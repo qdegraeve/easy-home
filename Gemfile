@@ -40,6 +40,18 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Result monad for services (Success/Failure) [https://github.com/dry-rb/dry-monads]
+gem "dry-monads"
+
+# Reusable, testable & encapsulated view components [https://github.com/ViewComponent/view_component]
+gem "view_component"
+
+# Minimal authorization through OO design and pure Ruby classes [https://github.com/varvet/pundit]
+gem "pundit"
+
+# Recurring date library for the recurrence engine [https://github.com/ice-cube-ruby/ice_cube]
+gem "ice_cube"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

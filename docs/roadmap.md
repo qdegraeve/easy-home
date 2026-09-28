@@ -13,7 +13,7 @@ Chaque étape produit quelque chose d'utilisable. Cocher au fur et à mesure.
   - [x] Mettre à jour `config/ci.rb` (`bundle exec rspec`) et `.github/workflows/ci.yml`
   - [x] Configurer les générateurs (`config.generators`) pour RSpec, factories, sans helpers ni specs de vues
 - [x] System specs : `capybara` + `cuprite`
-- [ ] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
+- [x] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
 - [ ] Vitest + happy-dom (`yarn test`), ajouté à `bin/ci`
 - [ ] Authentification : `bin/rails generate authentication` (active `bcrypt`)
 - [ ] `config.time_zone = "Indian/Reunion"`, `config.i18n.default_locale = :fr`, `rails-i18n`
