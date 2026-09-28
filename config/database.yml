@@ -1,0 +1,41 @@
+# PostgreSQL (voir docs/decisions/0004-base-de-donnees.md)
+#
+# En développement et en test, connexion locale par socket (Postgres.app, Homebrew...).
+# DATABASE_URL, si défini, surcharge cette configuration.
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: easy_home_development
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: easy_home_test
+
+# Production : un serveur PostgreSQL (accessory Kamal "db"), quatre bases.
+# Solid Cache, Solid Queue et Solid Cable ont chacun leur base.
+production:
+  primary: &primary_production
+    <<: *default
+    host: <%= ENV["DB_HOST"] %>
+    database: easy_home_production
+    username: easy_home
+    password: <%= ENV["EASY_HOME_DATABASE_PASSWORD"] %>
+  cache:
+    <<: *primary_production
+    database: easy_home_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: easy_home_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: easy_home_production_cable
+    migrations_paths: db/cable_migrate
