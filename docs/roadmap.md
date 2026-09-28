@@ -15,7 +15,7 @@ Chaque étape produit quelque chose d'utilisable. Cocher au fur et à mesure.
 - [x] System specs : `capybara` + `cuprite`
 - [x] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
 - [x] Vitest + happy-dom (`yarn test`), ajouté à `bin/ci`
-- [ ] Authentification : `bin/rails generate authentication` (active `bcrypt`)
+- [x] Authentification : `bin/rails generate authentication` (active `bcrypt`)
 - [ ] `config.time_zone = "Indian/Reunion"`, `config.i18n.default_locale = :fr`, `rails-i18n`
 - [ ] Layout de base Tailwind, pensé mobile d'abord
 
