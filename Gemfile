@@ -41,16 +41,16 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # Result monad for services (Success/Failure) [https://github.com/dry-rb/dry-monads]
-gem "dry-monads"
+gem "dry-monads", "~> 1.11"
 
 # Reusable, testable & encapsulated view components [https://github.com/ViewComponent/view_component]
-gem "view_component"
+gem "view_component", "~> 4.15"
 
 # Minimal authorization through OO design and pure Ruby classes [https://github.com/varvet/pundit]
-gem "pundit"
+gem "pundit", "~> 2.5"
 
 # Recurring date library for the recurrence engine [https://github.com/ice-cube-ruby/ice_cube]
-gem "ice_cube"
+gem "ice_cube", "~> 0.17"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -66,24 +66,24 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Test framework [https://github.com/rspec/rspec-rails]
-  gem "rspec-rails"
+  gem "rspec-rails", "~> 8.0"
 
   # Factories as a replacement for fixtures [https://github.com/thoughtbot/factory_bot_rails]
-  gem "factory_bot_rails"
+  gem "factory_bot_rails", "~> 6.5"
 
   # One-liners to test common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]
-  gem "shoulda-matchers"
+  gem "shoulda-matchers", "~> 8.0"
 
   # RSpec matchers for testing Pundit authorisation policies [https://github.com/pundit-community/pundit-matchers]
-  gem "pundit-matchers"
+  gem "pundit-matchers", "~> 4.0"
 end
 
 group :test do
   # Acceptance test framework for web applications [https://github.com/teamcapybara/capybara]
-  gem "capybara"
+  gem "capybara", "~> 3.40"
 
   # Headless Chrome driver for Capybara, using the Chrome DevTools Protocol [https://github.com/rubycdp/cuprite]
-  gem "cuprite"
+  gem "cuprite", "~> 0.18"
 end
 
 group :development do

@@ -435,25 +435,25 @@ DEPENDENCIES
   bootsnap
   brakeman
   bundler-audit
-  capybara
+  capybara (~> 3.40)
   cssbundling-rails
-  cuprite
+  cuprite (~> 0.18)
   debug
-  dry-monads
-  factory_bot_rails
-  ice_cube
+  dry-monads (~> 1.11)
+  factory_bot_rails (~> 6.5)
+  ice_cube (~> 0.17)
   image_processing (~> 1.2)
   jsbundling-rails
   kamal
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
-  pundit
-  pundit-matchers
+  pundit (~> 2.5)
+  pundit-matchers (~> 4.0)
   rails (~> 8.1.4)
-  rspec-rails
+  rspec-rails (~> 8.0)
   rubocop-rails-omakase
-  shoulda-matchers
+  shoulda-matchers (~> 8.0)
   solid_cable
   solid_cache
   solid_queue
@@ -461,7 +461,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   tzinfo-data
-  view_component
+  view_component (~> 4.15)
   web-console
 
 CHECKSUMS
