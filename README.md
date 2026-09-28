@@ -7,7 +7,7 @@ Rails 8.1 + Hotwire, avec une app Android Hotwire Native (à venir).
 ## Prérequis
 
 - Ruby 4.0.7 (`.ruby-version`)
-- Node 25.1.0 (`.node-version`) et Yarn
+- Node 22.18.0 (`.node-version`) et Yarn
 - PostgreSQL 18 en local (Postgres.app ou Homebrew)
 
 ## Démarrer

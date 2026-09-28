@@ -22,7 +22,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 
 ## Stack
 
-- Ruby 4.0.7, Rails 8.1.4, Node 25.1.0, Yarn
+- Ruby 4.0.7, Rails 8.1.4, Node 22.18.0, Yarn
 - Base de données : PostgreSQL 18 (ADR 0004). Colonnes JSON en `jsonb`
 - Hotwire (Turbo + Stimulus) ; JS bundlé par esbuild (`jsbundling-rails`) ; Tailwind CSS 4 (`cssbundling-rails`) ; Propshaft
 - Solid Queue, Solid Cache, Solid Cable (pas de Redis). En production, Solid Queue tourne dans Puma (`SOLID_QUEUE_IN_PUMA`)
