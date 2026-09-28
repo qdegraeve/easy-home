@@ -66,6 +66,14 @@ group :development, :test do
   gem "pundit-matchers"
 end
 
+group :test do
+  # Acceptance test framework for web applications [https://github.com/teamcapybara/capybara]
+  gem "capybara"
+
+  # Headless Chrome driver for Capybara, using the Chrome DevTools Protocol [https://github.com/rubycdp/cuprite]
+  gem "cuprite"
+end
+
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"

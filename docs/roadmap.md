@@ -12,7 +12,7 @@ Chaque étape produit quelque chose d'utilisable. Cocher au fur et à mesure.
   - [x] Supprimer `test/` et le railtie `rails/test_unit` dans `config/application.rb`
   - [x] Mettre à jour `config/ci.rb` (`bundle exec rspec`) et `.github/workflows/ci.yml`
   - [x] Configurer les générateurs (`config.generators`) pour RSpec, factories, sans helpers ni specs de vues
-- [ ] System specs : `capybara` + `cuprite`
+- [x] System specs : `capybara` + `cuprite`
 - [ ] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
 - [ ] Vitest + happy-dom (`yarn test`), ajouté à `bin/ci`
 - [ ] Authentification : `bin/rails generate authentication` (active `bcrypt`)
