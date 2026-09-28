@@ -1,0 +1,37 @@
+fr:
+  home:
+    show:
+      title: "Easy Home"
+      sign_out: "Se déconnecter"
+  passwords:
+    create:
+      notice: "Si un compte existe avec cette adresse, les instructions de réinitialisation ont été envoyées."
+      rate_limited: "Trop de tentatives, réessayez plus tard."
+    edit:
+      title: "Nouveau mot de passe"
+      password_placeholder: "Nouveau mot de passe"
+      password_confirmation_placeholder: "Confirmez le nouveau mot de passe"
+      submit: "Enregistrer"
+    invalid_token: "Le lien de réinitialisation est invalide ou a expiré."
+    new:
+      title: "Mot de passe oublié ?"
+      email_placeholder: "Votre adresse e-mail"
+      submit: "Recevoir les instructions"
+    update:
+      notice: "Votre mot de passe a été réinitialisé."
+      alert: "Les mots de passe ne correspondent pas."
+  passwords_mailer:
+    reset:
+      subject: "Réinitialisation de votre mot de passe"
+      intro: "Vous pouvez réinitialiser votre mot de passe sur"
+      link: "cette page"
+      expiration: "Ce lien expire dans %{duration}."
+  sessions:
+    create:
+      alert: "Adresse e-mail ou mot de passe incorrect."
+      rate_limited: "Trop de tentatives, réessayez plus tard."
+    new:
+      email_placeholder: "Votre adresse e-mail"
+      password_placeholder: "Votre mot de passe"
+      submit: "Se connecter"
+      forgot_password: "Mot de passe oublié ?"

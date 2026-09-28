@@ -16,7 +16,7 @@ Chaque étape produit quelque chose d'utilisable. Cocher au fur et à mesure.
 - [x] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
 - [x] Vitest + happy-dom (`yarn test`), ajouté à `bin/ci`
 - [x] Authentification : `bin/rails generate authentication` (active `bcrypt`)
-- [ ] `config.time_zone = "Indian/Reunion"`, `config.i18n.default_locale = :fr`, `rails-i18n`
+- [x] `config.time_zone = "Indian/Reunion"`, `config.i18n.default_locale = :fr`, `rails-i18n`
 - [ ] Layout de base Tailwind, pensé mobile d'abord
 
 ## Étape 1 : app Rails utilisable sur le web mobile
