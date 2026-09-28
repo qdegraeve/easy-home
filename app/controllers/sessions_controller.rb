@@ -1,6 +1,4 @@
 class SessionsController < ApplicationController
-  skip_after_action :verify_pundit_authorization
-
   allow_unauthenticated_access only: %i[ new create ]
   rate_limit(
     to: 10,
