@@ -52,6 +52,18 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Test framework [https://github.com/rspec/rspec-rails]
+  gem "rspec-rails"
+
+  # Factories as a replacement for fixtures [https://github.com/thoughtbot/factory_bot_rails]
+  gem "factory_bot_rails"
+
+  # One-liners to test common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]
+  gem "shoulda-matchers"
+
+  # RSpec matchers for testing Pundit authorisation policies [https://github.com/pundit-community/pundit-matchers]
+  gem "pundit-matchers"
 end
 
 group :development do

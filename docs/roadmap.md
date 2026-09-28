@@ -7,11 +7,11 @@ Chaque étape produit quelque chose d'utilisable. Cocher au fur et à mesure.
 - [ ] Premier commit de l'app générée
 - [x] Passage à PostgreSQL (ADR 0004) : Gemfile, `database.yml`, Dockerfile, accessory Kamal, CI
 - [ ] Sauvegardes de la base de production (`pg_dump` planifié)
-- [ ] Remplacer Minitest par RSpec :
-  - [ ] `rspec-rails`, `factory_bot_rails`, `shoulda-matchers`, `pundit-matchers`
-  - [ ] Supprimer `test/` et le railtie `rails/test_unit` dans `config/application.rb`
-  - [ ] Mettre à jour `config/ci.rb` (`bundle exec rspec`) et `.github/workflows/ci.yml`
-  - [ ] Configurer les générateurs (`config.generators`) pour RSpec, factories, sans helpers ni specs de vues
+- [x] Remplacer Minitest par RSpec :
+  - [x] `rspec-rails`, `factory_bot_rails`, `shoulda-matchers`, `pundit-matchers`
+  - [x] Supprimer `test/` et le railtie `rails/test_unit` dans `config/application.rb`
+  - [x] Mettre à jour `config/ci.rb` (`bundle exec rspec`) et `.github/workflows/ci.yml`
+  - [x] Configurer les générateurs (`config.generators`) pour RSpec, factories, sans helpers ni specs de vues
 - [ ] System specs : `capybara` + `cuprite`
 - [ ] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
 - [ ] Vitest + happy-dom (`yarn test`), ajouté à `bin/ci`
