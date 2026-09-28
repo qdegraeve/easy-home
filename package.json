@@ -2,11 +2,15 @@
   "name": "app",
   "private": true,
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "happy-dom": "^20.14.5",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
-    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "test": "vitest run"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
