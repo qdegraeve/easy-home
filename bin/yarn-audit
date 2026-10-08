@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+# yarn audit, avec une liste d'alertes acceptées (config/yarn-audit.yml).
+# Échoue sur toute alerte non listée, et sur toute acceptation arrivée à échéance.
+require "date"
+require "json"
+require "open3"
+require "yaml"
+
+config = YAML.safe_load_file(File.expand_path("../config/yarn-audit.yml", __dir__), permitted_classes: [ Date ])
+accepted = (config["ignore"] || []).to_h { |entry| [ entry["id"], entry ] }
+
+output, = Open3.capture2("yarn", "audit", "--json")
+unless output.include?('"type":"auditSummary"')
+  warn "yarn audit n'a pas abouti :\n#{output}"
+  exit 1
+end
+
+advisories = output.each_line.filter_map do |line|
+  event = JSON.parse(line)
+  event["data"]["advisory"] if event["type"] == "auditAdvisory"
+rescue JSON::ParserError
+  nil
+end.uniq { |advisory| advisory["id"] }
+
+failures = []
+advisories.each do |advisory|
+  label = "#{advisory["module_name"]} (#{advisory["severity"]}, #{advisory["id"]}) : #{advisory["title"]} #{advisory["url"]}"
+  entry = accepted[advisory["id"]]
+
+  if entry.nil?
+    failures << "✗ #{label}"
+  elsif entry["until"] < Date.today
+    failures << "✗ acceptation expirée le #{entry["until"]} : #{label}"
+  else
+    puts "– accepté jusqu'au #{entry["until"]} : #{label}"
+  end
+end
+
+(accepted.keys - advisories.map { |advisory| advisory["id"] }).each do |id|
+  puts "ℹ #{id} n'est plus signalé : le retirer de config/yarn-audit.yml"
+end
+
+if failures.empty?
+  puts "✓ yarn audit : aucune vulnérabilité non acceptée"
+else
+  puts failures
+  puts "Mettre à jour le paquet, ou documenter l'acceptation dans config/yarn-audit.yml."
+  exit 1
+end
