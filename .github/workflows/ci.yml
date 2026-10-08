@@ -157,7 +157,7 @@ jobs:
 
       - name: Captures d'écran des system specs en échec
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: captures-system-specs
           path: tmp/capybara
