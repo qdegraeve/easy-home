@@ -6,6 +6,8 @@ Side project à usage privé (le foyer du développeur) et terrain d'exploration
 
 **Langues** : documentation et interface en français. Code (classes, méthodes, tables, colonnes) en anglais.
 
+> **Dépôt public.** Aucun secret, aucune IP, aucun domaine réel, aucune donnée du foyer ou de la prod dans le code, les specs, les commits ou les PR.
+
 ## Documentation
 
 Lire le document concerné avant toute tâche qui touche son sujet.
@@ -15,7 +17,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 | `docs/produit.md` | Vision, périmètre du MVP, ce qui est hors MVP |
 | `docs/domaine.md` | Glossaire et modèle de données (provisoire) |
 | `docs/architecture.md` | Couches applicatives, règles d'usage, exemples de code |
-| `docs/tests.md` | Stratégie de test par couche |
+| `docs/tests.md` | Exigences de test, stratégie par couche, parcours critiques |
 | `docs/hotwire-native.md` | App Android, notifications push, authentification native, déploiement |
 | `docs/roadmap.md` | Étapes de construction et setup restant |
 | `docs/decisions/` | ADR : décisions structurantes et leur justification |
@@ -38,8 +40,9 @@ bin/ci                   # CI locale complète (lint, audits, tests)
 bin/rubocop -a           # lint avec correction automatique
 bin/brakeman             # analyse de sécurité
 bin/jobs                 # worker Solid Queue en local
-bundle exec rspec        # tests Ruby (une fois RSpec installé, voir roadmap)
-yarn test                # tests JS Vitest (une fois installé)
+bundle exec rspec        # tests Ruby, dont end to end (yarn build && yarn build:css avant les system specs)
+yarn test                # tests JS Vitest
+bin/check-specs          # garde-fous des specs : pas de sleep, de focus, de retry, de Time.now
 ```
 
 ## Architecture : règles essentielles
@@ -66,13 +69,16 @@ Détails et exemples dans `docs/architecture.md`. Principe directeur : **une str
 
 ## Tests
 
-Détails dans `docs/tests.md`.
+**Les tests sont la preuve que l'application fonctionne : personne ne relit le code.** Exigences complètes dans `docs/tests.md`, à lire avant d'écrire une spec.
 
-- RSpec + FactoryBot. Request specs plutôt que controller specs.
-- Tout service, formulaire, query, policy et composant a sa spec unitaire.
-- Le moteur de récurrence est testé de façon exhaustive, avec `travel_to` pour figer le temps.
-- System specs (Capybara + Cuprite) réservées à quelques parcours critiques.
-- Stimulus : Vitest uniquement pour les contrôleurs qui contiennent de la logique.
+- **Tous les parcours critiques sont testés de bout en bout** (system specs Capybara + Cuprite), du geste de l'utilisateur au résultat visible. Liste dans `docs/tests.md`, à tenir à jour.
+- **Chaque critère d'acceptation du ticket est couvert par une spec**, citée dans la PR.
+- **Fiables** : attendre un état (matchers Capybara, `have_no_*`), jamais une durée ; `travel_to` ; aucune dépendance au réseau ou à l'ordre. Une spec instable se corrige, elle ne se relance pas.
+- **Rapides** : budget par spec appliqué en CI (1 s, 8 s pour une spec système). Données minimales, un parcours complet par system spec.
+- **Pertinents** : specs unitaires là où elles apportent quelque chose (logique métier, services, récurrence, policies, cas limites). Pas de spec qui recopie l'implémentation.
+- RSpec + FactoryBot. Request specs plutôt que controller specs. Stimulus : Vitest pour les contrôleurs qui contiennent de la logique.
+- Le moteur de récurrence est testé de façon exhaustive.
+- Migrations : compatibles avec les données existantes ; une transformation de données a sa spec.
 
 ## État actuel
 
@@ -81,5 +87,5 @@ L'app vient d'être générée : aucun code métier. Le setup n'est pas terminé
 ## Façon de travailler
 
 - Pour une tâche non triviale, proposer un plan court avant de coder.
-- Avant d'annoncer une tâche terminée : lancer `bin/rubocop` et les tests concernés.
+- Avant d'annoncer une tâche terminée ou de pousser : `bin/ci` entièrement vert.
 - Quand une décision change, mettre à jour l'ADR et la doc concernée dans le même changement.

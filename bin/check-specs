@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Garde-fous sur la suite de tests, lancés en CI (job Lint) et par bin/ci.
+# Une spec fiable attend un état (matchers Capybara), jamais une durée.
+set -uo pipefail
+
+status=0
+
+check() {
+  local message="$1" pattern="$2"
+  local hits
+  hits=$(grep -rnE "$pattern" spec --include='*.rb' || true)
+  if [ -n "$hits" ]; then
+    echo "✗ $message"
+    echo "$hits"
+    echo
+    status=1
+  fi
+}
+
+check "sleep interdit : utiliser les attentes Capybara (have_content, have_css...) ou travel_to" '^[^#]*\bsleep\b'
+check "spec focalisée oubliée (fit, fdescribe, fcontext, focus: true)" '^\s*(fit|fdescribe|fcontext|fscenario|ffeature)\b|focus: true'
+check "réessai de spec interdit : une spec instable se corrige, elle ne se relance pas" 'rspec-retry|retry_count|:retry\b'
+check "Time.now / Date.today interdits : Time.current, Date.current et travel_to" '\b(Time\.now|Date\.today)\b'
+
+if [ "$status" -eq 0 ]; then echo "✓ Garde-fous des specs : OK"; fi
+exit "$status"

@@ -38,3 +38,17 @@
 !/app/assets/builds/.keep
 
 /node_modules
+
+# Configuration Claude Code personnelle (outils et règles locales, jamais partagés)
+/.claude/settings.local.json
+/.claude/rules/ccc
+/.claude/rules/ccc-session.md
+
+# Dumps de base et fichiers d'environnement : jamais dans le dépôt (il est public)
+*.dump
+*.sql
+*.sql.gz
+!/db/structure.sql
+
+# Notes locales pour Claude Code (chargées automatiquement, jamais commitées)
+/CLAUDE.local.md

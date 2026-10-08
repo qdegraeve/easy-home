@@ -6,3 +6,17 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
+
+# Conventions du projet vérifiées mécaniquement (voir CLAUDE.md).
+# Fuseau horaire : jamais Time.now / Date.today, toujours Time.current / Date.current.
+Rails/TimeZone:
+  Enabled: true
+  EnforcedStyle: strict
+
+Rails/Date:
+  Enabled: true
+  EnforcedStyle: strict
+
+# Pas de texte en dur dans les messages (I18n).
+Rails/I18nLocaleTexts:
+  Enabled: true
