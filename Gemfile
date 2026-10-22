@@ -44,7 +44,7 @@ gem "image_processing", "~> 1.2"
 gem "dry-monads", "~> 1.11"
 
 # Reusable, testable & encapsulated view components [https://github.com/ViewComponent/view_component]
-gem "view_component", "~> 4.15"
+gem "view_component", "~> 4.16"
 
 # Minimal authorization through OO design and pure Ruby classes [https://github.com/varvet/pundit]
 gem "pundit", "~> 2.5"
