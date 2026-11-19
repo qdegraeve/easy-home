@@ -10,6 +10,7 @@ config = YAML.safe_load_file(File.expand_path("../config/yarn-audit.yml", __dir_
 accepted = (config["ignore"] || []).to_h { |entry| [ entry["id"], entry ] }
 
 output, = Open3.capture2("yarn", "audit", "--json")
+output.force_encoding(Encoding::UTF_8)
 unless output.include?('"type":"auditSummary"')
   warn "yarn audit n'a pas abouti :\n#{output}"
   exit 1
