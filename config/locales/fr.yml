@@ -1,9 +1,28 @@
 fr:
+  activerecord:
+    models:
+      household: "Foyer"
+    attributes:
+      household:
+        name: "Nom du foyer"
   home:
     show:
       title: "Mes plantes"
       empty_title: "Aucune plante pour l'instant"
       empty_body: "L'inventaire des plantes arrive bientôt."
+  households:
+    create:
+      success: "Foyer « %{name} » créé."
+    index:
+      title: "Mes foyers"
+      current: "Foyer actif"
+      select: "Choisir"
+      new: "+ Nouveau foyer"
+    new:
+      title: "Créer un foyer"
+      intro: "Un foyer regroupe une maison, ses plantes et ses tâches. Vous pourrez en créer d'autres plus tard."
+      name_placeholder: "Ex. Maison de la plage"
+      submit: "Créer le foyer"
   layouts:
     application:
       app_name: "Easy Home"

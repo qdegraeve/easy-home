@@ -1,7 +1,8 @@
 class HomeController < ApplicationController
   def show
-    # Sans foyer, on autorise la classe : la policy refuse, ce qui donne une 403 plutôt qu'une 500.
-    @household = Current.household
-    authorize(@household || Household)
+    @household = current_household
+    return redirect_to(new_household_path) unless @household
+
+    authorize @household
   end
 end

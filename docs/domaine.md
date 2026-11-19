@@ -97,6 +97,14 @@ Device
   last_seen_at
 ```
 
+## Foyers et comptes
+
+- Un compte est créé en console (`bin/rails accounts:create`), sans inscription publique. Le foyer se crée ensuite
+  dans l'app : un utilisateur sans foyer est envoyé vers « Créer un foyer » (`Households::Create`, rôle `owner`).
+- Un utilisateur peut avoir plusieurs foyers. Le **foyer actif** est mémorisé en session (`session[:household_id]`) et
+  se change depuis « Mes foyers ». À défaut, ou si la session pointe vers un foyer dont il n'est plus membre, c'est son
+  premier foyer par ordre alphabétique. Toute lecture passe par `policy_scope(Household)`.
+
 ## Cycle de vie d'une échéance
 
 ```

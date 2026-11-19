@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include Authentication
   include Pundit::Authorization
+  include Dry::Monads[:result]
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
@@ -11,6 +12,12 @@ class ApplicationController < ActionController::Base
 
   def pundit_user
     Current.user
+  end
+
+  # Foyer actif mémorisé en session ; à défaut, le premier foyer de l'utilisateur. nil s'il n'en a aucun.
+  def current_household
+    households = policy_scope(Household)
+    households.find_by(id: session[:household_id]) || households.order(:name, :id).first
   end
 
   def forbidden

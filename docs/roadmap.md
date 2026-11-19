@@ -25,7 +25,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 ## Étape 2 : première version, les plantes
 
 - [x] Layout de base Tailwind, pensé mobile d'abord
-- [x] Foyer minimal (`Household`, `Membership` owner), comptes créés en console (`bin/rails accounts:create`)
+- [x] Foyers créés dans l'app, plusieurs par utilisateur, foyer actif en session ; comptes créés en console
+  (`bin/rails accounts:create`)
 - [ ] Moteur de récurrence : `Recurrence::Sliding`, testé de façon exhaustive
 - [ ] Ma maison : adresse avec autocomplétion, position et altitude (ADR 0009), emplacements (`Location`) avec
   exposition et abri

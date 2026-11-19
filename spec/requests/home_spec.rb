@@ -18,13 +18,24 @@ RSpec.describe "Home", type: :request do
       expect(response.body).to include("Maison de test", "Mes plantes", "Se déconnecter")
     end
 
-    it "refuses a signed in user without household" do
+    it "sends a user without household to the household form" do
       user = create(:user)
       post session_path, params: { email_address: user.email_address, password: "password" }
 
       get root_path
 
-      expect(response).to have_http_status(:forbidden)
+      expect(response).to redirect_to(new_household_path)
+    end
+
+    it "shows the first household by name when none is selected" do
+      user = create(:user)
+      create(:membership, user:, household: create(:household, name: "Zébu"))
+      create(:membership, user:, household: create(:household, name: "Appartement"))
+      post session_path, params: { email_address: user.email_address, password: "password" }
+
+      get root_path
+
+      expect(response.body).to include("Appartement")
     end
   end
 end
