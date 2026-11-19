@@ -107,36 +107,33 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(Task.exists?(task.id)).to be(true)
   end
 
-  describe "accès refusé" do
-    def requests(task)
+  describe "access denied" do
+    let(:task) { add_task }
+    let(:requests) do
       {
-        "formulaire d'ajout" => -> { get new_plant_task_path(plant) },
-        "ajout" => -> { post plant_tasks_path(plant), params: once_params },
-        "formulaire de modification" => -> { get edit_plant_task_path(plant, task) },
-        "modification" => lambda {
-          patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } }
-        },
-        "suppression" => -> { delete plant_task_path(plant, task) }
+        "new form" => -> { get new_plant_task_path(plant) },
+        "create" => -> { post plant_tasks_path(plant), params: once_params },
+        "edit form" => -> { get edit_plant_task_path(plant, task) },
+        "update" => -> { patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } } },
+        "destroy" => -> { delete plant_task_path(plant, task) }
       }
     end
 
-    [ [ "un invité du foyer", :guest ], [ "un autre foyer", :other ] ].each do |label, who|
-      it "répond 404 à #{label} sur chaque action, sans rien modifier" do
-        task = add_task
-        intruder =
-          if who == :guest
-            create(:household_member, household:, role: :guest).user
-          else
-            create(:user, :with_household)
-          end
-        sign_in(intruder)
+    {
+      "a guest of the household" => -> { create(:household_member, household:, role: :guest).user },
+      "a user of another household" => -> { create(:user, :with_household) }
+    }.each do |intruder_label, intruder|
+      [ "new form", "create", "edit form", "update", "destroy" ].each do |action|
+        it "answers 404 to #{intruder_label} on #{action}, without changing anything" do
+          task
+          sign_in(instance_exec(&intruder))
 
-        requests(task).each do |action, request|
-          request.call
-          expect(response).to have_http_status(:not_found), "#{action} : #{response.status}"
+          instance_exec(&requests.fetch(action))
+
+          expect(response).to have_http_status(:not_found)
+          expect(task.reload.title).to eq("Tailler")
+          expect(plant.tasks.count).to eq(2)
         end
-        expect(task.reload.title).to eq("Tailler")
-        expect(plant.tasks.count).to eq(2)
       end
     end
   end
