@@ -6,7 +6,7 @@ RSpec.describe HouseholdPolicy do
   let(:household) { create(:household) }
 
   context "pour un membre du foyer" do
-    let(:user) { create(:membership, household:).user }
+    let(:user) { create(:household_member, household:).user }
 
     it { is_expected.to permit_actions(%i[show new create]) }
   end
@@ -26,10 +26,10 @@ RSpec.describe HouseholdPolicy do
 
   describe "Scope" do
     it "ne renvoie que les foyers de l'utilisateur" do
-      membership = create(:membership)
+      member = create(:household_member)
       create(:household, name: "Foyer d'un autre")
 
-      expect(described_class::Scope.new(membership.user, Household).resolve).to eq([ membership.household ])
+      expect(described_class::Scope.new(member.user, Household).resolve).to eq([ member.household ])
     end
 
     it "ne renvoie rien sans utilisateur" do

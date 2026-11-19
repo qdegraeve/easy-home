@@ -3,14 +3,14 @@
   <h1 class="mb-6 text-2xl font-bold"><%= t(".title") %></h1>
 
   <%= form_with url: session_path, class: "space-y-4" do |form| %>
-    <%= form.label :email_address, t(".email_label"), class: "block text-sm font-semibold" %>
+    <%= form.label :email, t(".email_label"), class: "block text-sm font-semibold" %>
     <%= form.email_field(
-      :email_address,
+      :email,
       required: true,
       autofocus: true,
       autocomplete: "username",
       placeholder: t(".email_placeholder"),
-      value: params[:email_address],
+      value: params[:email],
       class: "w-full rounded-xl border border-stone-300 bg-white px-3 py-3"
     ) %>
     <%= form.label :password, t(".password_label"), class: "block text-sm font-semibold" %>

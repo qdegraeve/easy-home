@@ -3,7 +3,7 @@ require "rails_helper"
 # Parcours critique : sans foyer, l'app est inutilisable (voir docs/tests.md).
 RSpec.describe "Foyers", type: :system do
   it "crée un premier foyer à la première connexion, puis en ajoute un second et change de foyer" do
-    create(:user, email_address: "quentin@example.com", password: "secret-password")
+    create(:user, email: "quentin@example.com", password: "secret-password")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"

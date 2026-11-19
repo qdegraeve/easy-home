@@ -4,12 +4,12 @@ RSpec.describe "Households", type: :request do
   let(:user) { create(:user) }
 
   def sign_in(user)
-    post session_path, params: { email_address: user.email_address, password: "password" }
+    post session_path, params: { email: user.email, password: "password" }
   end
 
   describe "GET /households" do
     it "lists only the user's households" do
-      create(:membership, user:, household: create(:household, name: "Ma maison"))
+      create(:household_member, user:, household: create(:household, name: "Ma maison"))
       create(:household, name: "Foyer d'un autre")
       sign_in(user)
 
@@ -22,14 +22,15 @@ RSpec.describe "Households", type: :request do
 
   describe "POST /households" do
     it "creates the household and makes it the current one" do
-      create(:membership, user:, household: create(:household, name: "Appartement"))
+      create(:household_member, user:, household: create(:household, name: "Appartement"))
       sign_in(user)
 
       post households_path, params: { household: { name: "Zébu" } }
 
       expect(response).to redirect_to(root_path)
       follow_redirect!
-      expect(response.body).to include("Zébu", "Foyer « Zébu » créé.")
+      expect(response.body).to include("Foyer « Zébu » créé.")
+      expect(response.body).not_to include("Appartement")
     end
 
     it "re-renders the form when the name is missing" do
@@ -44,8 +45,8 @@ RSpec.describe "Households", type: :request do
 
   describe "POST /households/:household_id/selection" do
     it "switches the current household" do
-      create(:membership, user:, household: create(:household, name: "Appartement"))
-      other = create(:membership, user:, household: create(:household, name: "Zébu")).household
+      create(:household_member, user:, household: create(:household, name: "Appartement"))
+      other = create(:household_member, user:, household: create(:household, name: "Zébu")).household
       sign_in(user)
 
       post household_selection_path(other)

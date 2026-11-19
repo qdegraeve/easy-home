@@ -10,7 +10,7 @@ RSpec.describe "Home", type: :request do
 
     it "renders the household page for a signed in user" do
       user = create(:user, :with_household)
-      post session_path, params: { email_address: user.email_address, password: "password" }
+      post session_path, params: { email: user.email, password: "password" }
 
       get root_path
 
@@ -20,7 +20,7 @@ RSpec.describe "Home", type: :request do
 
     it "sends a user without household to the household form" do
       user = create(:user)
-      post session_path, params: { email_address: user.email_address, password: "password" }
+      post session_path, params: { email: user.email, password: "password" }
 
       get root_path
 
@@ -29,9 +29,9 @@ RSpec.describe "Home", type: :request do
 
     it "shows the first household by name when none is selected" do
       user = create(:user)
-      create(:membership, user:, household: create(:household, name: "Zébu"))
-      create(:membership, user:, household: create(:household, name: "Appartement"))
-      post session_path, params: { email_address: user.email_address, password: "password" }
+      create(:household_member, user:, household: create(:household, name: "Zébu"))
+      create(:household_member, user:, household: create(:household, name: "Appartement"))
+      post session_path, params: { email: user.email, password: "password" }
 
       get root_path
 

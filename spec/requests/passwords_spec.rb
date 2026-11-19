@@ -14,14 +14,14 @@ RSpec.describe "Passwords", type: :request do
 
   describe "POST /passwords" do
     it "sends reset instructions to a known address" do
-      expect { post passwords_path, params: { email_address: user.email_address } }
+      expect { post passwords_path, params: { email: user.email } }
         .to have_enqueued_mail(PasswordsMailer, :reset)
 
       expect(response).to redirect_to(new_session_path)
     end
 
     it "does not reveal an unknown address" do
-      expect { post passwords_path, params: { email_address: "unknown@example.com" } }
+      expect { post passwords_path, params: { email: "unknown@example.com" } }
         .not_to have_enqueued_mail(PasswordsMailer, :reset)
 
       expect(response).to redirect_to(new_session_path)

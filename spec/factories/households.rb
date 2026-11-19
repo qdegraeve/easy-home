@@ -3,7 +3,7 @@ FactoryBot.define do
     name { "Maison de test" }
   end
 
-  factory :membership do
+  factory :household_member do
     user
     household
     role { :owner }

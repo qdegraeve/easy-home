@@ -12,12 +12,14 @@ class HouseholdsController < ApplicationController
   def create
     authorize Household
 
-    case Households::Create.new.call(user: Current.user, params: household_params)
-    in Success(household)
+    result = Households::Create.new.call(user: Current.user, params: household_params)
+
+    if result.success?
+      household = result.value!
       session[:household_id] = household.id
       redirect_to root_path, notice: t(".success", name: household.name)
-    in Failure[ :invalid, household ]
-      @household = household
+    else
+      _code, @household = result.failure
       render :new, status: :unprocessable_content
     end
   end

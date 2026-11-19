@@ -1,4 +1,4 @@
-class Membership < ApplicationRecord
+class HouseholdMember < ApplicationRecord
   belongs_to :user
   belongs_to :household
 

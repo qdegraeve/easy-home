@@ -15,7 +15,7 @@ class HouseholdPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user
 
-      scope.where(id: user.memberships.select(:household_id))
+      scope.where(id: user.household_members.select(:household_id))
     end
   end
 end

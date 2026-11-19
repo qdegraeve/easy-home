@@ -8,7 +8,7 @@ module Households
 
       ActiveRecord::Base.transaction do
         household.save!
-        Membership.create!(user:, household:, role: :owner)
+        HouseholdMember.create!(user:, household:, role: :owner)
       end
 
       Success(household)
