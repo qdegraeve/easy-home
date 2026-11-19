@@ -13,7 +13,7 @@ class PlantPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user
 
-      scope.where(household_id: user.household_members.where.not(role: :guest).select(:household_id))
+      scope.where(household_id: managed_household_ids)
     end
   end
 

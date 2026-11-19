@@ -6,7 +6,10 @@ class HomeController < ApplicationController
     authorize @household
     plants = policy_scope(Plant).where(household: @household).order(:name)
     @plants = plants.active.includes(:location, watering_task: :pending_occurrence)
-    @to_water = @plants.select(&:needs_watering?)
     @archived_plants = plants.archived
+    @due_today = policy_scope(TaskOccurrence).pending
+      .where(tasks: { household_id: @household.id, active: true })
+      .where(due_at: ..Time.zone.today.end_of_day)
+      .includes(task: :subject).order(:due_at)
   end
 end

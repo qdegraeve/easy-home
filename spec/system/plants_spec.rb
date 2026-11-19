@@ -34,10 +34,10 @@ RSpec.describe "Plantes", type: :system do
 
     # Arrosage depuis l'accueil, une seule fois par jour.
     click_on "← Mes plantes"
-    expect(page).to have_content("À arroser aujourd'hui · 1")
+    expect(page).to have_content("À faire aujourd'hui · 1")
     click_on "Arrosée : Basilic"
     expect(page).to have_content("Arrosage noté pour « Basilic ».")
-    expect(page).to have_content("Rien à arroser aujourd'hui.")
+    expect(page).to have_content("Rien à faire aujourd'hui.")
 
     click_on "Basilic"
     expect(page).to have_content("Prochain arrosage : dans 2 j")

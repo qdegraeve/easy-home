@@ -132,7 +132,9 @@ Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 
 Interface commune : `#next_due_at(last_completed_at:)`, qui renvoie une heure dans le fuseau reçu (`Fixed` ajoutera
 ses propres paramètres). Construit depuis `recurrence_type` + `recurrence_config` par une fabrique
-(`Recurrence.build(type:, config:)`). Implémenté : `Sliding`.
+(`Recurrence.build(type:, config:)`). Implémentés : `Sliding` (avec `start_on` facultatif, date de la première
+échéance) et `Once` (`due_on`). `last_completed_at` vaut nil pour une tâche jamais faite ; `nil` en retour signifie
+qu'il n'y a plus d'échéance (tâche unique faite).
 
 ## Catalogue de modèles de tâches
 
@@ -166,6 +168,12 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
   Une analyse en échec ou en attente ne bloque donc rien.
 - À l'ajout, le « dernier arrosage » (aujourd'hui par défaut) entre au journal et sert de point de départ à la première
   échéance. Changer l'intervalle recale l'échéance ouverte depuis le dernier arrosage.
+- Une plante peut avoir des **tâches manuelles** (engrais, taille…) : une seule fois à une date (`once`), ou tous les
+  N jours après la dernière fois à partir d'une première date (`sliding` avec `start_on`). Elles se modifient (titre,
+  date de la prochaine fois, intervalle) et se suppriment ; la tâche d'arrosage se règle depuis la plante. Une tâche
+  unique faite disparaît de la fiche et reste au journal.
+- L'accueil liste **« À faire aujourd'hui »** : toutes les échéances ouvertes dues aujourd'hui ou en retard, arrosages
+  et autres tâches.
 - Une tâche ne se fait qu'une fois par jour (`Tasks::Complete`) : un second « Arrosée » le même jour est refusé.
 - Une réalisation enregistrée par erreur s'annule depuis le journal (`Tasks::CancelCompletion`) : elle disparaît et
   l'échéance ouverte est recalculée depuis la réalisation précédente.

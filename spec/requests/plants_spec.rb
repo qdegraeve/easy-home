@@ -24,7 +24,7 @@ RSpec.describe "Plantes", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À arroser aujourd&#39;hui · 1", "Arrosée : Basilic", "Toutes les plantes · 2")
+      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Arrosée : Basilic", "Toutes les plantes · 2")
       expect(response.body).to include("Terrasse · ⛅ Mi-ombre", "Sans emplacement", "dans 9 j")
       expect(response.body).to include("Plantes archivées · 1", "Fougère morte")
       expect(response.body).not_to include("Arrosée : Aloe")
@@ -44,7 +44,8 @@ RSpec.describe "Plantes", type: :request do
     it "ajoute une plante au foyer actif" do
       sign_in(user)
 
-      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", last_watered_on: "2026-11-16" } }
+      post plants_path,
+        params: { plant: { name: "Basilic", watering_interval_days: "2", last_watered_on: "2026-11-16" } }
 
       plant = household.plants.sole
       expect(response).to redirect_to(plant_path(plant))
@@ -79,7 +80,8 @@ RSpec.describe "Plantes", type: :request do
 
       get plant_path(plant)
 
-      expect(response.body).to include("Tous les 2 jours", "Prochain arrosage :", "demain", "Dernier arrosage : dim 15 nov.")
+      expect(response.body).to include("Tous les 2 jours", "Prochain arrosage :", "demain")
+      expect(response.body).to include("Dernier arrosage : dim 15 nov.")
     end
 
     it "ne trouve pas la plante d'un autre foyer" do
@@ -146,50 +148,48 @@ RSpec.describe "Plantes", type: :request do
     end
   end
 
-  describe "accès refusé sur chaque écriture" do
+  describe "access denied on every write" do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic") }
-    let(:pending) { plant.watering_task.pending_occurrence }
+    let(:pending_occurrence) { plant.watering_task.pending_occurrence }
     let(:watering) { plant.watering_task.occurrences.done.sole }
-
-    def write_requests
+    let(:requests) do
       {
-        "modification" => -> { patch plant_path(plant), params: { plant: { name: "X", watering_interval_days: "4" } } },
-        "suppression" => -> { delete plant_path(plant) },
-        "archivage" => -> { post plant_archive_path(plant) },
-        "restauration" => -> { delete plant_archive_path(plant) },
-        "arrosage" => -> { post task_occurrence_completion_path(pending) },
-        "annulation d'un arrosage" => -> { delete task_occurrence_completion_path(watering) }
+        "edit form" => -> { get edit_plant_path(plant) },
+        "update" => -> { patch plant_path(plant), params: { plant: { name: "X", watering_interval_days: "4" } } },
+        "destroy" => -> { delete plant_path(plant) },
+        "archive" => -> { post plant_archive_path(plant) },
+        "restore" => -> { delete plant_archive_path(plant) },
+        "watering" => -> { post task_occurrence_completion_path(pending_occurrence) },
+        "watering cancellation" => -> { delete task_occurrence_completion_path(watering) }
       }
     end
 
-    def expect_untouched
-      expect(plant.reload).to have_attributes(name: "Basilic", archived_at: nil)
-      expect(pending.reload).to be_pending
-      expect(watering.reload).to be_done
+    {
+      "a guest of the household" => -> { guest },
+      "a user of another household" => -> { create(:user, :with_household) }
+    }.each do |intruder_label, intruder|
+      [ "edit form", "update", "destroy", "archive", "restore", "watering", "watering cancellation" ].each do |action|
+        it "answers 404 to #{intruder_label} on #{action}, without changing anything" do
+          pending_occurrence
+          watering
+          sign_in(instance_exec(&intruder))
+
+          instance_exec(&requests.fetch(action))
+
+          expect(response).to have_http_status(:not_found)
+          expect(plant.reload).to have_attributes(name: "Basilic", archived_at: nil)
+          expect(pending_occurrence.reload).to be_pending
+          expect(watering.reload).to be_done
+        end
+      end
     end
 
-    it "répond 403 (formulaires) ou 404 (plante et échéances invisibles) à un invité, sans rien modifier" do
+    it "answers 403 to a guest on the new plant form" do
       sign_in(guest)
 
-      write_requests.each do |label, request|
-        request.call
-        expect(response).to have_http_status(:not_found), "#{label} : #{response.status}"
-      end
-      get edit_plant_path(plant)
-      expect(response).to have_http_status(:not_found)
       get new_plant_path
+
       expect(response).to have_http_status(:forbidden)
-      expect_untouched
-    end
-
-    it "répond 404 pour un autre foyer, sans rien modifier" do
-      sign_in(create(:user, :with_household))
-
-      write_requests.each do |label, request|
-        request.call
-        expect(response).to have_http_status(:not_found), "#{label} : #{response.status}"
-      end
-      expect_untouched
     end
   end
 

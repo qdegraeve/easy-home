@@ -46,6 +46,36 @@ RSpec.describe Recurrence::Sliding do
     end
   end
 
+  describe "jamais faite" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    around { |example| travel_to(zone.parse("2026-11-16 22:30")) { example.run } }
+
+    it "part de la date de début si elle est fixée, même passée" do
+      later = described_class.new(interval_days: 14, start_on: Date.new(2026, 11, 20))
+      past = described_class.new(interval_days: 14, start_on: Date.new(2026, 11, 1))
+
+      expect(later.next_due_at(last_completed_at: nil)).to eq(zone.parse("2026-11-20 00:00"))
+      expect(past.next_due_at(last_completed_at: nil)).to eq(zone.parse("2026-11-01 00:00"))
+    end
+
+    it "tombe dans interval_days jours à partir d'aujourd'hui (jour local) sans date de début" do
+      expect(described_class.new(interval_days: 3).next_due_at(last_completed_at: nil))
+        .to eq(zone.parse("2026-11-19 00:00"))
+    end
+
+    it "ignore la date de début une fois faite" do
+      recurrence = described_class.new(interval_days: 2, start_on: Date.new(2026, 12, 25))
+
+      expect(recurrence.next_due_at(last_completed_at: zone.parse("2026-11-16 08:00")))
+        .to eq(zone.parse("2026-11-18 00:00"))
+    end
+
+    it "refuse une date de début qui n'est pas une date" do
+      expect { described_class.new(interval_days: 2, start_on: "2026-11-20") }.to raise_error(Recurrence::InvalidConfig)
+    end
+  end
+
   describe "intervalle invalide" do
     [ 0, 61, -1, nil, "3", 2.5 ].each do |value|
       it "refuse #{value.inspect}" do

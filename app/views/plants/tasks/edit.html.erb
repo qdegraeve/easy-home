@@ -1,0 +1,9 @@
+<div class="mx-auto max-w-md">
+  <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
+  <h1 class="mt-2 text-2xl font-bold"><%= t(".title", title: @task.title) %></h1>
+
+  <div class="mt-6">
+    <%= render "form", form: @form, url: plant_task_path(@plant, @task), method: :patch, adding: false,
+          submit: t(".submit") %>
+  </div>
+</div>

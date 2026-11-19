@@ -31,20 +31,4 @@ RSpec.describe Plant, type: :model do
 
     expect(plant.reload.location).to be_nil
   end
-
-  describe "#needs_watering?" do
-    include ActiveSupport::Testing::TimeHelpers
-
-    it "est vrai le jour de l'échéance et en retard, faux avant" do
-      travel_to Time.zone.parse("2026-11-16 10:00") do
-        plant = create(:plant, :watered, interval_days: 2, last_watered_at: Time.zone.parse("2026-11-15 08:00"))
-
-        expect(plant.needs_watering?).to be(false)
-        travel 1.day
-        expect(plant.needs_watering?).to be(true)
-        travel 3.days
-        expect(plant.needs_watering?).to be(true)
-      end
-    end
-  end
 end

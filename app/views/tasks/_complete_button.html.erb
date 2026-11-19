@@ -1,0 +1,10 @@
+<%# Bouton « Arrosée » / « Fait » d'une échéance ouverte. %>
+<% task = occurrence.task %>
+<% if task.watering? %>
+  <% label, aria_label = t("plants.water"), t("plants.water_label", name: task.subject.name) %>
+<% else %>
+  <% label, aria_label = t("tasks.done"), t("tasks.done_label", title: task.title, subject: task.subject.name) %>
+<% end %>
+<%= button_to label, task_occurrence_completion_path(occurrence),
+      aria: { label: aria_label },
+      class: "shrink-0 rounded-xl bg-sky-600 px-3 py-2 text-sm font-semibold text-white" %>

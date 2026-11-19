@@ -22,10 +22,6 @@ class Plant < ApplicationRecord
 
   def next_watering_at = watering_task&.pending_occurrence&.due_at
 
-  def needs_watering?
-    next_watering_at.present? && next_watering_at.to_date <= Time.zone.today
-  end
-
   private
 
   def location_must_belong_to_household
