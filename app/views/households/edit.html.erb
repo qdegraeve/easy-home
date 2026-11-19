@@ -1,0 +1,106 @@
+<%= link_to t(".back"), root_path, class: "text-sm text-stone-500 underline" %>
+<h1 class="mt-2 text-2xl font-bold"><%= t(".title") %></h1>
+
+<div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+  <section class="space-y-3 self-start rounded-2xl bg-white p-4 shadow-sm">
+    <h2 class="font-semibold"><%= t(".situation") %></h2>
+    <p class="text-sm text-stone-500"><%= t(".situation_help") %></p>
+
+    <%= form_with(
+      model: @household,
+      class: "space-y-3",
+      data: { controller: "address-autocomplete", address_autocomplete_url_value: address_suggestions_path }
+    ) do |form| %>
+      <%= render "shared/errors", record: @household %>
+
+      <div class="relative">
+        <%= form.label :address, class: "block text-sm font-semibold" %>
+        <%= form.text_field(
+          :address,
+          autocomplete: "off",
+          placeholder: t(".address_placeholder"),
+          class: "mt-1 w-full rounded-xl border border-stone-300 px-3 py-3",
+          data: { address_autocomplete_target: "input", action: "input->address-autocomplete#search" }
+        ) %>
+        <div data-address-autocomplete-target="results"></div>
+      </div>
+      <%= form.hidden_field :latitude, data: { address_autocomplete_target: "latitude" } %>
+      <%= form.hidden_field :longitude, data: { address_autocomplete_target: "longitude" } %>
+
+      <div>
+        <%= form.label :altitude_m, class: "block text-sm font-semibold" %>
+        <div class="mt-1 flex items-center gap-2">
+          <%= form.number_field(
+            :altitude_m,
+            class: "w-28 rounded-xl border border-stone-300 px-3 py-3",
+            data: { address_autocomplete_target: "altitude" }
+          ) %>
+          <span class="text-sm"><%= t(".meters") %></span>
+        </div>
+        <p class="mt-1 text-xs text-stone-500">
+          <%= @household.located? && @household.altitude_m.nil? ? t(".altitude_unknown") : t(".altitude_help") %>
+        </p>
+      </div>
+
+      <%= form.submit t(".save"), class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+    <% end %>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="font-semibold"><%= t(".locations") %></h2>
+
+    <% locations = @household.locations.order(:name) %>
+    <% if locations.any? %>
+      <ul class="divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+        <% locations.each do |location| %>
+          <li class="flex items-center justify-between gap-3 p-3">
+            <div>
+              <p class="font-medium"><%= location.name %></p>
+              <p class="text-sm text-stone-500">
+                <%= t("locations.exposures.#{location.exposure}") %> ·
+                <%= location.sheltered? ? t(".sheltered") : t(".exposed") %>
+              </p>
+            </div>
+            <%= button_to t(".delete"), location_path(location), method: :delete,
+                  aria: { label: t(".delete_label", name: location.name) },
+                  class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_locations") %></p>
+    <% end %>
+
+    <%= form_with model: [ @household, @location ], class: "space-y-3 rounded-2xl bg-white p-4 shadow-sm" do |form| %>
+      <h3 class="font-semibold"><%= t(".new_location") %></h3>
+      <%= render "shared/errors", record: @location %>
+
+      <%= form.label :name, class: "block text-sm font-semibold" %>
+      <%= form.text_field(
+        :name,
+        required: true,
+        placeholder: t(".location_placeholder"),
+        class: "w-full rounded-xl border border-stone-300 px-3 py-3"
+      ) %>
+
+      <fieldset>
+        <legend class="text-sm font-semibold"><%= Location.human_attribute_name(:exposure) %></legend>
+        <div class="mt-1 grid grid-cols-3 gap-2 text-sm">
+          <% Location.exposures.each_key do |exposure| %>
+            <label class="rounded-xl border p-2 text-center has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
+              <%= form.radio_button :exposure, exposure, class: "sr-only", required: true %>
+              <%= t("locations.exposures.#{exposure}") %>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <label class="flex items-center gap-2 text-sm">
+        <%= form.check_box :sheltered, class: "h-5 w-5" %>
+        <%= Location.human_attribute_name(:sheltered) %>
+      </label>
+
+      <%= form.submit t(".add_location"), class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+    <% end %>
+  </section>
+</div>

@@ -15,8 +15,10 @@ l'utilisateur. On veut qu'il saisisse seulement son adresse.
   `data.geopf.fr/geocodage`), successeur de l'API Adresse de data.gouv.fr. Gratuit, sans clé, couvre La Réunion.
 - **Altitude** calculée depuis la position avec l'API d'élévation d'Open-Meteo (gratuite en usage non commercial, sans
   clé). Open-Meteo servira aussi plus tard pour la météo (arrosage ajusté par la pluie).
-- Appels HTTP simples depuis Rails, sans nouvelle gem, derrière deux adaptateurs (`Geo::Geocoder`, `Geo::Elevation`).
-  En test, de faux adaptateurs : aucun appel réseau.
+- Appels HTTP simples depuis Rails (`Net::HTTP`, délais de 3 s), derrière deux adaptateurs dans `app/adapters/geo/`
+  (`Geo::IgnGeocoder`, `Geo::OpenMeteoElevation`), accessibles par `Geo.geocoder` et `Geo.elevation`.
+  L'autocomplétion passe par le serveur (`GET /address_suggestions`) pour que tout le parcours soit testable sans
+  réseau. En test, de faux adaptateurs sont injectés par défaut, et WebMock bloque tout appel réel.
 - On stocke l'adresse choisie, la latitude, la longitude et l'altitude. L'utilisateur voit l'altitude calculée et peut
   la corriger.
 - **Confidentialité** : l'adresse reste en base. L'IA reçoit seulement une position arrondie (environ 1 km) et

@@ -2,9 +2,12 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
 
-  resources :households, only: [ :index, :new, :create ] do
+  resources :households, only: [ :index, :new, :create, :edit, :update ] do
     resource :selection, only: :create, module: :households
+    resources :locations, only: :create
   end
+  resources :locations, only: :destroy
+  resources :address_suggestions, only: :index
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

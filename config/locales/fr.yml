@@ -2,17 +2,46 @@ fr:
   activerecord:
     models:
       household: "Foyer"
+      location: "Emplacement"
     attributes:
       household:
         name: "Nom du foyer"
+        address: "Adresse"
+        altitude_m: "Altitude"
+      location:
+        name: "Nom"
+        exposure: "Exposition"
+        sheltered: "Abrité du vent"
   home:
     show:
       title: "Mes plantes"
+      house: "🏡 Ma maison"
       empty_title: "Aucune plante pour l'instant"
       empty_body: "L'inventaire des plantes arrive bientôt."
   households:
     create:
       success: "Foyer « %{name} » créé."
+    edit:
+      back: "← Retour"
+      title: "Ma maison"
+      situation: "📍 Situation"
+      situation_help: "Le climat change beaucoup d'un quartier à l'autre : l'adresse sert à adapter les conseils d'arrosage et les analyses. Elle n'est jamais transmise à l'IA."
+      address_placeholder: "Commencez à taper votre adresse"
+      meters: "mètres"
+      altitude_help: "Calculée automatiquement à partir de l'adresse choisie. Vous pouvez la corriger."
+      altitude_unknown: "Altitude indisponible pour le moment : vous pouvez la saisir, ou rechoisir l'adresse plus tard."
+      save: "Enregistrer"
+      locations: "🪴 Emplacements"
+      no_locations: "Aucun emplacement pour l'instant : ajoutez la terrasse, le jardin devant…"
+      sheltered: "abrité du vent"
+      exposed: "exposé au vent"
+      delete: "Supprimer"
+      delete_label: "Supprimer l'emplacement « %{name} »"
+      new_location: "Ajouter un emplacement"
+      location_placeholder: "Ex. bord de piscine"
+      add_location: "Ajouter"
+    update:
+      success: "Adresse enregistrée."
     index:
       title: "Mes foyers"
       current: "Foyer actif"
@@ -23,6 +52,15 @@ fr:
       intro: "Un foyer regroupe une maison, ses plantes et ses tâches. Vous pourrez en créer d'autres plus tard."
       name_placeholder: "Ex. Maison de la plage"
       submit: "Créer le foyer"
+  locations:
+    create:
+      success: "Emplacement « %{name} » ajouté."
+    destroy:
+      success: "Emplacement « %{name} » supprimé."
+    exposures:
+      full_sun: "☀️ Plein soleil"
+      partial_shade: "⛅ Mi-ombre"
+      shade: "☁️ Ombre"
   layouts:
     application:
       app_name: "Easy Home"

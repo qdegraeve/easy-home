@@ -1,0 +1,35 @@
+require "rails_helper"
+
+# Parcours critique : l'adresse et les emplacements servent aux conseils d'arrosage (voir docs/tests.md).
+RSpec.describe "Ma maison", type: :system do
+  it "choisit l'adresse dans les suggestions, voit l'altitude calculée, puis gère les emplacements" do
+    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    click_on "🏡 Ma maison"
+
+    fill_in "Adresse", with: "12 exemples ville"
+    click_on "12 Rue des Exemples 97400 Ville-Exemple"
+    click_on "Enregistrer"
+
+    expect(page).to have_content("Adresse enregistrée.")
+    expect(page).to have_field("Adresse", with: "12 Rue des Exemples 97400 Ville-Exemple")
+    expect(page).to have_field("Altitude", with: "320")
+
+    fill_in "Nom", with: "Terrasse"
+    find("label", text: "⛅ Mi-ombre").click
+    check "Abrité du vent"
+    click_on "Ajouter"
+
+    expect(page).to have_content("Emplacement « Terrasse » ajouté.")
+    expect(page).to have_content("⛅ Mi-ombre · abrité du vent")
+
+    click_on "Supprimer l'emplacement « Terrasse »"
+
+    expect(page).to have_content("Emplacement « Terrasse » supprimé.")
+    expect(page).to have_no_content("⛅ Mi-ombre · abrité du vent")
+  end
+end

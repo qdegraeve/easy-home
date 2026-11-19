@@ -87,6 +87,9 @@ group :test do
 
   # Headless Chrome driver for Capybara, using the Chrome DevTools Protocol [https://github.com/rubycdp/cuprite]
   gem "cuprite", "~> 0.18"
+
+  # Stubs HTTP requests: no real network call in the test suite [https://github.com/bblimke/webmock]
+  gem "webmock", "~> 3.35"
 end
 
 group :development do

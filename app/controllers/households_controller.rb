@@ -24,7 +24,29 @@ class HouseholdsController < ApplicationController
     end
   end
 
+  def edit
+    @household = policy_scope(Household).find(params[:id])
+    authorize @household
+    @location = Location.new(household: @household)
+  end
+
+  def update
+    @household = policy_scope(Household).find(params[:id])
+    authorize @household
+
+    result = Households::UpdateAddress.new.call(household: @household, params: address_params)
+
+    if result.success?
+      redirect_to edit_household_path(@household), notice: t(".success")
+    else
+      @location = Location.new(household: @household)
+      render :edit, status: :unprocessable_content
+    end
+  end
+
   private
 
   def household_params = params.expect(household: [ :name ])
+
+  def address_params = params.expect(household: [ :address, :latitude, :longitude, :altitude_m ])
 end

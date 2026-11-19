@@ -73,7 +73,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Connexion, déconnexion, mauvais mot de passe | `spec/system/authentication_spec.rb` | Fait |
 | Premier foyer à la première connexion, second foyer, changement de foyer | `spec/system/households_spec.rb` | Fait |
 | Mot de passe oublié jusqu'à la reconnexion | `spec/system/password_reset_spec.rb` | À faire |
-| Ma maison : adresse choisie dans les suggestions, altitude affichée, ajout d'un emplacement avec son exposition | | Étape 2 |
+| Ma maison : adresse choisie dans les suggestions, altitude affichée, ajout et suppression d'un emplacement | `spec/system/house_spec.rb` | Fait |
 | Ajout d'une plante avec photo : espèce proposée, confirmée ou corrigée | | Étape 2 |
 | Arrosage : « Arrosée » met à jour le journal et la prochaine échéance | | Étape 2 |
 | Analyse d'une photo : état et actions affichés, action acceptée devenue tâche | | Étape 2 |

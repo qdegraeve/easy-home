@@ -22,6 +22,8 @@ app/
   components/      # ViewComponent (+ template .html.erb à côté)
   domain/          # Ruby pur, sans ActiveRecord
     recurrence/                 → Recurrence::Fixed, ::Sliding, ::UsageBased
+  adapters/        # services externes (HTTP, IA), remplaçables par un faux en test
+    geo/                        → Geo::IgnGeocoder, Geo::OpenMeteoElevation
   jobs/            # minces, délèguent à un service
   views/           # pages, partials spécifiques, turbo_stream
   javascript/controllers/       # Stimulus

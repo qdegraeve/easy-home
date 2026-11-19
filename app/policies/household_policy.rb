@@ -1,6 +1,15 @@
 class HouseholdPolicy < ApplicationPolicy
   def show?
-    user.present? && record.is_a?(Household) && record.users.include?(user)
+    member.present?
+  end
+
+  # Propriétaire et membre gèrent la maison ; un invité ne la voit que pour ses tâches.
+  def update?
+    member.present? && !member.guest?
+  end
+
+  def edit?
+    update?
   end
 
   def create?
@@ -17,5 +26,13 @@ class HouseholdPolicy < ApplicationPolicy
 
       scope.where(id: user.household_members.select(:household_id))
     end
+  end
+
+  private
+
+  def member
+    return unless user && record.is_a?(Household)
+
+    @member ||= record.members.find_by(user:)
   end
 end
