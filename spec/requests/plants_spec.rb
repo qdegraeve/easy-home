@@ -18,7 +18,7 @@ RSpec.describe "Plantes", type: :request do
       terrasse = create(:location, household:, name: "Terrasse", exposure: :partial_shade)
       create(:plant, :watered, household:, name: "Basilic", location: terrasse, interval_days: 1,
                                last_watered_at: Time.zone.parse("2026-11-15 08:00"))
-      create(:plant, :watered, household:, name: "Aloe", interval_days: 9)
+      create(:plant, :watered, household:, name: "Aloe", interval_days: 9, last_watered_at: Time.current)
       create(:plant, :watered, household:, name: "Fougère morte", archived_at: Time.current)
       sign_in(user)
 
@@ -144,16 +144,67 @@ RSpec.describe "Plantes", type: :request do
       expect(Plant.exists?(plant.id)).to be(false)
       expect(TaskOccurrence.count).to eq(0)
     end
+  end
 
-    it "ne trouve pas la plante d'un autre foyer" do
-      other = create(:plant, :watered)
-      sign_in(user)
+  describe "accès refusé sur chaque écriture" do
+    let(:plant) { create(:plant, :watered, household:, name: "Basilic") }
+    let(:pending) { plant.watering_task.pending_occurrence }
+    let(:watering) { plant.watering_task.occurrences.done.sole }
 
-      delete plant_path(other)
-      post plant_archive_path(other)
+    def write_requests
+      {
+        "modification" => -> { patch plant_path(plant), params: { plant: { name: "X", watering_interval_days: "4" } } },
+        "suppression" => -> { delete plant_path(plant) },
+        "archivage" => -> { post plant_archive_path(plant) },
+        "restauration" => -> { delete plant_archive_path(plant) },
+        "arrosage" => -> { post task_occurrence_completion_path(pending) },
+        "annulation d'un arrosage" => -> { delete task_occurrence_completion_path(watering) }
+      }
+    end
 
+    def expect_untouched
+      expect(plant.reload).to have_attributes(name: "Basilic", archived_at: nil)
+      expect(pending.reload).to be_pending
+      expect(watering.reload).to be_done
+    end
+
+    it "répond 403 (formulaires) ou 404 (plante et échéances invisibles) à un invité, sans rien modifier" do
+      sign_in(guest)
+
+      write_requests.each do |label, request|
+        request.call
+        expect(response).to have_http_status(:not_found), "#{label} : #{response.status}"
+      end
+      get edit_plant_path(plant)
       expect(response).to have_http_status(:not_found)
-      expect(other.reload).not_to be_archived
+      get new_plant_path
+      expect(response).to have_http_status(:forbidden)
+      expect_untouched
+    end
+
+    it "répond 404 pour un autre foyer, sans rien modifier" do
+      sign_in(create(:user, :with_household))
+
+      write_requests.each do |label, request|
+        request.call
+        expect(response).to have_http_status(:not_found), "#{label} : #{response.status}"
+      end
+      expect_untouched
+    end
+  end
+
+  describe "DELETE /task_occurrences/:id/completion" do
+    it "annule un arrosage et recalcule le prochain" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2)
+      sign_in(user)
+      post task_occurrence_completion_path(plant.watering_task.pending_occurrence)
+      watering = plant.watering_task.occurrences.done.order(:completed_at).last
+
+      delete task_occurrence_completion_path(watering)
+
+      expect(flash[:notice]).to eq("Arrosage annulé, prochaine échéance recalculée.")
+      expect(TaskOccurrence.exists?(watering.id)).to be(false)
+      expect(plant.reload.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-17 00:00"))
     end
   end
 

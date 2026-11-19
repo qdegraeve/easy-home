@@ -3,6 +3,7 @@ class PlantsController < ApplicationController
     @plant = find_plant
     @watering_task = @plant.watering_task
     @journal = @watering_task.occurrences.done.order(completed_at: :desc).limit(30)
+    @watered_today = @watering_task.occurrences.done_on?(Time.zone.today)
   end
 
   def new

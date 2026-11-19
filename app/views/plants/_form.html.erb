@@ -38,7 +38,7 @@
   <% if adding %>
     <div>
       <%= f.label :last_watered_on, class: "block text-sm font-semibold" %>
-      <%= f.date_field :last_watered_on, required: true, max: Time.zone.today,
+      <%= f.date_field :last_watered_on, max: Time.zone.today,
             class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
       <p class="mt-1 text-xs text-stone-500"><%= t("plants.form.last_watered_help") %></p>
     </div>

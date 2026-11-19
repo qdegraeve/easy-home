@@ -14,7 +14,6 @@ class PlantForm
   validates :name, presence: true, length: { maximum: 100 }
   validates :species, length: { maximum: 100 }
   validates :watering_interval_days, numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS }
-  validates :last_watered_on, presence: true, on: :create
   validates :last_watered_on, comparison: { less_than_or_equal_to: -> { Time.zone.today } }, allow_nil: true, on: :create
   validate :location_must_belong_to_household
 

@@ -1,17 +1,19 @@
 module Tasks
-  # Marque une échéance comme faite et crée la suivante selon la récurrence de la tâche. Un double appui (deux
-  # requêtes simultanées) est sérialisé par le verrou : le second reçoit Failure[:not_pending].
+  # Marque une échéance comme faite et crée la suivante selon la récurrence de la tâche. La tâche est verrouillée :
+  # un double appui, ou un archivage simultané, est sérialisé et le second reçoit un Failure. Une seule réalisation
+  # par jour : refaire la même tâche le même jour ne change rien à la récurrence et fausserait le journal.
   class Complete
     include Dry::Monads[:result, :do]
 
     def call(occurrence:, user:)
       ActiveRecord::Base.transaction do
-        occurrence.lock!
-        yield ensure_open(occurrence)
+        task = occurrence.task
+        task.lock!
+        occurrence.reload
+        yield ensure_open(task, occurrence)
 
         completed_at = Time.current
         occurrence.update!(status: :done, completed_at:, completed_by: user)
-        task = occurrence.task
         task.occurrences.create!(due_at: task.recurrence.next_due_at(last_completed_at: completed_at))
       end
 
@@ -20,9 +22,10 @@ module Tasks
 
     private
 
-    def ensure_open(occurrence)
+    def ensure_open(task, occurrence)
       return Failure[:not_pending, occurrence] unless occurrence.pending?
-      return Failure[:inactive, occurrence] unless occurrence.task.active?
+      return Failure[:inactive, occurrence] unless task.active?
+      return Failure[:already_done_today, occurrence] if task.occurrences.done_on?(Time.zone.today)
 
       Success(occurrence)
     end

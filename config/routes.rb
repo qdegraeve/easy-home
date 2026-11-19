@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     resource :archive, only: [ :create, :destroy ], module: :plants
   end
   resources :task_occurrences, only: [] do
-    resource :completion, only: :create, module: :task_occurrences
+    resource :completion, only: [ :create, :destroy ], module: :task_occurrences
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -6,4 +6,8 @@ class TaskOccurrence < ApplicationRecord
 
   validates :due_at, presence: true
   validates :completed_at, presence: true, if: :done?
+
+  def self.done_on?(date)
+    done.where(completed_at: date.in_time_zone.all_day).exists?
+  end
 end

@@ -24,7 +24,11 @@
     <% if (occurrence = @watering_task.pending_occurrence) %>
       <div class="flex items-center justify-between gap-3">
         <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
-        <%= render "plants/water_button", plant: @plant, occurrence: %>
+        <% if @watered_today %>
+          <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800"><%= t(".watered_today") %></span>
+        <% else %>
+          <%= render "plants/water_button", plant: @plant, occurrence: %>
+        <% end %>
       </div>
     <% end %>
     <% if (last = @journal.first) %>
@@ -36,9 +40,16 @@
     <h2 id="journal" class="font-semibold"><%= t(".journal") %></h2>
     <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
       <% @journal.each do |entry| %>
-        <li class="flex justify-between gap-3 p-3 text-sm">
+        <% date = l(entry.completed_at.to_date, format: :day) %>
+        <li class="flex items-center justify-between gap-3 p-3 text-sm">
           <span><%= t(".watered") %></span>
-          <span class="text-stone-500"><%= l(entry.completed_at.to_date, format: :day) %></span>
+          <span class="flex items-center gap-2">
+            <span class="text-stone-500"><%= date %></span>
+            <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
+                  aria: { label: t(".cancel_label", date:) },
+                  form: { data: { turbo_confirm: t(".cancel_confirm", date:) } },
+                  class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
+          </span>
         </li>
       <% end %>
     </ul>

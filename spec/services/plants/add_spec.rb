@@ -42,8 +42,7 @@ RSpec.describe Plants::Add do
     "intervalle à 0" => { watering_interval_days: "0" },
     "intervalle au-delà de 60" => { watering_interval_days: "61" },
     "intervalle non numérique" => { watering_interval_days: "abc" },
-    "dernier arrosage dans le futur" => { last_watered_on: "2026-11-17" },
-    "dernier arrosage vide" => { last_watered_on: "" }
+    "dernier arrosage dans le futur" => { last_watered_on: "2026-11-17" }
   }.each do |label, override|
     it "refuse une saisie #{label}, sans rien créer" do
       result = nil
@@ -53,6 +52,13 @@ RSpec.describe Plants::Add do
       expect(result).to be_failure
       expect(result.failure.first).to eq(:invalid)
     end
+  end
+
+  it "prend aujourd'hui quand le dernier arrosage est vidé" do
+    plant = described_class.new.call(household:, user:, params: params.merge(last_watered_on: "")).value!
+
+    expect(plant.watering_task.occurrences.done.sole.completed_at).to eq(Time.zone.parse("2026-11-16 00:00"))
+    expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
   end
 
   it "refuse l'emplacement d'un autre foyer" do

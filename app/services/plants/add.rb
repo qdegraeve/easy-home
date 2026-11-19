@@ -30,7 +30,7 @@ module Plants
         recurrence_type: :sliding,
         recurrence_config: form.watering_recurrence_config
       )
-      watered_at = form.last_watered_on.in_time_zone
+      watered_at = (form.last_watered_on || Time.zone.today).in_time_zone
       task.occurrences.create!(status: :done, due_at: watered_at, completed_at: watered_at, completed_by: user)
       task.occurrences.create!(due_at: task.recurrence.next_due_at(last_completed_at: watered_at))
     end

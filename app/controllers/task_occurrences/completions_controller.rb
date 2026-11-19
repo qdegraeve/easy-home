@@ -1,13 +1,29 @@
 module TaskOccurrences
   class CompletionsController < ApplicationController
     def create
-      occurrence = policy_scope(TaskOccurrence).find(params[:task_occurrence_id])
-      authorize occurrence, :complete?
-
+      occurrence = find_occurrence
       result = Tasks::Complete.new.call(occurrence:, user: Current.user)
-      # Déjà faite (double appui, autre membre) : même retour, l'état affiché est à jour.
-      notice = result.success? ? t(".success", title: occurrence.task.title, subject: occurrence.task.subject&.name) : t(".already_done")
+
+      notice = if result.success?
+        t(".success", title: occurrence.task.title, subject: occurrence.task.subject&.name)
+      else
+        t(".#{result.failure.first}")
+      end
       redirect_back_or_to root_path, notice:, status: :see_other
+    end
+
+    def destroy
+      occurrence = find_occurrence
+      result = Tasks::CancelCompletion.new.call(occurrence:)
+
+      notice = result.success? ? t(".success", title: occurrence.task.title) : t(".not_done")
+      redirect_back_or_to root_path, notice:, status: :see_other
+    end
+
+    private
+
+    def find_occurrence
+      policy_scope(TaskOccurrence).find(params[:task_occurrence_id]).tap { |occurrence| authorize occurrence, :complete? }
     end
   end
 end

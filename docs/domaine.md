@@ -166,6 +166,9 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
   Une analyse en échec ou en attente ne bloque donc rien.
 - À l'ajout, le « dernier arrosage » (aujourd'hui par défaut) entre au journal et sert de point de départ à la première
   échéance. Changer l'intervalle recale l'échéance ouverte depuis le dernier arrosage.
+- Une tâche ne se fait qu'une fois par jour (`Tasks::Complete`) : un second « Arrosée » le même jour est refusé.
+- Une réalisation enregistrée par erreur s'annule depuis le journal (`Tasks::CancelCompletion`) : elle disparaît et
+  l'échéance ouverte est recalculée depuis la réalisation précédente.
 - Archiver une plante désactive sa tâche et supprime l'échéance ouverte ; restaurer la recalcule depuis le dernier
   arrosage.
 - Une action conseillée acceptée devient une `Task` en récurrence `once`, due dans `due_in_days` jours.

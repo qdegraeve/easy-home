@@ -1,6 +1,6 @@
 module Tasks
   # Recalcule l'échéance ouverte d'une tâche active depuis sa dernière réalisation (ou maintenant, s'il n'y en a pas).
-  # À appeler dans une transaction.
+  # À appeler dans une transaction, la tâche verrouillée (task.lock!).
   class Reschedule
     include Dry::Monads[:result]
 

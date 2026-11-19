@@ -21,6 +21,7 @@ module Plants
     private
 
     def update_watering(task, config)
+      task.lock!
       return if task.recurrence_config == config
 
       task.update!(recurrence_config: config)

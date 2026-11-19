@@ -80,6 +80,10 @@ fr:
       last_watered: "Dernier arrosage : %{date}"
       journal: "📒 Journal"
       watered: "💧 Arrosée"
+      watered_today: "Arrosée aujourd'hui"
+      cancel: "Annuler"
+      cancel_label: "Annuler l'arrosage du %{date}"
+      cancel_confirm: "Annuler l'arrosage du %{date} ? Le prochain arrosage sera recalculé."
       archived_on: "Archivée le %{date} : plus de rappel, l'historique reste consultable."
       edit: "Modifier"
       archive: "Archiver"
@@ -90,13 +94,20 @@ fr:
     archives:
       create:
         success: "Plante « %{name} » archivée."
+        already: "« %{name} » était déjà archivée."
       destroy:
         success: "Plante « %{name} » restaurée."
+        already: "« %{name} » n'était pas archivée."
   task_occurrences:
     completions:
       create:
         success: "%{title} noté pour « %{subject} »."
-        already_done: "C'était déjà fait."
+        not_pending: "C'était déjà fait."
+        inactive: "Cette tâche est arrêtée."
+        already_done_today: "Déjà fait aujourd'hui."
+      destroy:
+        success: "%{title} annulé, prochaine échéance recalculée."
+        not_done: "Rien à annuler."
   households:
     create:
       success: "Foyer « %{name} » créé."
@@ -140,6 +151,10 @@ fr:
       full_sun: "☀️ Plein soleil"
       partial_shade: "⛅ Mi-ombre"
       shade: "☁️ Ombre"
+  shared:
+    confirm_dialog:
+      cancel: "Non, revenir"
+      confirm: "Oui, confirmer"
   layouts:
     application:
       app_name: "Easy Home"

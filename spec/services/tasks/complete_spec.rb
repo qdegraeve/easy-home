@@ -32,6 +32,17 @@ RSpec.describe Tasks::Complete do
     expect(plant.watering_task.occurrences.pending.count).to eq(1)
   end
 
+  it "refuse un second arrosage le même jour, l'accepte le lendemain" do
+    described_class.new.call(occurrence:, user:)
+    next_occurrence = plant.reload.watering_task.pending_occurrence
+
+    expect(described_class.new.call(occurrence: next_occurrence, user:).failure.first).to eq(:already_done_today)
+    expect(next_occurrence.reload).to be_pending
+
+    travel 1.day
+    expect(described_class.new.call(occurrence: next_occurrence, user:)).to be_success
+  end
+
   it "refuse une tâche désactivée sans rien écrire" do
     plant.watering_task.update!(active: false)
 

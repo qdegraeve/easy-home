@@ -7,7 +7,7 @@ FactoryBot.define do
     trait :watered do
       transient do
         interval_days { 3 }
-        last_watered_at { Time.current.beginning_of_day }
+        last_watered_at { 1.day.ago.beginning_of_day }
       end
 
       after(:create) do |plant, context|

@@ -2,14 +2,14 @@ module Plants
   class ArchivesController < ApplicationController
     def create
       plant = find_plant(:archive?)
-      Plants::Archive.new.call(plant:)
-      redirect_to plant, notice: t(".success", name: plant.name), status: :see_other
+      result = Plants::Archive.new.call(plant:)
+      redirect_to plant, notice: t(result.success? ? ".success" : ".already", name: plant.name), status: :see_other
     end
 
     def destroy
       plant = find_plant(:restore?)
-      Plants::Restore.new.call(plant:)
-      redirect_to plant, notice: t(".success", name: plant.name), status: :see_other
+      result = Plants::Restore.new.call(plant:)
+      redirect_to plant, notice: t(result.success? ? ".success" : ".already", name: plant.name), status: :see_other
     end
 
     private
