@@ -43,6 +43,7 @@ bin/jobs                 # worker Solid Queue en local
 bundle exec rspec        # tests Ruby, dont end to end (yarn build && yarn build:css avant les system specs)
 yarn test                # tests JS Vitest
 bin/check-specs          # garde-fous des specs : pas de sleep, de focus, de retry, de Time.now
+bin/rails accounts:create EMAIL=moi@example.com HOUSEHOLD="Ma maison"  # crée un compte et son foyer (pas d'inscription publique)
 ```
 
 ## Architecture : règles essentielles

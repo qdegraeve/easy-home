@@ -1,3 +1,8 @@
-<h1><%= t(".title") %></h1>
+<p class="text-xs font-semibold uppercase tracking-wide text-emerald-700"><%= @household.name %></p>
+<h1 class="text-2xl font-bold"><%= t(".title") %></h1>
 
-<%= button_to t(".sign_out"), session_path, method: :delete %>
+<div class="mt-6 rounded-2xl bg-white p-6 text-center shadow-sm">
+  <p class="text-4xl" aria-hidden="true">🪴</p>
+  <p class="mt-2 font-semibold"><%= t(".empty_title") %></p>
+  <p class="mt-1 text-sm text-stone-500"><%= t(".empty_body") %></p>
+</div>

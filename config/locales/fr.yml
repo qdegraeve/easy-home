@@ -1,7 +1,12 @@
 fr:
   home:
     show:
-      title: "Easy Home"
+      title: "Mes plantes"
+      empty_title: "Aucune plante pour l'instant"
+      empty_body: "L'inventaire des plantes arrive bientôt."
+  layouts:
+    application:
+      app_name: "Easy Home"
       sign_out: "Se déconnecter"
   passwords:
     create:
@@ -17,6 +22,7 @@ fr:
       title: "Mot de passe oublié ?"
       email_placeholder: "Votre adresse e-mail"
       submit: "Recevoir les instructions"
+      back: "Retour à la connexion"
     update:
       notice: "Votre mot de passe a été réinitialisé."
       alert: "Les mots de passe ne correspondent pas."
@@ -31,7 +37,10 @@ fr:
       alert: "Adresse e-mail ou mot de passe incorrect."
       rate_limited: "Trop de tentatives, réessayez plus tard."
     new:
+      title: "Connexion"
+      email_label: "Adresse e-mail"
       email_placeholder: "Votre adresse e-mail"
+      password_label: "Mot de passe"
       password_placeholder: "Votre mot de passe"
       submit: "Se connecter"
       forgot_password: "Mot de passe oublié ?"
