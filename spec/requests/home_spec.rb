@@ -17,5 +17,14 @@ RSpec.describe "Home", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Maison de test", "Mes plantes", "Se déconnecter")
     end
+
+    it "refuses a signed in user without household" do
+      user = create(:user)
+      post session_path, params: { email_address: user.email_address, password: "password" }
+
+      get root_path
+
+      expect(response).to have_http_status(:forbidden)
+    end
   end
 end

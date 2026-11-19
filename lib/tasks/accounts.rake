@@ -5,7 +5,12 @@ namespace :accounts do
   task create: :environment do
     email_address = ENV.fetch("EMAIL") { abort "EMAIL manquant" }
     household_name = ENV.fetch("HOUSEHOLD", "Ma maison").dup.force_encoding(Encoding::UTF_8)
-    password = $stdin.tty? ? IO.console.getpass("Mot de passe : ") : $stdin.gets.to_s.chomp
+    if $stdin.tty?
+      password = IO.console.getpass("Mot de passe : ")
+      abort "Les mots de passe ne correspondent pas" unless IO.console.getpass("Confirmation : ") == password
+    else
+      password = $stdin.gets.to_s.chomp
+    end
 
     case Accounts::Create.new.call(email_address:, password:, household_name:)
     in Dry::Monads::Success(user)

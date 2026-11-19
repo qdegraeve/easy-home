@@ -24,7 +24,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_085443) do
   create_table "memberships", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
-    t.string "role", default: "owner", null: false
+    t.string "role", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["household_id"], name: "index_memberships_on_household_id"
