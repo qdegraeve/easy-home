@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Location, type: :model do
-  it "refuse deux emplacements de même nom dans un foyer, sans tenir compte de la casse" do
+  it "rejects two locations with the same name in a household, case insensitively" do
     location = create(:location, name: "Terrasse")
 
     expect(build(:location, household: location.household, name: "terrasse")).not_to be_valid

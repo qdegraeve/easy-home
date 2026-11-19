@@ -1,7 +1,7 @@
 module Tasks
-  # Recalcule l'échéance ouverte d'une tâche active depuis sa dernière réalisation (voir Recurrence : une tâche jamais
-  # faite part de sa date de début). Sans prochaine échéance (tâche unique déjà faite), l'échéance ouverte disparaît.
-  # À appeler dans une transaction, la tâche verrouillée (task.lock!).
+  # Recomputes the open occurrence of an active task from its last completion (see Recurrence: a task never done
+  # starts from its start date). With no next occurrence (one-off task already done), the open occurrence is removed.
+  # Call inside a transaction, with the task locked (task.lock!).
   class Reschedule
     include Dry::Monads[:result]
 

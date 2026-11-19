@@ -12,7 +12,7 @@ class AddressSuggestionsController < ApplicationController
 
   private
 
-  # Requête de fond (fetch) : pas de redirection vers la connexion, ni d'URL de retour vers ce fragment.
+  # Background request (fetch): no redirect to sign in, and no return URL pointing to this fragment.
   def request_authentication
     head :unauthorized
   end

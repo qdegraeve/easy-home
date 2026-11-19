@@ -4,7 +4,7 @@ class Task < ApplicationRecord
   has_many :occurrences, class_name: "TaskOccurrence", dependent: :destroy
   has_one :pending_occurrence, -> { pending }, class_name: "TaskOccurrence"
 
-  # Les droits passent par le foyer de la tâche : il ne doit jamais diverger de celui du sujet (voir ADR 0010).
+  # Authorization goes through the task's household: it must never diverge from the subject's (see ADR 0010).
   attr_readonly :household_id
 
   enum :recurrence_type, { sliding: "sliding", once: "once" }, validate: true
@@ -19,7 +19,7 @@ class Task < ApplicationRecord
     Recurrence.build(type: recurrence_type, config: recurrence_config)
   end
 
-  # Tâche ajoutée à la main (engrais, taille…), par opposition à une tâche créée avec son sujet (arrosage).
+  # Task added by hand (fertilizer, pruning…), as opposed to a task created with its subject (watering).
   def manual? = template_key.nil?
 
   def watering? = template_key == Plant::WATERING_TEMPLATE_KEY

@@ -16,7 +16,7 @@ class ApplicationPolicy
 
     attr_reader :user, :scope
 
-    # Foyers où l'utilisateur gère les plantes et les tâches : propriétaire ou membre, pas invité.
+    # Households where the user manages plants and tasks: owner or member, not guest.
     def managed_household_ids
       user.household_members.where.not(role: :guest).select(:household_id)
     end

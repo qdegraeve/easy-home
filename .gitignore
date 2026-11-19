@@ -39,16 +39,16 @@
 
 /node_modules
 
-# Configuration Claude Code personnelle (outils et règles locales, jamais partagés)
+# Personal Claude Code configuration (local tools and rules, never shared)
 /.claude/settings.local.json
 /.claude/rules/ccc
 /.claude/rules/ccc-session.md
 
-# Dumps de base et fichiers d'environnement : jamais dans le dépôt (il est public)
+# Database dumps and environment files: never in the repository (it is public)
 *.dump
 *.sql
 *.sql.gz
 !/db/structure.sql
 
-# Notes locales pour Claude Code (chargées automatiquement, jamais commitées)
+# Local notes for Claude Code (loaded automatically, never committed)
 /CLAUDE.local.md

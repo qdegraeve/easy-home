@@ -11,7 +11,7 @@ class CreateTaskOccurrences < ActiveRecord::Migration[8.1]
     end
 
     add_index :task_occurrences, [ :task_id, :due_at ]
-    # Une seule échéance ouverte par tâche : deux validations simultanées ne créent pas deux échéances suivantes.
+    # One open occurrence per task: two concurrent completions cannot create two next occurrences.
     add_index(
       :task_occurrences,
       :task_id,

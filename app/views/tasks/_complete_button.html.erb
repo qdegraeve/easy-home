@@ -1,4 +1,4 @@
-<%# Bouton « Arrosée » / « Fait » d'une échéance ouverte. %>
+<%# "Arrosée" / "Fait" button of an open occurrence. %>
 <% task = occurrence.task %>
 <% if task.watering? %>
   <% label, aria_label = t("plants.water"), t("plants.water_label", name: task.subject.name) %>

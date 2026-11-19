@@ -1,6 +1,6 @@
 module Tasks
-  # Annule une réalisation enregistrée par erreur : elle sort du journal et l'échéance ouverte est recalculée depuis la
-  # réalisation précédente.
+  # Cancels a completion recorded by mistake: it leaves the log and the open occurrence is recomputed from the
+  # previous completion.
   class CancelCompletion
     include Dry::Monads[:result, :do]
 

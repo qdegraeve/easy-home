@@ -1,5 +1,5 @@
-# Saisie d'une tâche manuelle d'un sujet (engrais, taille…) : une seule fois à une date, ou tous les N jours à
-# partir d'une date. Le type de répétition se choisit à la création et ne change plus ensuite.
+# Input for a manual task of a subject (fertilizer, pruning…): once on a date, or every N days starting from a
+# date. The repetition type is chosen on creation and never changes afterwards.
 class TaskForm
   include ActiveModel::Model
   include ActiveModel::Attributes

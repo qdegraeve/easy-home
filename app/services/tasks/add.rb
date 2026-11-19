@@ -1,5 +1,5 @@
 module Tasks
-  # Ajoute une tâche manuelle à un sujet (une plante…) avec sa première échéance, à la date choisie.
+  # Adds a manual task to a subject (a plant…) with its first occurrence on the chosen date.
   class Add
     include Dry::Monads[:result]
 

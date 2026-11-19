@@ -6,7 +6,7 @@ class Plant < ApplicationRecord
   has_many :tasks, as: :subject, dependent: :destroy
   has_one :watering_task, -> { where(template_key: WATERING_TEMPLATE_KEY) }, class_name: "Task", as: :subject
 
-  # Une plante ne change jamais de foyer : ses tâches portent le même foyer (voir ADR 0010).
+  # A plant never changes household: its tasks carry the same household (see ADR 0010).
   attr_readonly :household_id
 
   enum :species_source, { user: "user", ai: "ai" }, prefix: :species_from, validate: { allow_nil: true }

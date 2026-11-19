@@ -1,12 +1,12 @@
 require "net/http"
 
 module Geo
-  # Autocomplétion d'adresse par le service de géocodage de l'IGN (Géoplateforme), sans clé.
+  # Address autocomplete through the IGN geocoding service (Géoplateforme), no key needed.
   class IgnGeocoder
     ENDPOINT = URI("https://data.geopf.fr/geocodage/search")
     LIMIT = 5
 
-    # Renvoie une liste de Geo::Suggestion, vide si le service ne répond pas ou répond mal.
+    # Returns a list of Geo::Suggestion, empty when the service is down or answers badly.
     def suggest(query)
       uri = ENDPOINT.dup
       uri.query = URI.encode_www_form(q: query, autocomplete: 1, index: "address", limit: LIMIT)
@@ -20,7 +20,7 @@ module Geo
       end
 
       features(JSON.parse(response.body)).filter_map { |feature| suggestion(feature) }
-    # Service externe : toute panne (réseau, protocole, réponse inattendue) dégrade en liste vide.
+    # External service: any failure (network, protocol, unexpected response) degrades to an empty list.
     rescue StandardError => error
       Rails.logger.warn("[Geo::IgnGeocoder] #{error.class}: #{error.message}")
       []

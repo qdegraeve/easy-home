@@ -1,20 +1,20 @@
 require "io/console"
 
 namespace :accounts do
-  desc "Crée un compte (le foyer se crée ensuite dans l'app) : bin/rails accounts:create EMAIL=moi@example.com"
+  desc "Creates an account (the household is then created in the app): bin/rails accounts:create EMAIL=me@example.com"
   task create: :environment do
-    email = ENV.fetch("EMAIL") { abort "EMAIL manquant" }
+    email = ENV.fetch("EMAIL") { abort "EMAIL is missing" }
 
     if $stdin.tty?
-      password = IO.console.getpass("Mot de passe : ")
-      abort "Les mots de passe ne correspondent pas" unless IO.console.getpass("Confirmation : ") == password
+      password = IO.console.getpass("Password: ")
+      abort "Passwords do not match" unless IO.console.getpass("Confirmation: ") == password
     else
       password = $stdin.gets.to_s.chomp
     end
 
     user = User.new(email:, password:)
-    abort "Échec : #{user.errors.full_messages.to_sentence}" unless user.save
+    abort "Failed: #{user.errors.full_messages.to_sentence}" unless user.save
 
-    puts "Compte créé : #{user.email}"
+    puts "Account created: #{user.email}"
   end
 end

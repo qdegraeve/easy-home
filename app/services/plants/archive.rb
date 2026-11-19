@@ -1,5 +1,5 @@
 module Plants
-  # Archive une plante (morte, donnée…) : plus d'échéance ni de rappel, mais la fiche et le journal restent.
+  # Archives a plant (dead, given away…): no more occurrences or reminders, but its page and log remain.
   class Archive
     include Dry::Monads[:result, :do]
 

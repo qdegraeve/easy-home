@@ -5,25 +5,25 @@ RSpec.describe LocationPolicy do
 
   let(:location) { build(:location) }
 
-  context "pour le propriétaire du foyer" do
+  context "for the owner of the household" do
     let(:user) { create(:household_member, household: location.household, role: :owner).user }
 
     it { is_expected.to permit_actions(%i[create destroy]) }
   end
 
-  context "pour un membre du foyer" do
+  context "for a member of the household" do
     let(:user) { create(:household_member, household: location.household, role: :member).user }
 
     it { is_expected.to permit_actions(%i[create destroy]) }
   end
 
-  context "pour un invité du foyer" do
+  context "for a guest of the household" do
     let(:user) { create(:household_member, household: location.household, role: :guest).user }
 
     it { is_expected.to forbid_actions(%i[create destroy]) }
   end
 
-  context "pour un utilisateur d'un autre foyer" do
+  context "for a user of another household" do
     let(:user) { create(:user, :with_household) }
 
     it { is_expected.to forbid_actions(%i[create destroy]) }

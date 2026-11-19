@@ -9,8 +9,8 @@ CI.run do
   step "Security: Gem audit", "bin/bundler-audit"
   step "Security: Yarn vulnerability audit", "bin/yarn-audit"
   step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
-  step "Assets: JS et CSS (requis par les system specs)", "yarn build && yarn build:css"
-  step "Tests: Rails (dont end to end)", "bundle exec rspec --profile 10"
+  step "Assets: JS and CSS (required by system specs)", "yarn build && yarn build:css"
+  step "Tests: Rails (including end to end)", "bundle exec rspec --profile 10"
   step "Tests: JavaScript", "yarn test"
   step "Tests: Seeds", "env RAILS_ENV=test bin/rails db:seed:replant"
 

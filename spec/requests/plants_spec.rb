@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Plantes", type: :request do
+RSpec.describe "Plants", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:household) { create(:household, name: "Maison") }
@@ -14,7 +14,7 @@ RSpec.describe "Plantes", type: :request do
   end
 
   describe "GET /" do
-    it "liste les plantes à arroser, toutes les plantes par emplacement, et les archivées à part" do
+    it "lists what to do today, all plants by location, and archived ones apart" do
       terrasse = create(:location, household:, name: "Terrasse", exposure: :partial_shade)
       create(:plant, :watered, household:, name: "Basilic", location: terrasse, interval_days: 1,
                                last_watered_at: Time.zone.parse("2026-11-15 08:00"))
@@ -30,7 +30,7 @@ RSpec.describe "Plantes", type: :request do
       expect(response.body).not_to include("Arrosée : Aloe")
     end
 
-    it "ne montre ni plantes ni bouton d'ajout à un invité" do
+    it "shows neither plants nor the add button to a guest" do
       create(:plant, :watered, household:, name: "Basilic")
       sign_in(guest)
 
@@ -41,7 +41,7 @@ RSpec.describe "Plantes", type: :request do
   end
 
   describe "POST /plants" do
-    it "ajoute une plante au foyer actif" do
+    it "adds a plant to the current household" do
       sign_in(user)
 
       post plants_path,
@@ -52,7 +52,7 @@ RSpec.describe "Plantes", type: :request do
       expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-18 00:00"))
     end
 
-    it "réaffiche le formulaire sur un intervalle invalide" do
+    it "renders the form again on an invalid interval" do
       sign_in(user)
 
       post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "0" } }
@@ -62,7 +62,7 @@ RSpec.describe "Plantes", type: :request do
       expect(Plant.count).to eq(0)
     end
 
-    it "refuse un invité" do
+    it "rejects a guest" do
       sign_in(guest)
 
       post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2" } }
@@ -73,7 +73,7 @@ RSpec.describe "Plantes", type: :request do
   end
 
   describe "GET /plants/:id" do
-    it "affiche l'arrosage et le journal" do
+    it "shows the watering and the log" do
       plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
                                        last_watered_at: Time.zone.parse("2026-11-15 08:00"))
       sign_in(user)
@@ -84,7 +84,7 @@ RSpec.describe "Plantes", type: :request do
       expect(response.body).to include("Dernier arrosage : dim 15 nov.")
     end
 
-    it "ne trouve pas la plante d'un autre foyer" do
+    it "does not find the plant of another household" do
       sign_in(user)
 
       get plant_path(create(:plant))
@@ -92,7 +92,7 @@ RSpec.describe "Plantes", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it "ne montre pas la plante à un invité" do
+    it "does not show the plant to a guest" do
       sign_in(guest)
 
       get plant_path(create(:plant, household:))
@@ -104,7 +104,7 @@ RSpec.describe "Plantes", type: :request do
   describe "PATCH /plants/:id" do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
 
-    it "enregistre le nouvel intervalle" do
+    it "saves the new interval" do
       sign_in(user)
 
       patch plant_path(plant), params: { plant: { name: "Basilic", watering_interval_days: "4" } }
@@ -113,7 +113,7 @@ RSpec.describe "Plantes", type: :request do
       expect(plant.watering_task.reload.recurrence.interval_days).to eq(4)
     end
 
-    it "réaffiche le formulaire sans nom" do
+    it "renders the form again without a name" do
       sign_in(user)
 
       patch plant_path(plant), params: { plant: { name: "", watering_interval_days: "4" } }
@@ -124,10 +124,10 @@ RSpec.describe "Plantes", type: :request do
     end
   end
 
-  describe "archivage et suppression" do
+  describe "archiving and deletion" do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic") }
 
-    it "archive puis restaure une plante" do
+    it "archives then restores a plant" do
       sign_in(user)
 
       post plant_archive_path(plant)
@@ -137,7 +137,7 @@ RSpec.describe "Plantes", type: :request do
       expect(plant.reload).not_to be_archived
     end
 
-    it "supprime une plante et son historique" do
+    it "deletes a plant and its history" do
       sign_in(user)
 
       delete plant_path(plant)
@@ -194,7 +194,7 @@ RSpec.describe "Plantes", type: :request do
   end
 
   describe "DELETE /task_occurrences/:id/completion" do
-    it "annule un arrosage et recalcule le prochain" do
+    it "cancels a watering and recomputes the next one" do
       plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2)
       sign_in(user)
       post task_occurrence_completion_path(plant.watering_task.pending_occurrence)
@@ -208,19 +208,19 @@ RSpec.describe "Plantes", type: :request do
     end
   end
 
-  describe "messages d'échec" do
+  describe "failure messages" do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
 
     before { sign_in(user) }
 
-    it "refuse un second arrosage le même jour" do
+    it "rejects a second watering on the same day" do
       post task_occurrence_completion_path(plant.watering_task.pending_occurrence)
       post task_occurrence_completion_path(plant.reload.watering_task.pending_occurrence)
 
       expect(flash[:notice]).to eq("Déjà fait aujourd'hui.")
     end
 
-    it "refuse l'arrosage d'une tâche arrêtée" do
+    it "rejects the watering of a stopped task" do
       plant.watering_task.update!(active: false)
 
       post task_occurrence_completion_path(plant.watering_task.pending_occurrence)
@@ -228,14 +228,14 @@ RSpec.describe "Plantes", type: :request do
       expect(flash[:notice]).to eq("Cette tâche est arrêtée.")
     end
 
-    it "n'annule rien sur une échéance pas encore faite" do
+    it "cancels nothing on an occurrence not done yet" do
       delete task_occurrence_completion_path(plant.watering_task.pending_occurrence)
 
       expect(flash[:notice]).to eq("Rien à annuler.")
       expect(plant.watering_task.occurrences.count).to eq(2)
     end
 
-    it "annule un arrosage d'une plante archivée sans recréer d'échéance" do
+    it "cancels a watering of an archived plant without recreating an occurrence" do
       post plant_archive_path(plant)
 
       delete task_occurrence_completion_path(plant.watering_task.occurrences.done.sole)
@@ -244,7 +244,7 @@ RSpec.describe "Plantes", type: :request do
       expect(plant.watering_task.occurrences).to be_empty
     end
 
-    it "signale une plante déjà archivée, ou pas archivée" do
+    it "reports a plant already archived, or not archived" do
       post plant_archive_path(plant)
       post plant_archive_path(plant)
       expect(flash[:notice]).to eq("« Basilic » était déjà archivée.")
@@ -259,7 +259,7 @@ RSpec.describe "Plantes", type: :request do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
     let(:occurrence) { plant.watering_task.pending_occurrence }
 
-    it "enregistre l'arrosage et revient à la page d'origine" do
+    it "records the watering and goes back to the previous page" do
       sign_in(user)
 
       post task_occurrence_completion_path(occurrence), headers: { "HTTP_REFERER" => plant_url(plant) }
@@ -269,7 +269,7 @@ RSpec.describe "Plantes", type: :request do
       expect(occurrence.reload).to be_done
     end
 
-    it "ne compte qu'un arrosage sur un double appui" do
+    it "counts a single watering on a double tap" do
       sign_in(user)
 
       2.times { post task_occurrence_completion_path(occurrence) }
@@ -278,7 +278,7 @@ RSpec.describe "Plantes", type: :request do
       expect(plant.watering_task.occurrences.done.count).to eq(2)
     end
 
-    it "refuse l'échéance d'un autre foyer" do
+    it "rejects the occurrence of another household" do
       other = create(:plant, :watered).watering_task.pending_occurrence
       sign_in(user)
 

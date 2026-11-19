@@ -1,4 +1,4 @@
-# Saisie d'une plante et de son arrosage : couvre Plant et sa tâche d'arrosage (Task).
+# Input for a plant and its watering: covers Plant and its watering Task.
 class PlantForm
   include ActiveModel::Model
   include ActiveModel::Attributes
@@ -14,7 +14,10 @@ class PlantForm
   validates :name, presence: true, length: { maximum: 100 }
   validates :species, length: { maximum: 100 }
   validates :watering_interval_days, numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS }
-  validates :last_watered_on, comparison: { less_than_or_equal_to: -> { Time.zone.today } }, allow_nil: true, on: :create
+  validates :last_watered_on,
+    comparison: { less_than_or_equal_to: -> { Time.zone.today } },
+    allow_nil: true,
+    on: :create
   validate :location_must_belong_to_household
 
   def self.model_name = ActiveModel::Name.new(self, nil, "Plant")

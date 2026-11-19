@@ -7,7 +7,7 @@ RSpec.describe Tasks::Add do
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
-  it "ajoute une tâche unique, due le jour choisi, dans le foyer de la plante" do
+  it "adds a one-off task, due on the chosen day, in the household of the plant" do
     task = described_class.new.call(
       subject: plant, params: { title: " Tailler ", recurrence_type: "once", due_on: "2026-11-30" }
     ).value!
@@ -19,7 +19,7 @@ RSpec.describe Tasks::Add do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
   end
 
-  it "ajoute une tâche répétée tous les N jours à partir de la date choisie" do
+  it "adds a task repeating every N days from the chosen date" do
     task = described_class.new.call(
       subject: plant,
       params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
@@ -30,13 +30,13 @@ RSpec.describe Tasks::Add do
   end
 
   {
-    "sans titre" => { title: "" },
-    "sans date" => { due_on: "" },
-    "répétée sans intervalle" => { recurrence_type: "sliding", interval_days: "" },
-    "répétée au-delà de 60 jours" => { recurrence_type: "sliding", interval_days: "61" },
-    "de type inconnu" => { recurrence_type: "weekly" }
+    "without a title" => { title: "" },
+    "without a date" => { due_on: "" },
+    "repeating without an interval" => { recurrence_type: "sliding", interval_days: "" },
+    "repeating over 60 days" => { recurrence_type: "sliding", interval_days: "61" },
+    "of an unknown type" => { recurrence_type: "weekly" }
   }.each do |label, override|
-    it "refuse une tâche #{label}, sans rien créer" do
+    it "rejects a task #{label}, without creating anything" do
       params = { title: "Tailler", recurrence_type: "once", due_on: "2026-11-30" }.merge(override)
 
       expect { expect(described_class.new.call(subject: plant, params:).failure.first).to eq(:invalid) }
@@ -44,7 +44,7 @@ RSpec.describe Tasks::Add do
     end
   end
 
-  it "ignore l'intervalle d'une tâche unique" do
+  it "ignores the interval of a one-off task" do
     task = described_class.new.call(
       subject: plant, params: { title: "Tailler", recurrence_type: "once", due_on: "2026-11-30", interval_days: "abc" }
     ).value!
@@ -52,7 +52,7 @@ RSpec.describe Tasks::Add do
     expect(task.recurrence_config).to eq("due_on" => "2026-11-30")
   end
 
-  it "refuse une plante archivée" do
+  it "rejects an archived plant" do
     plant.update!(archived_at: Time.current)
 
     result = described_class.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-30" })

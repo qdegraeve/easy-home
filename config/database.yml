@@ -1,7 +1,7 @@
-# PostgreSQL (voir docs/decisions/0004-base-de-donnees.md)
+# PostgreSQL (see docs/decisions/0004-base-de-donnees.md)
 #
-# En développement et en test, connexion locale par socket (Postgres.app, Homebrew...).
-# DATABASE_URL, si défini, surcharge cette configuration.
+# In development and test, local socket connection (Postgres.app, Homebrew...).
+# DATABASE_URL, when set, overrides this configuration.
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -20,8 +20,8 @@ test:
   <<: *default
   database: easy_home_test
 
-# Production : un serveur PostgreSQL (accessory Kamal "db"), quatre bases.
-# Solid Cache, Solid Queue et Solid Cable ont chacun leur base.
+# Production: one PostgreSQL server (Kamal accessory "db"), four databases.
+# Solid Cache, Solid Queue and Solid Cable each have their own database.
 production:
   primary: &primary_production
     <<: *default

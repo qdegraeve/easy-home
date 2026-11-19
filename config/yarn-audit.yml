@@ -1,7 +1,7 @@
-# Alertes `yarn audit` acceptées, lues par bin/yarn-audit (CI et bin/ci).
+# Accepted `yarn audit` advisories, read by bin/yarn-audit (CI and bin/ci).
 #
-# Une entrée = une alerte analysée et jugée sans risque pour l'app, avec sa raison
-# et une date limite. À la date limite, l'audit échoue de nouveau : on vérifie
-# si un correctif existe, sinon on prolonge en justifiant.
+# One entry = one advisory reviewed and judged harmless for the app, with its reason
+# and a deadline. At the deadline, the audit fails again: check whether a fix exists,
+# otherwise extend it with a justification.
 
 ignore: []

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Archivage d'une plante" do
+RSpec.describe "Plant archiving" do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:plant) { create(:plant, :watered, interval_days: 3, last_watered_at: Time.zone.parse("2026-11-01 08:00")) }
@@ -8,7 +8,7 @@ RSpec.describe "Archivage d'une plante" do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   describe Plants::Archive do
-    it "arrête les rappels et garde le journal" do
+    it "stops reminders and keeps the log" do
       result = described_class.new.call(plant:)
 
       expect(result).to be_success
@@ -19,7 +19,7 @@ RSpec.describe "Archivage d'une plante" do
       expect(task.occurrences.done.count).to eq(1)
     end
 
-    it "refuse une plante déjà archivée" do
+    it "rejects an already archived plant" do
       described_class.new.call(plant:)
 
       expect(described_class.new.call(plant:).failure.first).to eq(:already_archived)
@@ -27,7 +27,7 @@ RSpec.describe "Archivage d'une plante" do
   end
 
   describe Plants::Restore do
-    it "reprend l'arrosage, échéance recalculée depuis le dernier arrosage (ici en retard)" do
+    it "resumes watering, next occurrence recomputed from the last watering (here late)" do
       Plants::Archive.new.call(plant:)
 
       result = described_class.new.call(plant: plant.reload)
@@ -39,7 +39,7 @@ RSpec.describe "Archivage d'une plante" do
       expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-04 00:00"))
     end
 
-    it "reprend aussi les autres tâches : la répétée repart, l'unique déjà faite reste finie" do
+    it "resumes other tasks too: the repeating one restarts, the done one-off stays finished" do
       engrais = Tasks::Add.new.call(
         subject: plant,
         params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
@@ -55,7 +55,7 @@ RSpec.describe "Archivage d'une plante" do
       expect(taille.reload.pending_occurrence).to be_nil
     end
 
-    it "refuse une plante non archivée" do
+    it "rejects a plant that is not archived" do
       expect(described_class.new.call(plant:).failure.first).to eq(:not_archived)
     end
   end

@@ -1,12 +1,12 @@
 require "rails_helper"
 
-# Parcours critiques : ajout d'une plante, arrosage, correction, archivage (voir docs/tests.md).
-RSpec.describe "Plantes", type: :system do
+# Critical journeys: adding a plant, watering, correction, archiving (see docs/tests.md).
+RSpec.describe "Plants", type: :system do
   include ActiveSupport::Testing::TimeHelpers
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
-  it "ajoute une plante, l'arrose, corrige le journal, change l'intervalle, l'archive puis la restaure" do
+  it "adds a plant, waters it, fixes the log, changes the interval, archives then restores it" do
     user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
     create(:location, household: user.households.first, name: "Terrasse", exposure: :partial_shade)
 
@@ -16,7 +16,7 @@ RSpec.describe "Plantes", type: :system do
     click_on "Se connecter"
     click_on "+ Ajouter une plante"
 
-    # Saisie invalide (le navigateur bloque les autres) : l'erreur du serveur s'affiche et les valeurs restent.
+    # Invalid input (the browser blocks the others): the server error shows and values are kept.
     fill_in "Nom", with: "   "
     select "Terrasse", from: "Emplacement"
     fill_in "Arrosage", with: "2"
@@ -32,7 +32,7 @@ RSpec.describe "Plantes", type: :system do
     expect(page).to have_content("Prochain arrosage : aujourd'hui")
     expect(page).to have_content("Dernier arrosage : sam 14 nov.")
 
-    # Arrosage depuis l'accueil, une seule fois par jour.
+    # Watering from the home page, once a day.
     click_on "← Mes plantes"
     expect(page).to have_content("À faire aujourd'hui · 1")
     click_on "Arrosée : Basilic"
@@ -44,7 +44,7 @@ RSpec.describe "Plantes", type: :system do
     expect(page).to have_content("Arrosée aujourd'hui")
     expect(page).to have_no_button("Arrosée : Basilic")
 
-    # Correction : l'arrosage du jour était une erreur.
+    # Correction: today's watering was a mistake.
     click_on "Annuler l'arrosage du lun 16 nov."
     within("dialog", text: "Le prochain arrosage sera recalculé.") { click_on "Oui, confirmer" }
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")
@@ -52,7 +52,7 @@ RSpec.describe "Plantes", type: :system do
     expect(page).to have_content("Dernier arrosage : sam 14 nov.")
     expect(page).to have_button("Arrosée : Basilic")
 
-    # Nouvel intervalle : l'échéance se recale depuis le dernier arrosage (14 nov. + 5 j).
+    # New interval: the occurrence is rescheduled from the last watering (Nov 14 + 5 days).
     click_on "Modifier"
     fill_in "Arrosage", with: "5"
     click_on "Enregistrer"
@@ -60,7 +60,7 @@ RSpec.describe "Plantes", type: :system do
     expect(page).to have_content("Tous les 5 jours")
     expect(page).to have_content("Prochain arrosage : dans 3 j")
 
-    # Archivage : plus de rappel, le journal reste.
+    # Archiving: no more reminders, the log remains.
     click_on "Archiver"
     within("dialog") { click_on "Non, revenir" }
     expect(page).to have_no_css("dialog[open]")
@@ -73,7 +73,7 @@ RSpec.describe "Plantes", type: :system do
     click_on "← Mes plantes"
     expect(page).to have_content("Plantes archivées · 1")
 
-    # Restauration quelques jours plus tard : l'arrosage reprend, en retard.
+    # Restore a few days later: watering resumes, late.
     travel 7.days
     find("summary", text: "Plantes archivées · 1").click
     click_on "Basilic"

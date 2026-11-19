@@ -1,5 +1,5 @@
 module Plants
-  # Restaure une plante archivée : ses tâches reprennent, échéance recalculée depuis la dernière réalisation.
+  # Restores an archived plant: its tasks resume, next occurrence recomputed from the last completion.
   class Restore
     include Dry::Monads[:result, :do]
 

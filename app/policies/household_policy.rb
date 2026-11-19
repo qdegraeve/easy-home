@@ -3,7 +3,7 @@ class HouseholdPolicy < ApplicationPolicy
     member.present?
   end
 
-  # Propriétaire et membre gèrent la maison ; un invité ne la voit que pour ses tâches.
+  # Owner and member manage the house; a guest only sees it for their tasks.
   def update?
     member.present? && !member.guest?
   end

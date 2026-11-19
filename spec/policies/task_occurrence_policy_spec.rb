@@ -6,26 +6,26 @@ RSpec.describe TaskOccurrencePolicy do
   let(:occurrence) { create(:task_occurrence) }
   let(:household) { occurrence.task.household }
 
-  context "pour un membre du foyer" do
+  context "for a member of the household" do
     let(:user) { create(:household_member, household:, role: :member).user }
 
     it { is_expected.to permit_action(:complete) }
   end
 
-  context "pour un invité du foyer" do
+  context "for a guest of the household" do
     let(:user) { create(:household_member, household:, role: :guest).user }
 
     it { is_expected.to forbid_action(:complete) }
   end
 
-  context "pour un utilisateur d'un autre foyer" do
+  context "for a user of another household" do
     let(:user) { create(:user, :with_household) }
 
     it { is_expected.to forbid_action(:complete) }
   end
 
   describe "Scope" do
-    it "ne renvoie que les échéances des foyers où l'utilisateur n'est pas invité" do
+    it "only returns occurrences of households where the user is not a guest" do
       user = create(:household_member, household:, role: :owner).user
       other = create(:task_occurrence)
       create(:household_member, user:, household: other.task.household, role: :guest)

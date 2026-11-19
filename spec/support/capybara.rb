@@ -7,16 +7,16 @@ Capybara.enable_aria_label = true
 
 RSpec.configure do |config|
   config.before(:each, type: :system) do
-    # Les options passent par driven_by : Rails réenregistre le driver :cuprite à chaque appel
-    # et ignorerait un Capybara.register_driver(:cuprite) défini à part.
+    # Options go through driven_by: Rails registers the :cuprite driver again on each call
+    # and would ignore a Capybara.register_driver(:cuprite) defined separately.
     driven_by(
       :cuprite,
-      screen_size: [ 390, 844 ], # mobile d'abord : l'app tourne dans une webview Android
+      screen_size: [ 390, 844 ], # mobile first: the app runs in an Android webview
       options: {
-        js_errors: true, # une erreur JS fait échouer la spec
+        js_errors: true, # a JS error fails the spec
         process_timeout: 15,
         timeout: 10,
-        # Chromium tourne en root dans les conteneurs (dev Docker, CI) : bac à sable désactivé.
+        # Chromium runs as root in containers (Docker dev, CI): sandbox disabled.
         browser_options: { "no-sandbox" => nil }
       }
     )

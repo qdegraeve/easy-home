@@ -42,7 +42,7 @@ describe("address-autocomplete", () => {
     vi.useRealTimers()
   })
 
-  it("efface la position connue dès que l'adresse est retapée", () => {
+  it("clears the known position as soon as the address is retyped", () => {
     type("12")
 
     expect(el("latitude").value).toBe("")
@@ -50,14 +50,14 @@ describe("address-autocomplete", () => {
     expect(el("altitude").value).toBe("")
   })
 
-  it("n'interroge pas le serveur sous trois caractères", async () => {
+  it("does not query the server under three characters", async () => {
     type("12")
     await vi.runAllTimersAsync()
 
     expect(fetch).not.toHaveBeenCalled()
   })
 
-  it("attend la fin de la saisie avant d'interroger le serveur, une seule fois", async () => {
+  it("waits for typing to stop before querying the server, once", async () => {
     type("12 r")
     type("12 ru")
     type("12 rue")
@@ -68,7 +68,7 @@ describe("address-autocomplete", () => {
     expect(el("results").innerHTML).toContain("12 Rue des Exemples")
   })
 
-  it("ignore une réponse arrivée après une nouvelle frappe", async () => {
+  it("ignores a response arriving after a new keystroke", async () => {
     let resolveFirst
     fetch.mockImplementationOnce(() => new Promise((resolve) => (resolveFirst = resolve)))
 
@@ -81,7 +81,7 @@ describe("address-autocomplete", () => {
     expect(el("results").innerHTML).not.toContain("périmé")
   })
 
-  it("n'affiche rien quand le serveur refuse la requête (session expirée)", async () => {
+  it("shows nothing when the server rejects the request (expired session)", async () => {
     fetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => "<h1>Connexion</h1>" })
 
     type("12 rue")
@@ -90,7 +90,7 @@ describe("address-autocomplete", () => {
     expect(el("results").innerHTML).toBe("")
   })
 
-  it("reste silencieux hors ligne", async () => {
+  it("stays silent when offline", async () => {
     fetch.mockRejectedValueOnce(new TypeError("Failed to fetch"))
 
     type("12 rue")
@@ -99,7 +99,7 @@ describe("address-autocomplete", () => {
     expect(el("results").innerHTML).toBe("")
   })
 
-  it("remplit l'adresse et la position quand une suggestion est choisie", async () => {
+  it("fills the address and position when a suggestion is picked", async () => {
     type("12 rue")
     await vi.runAllTimersAsync()
 

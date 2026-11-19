@@ -12,14 +12,14 @@ RSpec.describe DueLabelComponent, type: :component do
     "2026-11-17 00:00" => "demain",
     "2026-11-20 00:00" => "dans 4 j"
   }.each do |due_at, label|
-    it "affiche « #{label} » pour une échéance le #{due_at}" do
+    it "shows \"#{label}\" for an occurrence due on #{due_at}" do
       render_inline(described_class.new(due_at: Time.zone.parse(due_at)))
 
       expect(page).to have_text(label)
     end
   end
 
-  it "met le retard en évidence" do
+  it "highlights a late occurrence" do
     render_inline(described_class.new(due_at: Time.zone.parse("2026-11-15 00:00")))
 
     expect(page).to have_css("span.text-red-700")

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-# yarn audit, avec une liste d'alertes acceptées (config/yarn-audit.yml).
-# Échoue sur toute alerte non listée, et sur toute acceptation arrivée à échéance.
+# yarn audit, with a list of accepted advisories (config/yarn-audit.yml).
+# Fails on any unlisted advisory, and on any acceptance past its deadline.
 require "date"
 require "json"
 require "open3"
@@ -12,7 +12,7 @@ accepted = (config["ignore"] || []).to_h { |entry| [ entry["id"], entry ] }
 output, = Open3.capture2("yarn", "audit", "--json")
 output.force_encoding(Encoding::UTF_8)
 unless output.include?('"type":"auditSummary"')
-  warn "yarn audit n'a pas abouti :\n#{output}"
+  warn "yarn audit did not complete:\n#{output}"
   exit 1
 end
 
@@ -25,26 +25,27 @@ end.uniq { |advisory| advisory["id"] }
 
 failures = []
 advisories.each do |advisory|
-  label = "#{advisory["module_name"]} (#{advisory["severity"]}, #{advisory["id"]}) : #{advisory["title"]} #{advisory["url"]}"
+  label = "#{advisory["module_name"]} (#{advisory["severity"]}, #{advisory["id"]}): " \
+          "#{advisory["title"]} #{advisory["url"]}"
   entry = accepted[advisory["id"]]
 
   if entry.nil?
     failures << "✗ #{label}"
   elsif entry["until"] < Date.today
-    failures << "✗ acceptation expirée le #{entry["until"]} : #{label}"
+    failures << "✗ acceptance expired on #{entry["until"]}: #{label}"
   else
-    puts "– accepté jusqu'au #{entry["until"]} : #{label}"
+    puts "– accepted until #{entry["until"]}: #{label}"
   end
 end
 
 (accepted.keys - advisories.map { |advisory| advisory["id"] }).each do |id|
-  puts "ℹ #{id} n'est plus signalé : le retirer de config/yarn-audit.yml"
+  puts "ℹ #{id} is no longer reported: remove it from config/yarn-audit.yml"
 end
 
 if failures.empty?
-  puts "✓ yarn audit : aucune vulnérabilité non acceptée"
+  puts "✓ yarn audit: no unaccepted vulnerability"
 else
   puts failures
-  puts "Mettre à jour le paquet, ou documenter l'acceptation dans config/yarn-audit.yml."
+  puts "Upgrade the package, or document the acceptance in config/yarn-audit.yml."
   exit 1
 end

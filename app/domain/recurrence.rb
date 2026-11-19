@@ -1,11 +1,11 @@
-# Moteur de récurrence : Ruby pur, sans ActiveRecord. Calcule la prochaine échéance d'une tâche.
+# Recurrence engine: plain Ruby, no ActiveRecord. Computes the next due date of a task.
 #
-# Interface commune : #next_due_at(last_completed_at:) renvoie la prochaine échéance (TimeWithZone, au début du jour
-# local), ou nil quand il n'y en a plus. last_completed_at vaut nil si la tâche n'a jamais été faite.
+# Common interface: #next_due_at(last_completed_at:) returns the next due date (TimeWithZone, at the start of the
+# local day), or nil when there is none left. last_completed_at is nil when the task was never done.
 module Recurrence
   class InvalidConfig < ArgumentError; end
 
-  # Construit la règle depuis Task#recurrence_type et Task#recurrence_config (clés chaîne ou symbole, dates ISO 8601).
+  # Builds the rule from Task#recurrence_type and Task#recurrence_config (string or symbol keys, ISO 8601 dates).
   def self.build(type:, config:)
     config = config.to_h.transform_keys(&:to_s)
 

@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Autocomplétion d'adresse : interroge le serveur pendant la saisie, puis remplit la position choisie.
+// Address autocomplete: queries the server while typing, then fills in the chosen position.
 export default class extends Controller {
   static targets = ["input", "results", "latitude", "longitude", "altitude"]
   static values = { url: String, delay: { type: Number, default: 250 }, minLength: { type: Number, default: 3 } }
@@ -10,7 +10,7 @@ export default class extends Controller {
   }
 
   search() {
-    // Une adresse retapée à la main n'a plus de position connue : l'altitude sera recalculée au choix suivant.
+    // A retyped address has no known position anymore: the altitude is recomputed on the next choice.
     this.latitudeTarget.value = ""
     this.longitudeTarget.value = ""
     this.altitudeTarget.value = ""
@@ -39,12 +39,12 @@ export default class extends Controller {
 
     try {
       const response = await fetch(url, { headers: { Accept: "text/html" } })
-      // Une erreur (session expirée : 401) ou une réponse arrivée après une nouvelle frappe est ignorée.
+      // An error (expired session: 401) or a response arriving after a new keystroke is ignored.
       if (!response.ok || query !== this.inputTarget.value.trim()) return
 
       this.resultsTarget.innerHTML = await response.text()
     } catch {
-      // Hors ligne : pas de suggestion, l'adresse reste saisissable à la main.
+      // Offline: no suggestion, the address can still be typed by hand.
     }
   }
 }

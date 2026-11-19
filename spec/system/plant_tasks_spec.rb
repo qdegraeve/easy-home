@@ -1,12 +1,12 @@
 require "rails_helper"
 
-# Parcours critique : tâches manuelles d'une plante (voir docs/tests.md).
-RSpec.describe "Tâches d'une plante", type: :system do
+# Critical journey: manual tasks of a plant (see docs/tests.md).
+RSpec.describe "Plant tasks", type: :system do
   include ActiveSupport::Testing::TimeHelpers
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
-  it "ajoute une tâche répétée et une tâche unique, les fait depuis l'accueil et la fiche, annule, modifie, supprime" do
+  it "adds a repeating and a one-off task, does them from home and plant page, cancels, edits, deletes" do
     user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
     create(:plant, :watered, household: user.households.first, name: "Citronnier", interval_days: 7)
 
@@ -18,7 +18,7 @@ RSpec.describe "Tâches d'une plante", type: :system do
     click_on "Citronnier"
     expect(page).to have_content("Aucune autre tâche")
 
-    # Tâche répétée, due aujourd'hui : elle apparaît dans « À faire aujourd'hui ».
+    # Repeating task due today: it shows up in "À faire aujourd'hui".
     click_on "+ Ajouter une tâche"
     fill_in "Tâche", with: "Engrais"
     expect(page).to have_no_field("Répétition")
@@ -29,7 +29,7 @@ RSpec.describe "Tâches d'une plante", type: :system do
     expect(page).to have_content("Tâche « Engrais » ajoutée.")
     expect(page).to have_content("Tous les 14 jours · aujourd'hui")
 
-    # Tâche unique dans quelques jours, avec une erreur de saisie corrigée.
+    # One-off task in a few days, with an input error fixed.
     click_on "+ Ajouter une tâche"
     fill_in "Tâche", with: "   "
     expect(page).to have_no_field("Répétition")
@@ -51,7 +51,7 @@ RSpec.describe "Tâches d'une plante", type: :system do
     expect(page).to have_content("Fait aujourd'hui")
     expect(page).to have_content("✅ Engrais")
 
-    # Tâche unique faite : elle quitte la liste, reste au journal ; annulée, elle revient.
+    # One-off task done: it leaves the list, stays in the log; cancelled, it comes back.
     click_on "Fait : Tailler (Citronnier)"
     expect(page).to have_content("Tailler noté pour « Citronnier ».")
     expect(page).to have_no_button("Fait : Tailler (Citronnier)")
