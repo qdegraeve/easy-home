@@ -4,12 +4,4 @@
 # et une date limite. À la date limite, l'audit échoue de nouveau : on vérifie
 # si un correctif existe, sinon on prolonge en justifiant.
 
-ignore:
-  - id: 1240992
-    package: braces
-    reason: >-
-      Déni de service sur des motifs de glob très imbriqués. Outil de build
-      uniquement (@tailwindcss/cli > @parcel/watcher > micromatch), qui ne
-      traite que nos propres chemins : aucune entrée utilisateur, rien en
-      production. Pas de version corrigée au 2026-10-06.
-    until: 2027-01-06
+ignore: []
