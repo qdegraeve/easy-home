@@ -36,16 +36,20 @@ Les plantes cumulent tous ces problèmes : l'arrosage dépend de chaque espèce 
 
 Point de départ : une dizaine de plantes en extérieur, à La Réunion.
 
-1. **Inventaire** : chaque plante a un nom, une espèce, un emplacement (« terrasse », « jardin devant »…) et des photos.
-2. **Identification** : la première photo propose l'espèce automatiquement ; on la confirme ou on la corrige.
-3. **Arrosage** : chaque plante a son intervalle d'arrosage (récurrence glissante). L'IA propose l'intervalle de départ
+1. **Ma maison** : la commune et l'altitude (le climat varie beaucoup d'un endroit à l'autre de l'île), et la liste des
+   emplacements (« terrasse », « jardin devant »…) avec leur exposition au soleil et leur abri du vent. L'IA en tient
+   compte pour l'arrosage et le diagnostic.
+2. **Inventaire** : chaque plante a un nom, une espèce, un emplacement et des photos.
+3. **Identification** : la première photo propose l'espèce automatiquement ; on la confirme ou on la corrige.
+4. **Arrosage** : chaque plante a son intervalle d'arrosage (récurrence glissante). L'IA propose l'intervalle de départ
    selon l'espèce et le climat ; on le valide ou on l'ajuste. Un bouton « Arrosée » alimente le journal.
-4. **Suivi photo** : un historique de photos par plante pour voir l'évolution.
-5. **Analyse** : sur une photo, un bouton « Analyser » donne l'état (bien / à surveiller / à traiter), ce qui est observé
+5. **Suivi photo** : un historique de photos par plante pour voir l'évolution.
+6. **Analyse** : sur une photo, un bouton « Analyser » donne l'état (bien / à surveiller / à traiter), ce qui est observé
    et les actions conseillées. Une action peut devenir une tâche si on l'accepte.
 
 Foyer minimal (créé à l'inscription), sans invités ni rôles. Pas encore de notifications : l'app s'utilise depuis le
-navigateur du téléphone. Le choix du modèle d'IA est dans l'ADR 0008.
+navigateur, sur téléphone comme sur ordinateur (mise en page mobile d'abord, élargie sur grand écran). Le choix du
+modèle d'IA est dans l'ADR 0008.
 
 ## Ensuite (MVP complet)
 

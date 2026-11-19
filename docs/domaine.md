@@ -17,7 +17,7 @@
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
 | Appareil | `Device` | Téléphone d'un utilisateur : jeton push Firebase et jeton d'API natif. |
 | Plante | `Item` (`kind: plant`) | Un élément du foyer. Espèce dans `properties`. |
-| Emplacement | `Item#location` | Texte libre (« terrasse », « jardin devant »), avec les emplacements déjà saisis en suggestion. |
+| Emplacement | `Location` | Zone de la maison (« terrasse », « jardin devant ») avec son exposition au soleil. |
 | Photo | `Photo` | Une photo d'un élément, datée. L'ensemble forme le suivi photo. |
 | Analyse | `PhotoAnalysis` | Résultat de l'IA sur une photo : espèce proposée, état, observations, actions conseillées. |
 
@@ -30,7 +30,14 @@ User
 
 Household
   name, time_zone (défaut "Indian/Reunion")
-  has_many :memberships, :items, :tasks
+  city, altitude_m (optionnels)  # contexte climatique envoyé à l'IA
+  has_many :memberships, :items, :tasks, :locations
+
+Location
+  household, name
+  exposure (full_sun | partial_shade | shade)
+  sheltered : boolean            # abrité du vent
+  has_many :items
 
 Membership
   user, household, role (owner | member | guest)
@@ -38,7 +45,7 @@ Membership
 
 Item
   household, kind, name
-  location (optionnel)           # emplacement, texte libre
+  location (Location, optionnel)
   properties : jsonb             # attributs variables : cycles_per_week, volume_m3…
                                  # plante : { species, species_source (ai | user) }
   has_many :photos
@@ -141,5 +148,7 @@ Ajouter un élément au foyer (`Items::Add`) crée l'`Item` et instancie les `Ta
 - Ajouter une plante : création de l'`Item` et de sa première `Photo`, puis analyse en job. L'espèce proposée s'affiche
   à confirmer : acceptée telle quelle, elle remplit `properties.species` avec `species_source: ai` ; corrigée, avec
   `species_source: user`.
+- Chaque analyse reçoit le contexte : commune et altitude du foyer, exposition et abri de l'emplacement, espèce
+  confirmée, intervalle d'arrosage actuel. Ces données restent en base, jamais dans le dépôt.
 - Une analyse ne modifie jamais rien d'elle-même : l'espèce, l'intervalle et les actions sont des **propositions** à
   accepter. Le fournisseur d'IA est derrière `Plants::Analyzer` (ADR 0008).

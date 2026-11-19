@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-stone-50 text-stone-800">
-  <div class="max-w-md mx-auto min-h-screen px-4 pb-10">
+  <div class="max-w-md lg:max-w-xl mx-auto min-h-screen px-4 pb-10">
     <header class="flex items-center gap-3 pt-6 pb-4">
       <a href="index.html" class="w-10 h-10 rounded-full bg-white shadow-sm grid place-items-center">←</a>
       <h1 class="text-xl font-bold">Ajouter une plante</h1>
@@ -19,16 +19,24 @@
         <span class="text-center"><span class="text-4xl block">📷</span><span class="font-semibold">Prendre une photo</span><br><span class="text-xs">ou choisir dans la galerie</span></span>
       </button>
 
-      <div>
-        <label class="text-sm font-semibold">Emplacement</label>
-        <input list="locations" placeholder="Ex. terrasse" class="w-full mt-1 border border-stone-300 rounded-xl px-3 py-3 bg-white">
-        <datalist id="locations"><option value="Jardin devant"><option value="Terrasse"><option value="Fond du jardin"></datalist>
-        <div class="flex gap-2 mt-2 text-xs">
-          <span class="px-2 py-1 rounded-full bg-white border">Jardin devant</span>
-          <span class="px-2 py-1 rounded-full bg-white border">Terrasse</span>
-          <span class="px-2 py-1 rounded-full bg-white border">Fond du jardin</span>
+      <fieldset>
+        <legend class="text-sm font-semibold">Emplacement</legend>
+        <div class="space-y-2 mt-1">
+          <label class="flex items-center justify-between bg-white border rounded-xl px-3 py-3 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
+            <span>Jardin devant</span><span class="text-xs text-stone-500">☀️ plein soleil</span>
+            <input type="radio" name="location" class="sr-only" checked>
+          </label>
+          <label class="flex items-center justify-between bg-white border rounded-xl px-3 py-3 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
+            <span>Terrasse</span><span class="text-xs text-stone-500">⛅ mi-ombre</span>
+            <input type="radio" name="location" class="sr-only">
+          </label>
+          <label class="flex items-center justify-between bg-white border rounded-xl px-3 py-3 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50">
+            <span>Fond du jardin</span><span class="text-xs text-stone-500">⛅ mi-ombre</span>
+            <input type="radio" name="location" class="sr-only">
+          </label>
         </div>
-      </div>
+        <a href="maison.html" class="inline-block text-sm text-emerald-700 font-semibold mt-2">+ Nouvel emplacement</a>
+      </fieldset>
 
       <div>
         <label class="text-sm font-semibold">Nom <span class="font-normal text-stone-400">(facultatif)</span></label>
@@ -71,7 +79,7 @@
           <input type="number" value="3" class="w-16 border border-stone-300 rounded-lg px-2 py-1 text-center font-bold">
           <span>jours</span>
         </div>
-        <p class="text-sm text-stone-500 mt-2">En extérieur à La Réunion, saison chaude : terre légèrement humide en permanence, sans eau stagnante.</p>
+        <p class="text-sm text-stone-500 mt-2">Plein soleil, 150 m d'altitude, saison chaude : terre légèrement humide en permanence, sans eau stagnante.</p>
       </div>
 
       <div class="bg-white rounded-2xl shadow-sm p-4">

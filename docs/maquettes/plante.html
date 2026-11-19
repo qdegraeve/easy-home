@@ -7,8 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-stone-50 text-stone-800">
-  <div class="max-w-md mx-auto min-h-screen pb-10">
-    <div class="relative h-64 bg-gradient-to-br from-rose-300 via-pink-200 to-emerald-500 grid place-items-center text-8xl">
+  <div class="max-w-md lg:max-w-5xl mx-auto min-h-screen pb-10 lg:grid lg:grid-cols-2 lg:gap-6 lg:pt-6 lg:px-4">
+    <div class="lg:self-start lg:sticky lg:top-6">
+    <div class="relative h-64 lg:h-96 lg:rounded-3xl lg:overflow-hidden bg-gradient-to-br from-rose-300 via-pink-200 to-emerald-500 grid place-items-center text-8xl">
       🌺
       <a href="index.html" class="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/90 grid place-items-center text-lg">←</a>
       <span class="absolute top-6 right-4 text-xs bg-black/50 text-white px-2 py-1 rounded-full">Photo du 12 nov.</span>
@@ -23,10 +24,14 @@
           <span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-800">Espèce confirmée</span>
           <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold">En forme</span>
         </div>
+        <p class="text-xs text-stone-400 mt-2">☀️ Plein soleil · abrité du vent</p>
       </div>
     </div>
+    </div>
 
-    <section class="px-4 pt-4">
+    <div>
+
+    <section class="px-4 pt-4 lg:pt-0">
       <div class="bg-white rounded-2xl shadow-sm p-4">
         <div class="flex items-start justify-between gap-3">
           <div>
@@ -72,6 +77,7 @@
         <li class="p-3 flex justify-between"><span>💧 Oubli d'arrosage</span><span class="text-red-500">sam. 7 nov.</span></li>
       </ul>
     </section>
+    </div>
   </div>
 
   <script>
