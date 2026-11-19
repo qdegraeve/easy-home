@@ -1,0 +1,61 @@
+<%= link_to t("plants.back"), root_path, class: "text-sm text-stone-500 underline" %>
+
+<div class="mt-2">
+  <h1 class="text-2xl font-bold"><%= @plant.name %></h1>
+  <% if @plant.species %>
+    <p class="italic text-stone-600"><%= @plant.species %></p>
+  <% end %>
+  <% if @plant.location %>
+    <p class="mt-1 text-sm text-stone-500">
+      📍 <%= @plant.location.name %> · <%= t("locations.exposures.#{@plant.location.exposure}") %>
+    </p>
+  <% end %>
+  <% if @plant.archived? %>
+    <p class="mt-2 rounded-xl bg-stone-100 px-3 py-2 text-sm">
+      <%= t(".archived_on", date: l(@plant.archived_at.to_date, format: :long)) %>
+    </p>
+  <% end %>
+</div>
+
+<div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+  <section class="space-y-2 self-start rounded-2xl bg-white p-4 shadow-sm" aria-labelledby="watering">
+    <h2 id="watering" class="font-semibold"><%= t(".watering") %></h2>
+    <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
+    <% if (occurrence = @watering_task.pending_occurrence) %>
+      <div class="flex items-center justify-between gap-3">
+        <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
+        <%= render "plants/water_button", plant: @plant, occurrence: %>
+      </div>
+    <% end %>
+    <% if (last = @journal.first) %>
+      <p class="text-sm text-stone-500"><%= t(".last_watered", date: l(last.completed_at.to_date, format: :day)) %></p>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="journal">
+    <h2 id="journal" class="font-semibold"><%= t(".journal") %></h2>
+    <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+      <% @journal.each do |entry| %>
+        <li class="flex justify-between gap-3 p-3 text-sm">
+          <span><%= t(".watered") %></span>
+          <span class="text-stone-500"><%= l(entry.completed_at.to_date, format: :day) %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+</div>
+
+<div class="mt-8 flex flex-wrap gap-3">
+  <%= link_to t(".edit"), edit_plant_path(@plant), class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+  <% if @plant.archived? %>
+    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete,
+          class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+  <% else %>
+    <%= button_to t(".archive"), plant_archive_path(@plant),
+          form: { data: { turbo_confirm: t(".archive_confirm") } },
+          class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+  <% end %>
+  <%= button_to t(".destroy"), plant_path(@plant), method: :delete,
+        form: { data: { turbo_confirm: t(".destroy_confirm") } },
+        class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
+</div>

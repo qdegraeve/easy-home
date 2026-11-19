@@ -1,8 +1,20 @@
 fr:
+  date:
+    formats:
+      day: "%a %-d %b"
+  activemodel:
+    attributes:
+      plant:
+        name: "Nom"
+        species: "Espèce"
+        location_id: "Emplacement"
+        watering_interval_days: "Arrosage"
+        last_watered_on: "Dernier arrosage"
   activerecord:
     models:
       household: "Foyer"
       location: "Emplacement"
+      plant: "Plante"
     attributes:
       household:
         name: "Nom du foyer"
@@ -17,7 +29,74 @@ fr:
       title: "Mes plantes"
       house: "🏡 Ma maison"
       empty_title: "Aucune plante pour l'instant"
-      empty_body: "L'inventaire des plantes arrive bientôt."
+      empty_body: "Ajoutez votre première plante pour suivre son arrosage."
+      to_water:
+        one: "À arroser aujourd'hui · %{count}"
+        other: "À arroser aujourd'hui · %{count}"
+      nothing_to_water: "Rien à arroser aujourd'hui."
+      all: "Toutes les plantes · %{count}"
+      no_location: "Sans emplacement"
+      add: "+ Ajouter une plante"
+      archived: "Plantes archivées · %{count}"
+  due_label:
+    overdue:
+      one: "en retard de %{count} j"
+      other: "en retard de %{count} j"
+    today: "aujourd'hui"
+    tomorrow: "demain"
+    later:
+      one: "dans %{count} j"
+      other: "dans %{count} j"
+  plants:
+    back: "← Mes plantes"
+    water: "Arrosée"
+    water_label: "Arrosée : %{name}"
+    watering_task_title: "Arrosage"
+    form:
+      name_placeholder: "Ex. Hibiscus de l'entrée"
+      species_placeholder: "Facultatif, ex. Hibiscus rosa-sinensis"
+      no_location: "Aucun emplacement"
+      every: "Tous les"
+      days: "jours"
+      last_watered_help: "Point de départ du calcul du prochain arrosage."
+    new:
+      title: "Ajouter une plante"
+      submit: "Ajouter la plante"
+    create:
+      success: "Plante « %{name} » ajoutée."
+    edit:
+      title: "Modifier « %{name} »"
+      submit: "Enregistrer"
+    update:
+      success: "Plante enregistrée."
+    destroy:
+      success: "Plante « %{name} » supprimée."
+    show:
+      watering: "💧 Arrosage"
+      every:
+        one: "Tous les jours"
+        other: "Tous les %{count} jours"
+      next: "Prochain arrosage :"
+      last_watered: "Dernier arrosage : %{date}"
+      journal: "📒 Journal"
+      watered: "💧 Arrosée"
+      archived_on: "Archivée le %{date} : plus de rappel, l'historique reste consultable."
+      edit: "Modifier"
+      archive: "Archiver"
+      archive_confirm: "Archiver cette plante ? Les rappels s'arrêtent, l'historique est conservé."
+      restore: "Restaurer"
+      destroy: "Supprimer"
+      destroy_confirm: "Supprimer définitivement cette plante et tout son historique ?"
+    archives:
+      create:
+        success: "Plante « %{name} » archivée."
+      destroy:
+        success: "Plante « %{name} » restaurée."
+  task_occurrences:
+    completions:
+      create:
+        success: "%{title} noté pour « %{subject} »."
+        already_done: "C'était déjà fait."
   households:
     create:
       success: "Foyer « %{name} » créé."
