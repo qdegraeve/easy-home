@@ -49,6 +49,17 @@ RSpec.describe Tasks::Update do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-16 00:00"))
   end
 
+  it "fait de la date saisie la date de début d'une tâche répétée jamais faite (gardée après restauration)" do
+    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
+
+    described_class.new.call(task:, params: { title: "Engrais", due_on: "2026-11-25", interval_days: "14" })
+    Plants::Archive.new.call(plant:)
+    Plants::Restore.new.call(plant: plant.reload)
+
+    expect(task.reload.recurrence.start_on).to eq(Date.new(2026, 11, 25))
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-25 00:00"))
+  end
+
   it "refuse une modification sans date au lieu de prendre aujourd'hui" do
     task = add(title: "Tailler", recurrence_type: "once", due_on: "2026-11-30")
 
