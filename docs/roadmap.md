@@ -2,55 +2,60 @@
 
 Chaque étape produit quelque chose d'utilisable. Cocher au fur et à mesure.
 
-## Étape 0 : finir le setup
+Ordre : valider le produit avant de l'industrialiser. Maquettes, puis une première version centrée sur les plantes,
+puis le risque technique (Hotwire Native et push), et le déploiement seulement quand l'app Android en a besoin. Le flux
+de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche `chore/flux-de-livraison`.
 
-- [ ] Premier commit de l'app générée
+## Étape 0 : setup
+
+- [x] Premier commit de l'app générée
 - [x] Passage à PostgreSQL (ADR 0004) : Gemfile, `database.yml`, Dockerfile, accessory Kamal, CI
-- [ ] Sauvegardes de la base de production (`pg_dump` planifié)
-- [x] Remplacer Minitest par RSpec :
-  - [x] `rspec-rails`, `factory_bot_rails`, `shoulda-matchers`, `pundit-matchers`
-  - [x] Supprimer `test/` et le railtie `rails/test_unit` dans `config/application.rb`
-  - [x] Mettre à jour `config/ci.rb` (`bundle exec rspec`) et `.github/workflows/ci.yml`
-  - [x] Configurer les générateurs (`config.generators`) pour RSpec, factories, sans helpers ni specs de vues
-- [x] System specs : `capybara` + `cuprite`
+- [x] RSpec, FactoryBot, shoulda-matchers, pundit-matchers ; Capybara + Cuprite ; Vitest + happy-dom
 - [x] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
-- [x] Vitest + happy-dom (`yarn test`), ajouté à `bin/ci`
-- [x] Authentification : `bin/rails generate authentication` (active `bcrypt`)
-- [x] `config.time_zone = "Indian/Reunion"`, `config.i18n.default_locale = :fr`, `rails-i18n`
+- [x] Authentification Rails 8
+- [x] Fuseau `Indian/Reunion`, locale `fr`, `rails-i18n`
+- [x] Socle de tests et CI GitHub (garde-fous des specs, audits, budget de temps)
+
+## Étape 1 : maquettes
+
+- [ ] Maquettes HTML cliquables, mobile d'abord et élargies sur desktop : liste des plantes, fiche d'une plante
+  (arrosage, photos, analyses), ajout d'une plante, résultat d'une analyse, ma maison (adresse, emplacements)
+- [ ] Validation sur téléphone, corrections
+
+## Étape 2 : première version, les plantes
+
 - [ ] Layout de base Tailwind, pensé mobile d'abord
+- [ ] Foyer minimal créé à l'inscription (`Household`, `Membership` owner)
+- [ ] Moteur de récurrence : `Recurrence::Sliding`, testé de façon exhaustive
+- [ ] Ma maison : adresse avec autocomplétion, position et altitude (ADR 0009), emplacements (`Location`) avec
+  exposition et abri
+- [ ] Plantes : `Item` (`kind: plant`), emplacement, espèce
+- [ ] Photos (Active Storage) et suivi photo
+- [ ] `Plants::Analyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test
+- [ ] Identification de l'espèce proposée, confirmée ou corrigée
+- [ ] Arrosage : tâche `plant.watering`, bouton « Arrosée », journal
+- [ ] Analyse d'une photo : état, observations, actions ; action acceptée → tâche
+- [ ] System specs des parcours : ajouter une plante, arroser, analyser une photo
 
-## Étape 1 : app Rails utilisable sur le web mobile
-
-- [ ] Foyer et membres (`Household`, `Membership`)
-- [ ] Moteur de récurrence (`app/domain/recurrence`), testé de façon exhaustive
-- [ ] Tâches manuelles et échéances (`Task`, `TaskOccurrence`)
-- [ ] Validation, saut d'échéance, journal
-- [ ] Catalogue YAML et éléments (`Item`) : poubelles, lave-vaisselle, piscine, un animal
-- [ ] Tableau de bord : en retard, aujourd'hui, à venir
-- [ ] Job qui marque les échéances manquées
-
-## Étape 2 : coque Hotwire Native Android
+## Étape 3 : coque Hotwire Native Android et push (spike)
 
 - [ ] Projet `android/`, webview pointant vers l'app
-- [ ] Path configuration servie par Rails
-- [ ] Déploiement Kamal avec HTTPS public
+- [ ] Une notification FCM « à arroser » qui arrive au bon moment
 
-## Étape 3 : notifications push simples
+## Étape 4 : déploiement minimal
 
-- [ ] Firebase, enregistrement des appareils (`Device`)
-- [ ] Job récurrent d'envoi des rappels + relances
-- [ ] Bouton « notification de test »
+- [ ] Kamal vers le serveur de la maison, HTTPS public via le tunnel
+- [ ] CLI `claude` et jeton dans l'image (ADR 0008)
+- [ ] Sauvegardes de la base de production (`pg_dump` planifié)
 
-## Étape 4 : action « Fait » native
+## Étape 5 : le reste du MVP
 
-- [ ] Jeton d'API par appareil, API `api/v1`
-- [ ] Action de notification qui valide sans ouvrir l'app
-
-## Étape 5 : invités
-
-- [ ] Rôle `guest`, `TaskAccess` avec période, policies et scopes
-- [ ] Invitation par lien
+- [ ] Tâches manuelles, récurrences fixes et basées sur l'usage
+- [ ] Catalogue : poubelles, lave-vaisselle, piscine, un animal
+- [ ] Tableau de bord : en retard, aujourd'hui, à venir ; job des échéances manquées
+- [ ] Notifications avec relance, action « Fait » native (`Device`, API `api/v1`)
+- [ ] Membres et invités (`TaskAccess`, invitation par lien)
 
 ## Après le MVP
 
-Voir la section « Hors MVP » de `docs/produit.md` : tournantes, module plantes avec IA, stocks, mesures, météo et mode cyclone…
+Voir la section « Hors MVP » de `docs/produit.md`.

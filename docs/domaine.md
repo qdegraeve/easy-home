@@ -16,6 +16,10 @@
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
 | Appareil | `Device` | Téléphone d'un utilisateur : jeton push Firebase et jeton d'API natif. |
+| Plante | `Item` (`kind: plant`) | Un élément du foyer. Espèce dans `properties`. |
+| Emplacement | `Location` | Zone de la maison (« terrasse », « jardin devant ») avec son exposition au soleil. |
+| Photo | `Photo` | Une photo d'un élément, datée. L'ensemble forme le suivi photo. |
+| Analyse | `PhotoAnalysis` | Résultat de l'IA sur une photo : espèce proposée, état, observations, actions conseillées. |
 
 ## Modèle de données (esquisse)
 
@@ -26,7 +30,16 @@ User
 
 Household
   name, time_zone (défaut "Indian/Reunion")
-  has_many :memberships, :items, :tasks
+  address (optionnel)            # libellé choisi dans l'autocomplétion
+  latitude, longitude            # issus du géocodage
+  altitude_m                     # calculée depuis la position (ADR 0009)
+  has_many :memberships, :items, :tasks, :locations
+
+Location
+  household, name
+  exposure (full_sun | partial_shade | shade)
+  sheltered : boolean            # abrité du vent
+  has_many :items
 
 Membership
   user, household, role (owner | member | guest)
@@ -34,14 +47,32 @@ Membership
 
 Item
   household, kind, name
+  location (Location, optionnel)
   properties : jsonb             # attributs variables : cycles_per_week, volume_m3…
+                                 # plante : { species, species_source (ai | user) }
+  has_many :photos
+
+Photo
+  item, taken_at
+  image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu
+  has_one :analysis (PhotoAnalysis)
+
+PhotoAnalysis
+  photo
+  status (pending | done | failed), error
+  health (ok | watch | act)      # bien / à surveiller / à traiter
+  species_guess, species_confidence
+  watering_interval_days         # intervalle proposé (1 à 60), optionnel
+  observations : text
+  actions : jsonb                # [{ title, details, due_in_days }] ; une action acceptée devient une Task `once`
+  provider                       # ex. "claude_cli"
 
 Task
   household
   item (optionnel)               # null pour une tâche manuelle indépendante
   title, description
   source (manual | template), template_key (ex. "dishwasher.salt")
-  recurrence_type (fixed | sliding | usage_based)
+  recurrence_type (once | fixed | sliding | usage_based)
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_offset                # quand notifier avant l'échéance (ex. la veille à 19h)
   assignee (Membership, optionnel)   # prévu pour les tournantes, hors MVP
@@ -83,6 +114,7 @@ pending ──(Fait)──────────▶ done
 
 Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 
+- `Recurrence::Once` : une seule échéance, aucune suivante après réalisation ;
 - `Recurrence::Fixed` : règle calendaire, s'appuie sur `ice_cube` ;
 - `Recurrence::Sliding` : `interval_days` après la dernière réalisation ;
 - `Recurrence::UsageBased` : intervalle = `capacity / usage_per_day`, ajusté par un facteur de calibrage issu du `feedback` des échéances précédentes.
@@ -112,3 +144,19 @@ tasks:
 ```
 
 Ajouter un élément au foyer (`Items::Add`) crée l'`Item` et instancie les `Task` de son modèle.
+
+## Plantes
+
+- Le modèle `plant` du catalogue porte une seule tâche, `plant.watering`, en récurrence **glissante**, créée à l'ajout
+  de la plante avec un intervalle par défaut du catalogue (3 jours). L'analyse propose de le remplacer
+  (`watering_interval_days`) ; il reste modifiable à la main. Une analyse en échec ou en attente ne bloque donc rien.
+- Une action conseillée acceptée devient une `Task` en récurrence `once`, due dans `due_in_days` jours.
+- Ajouter une plante : création de l'`Item` et de sa première `Photo`, puis analyse en job. L'espèce proposée s'affiche
+  à confirmer : acceptée telle quelle, elle remplit `properties.species` avec `species_source: ai` ; corrigée, avec
+  `species_source: user`.
+- Chaque analyse reçoit le contexte : position arrondie (environ 1 km) et altitude du foyer, exposition et abri de
+  l'emplacement, espèce confirmée, intervalle d'arrosage actuel, mois en cours (saisons de l'hémisphère sud).
+  **L'adresse n'est jamais envoyée à l'IA**, ni les métadonnées de la photo (voir ADR 0008), et ces données restent en
+  base, jamais dans le dépôt.
+- Une analyse ne modifie jamais rien d'elle-même : l'espèce, l'intervalle et les actions sont des **propositions** à
+  accepter. Le fournisseur d'IA est derrière `Plants::Analyzer` (ADR 0008).
