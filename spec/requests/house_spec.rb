@@ -37,6 +37,19 @@ RSpec.describe "Ma maison", type: :request do
     end
   end
 
+  describe "GET /" do
+    it "montre le lien « Ma maison » au propriétaire, pas à l'invité" do
+      sign_in(user)
+      get root_path
+      expect(response.body).to include("Ma maison")
+
+      delete session_path
+      sign_in(create(:household_member, household:, role: :guest).user)
+      get root_path
+      expect(response.body).not_to include("Ma maison")
+    end
+  end
+
   describe "PATCH /households/:id" do
     it "enregistre l'adresse et l'altitude calculée" do
       sign_in(user)
@@ -55,7 +68,26 @@ RSpec.describe "Ma maison", type: :request do
       patch household_path(household), params: { household: { address: "Ici", altitude_m: "99999" } }
 
       expect(response).to have_http_status(:unprocessable_content)
-      expect(response.body).to include("Altitude")
+      expect(response.body).to include("Altitude doit être dans l&#39;intervalle -500..9000")
+      expect(household.reload.address).to be_nil
+    end
+
+    it "refuse une position falsifiée hors des bornes, sans erreur serveur" do
+      sign_in(user)
+
+      patch household_path(household), params: { household: { address: "Ici", latitude: "1000", longitude: "55" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(household.reload.latitude).to be_nil
+    end
+
+    it "refuse un invité" do
+      sign_in(create(:household_member, household:, role: :guest).user)
+
+      patch household_path(household), params: { household: { address: "Ici" } }
+
+      expect(response).to have_http_status(:forbidden)
+      expect(household.reload.address).to be_nil
     end
   end
 
@@ -78,7 +110,17 @@ RSpec.describe "Ma maison", type: :request do
       post household_locations_path(household), params: { location: { name: "terrasse", exposure: "shade" } }
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Nom est déjà utilisé(e)")
       expect(household.locations.count).to eq(1)
+    end
+
+    it "refuse un invité" do
+      sign_in(create(:household_member, household:, role: :guest).user)
+
+      post household_locations_path(household), params: { location: { name: "Terrasse", exposure: "shade" } }
+
+      expect(response).to have_http_status(:forbidden)
+      expect(household.locations).to be_empty
     end
 
     it "ne trouve pas le foyer d'un autre" do
@@ -110,6 +152,16 @@ RSpec.describe "Ma maison", type: :request do
       expect(response).to have_http_status(:not_found)
       expect(Location.exists?(location.id)).to be(true)
     end
+
+    it "refuse un invité" do
+      location = create(:location, household:)
+      sign_in(create(:household_member, household:, role: :guest).user)
+
+      delete location_path(location)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(Location.exists?(location.id)).to be(true)
+    end
   end
 
   describe "GET /address_suggestions" do
@@ -130,10 +182,11 @@ RSpec.describe "Ma maison", type: :request do
       expect(response.body.strip).to be_empty
     end
 
-    it "exige une connexion" do
+    it "répond 401 sans connexion, sans rediriger ni mémoriser l'URL du fragment" do
       get address_suggestions_path, params: { q: "12 exemples" }
 
-      expect(response).to redirect_to(new_session_path)
+      expect(response).to have_http_status(:unauthorized)
+      expect(session[:return_to_after_authenticating]).to be_nil
     end
   end
 end

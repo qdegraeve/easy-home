@@ -5,7 +5,7 @@ module Geo
   class OpenMeteoElevation
     ENDPOINT = URI("https://api.open-meteo.com/v1/elevation")
 
-    # Altitude en mètres (entier), nil si le service ne répond pas.
+    # Altitude en mètres (entier), nil si le service ne répond pas ou répond mal.
     def altitude(latitude:, longitude:)
       uri = ENDPOINT.dup
       uri.query = URI.encode_www_form(latitude:, longitude:)
@@ -18,8 +18,11 @@ module Geo
         return
       end
 
-      JSON.parse(response.body).fetch("elevation", []).first&.round
-    rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, SystemCallError, OpenSSL::SSL::SSLError, JSON::ParserError => error
+      json = JSON.parse(response.body)
+      value = Array(json.is_a?(Hash) ? json["elevation"] : nil).first
+      value.round if value.is_a?(Numeric)
+    # Service externe : toute panne (réseau, protocole, réponse inattendue) dégrade en altitude inconnue.
+    rescue StandardError => error
       Rails.logger.warn("[Geo::OpenMeteoElevation] #{error.class}: #{error.message}")
       nil
     end

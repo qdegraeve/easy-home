@@ -81,6 +81,24 @@ describe("address-autocomplete", () => {
     expect(el("results").innerHTML).not.toContain("périmé")
   })
 
+  it("n'affiche rien quand le serveur refuse la requête (session expirée)", async () => {
+    fetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => "<h1>Connexion</h1>" })
+
+    type("12 rue")
+    await vi.runAllTimersAsync()
+
+    expect(el("results").innerHTML).toBe("")
+  })
+
+  it("reste silencieux hors ligne", async () => {
+    fetch.mockRejectedValueOnce(new TypeError("Failed to fetch"))
+
+    type("12 rue")
+    await vi.runAllTimersAsync()
+
+    expect(el("results").innerHTML).toBe("")
+  })
+
   it("remplit l'adresse et la position quand une suggestion est choisie", async () => {
     type("12 rue")
     await vi.runAllTimersAsync()

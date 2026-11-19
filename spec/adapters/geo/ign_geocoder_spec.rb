@@ -30,4 +30,29 @@ RSpec.describe Geo::IgnGeocoder do
 
     expect(described_class.new.suggest("1 rue exemple")).to eq([])
   end
+
+  it "renvoie une liste vide quand la connexion est coupée" do
+    stub_request(:get, endpoint).to_raise(EOFError)
+
+    expect(described_class.new.suggest("1 rue exemple")).to eq([])
+  end
+
+  it "renvoie une liste vide sur une réponse inattendue" do
+    stub_request(:get, endpoint).to_return(status: 200, body: { features: nil }.to_json)
+
+    expect(described_class.new.suggest("1 rue exemple")).to eq([])
+  end
+
+  it "écarte les suggestions sans libellé ou sans position" do
+    body = {
+      features: [
+        { properties: { label: "Sans position" }, geometry: nil },
+        { properties: {}, geometry: { coordinates: [ 55.45, -20.88 ] } },
+        { properties: { label: "Complète" }, geometry: { coordinates: [ 55.45, -20.88 ] } }
+      ]
+    }
+    stub_request(:get, endpoint).to_return(status: 200, body: body.to_json)
+
+    expect(described_class.new.suggest("1 rue exemple").map(&:label)).to eq([ "Complète" ])
+  end
 end

@@ -22,7 +22,7 @@ export default class extends Controller {
       return
     }
 
-    this.timeout = setTimeout(() => this.fetchSuggestions(query), this.delayValue)
+    this.timeout = setTimeout(() => this.#fetchSuggestions(query), this.delayValue)
   }
 
   select(event) {
@@ -33,14 +33,18 @@ export default class extends Controller {
     this.resultsTarget.innerHTML = ""
   }
 
-  async fetchSuggestions(query) {
+  async #fetchSuggestions(query) {
     const url = new URL(this.urlValue, window.location.origin)
     url.searchParams.set("q", query)
 
-    const response = await fetch(url, { headers: { Accept: "text/html" } })
-    // Une réponse arrivée après une nouvelle frappe est ignorée.
-    if (!response.ok || query !== this.inputTarget.value.trim()) return
+    try {
+      const response = await fetch(url, { headers: { Accept: "text/html" } })
+      // Une erreur (session expirée : 401) ou une réponse arrivée après une nouvelle frappe est ignorée.
+      if (!response.ok || query !== this.inputTarget.value.trim()) return
 
-    this.resultsTarget.innerHTML = await response.text()
+      this.resultsTarget.innerHTML = await response.text()
+    } catch {
+      // Hors ligne : pas de suggestion, l'adresse reste saisissable à la main.
+    }
   }
 }

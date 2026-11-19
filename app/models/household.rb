@@ -6,6 +6,8 @@ class Household < ApplicationRecord
   validates :name, presence: true
   validates :time_zone, inclusion: { in: TZInfo::Timezone.all_identifiers }
   validates :altitude_m, numericality: { only_integer: true, in: -500..9000 }, allow_nil: true
+  validates :latitude, numericality: { in: -90..90 }, allow_nil: true
+  validates :longitude, numericality: { in: -180..180 }, allow_nil: true
 
   def located?
     latitude.present? && longitude.present?

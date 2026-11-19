@@ -22,4 +22,16 @@ RSpec.describe Geo::OpenMeteoElevation do
 
     expect(described_class.new.altitude(latitude: -20.88, longitude: 55.45)).to be_nil
   end
+
+  it "renvoie nil quand la connexion est coupée" do
+    stub_request(:get, endpoint).to_raise(EOFError)
+
+    expect(described_class.new.altitude(latitude: -20.88, longitude: 55.45)).to be_nil
+  end
+
+  it "renvoie nil sur une réponse inattendue" do
+    stub_request(:get, endpoint).to_return(status: 200, body: { elevation: nil }.to_json)
+
+    expect(described_class.new.altitude(latitude: -20.88, longitude: 55.45)).to be_nil
+  end
 end
