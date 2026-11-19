@@ -1,8 +1,8 @@
 require "rails_helper"
 
-# Parcours critique : sans foyer, l'app est inutilisable (voir docs/tests.md).
-RSpec.describe "Foyers", type: :system do
-  it "crée un premier foyer à la première connexion, puis en ajoute un second et change de foyer" do
+# Critical journey: without a household, the app is unusable (see docs/tests.md).
+RSpec.describe "Households", type: :system do
+  it "creates a first household on first sign in, then adds a second one and switches" do
     create(:user, email: "quentin@example.com", password: "secret-password")
 
     visit root_path

@@ -1,5 +1,5 @@
 module Plants
-  # Tâches manuelles d'une plante (engrais, taille…).
+  # Manual tasks of a plant (fertilizer, pruning…).
   class TasksController < ApplicationController
     def new
       @plant = find_plant

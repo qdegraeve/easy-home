@@ -15,7 +15,7 @@ describe("confirmWithDialog", () => {
 
   const dialog = () => document.getElementById("confirm-dialog")
 
-  it("affiche le message dans la page et répond oui quand on confirme", async () => {
+  it("shows the message in the page and answers yes on confirm", async () => {
     const answer = confirmWithDialog("Supprimer ?")
 
     expect(dialog().open).toBe(true)
@@ -25,7 +25,7 @@ describe("confirmWithDialog", () => {
     await expect(answer).resolves.toBe(true)
   })
 
-  it("répond non quand on revient en arrière ou qu'on ferme (Échap)", async () => {
+  it("answers no on going back or closing (Escape)", async () => {
     const cancelled = confirmWithDialog("Supprimer ?")
     dialog().close("cancel")
     await expect(cancelled).resolves.toBe(false)
@@ -35,7 +35,7 @@ describe("confirmWithDialog", () => {
     await expect(escaped).resolves.toBe(false)
   })
 
-  it("ne réutilise pas la réponse précédente", async () => {
+  it("does not reuse the previous answer", async () => {
     const first = confirmWithDialog("A ?")
     dialog().close("confirm")
     await first
@@ -45,7 +45,7 @@ describe("confirmWithDialog", () => {
     await expect(second).resolves.toBe(false)
   })
 
-  it("se rabat sur window.confirm sans boîte de dialogue dans la page", async () => {
+  it("falls back to window.confirm without an in-page dialog", async () => {
     document.body.innerHTML = ""
     const confirm = vi.fn(() => true)
     vi.stubGlobal("confirm", confirm)

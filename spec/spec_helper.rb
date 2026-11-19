@@ -44,8 +44,8 @@ RSpec.configure do |config|
   # triggering implicit auto-inclusion in groups with matching metadata.
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
-  # Ordre aléatoire : révèle les dépendances entre specs. Pour reproduire un échec,
-  # relancer avec la graine affichée en fin de run (--seed 1234).
+  # Random order: reveals dependencies between specs. To reproduce a failure,
+  # rerun with the seed printed at the end of the run (--seed 1234).
   config.order = :random
   Kernel.srand config.seed
 

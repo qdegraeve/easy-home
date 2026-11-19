@@ -4,7 +4,8 @@ Application de gestion de la maison : rappels des tâches domestiques (poubelles
 
 Side project à usage privé (le foyer du développeur) et terrain d'exploration de **Hotwire Native**. Point de départ : ne plus oublier la poubelle jaune, collectée une semaine sur deux.
 
-**Langues** : documentation et interface en français. Code (classes, méthodes, tables, colonnes) en anglais.
+**Langues** : documentation, interface et messages de commit en français. Tout le code est en anglais : classes,
+méthodes, tables, colonnes, mais aussi commentaires, descriptions de specs et messages destinés aux développeurs.
 
 > **Dépôt public.** Aucun secret, aucune IP, aucun domaine réel, aucune donnée du foyer ou de la prod dans le code, les specs, les commits ou les PR.
 

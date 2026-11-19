@@ -1,6 +1,6 @@
-# Tâches d'un foyer : propriétaire et membre les gèrent. Seules les tâches manuelles se modifient et se suppriment
-# ici ; une tâche créée avec son sujet (arrosage) se règle depuis le sujet. Un sujet archivé ne reçoit ni nouvelle
-# tâche ni modification (il faut le restaurer) ; ses tâches restent supprimables.
+# Tasks of a household: owner and member manage them. Only manual tasks are edited and deleted here; a task created
+# with its subject (watering) is set up from the subject. An archived subject gets neither new tasks nor edits (it
+# must be restored first); its tasks can still be deleted.
 class TaskPolicy < ApplicationPolicy
   def create? = manage? && !subject_archived?
   def new? = create?

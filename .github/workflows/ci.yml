@@ -1,8 +1,8 @@
 name: CI
 
-# Une PR passe par : secrets, sécurité, lint, tests. Voir docs/tests.md.
-# Déclencheurs par défaut de pull_request (opened, synchronize, reopened) : un label ne relance
-# jamais la CI, sinon des jobs « skipped » seraient comptés comme réussis par les checks obligatoires.
+# A PR goes through: secrets, security, lint, tests. See docs/tests.md.
+# Default pull_request triggers (opened, synchronize, reopened): a label never reruns the CI,
+# otherwise "skipped" jobs would count as passing for the required checks.
 
 on:
   pull_request:
@@ -29,14 +29,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Recherche de secrets dans l'historique
+      - name: Scan the history for secrets
         uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_ENABLE_COMMENTS: false
 
   scan_ruby:
-    name: Sécurité
+    name: Security
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -88,7 +88,7 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
-      - name: Pas de sleep dans les specs (attentes Capybara uniquement)
+      - name: Spec guardrails (no sleep, focus or retry)
         run: bin/check-specs
 
   test:
@@ -134,28 +134,28 @@ jobs:
       - name: Install JavaScript packages
         run: yarn install --frozen-lockfile
 
-      - name: Build JS et CSS (requis par les system specs)
+      - name: Build JS and CSS (required by system specs)
         run: yarn build && yarn build:css
 
-      - name: Préparer la base de test
+      - name: Prepare the test database
         run: bin/rails db:test:prepare
 
-      - name: Tests Ruby (dont end to end), 10 specs les plus lentes affichées
+      - name: Ruby tests (including end to end), 10 slowest specs shown
         run: bundle exec rspec --profile 10
 
-      - name: Stabilité des system specs modifiées (3 passages, ordre aléatoire)
+      - name: Stability of changed system specs (3 runs, random order)
         if: github.event_name == 'pull_request'
         run: |
           files=$(git diff --name-only --diff-filter=AM "origin/${{ github.base_ref }}...HEAD" -- 'spec/system/*_spec.rb')
-          if [ -z "$files" ]; then echo "Aucune system spec modifiée."; exit 0; fi
-          # shellcheck disable=SC2086 # découpage voulu : une spec par mot
+          if [ -z "$files" ]; then echo "No system spec changed."; exit 0; fi
+          # shellcheck disable=SC2086 # intended splitting: one spec per word
           for i in 1 2 3; do
             echo "::group::Passage $i"
             bundle exec rspec $files --order random
             echo "::endgroup::"
           done
 
-      - name: Captures d'écran des system specs en échec
+      - name: Screenshots of failing system specs
         if: failure()
         uses: actions/upload-artifact@v7
         with:

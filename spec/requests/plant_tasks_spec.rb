@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Tâches d'une plante", type: :request do
+RSpec.describe "Plant tasks", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
   let(:household) { create(:household) }
@@ -18,7 +18,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     Tasks::Add.new.call(subject: plant, params:).value!
   end
 
-  it "ajoute une tâche et l'affiche sur la fiche" do
+  it "adds a task and shows it on the plant page" do
     sign_in(user)
 
     post plant_tasks_path(plant), params: once_params
@@ -29,7 +29,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(response.body).to include("Fait : Tailler (Citronnier)")
   end
 
-  it "réaffiche le formulaire sans titre" do
+  it "renders the form again without a title" do
     sign_in(user)
 
     post plant_tasks_path(plant), params: { task: once_params[:task].merge(title: " ") }
@@ -38,7 +38,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(response.body).to include("Tâche doit être rempli(e)")
   end
 
-  it "sur une plante archivée, refuse l'ajout et la modification, mais permet la suppression" do
+  it "on an archived plant, forbids adding and editing, but allows deleting" do
     task = add_task
     Plants::Archive.new.call(plant:)
     sign_in(user)
@@ -58,7 +58,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(plant.tasks.count).to eq(1)
   end
 
-  it "modifie une tâche répétée : prochaine fois et intervalle" do
+  it "edits a repeating task: next date and interval" do
     task = add_task(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
     sign_in(user)
 
@@ -73,7 +73,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))
   end
 
-  it "modifie puis supprime une tâche manuelle" do
+  it "edits then deletes a manual task" do
     task = add_task
     sign_in(user)
 
@@ -86,7 +86,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(Task.exists?(task.id)).to be(false)
   end
 
-  it "ne laisse ni modifier ni supprimer la tâche d'arrosage par ici" do
+  it "lets neither edit nor delete the watering task from here" do
     sign_in(user)
 
     get edit_plant_task_path(plant, plant.watering_task)
@@ -96,7 +96,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(plant.reload.watering_task).to be_present
   end
 
-  it "ne trouve pas la tâche d'une autre plante par l'URL de celle-ci" do
+  it "does not find the task of another plant through this plant's URL" do
     other_plant = create(:plant, :watered, household:)
     task = add_task
     sign_in(user)
@@ -138,8 +138,8 @@ RSpec.describe "Tâches d'une plante", type: :request do
     end
   end
 
-  describe "accueil" do
-    it "ne montre ni les tâches d'un autre foyer de l'utilisateur, ni les tâches arrêtées" do
+  describe "home page" do
+    it "shows neither tasks of another household of the user, nor stopped tasks" do
       other_household = create(:household_member, user:, role: :owner).household
       create(:plant, :watered, household: other_household, name: "Ailleurs", interval_days: 1)
       stopped = add_task(title: "Arrêtée", recurrence_type: "once", due_on: "2026-11-15")
@@ -152,7 +152,7 @@ RSpec.describe "Tâches d'une plante", type: :request do
       expect(response.body).not_to include("Ailleurs", "Arrêtée")
     end
 
-    it "regroupe arrosages et autres tâches du jour (retards compris), sans les tâches à venir" do
+    it "groups waterings and other tasks of the day (late ones included), without upcoming tasks" do
       add_task(title: "Engrais", recurrence_type: "once", due_on: "2026-11-15")
       add_task(title: "Rempoter", recurrence_type: "once", due_on: "2026-12-15")
       plant.watering_task.pending_occurrence.update!(due_at: Time.zone.parse("2026-11-16 00:00"))

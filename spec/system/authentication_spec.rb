@@ -1,10 +1,10 @@
 require "rails_helper"
 
-# Parcours critique : sans connexion, l'app est inutilisable (voir docs/tests.md).
-RSpec.describe "Authentification", type: :system do
+# Critical journey: without signing in, the app is unusable (see docs/tests.md).
+RSpec.describe "Authentication", type: :system do
   let!(:user) { create(:user, :with_household, email: "quentin@example.com", password: "secret-password") }
 
-  it "connecte l'utilisateur puis le déconnecte" do
+  it "signs the user in then out" do
     visit root_path
 
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
@@ -20,7 +20,7 @@ RSpec.describe "Authentification", type: :system do
     expect(page).to have_button("Se connecter")
   end
 
-  it "refuse un mauvais mot de passe" do
+  it "rejects a wrong password" do
     visit new_session_path
 
     fill_in "Votre adresse e-mail", with: "quentin@example.com"

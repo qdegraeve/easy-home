@@ -1,4 +1,4 @@
-# Propriétaire et membre gèrent les plantes. Un invité n'y a pas accès (ses tâches ouvertes viendront avec TaskAccess).
+# Owner and member manage plants. A guest has no access (their opened tasks will come with TaskAccess).
 class PlantPolicy < ApplicationPolicy
   def show? = manage?
   def create? = manage?

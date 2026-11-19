@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
     Current.user
   end
 
-  # Foyer actif mémorisé en session ; à défaut, le premier foyer de l'utilisateur. nil s'il n'en a aucun.
+  # Current household stored in the session; otherwise the user's first household. nil when they have none.
   def current_household
     households = policy_scope(Household)
     households.find_by(id: session[:household_id]) || households.order(:name, :id).first

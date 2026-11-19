@@ -1,7 +1,7 @@
 module Tasks
-  # Modifie une tâche manuelle : titre, intervalle, et date de la prochaine échéance telle que saisie. Le type de
-  # répétition ne change pas. Une tâche répétée déjà faite garde sa date de début (annuler toutes ses réalisations
-  # la ramène à sa date d'origine) ; jamais faite, la date saisie devient sa date de début.
+  # Updates a manual task: title, interval, and the next occurrence date as typed. The repetition type never
+  # changes. A repeating task already done keeps its start date (cancelling all its completions brings it back to
+  # its original date); never done, the typed date becomes its start date.
   class Update
     include Dry::Monads[:result]
 

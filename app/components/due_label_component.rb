@@ -1,4 +1,4 @@
-# Échéance relative à aujourd'hui : « en retard de 2 j », « aujourd'hui », « demain », « dans 4 j ».
+# Due date relative to today: "2 days late", "today", "tomorrow", "in 4 days" (French labels from I18n).
 class DueLabelComponent < ViewComponent::Base
   def initialize(due_at:)
     @days = (due_at.to_date - Time.zone.today).to_i

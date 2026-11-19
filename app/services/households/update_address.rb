@@ -1,6 +1,6 @@
 module Households
-  # Enregistre l'adresse choisie dans l'autocomplétion. L'altitude est recalculée quand la position change ;
-  # sinon l'altitude saisie à la main est conservée.
+  # Saves the address picked in the autocomplete. The altitude is recomputed when the position changes; otherwise
+  # an altitude typed by hand is kept.
   class UpdateAddress
     include Dry::Monads[:result]
 

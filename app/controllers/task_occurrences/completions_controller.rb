@@ -19,7 +19,7 @@ module TaskOccurrences
       notice = if result.failure?
         t(".not_done")
       else
-        # Tâche arrêtée (plante archivée) : la réalisation sort du journal, sans nouvelle échéance.
+        # Stopped task (archived plant): the completion leaves the log, no new occurrence is scheduled.
         t(occurrence.task.active? ? ".success" : ".success_stopped", title: occurrence.task.title)
       end
       redirect_back_or_to root_path, notice:, status: :see_other
@@ -28,7 +28,9 @@ module TaskOccurrences
     private
 
     def find_occurrence
-      policy_scope(TaskOccurrence).find(params[:task_occurrence_id]).tap { |occurrence| authorize occurrence, :complete? }
+      occurrence = policy_scope(TaskOccurrence).find(params[:task_occurrence_id])
+      authorize occurrence, :complete?
+      occurrence
     end
   end
 end

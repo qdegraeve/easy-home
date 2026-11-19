@@ -1,8 +1,8 @@
 module Tasks
-  # Marque une échéance comme faite et crée la suivante selon la récurrence de la tâche (aucune pour une tâche
-  # unique). La tâche est verrouillée : un double appui, ou un archivage simultané, est sérialisé et le second reçoit
-  # un Failure. Une seule réalisation par jour : refaire la même tâche le même jour ne change rien à la récurrence et
-  # fausserait le journal.
+  # Marks an occurrence as done and creates the next one from the task's recurrence (none for a one-off task). The
+  # task is locked: a double tap, or a concurrent archive, is serialized and the second one gets a Failure. One
+  # completion per day: doing the same task twice on the same day changes nothing to the recurrence and would skew
+  # the log.
   class Complete
     include Dry::Monads[:result, :do]
 

@@ -1,7 +1,7 @@
 module Recurrence
-  # Récurrence glissante : la prochaine échéance tombe interval_days jours après la dernière réalisation, au début de
-  # la journée, dans le fuseau de cette réalisation. Jamais faite : start_on s'il est fixé, sinon dans interval_days
-  # jours à partir d'aujourd'hui.
+  # Sliding recurrence: the next occurrence falls interval_days days after the last completion, at the start of the
+  # day, in the time zone of that completion. Never done: start_on when set, otherwise interval_days days from
+  # today.
   class Sliding
     INTERVAL_DAYS = 1..60
 

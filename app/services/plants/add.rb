@@ -1,6 +1,6 @@
 module Plants
-  # Ajoute une plante avec sa tâche d'arrosage (récurrence glissante). Le dernier arrosage déclaré entre au journal et
-  # sert de point de départ à la première échéance.
+  # Adds a plant with its watering task (sliding recurrence). The declared last watering goes into the log and is
+  # the starting point of the first occurrence.
   class Add
     include Dry::Monads[:result]
 

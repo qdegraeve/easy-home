@@ -9,7 +9,7 @@ RSpec.describe Tasks::Complete do
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
 
-  it "marque l'échéance faite et crée la suivante depuis la réalisation (glissante, même en retard)" do
+  it "marks the occurrence done and creates the next one from the completion (sliding, even late)" do
     result = described_class.new.call(occurrence:, user:)
 
     expect(result).to be_success
@@ -21,7 +21,7 @@ RSpec.describe Tasks::Complete do
     expect(plant.reload.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
   end
 
-  it "n'arrose pas deux fois sur un double appui" do
+  it "does not water twice on a double tap" do
     stale_copy = TaskOccurrence.find(occurrence.id)
     described_class.new.call(occurrence:, user:)
 
@@ -32,7 +32,7 @@ RSpec.describe Tasks::Complete do
     expect(plant.watering_task.occurrences.pending.count).to eq(1)
   end
 
-  it "refuse un second arrosage le même jour, l'accepte le lendemain" do
+  it "rejects a second watering on the same day, accepts it the next day" do
     described_class.new.call(occurrence:, user:)
     next_occurrence = plant.reload.watering_task.pending_occurrence
 
@@ -43,7 +43,7 @@ RSpec.describe Tasks::Complete do
     expect(described_class.new.call(occurrence: next_occurrence, user:)).to be_success
   end
 
-  it "ne crée aucune échéance suivante pour une tâche unique" do
+  it "creates no next occurrence for a one-off task" do
     task = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-16" }).value!
 
     expect(described_class.new.call(occurrence: task.pending_occurrence, user:)).to be_success
@@ -51,7 +51,7 @@ RSpec.describe Tasks::Complete do
     expect(task.occurrences.done.count).to eq(1)
   end
 
-  it "refuse une tâche désactivée sans rien écrire" do
+  it "rejects a deactivated task without writing anything" do
     plant.watering_task.update!(active: false)
 
     result = described_class.new.call(occurrence:, user:)

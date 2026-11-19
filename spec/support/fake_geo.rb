@@ -1,4 +1,4 @@
-# Faux adaptateurs géographiques, injectés par défaut dans toutes les specs (ADR 0009).
+# Fake geographic adapters, injected by default in every spec (ADR 0009).
 class FakeGeocoder
   ADDRESSES = [
     Geo::Suggestion.new(label: "12 Rue des Exemples 97400 Ville-Exemple", latitude: -20.9, longitude: 55.45),

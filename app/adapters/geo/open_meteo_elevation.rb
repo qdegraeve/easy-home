@@ -1,11 +1,11 @@
 require "net/http"
 
 module Geo
-  # Altitude d'un point par l'API d'élévation d'Open-Meteo (gratuite en usage non commercial, sans clé).
+  # Altitude of a point through the Open-Meteo elevation API (free for non-commercial use, no key).
   class OpenMeteoElevation
     ENDPOINT = URI("https://api.open-meteo.com/v1/elevation")
 
-    # Altitude en mètres (entier), nil si le service ne répond pas ou répond mal.
+    # Altitude in meters (integer), nil when the service is down or answers badly.
     def altitude(latitude:, longitude:)
       uri = ENDPOINT.dup
       uri.query = URI.encode_www_form(latitude:, longitude:)
@@ -21,7 +21,7 @@ module Geo
       json = JSON.parse(response.body)
       value = Array(json.is_a?(Hash) ? json["elevation"] : nil).first
       value.round if value.is_a?(Numeric)
-    # Service externe : toute panne (réseau, protocole, réponse inattendue) dégrade en altitude inconnue.
+    # External service: any failure (network, protocol, unexpected response) degrades to an unknown altitude.
     rescue StandardError => error
       Rails.logger.warn("[Geo::OpenMeteoElevation] #{error.class}: #{error.message}")
       nil

@@ -1,5 +1,5 @@
 module Recurrence
-  # Une seule échéance, le jour due_on (au début du jour local). Une fois faite, il n'y en a plus.
+  # A single occurrence on due_on (at the start of the local day). Once done, there is none left.
   class Once
     attr_reader :due_on
 

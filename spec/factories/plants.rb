@@ -3,7 +3,7 @@ FactoryBot.define do
     household
     sequence(:name) { |n| "Plante #{n}" }
 
-    # Plante telle que créée par Plants::Add : tâche d'arrosage, dernier arrosage au journal, échéance ouverte.
+    # Plant as created by Plants::Add: watering task, last watering in the log, open occurrence.
     trait :watered do
       transient do
         interval_days { 3 }

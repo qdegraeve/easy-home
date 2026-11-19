@@ -1,11 +1,11 @@
-# Budget de temps par spec, appliqué en CI : une suite lente finit par ne plus être lancée.
-# Une spec qui dépasse son budget échoue avec un message explicite. On la rend plus
-# rapide (build au lieu de create, moins de navigation, données minimales) plutôt
-# que de relever le budget. Voir docs/tests.md.
+# Time budget per spec, enforced in CI: a slow suite ends up not being run anymore.
+# A spec over its budget fails with an explicit message. Make it faster (build
+# instead of create, less navigation, minimal data) rather than raising the budget.
+# See docs/tests.md.
 module TimeBudget
-  # Secondes par exemple.
+  # Seconds per example.
   LIMITS = { system: 8.0, other: 1.0 }.freeze
-  # Marge pour le premier exemple de chaque sorte (chargement, démarrage de Chrome).
+  # Allowance for the first example of each kind (loading, Chrome startup).
   WARMUP = 10.0
 
   def self.kind(example)
@@ -29,7 +29,7 @@ if ENV["CI"]
       elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at
       next if example.exception || elapsed <= limit
 
-      raise "Spec trop lente : #{elapsed.round(2)} s pour un budget de #{limit} s (voir docs/tests.md)"
+      raise "Spec too slow: #{elapsed.round(2)} s for a budget of #{limit} s (see docs/tests.md)"
     end
   end
 end

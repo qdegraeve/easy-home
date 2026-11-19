@@ -3,15 +3,15 @@ require "rails_helper"
 RSpec.describe Household, type: :model do
   it { is_expected.to validate_presence_of(:name) }
 
-  it "est à l'heure de La Réunion par défaut" do
+  it "uses the Reunion time zone by default" do
     expect(described_class.new.time_zone).to eq("Indian/Reunion")
   end
 
-  it "refuse un fuseau horaire inconnu" do
+  it "rejects an unknown time zone" do
     expect(build(:household, time_zone: "Mars/Olympus")).not_to be_valid
   end
 
-  it "refuse une position hors des bornes ou non numérique, sans erreur en base" do
+  it "rejects an out of range or non numeric position, without a database error" do
     expect(build(:household, latitude: "1000", longitude: "55")).not_to be_valid
     expect(build(:household, latitude: "-20.9", longitude: "200")).not_to be_valid
     expect(build(:household, latitude: "abc", longitude: "55")).not_to be_valid

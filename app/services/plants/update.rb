@@ -1,6 +1,6 @@
 module Plants
-  # Modifie une plante et son intervalle d'arrosage. Un nouvel intervalle recale l'échéance en cours depuis le dernier
-  # arrosage.
+  # Updates a plant and its watering interval. A new interval reschedules the open occurrence from the last
+  # watering.
   class Update
     include Dry::Monads[:result]
 

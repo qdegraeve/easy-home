@@ -13,7 +13,7 @@ RSpec.describe Plants::Add do
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
-  it "crée la plante, sa tâche d'arrosage, le dernier arrosage au journal et la prochaine échéance" do
+  it "creates the plant, its watering task, the last watering in the log and the next occurrence" do
     result = described_class.new.call(household:, user:, params:)
 
     plant = result.value!
@@ -28,7 +28,7 @@ RSpec.describe Plants::Add do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-17 00:00"))
   end
 
-  it "part d'aujourd'hui sans dernier arrosage saisi, sans espèce ni emplacement" do
+  it "starts from today without a last watering, species or location" do
     plant = described_class.new.call(
       household:, user:, params: { name: "Basilic", watering_interval_days: "2" }
     ).value!
@@ -38,13 +38,13 @@ RSpec.describe Plants::Add do
   end
 
   {
-    "sans nom" => { name: " " },
-    "intervalle à 0" => { watering_interval_days: "0" },
-    "intervalle au-delà de 60" => { watering_interval_days: "61" },
-    "intervalle non numérique" => { watering_interval_days: "abc" },
-    "dernier arrosage dans le futur" => { last_watered_on: "2026-11-17" }
+    "without a name" => { name: " " },
+    "with a 0 interval" => { watering_interval_days: "0" },
+    "with an interval over 60" => { watering_interval_days: "61" },
+    "with a non numeric interval" => { watering_interval_days: "abc" },
+    "with a last watering in the future" => { last_watered_on: "2026-11-17" }
   }.each do |label, override|
-    it "refuse une saisie #{label}, sans rien créer" do
+    it "rejects an input #{label}, without creating anything" do
       result = nil
 
       expect { result = described_class.new.call(household:, user:, params: params.merge(override)) }
@@ -54,14 +54,14 @@ RSpec.describe Plants::Add do
     end
   end
 
-  it "prend aujourd'hui quand le dernier arrosage est vidé" do
+  it "uses today when the last watering is emptied" do
     plant = described_class.new.call(household:, user:, params: params.merge(last_watered_on: "")).value!
 
     expect(plant.watering_task.occurrences.done.sole.completed_at).to eq(Time.zone.parse("2026-11-16 00:00"))
     expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
   end
 
-  it "refuse l'emplacement d'un autre foyer" do
+  it "rejects a location of another household" do
     result = described_class.new.call(household:, user:, params: params.merge(location_id: create(:location).id.to_s))
 
     expect(result.failure.last.errors[:location_id]).to be_present

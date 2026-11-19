@@ -1,4 +1,4 @@
-# Services géographiques externes (ADR 0009). Remplaçables en test par de faux adaptateurs.
+# External geographic services (ADR 0009). Replaced by fake adapters in tests.
 module Geo
   Suggestion = Data.define(:label, :latitude, :longitude)
 

@@ -11,7 +11,7 @@ RSpec.describe Plants::Update do
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
-  it "recale l'échéance ouverte depuis le dernier arrosage quand l'intervalle change" do
+  it "reschedules the open occurrence from the last watering when the interval changes" do
     described_class.new.call(plant:, params: params.merge(watering_interval_days: "5"))
 
     task = plant.watering_task.reload
@@ -20,7 +20,7 @@ RSpec.describe Plants::Update do
     expect(task.occurrences.count).to eq(2)
   end
 
-  it "garde l'échéance et la source de l'espèce quand rien ne change" do
+  it "keeps the occurrence and the species source when nothing changes" do
     due_at = plant.watering_task.pending_occurrence.due_at
 
     described_class.new.call(plant:, params: params.merge(name: "Basilic de la terrasse"))
@@ -29,7 +29,7 @@ RSpec.describe Plants::Update do
     expect(plant.watering_task.pending_occurrence.due_at).to eq(due_at)
   end
 
-  it "marque l'espèce comme saisie par l'utilisateur quand elle est corrigée, et l'efface si vidée" do
+  it "marks the species as entered by the user when corrected, and clears it when emptied" do
     described_class.new.call(plant:, params: params.merge(species: "Ocimum basilicum"))
     expect(plant.reload).to have_attributes(species: "Ocimum basilicum", species_source: "user")
 
@@ -37,7 +37,7 @@ RSpec.describe Plants::Update do
     expect(plant.reload).to have_attributes(species: nil, species_source: nil)
   end
 
-  it "refuse un intervalle invalide sans rien modifier" do
+  it "rejects an invalid interval without changing anything" do
     result = described_class.new.call(plant:, params: params.merge(watering_interval_days: "0"))
 
     expect(result.failure.first).to eq(:invalid)

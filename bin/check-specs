@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Garde-fous sur la suite de tests, lancés en CI (job Lint) et par bin/ci.
-# Une spec fiable attend un état (matchers Capybara), jamais une durée.
+# Guardrails on the test suite, run in CI (Lint job) and by bin/ci.
+# A reliable spec waits for a state (Capybara matchers), never for a duration.
 set -uo pipefail
 
 status=0
@@ -17,10 +17,12 @@ check() {
   fi
 }
 
-check "sleep interdit : utiliser les attentes Capybara (have_content, have_css...) ou travel_to" '^[^#]*\bsleep\b'
-check "spec focalisée oubliée (fit, fdescribe, fcontext, focus: true)" '^\s*(fit|fdescribe|fcontext|fscenario|ffeature)\b|focus: true'
-check "réessai de spec interdit : une spec instable se corrige, elle ne se relance pas" 'rspec-retry|retry_count|:retry\b'
-check "Time.now / Date.today interdits : Time.current, Date.current et travel_to" '\b(Time\.now|Date\.today)\b'
+check "sleep is forbidden: use Capybara waiting matchers (have_content, have_css...) or travel_to" '^[^#]*\bsleep\b'
+check "focused spec left behind (fit, fdescribe, fcontext, focus: true)" \
+  '^\s*(fit|fdescribe|fcontext|fscenario|ffeature)\b|focus: true'
+check "spec retries are forbidden: a flaky spec gets fixed, not rerun" 'rspec-retry|retry_count|:retry\b'
+check "Time.now / Date.today are forbidden: use Time.current, Time.zone.today and travel_to" \
+  '\b(Time\.now|Date\.today)\b'
 
-if [ "$status" -eq 0 ]; then echo "✓ Garde-fous des specs : OK"; fi
+if [ "$status" -eq 0 ]; then echo "✓ Spec guardrails: OK"; fi
 exit "$status"

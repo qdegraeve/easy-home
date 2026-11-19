@@ -1,8 +1,8 @@
 require "rails_helper"
 
-# Parcours critique : l'adresse et les emplacements servent aux conseils d'arrosage (voir docs/tests.md).
-RSpec.describe "Ma maison", type: :system do
-  it "choisit l'adresse dans les suggestions, voit l'altitude calculée, puis gère les emplacements" do
+# Critical journey: the address and locations feed the watering advice (see docs/tests.md).
+RSpec.describe "My house", type: :system do
+  it "picks the address in the suggestions, sees the computed altitude, then manages locations" do
     create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
 
     visit root_path
