@@ -82,33 +82,65 @@
     </section>
   </div>
 
-  <section aria-labelledby="journal" class="self-start">
-    <h2 id="journal" class="font-semibold"><%= t(".journal") %></h2>
-    <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
-      <% @journal.each do |entry| %>
-        <% date = l(entry.completed_at.to_date, format: :day) %>
-        <% if entry.task.watering? %>
-          <% label = t(".watered") %>
-          <% cancel_label, cancel_confirm = t(".cancel_label", date:), t(".cancel_confirm", date:) %>
-        <% else %>
-          <% title = entry.task.title %>
-          <% label = t(".done_entry", title:) %>
-          <% cancel_label = t(".cancel_task_label", title:, date:) %>
-          <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
-        <% end %>
-        <li class="flex items-center justify-between gap-3 p-3 text-sm">
-          <span><%= label %></span>
-          <span class="flex items-center gap-2">
-            <span class="shrink-0 text-stone-500"><%= date %></span>
-            <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
-                  aria: { label: cancel_label },
-                  form: { data: { turbo_confirm: cancel_confirm } },
-                  class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
-          </span>
-        </li>
+  <div class="space-y-6 self-start">
+    <section aria-labelledby="photos">
+      <h2 id="photos" class="font-semibold"><%= t(".photos") %></h2>
+      <% if @photos.any? %>
+        <ul class="mt-2 grid grid-cols-3 gap-2">
+          <% @photos.each do |photo| %>
+            <li>
+              <% date = l(photo.taken_at.to_date, format: :day) %>
+              <%= link_to plant_photo_path(@plant, photo), class: "block" do %>
+                <%= image_tag photo.image.variant(:thumb), alt: t(".photo_alt", date:),
+                      class: "aspect-square w-full rounded-xl object-cover" %>
+                <span class="mt-1 block text-center text-xs text-stone-500"><%= date %></span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_photos") %></p>
       <% end %>
-    </ul>
-  </section>
+      <% unless @plant.archived? %>
+        <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3 space-y-2" do |f| %>
+          <%= f.label :file, t(".new_photo"), class: "block text-sm font-semibold" %>
+          <%= f.file_field :file, accept: "image/jpeg,image/png,image/webp", required: true,
+                class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-white file:px-3 " \
+                       "file:py-2 file:shadow-sm" %>
+          <%= f.submit t(".add_photo"),
+                class: "w-full rounded-xl bg-white py-3 text-sm font-semibold text-emerald-700 shadow-sm" %>
+        <% end %>
+      <% end %>
+    </section>
+
+    <section aria-labelledby="journal">
+      <h2 id="journal" class="font-semibold"><%= t(".journal") %></h2>
+      <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+        <% @journal.each do |entry| %>
+          <% date = l(entry.completed_at.to_date, format: :day) %>
+          <% if entry.task.watering? %>
+            <% label = t(".watered") %>
+            <% cancel_label, cancel_confirm = t(".cancel_label", date:), t(".cancel_confirm", date:) %>
+          <% else %>
+            <% title = entry.task.title %>
+            <% label = t(".done_entry", title:) %>
+            <% cancel_label = t(".cancel_task_label", title:, date:) %>
+            <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
+          <% end %>
+          <li class="flex items-center justify-between gap-3 p-3 text-sm">
+            <span><%= label %></span>
+            <span class="flex items-center gap-2">
+              <span class="shrink-0 text-stone-500"><%= date %></span>
+              <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
+                    aria: { label: cancel_label },
+                    form: { data: { turbo_confirm: cancel_confirm } },
+                    class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  </div>
 </div>
 
 <div class="mt-8 flex flex-wrap gap-3">

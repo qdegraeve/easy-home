@@ -61,6 +61,23 @@ RSpec.describe Plants::Add do
     expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
   end
 
+  it "adds the optional first photo" do
+    plant = described_class.new.call(
+      household:, user:, params: params.merge(photo: Rack::Test::UploadedFile.new(file_fixture("plant.png")))
+    ).value!
+
+    expect(plant.photos.sole.image).to be_attached
+  end
+
+  it "rejects a photo that is not a picture, without creating the plant" do
+    result = described_class.new.call(
+      household:, user:, params: params.merge(photo: Rack::Test::UploadedFile.new(file_fixture("not_an_image.jpg")))
+    )
+
+    expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
+    expect(Plant.count).to eq(0)
+  end
+
   it "rejects a location of another household" do
     result = described_class.new.call(household:, user:, params: params.merge(location_id: create(:location).id.to_s))
 

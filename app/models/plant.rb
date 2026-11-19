@@ -4,6 +4,7 @@ class Plant < ApplicationRecord
   belongs_to :household
   belongs_to :location, optional: true
   has_many :tasks, as: :subject, dependent: :destroy
+  has_many :photos, -> { order(taken_at: :desc, id: :desc) }, dependent: :destroy, inverse_of: :plant
   has_one :watering_task, -> { where(template_key: WATERING_TEMPLATE_KEY) }, class_name: "Task", as: :subject
 
   # A plant never changes household: its tasks carry the same household (see ADR 0010).

@@ -13,6 +13,7 @@ Une décision structurante = un fichier court : contexte, décision, alternative
 | [0008](0008-modele-ia-plantes.md) | Modèle d'IA pour les plantes : forfait Claude via `claude -p`, puis API | Acceptée |
 | [0009](0009-adresse-et-altitude.md) | Adresse de la maison : géocodage IGN et altitude Open-Meteo | Acceptée |
 | [0010](0010-modele-par-type-et-taches-polymorphes.md) | Un modèle par type d'élément, tâches rattachées par un sujet polymorphe | Acceptée |
+| [0011](0011-stockage-des-photos.md) | Stockage des photos : Active Storage sur disque, images normalisées sans métadonnées | Acceptée |
 
 Le numéro 0007 est réservé au flux de livraison (branche `chore/flux-de-livraison`, gelée).
 

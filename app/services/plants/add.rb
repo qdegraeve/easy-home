@@ -1,6 +1,6 @@
 module Plants
-  # Adds a plant with its watering task (sliding recurrence). The declared last watering goes into the log and is
-  # the starting point of the first occurrence.
+  # Adds a plant with its watering task (sliding recurrence) and its optional first photo. The declared last watering
+  # goes into the log and is the starting point of the first occurrence.
   class Add
     include Dry::Monads[:result]
 
@@ -16,6 +16,7 @@ module Plants
         create_watering_task(plant, form, user)
         plant
       end
+      Photos::Add.new.call(plant:, file: form.photo) if form.photo.present?
 
       Success(plant)
     end

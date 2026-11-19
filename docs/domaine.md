@@ -57,7 +57,8 @@ Plant                            # un modèle par type d'élément (ADR 0010)
 
 Photo
   plant, taken_at
-  image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu
+  image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
+                                 # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
   has_one :analysis (PhotoAnalysis)
 
 PhotoAnalysis

@@ -2,6 +2,7 @@ class PlantsController < ApplicationController
   def show
     @plant = find_plant
     @watering_task = @plant.watering_task
+    @photos = @plant.photos.with_attached_image
     @other_tasks = @plant.tasks.active.where.not(id: @watering_task)
       .includes(:pending_occurrence).select(&:pending_occurrence).sort_by { |task| task.pending_occurrence.due_at }
     occurrences = TaskOccurrence.done.where(task: @plant.tasks)
@@ -64,6 +65,6 @@ class PlantsController < ApplicationController
   end
 
   def plant_params
-    params.expect(plant: [ :name, :species, :location_id, :watering_interval_days, :last_watered_on ])
+    params.expect(plant: [ :name, :species, :location_id, :watering_interval_days, :last_watered_on, :photo ])
   end
 end

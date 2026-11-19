@@ -3,8 +3,18 @@ fr:
     formats:
       day: "%a %-d %b"
   activemodel:
+    errors:
+      models:
+        photo:
+          attributes:
+            file:
+              too_large: "dépasse %{count} Mo"
+              not_a_picture: "n'est pas une image JPEG, PNG ou WebP lisible"
     attributes:
+      photo:
+        file: "Photo"
       plant:
+        photo: "Photo"
         name: "Nom"
         species: "Espèce"
         location_id: "Emplacement"
@@ -63,6 +73,7 @@ fr:
       every: "Tous les"
       days: "jours"
       last_watered_help: "Point de départ du calcul du prochain arrosage."
+      photo_help: "Facultative : JPEG, PNG ou WebP, 15 Mo maximum."
     new:
       title: "Ajouter une plante"
       submit: "Ajouter la plante"
@@ -87,6 +98,11 @@ fr:
       watered_today: "Arrosée aujourd'hui"
       done_today: "Fait aujourd'hui"
       tasks: "🌿 Autres tâches"
+      photos: "📷 Suivi photo"
+      no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
+      photo_alt: "Photo du %{date}"
+      new_photo: "Nouvelle photo"
+      add_photo: "Ajouter la photo"
       no_tasks: "Aucune autre tâche : engrais, taille, rempotage…"
       add_task: "+ Ajouter une tâche"
       once: "Une fois"
@@ -108,6 +124,17 @@ fr:
       restore: "Restaurer"
       destroy: "Supprimer"
       destroy_confirm: "Supprimer définitivement cette plante et tout son historique ?"
+    photos:
+      create:
+        success: "Photo ajoutée."
+        subject_archived: "Cette plante est archivée : restaurez-la pour ajouter des photos."
+      show:
+        title: "Photo du %{date}"
+        alt: "%{name}"
+        destroy: "Supprimer la photo"
+        destroy_confirm: "Supprimer cette photo ?"
+      destroy:
+        success: "Photo supprimée."
     tasks:
       back: "← %{name}"
       form:
