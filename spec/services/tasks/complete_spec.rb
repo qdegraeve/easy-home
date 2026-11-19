@@ -43,6 +43,14 @@ RSpec.describe Tasks::Complete do
     expect(described_class.new.call(occurrence: next_occurrence, user:)).to be_success
   end
 
+  it "ne crée aucune échéance suivante pour une tâche unique" do
+    task = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-16" }).value!
+
+    expect(described_class.new.call(occurrence: task.pending_occurrence, user:)).to be_success
+    expect(task.reload.pending_occurrence).to be_nil
+    expect(task.occurrences.done.count).to eq(1)
+  end
+
   it "refuse une tâche désactivée sans rien écrire" do
     plant.watering_task.update!(active: false)
 

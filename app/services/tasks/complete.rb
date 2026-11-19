@@ -1,5 +1,5 @@
 module Tasks
-  # Marque une échéance comme faite et crée la suivante selon la récurrence de la tâche. La tâche est verrouillée :
+  # Marque une échéance comme faite et crée la suivante selon la récurrence de la tâche (aucune pour une tâche unique). La tâche est verrouillée :
   # un double appui, ou un archivage simultané, est sérialisé et le second reçoit un Failure. Une seule réalisation
   # par jour : refaire la même tâche le même jour ne change rien à la récurrence et fausserait le journal.
   class Complete
@@ -14,7 +14,8 @@ module Tasks
 
         completed_at = Time.current
         occurrence.update!(status: :done, completed_at:, completed_by: user)
-        task.occurrences.create!(due_at: task.recurrence.next_due_at(last_completed_at: completed_at))
+        next_due_at = task.recurrence.next_due_at(last_completed_at: completed_at)
+        task.occurrences.create!(due_at: next_due_at) if next_due_at
       end
 
       Success(occurrence)

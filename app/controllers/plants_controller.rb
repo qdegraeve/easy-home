@@ -2,8 +2,12 @@ class PlantsController < ApplicationController
   def show
     @plant = find_plant
     @watering_task = @plant.watering_task
-    @journal = @watering_task.occurrences.done.order(completed_at: :desc).limit(30)
-    @watered_today = @watering_task.occurrences.done_on?(Time.zone.today)
+    @other_tasks = @plant.tasks.active.where.not(id: @watering_task)
+      .includes(:pending_occurrence).select(&:pending_occurrence).sort_by { |task| task.pending_occurrence.due_at }
+    occurrences = TaskOccurrence.done.where(task: @plant.tasks)
+    @journal = occurrences.includes(:task).order(completed_at: :desc).limit(30)
+    @last_watered_at = occurrences.where(task: @watering_task).maximum(:completed_at)
+    @done_today_task_ids = occurrences.where(completed_at: Time.zone.today.all_day).distinct.pluck(:task_id)
   end
 
   def new

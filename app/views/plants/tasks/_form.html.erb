@@ -1,0 +1,46 @@
+<%= form_with model: form, url:, method:, class: "space-y-4" do |f| %>
+  <%= render "shared/errors", record: form %>
+
+  <div>
+    <%= f.label :title, class: "block text-sm font-semibold" %>
+    <%= f.text_field :title, required: true, maxlength: 100, placeholder: t("plants.tasks.form.title_placeholder"),
+          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+  </div>
+
+  <% if adding %>
+    <fieldset>
+      <legend class="text-sm font-semibold"><%= t("plants.tasks.form.repeat") %></legend>
+      <div class="mt-1 space-y-2">
+        <% TaskForm::KINDS.each do |kind| %>
+          <label class="flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-3 py-3">
+            <%= f.radio_button :recurrence_type, kind %>
+            <span><%= t("plants.tasks.form.kinds.#{kind}") %></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+  <% end %>
+
+  <div>
+    <%= f.label :due_on, t("plants.tasks.form.due_on.#{adding ? "new" : form.recurrence_type}"),
+          class: "block text-sm font-semibold" %>
+    <%= f.date_field :due_on, required: true, class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+  </div>
+
+  <% if adding || form.sliding? %>
+    <div>
+      <%= f.label :interval_days, class: "block text-sm font-semibold" %>
+      <div class="mt-1 flex items-center gap-2">
+        <span class="text-sm"><%= t("plants.form.every") %></span>
+        <%= f.number_field :interval_days, min: 1, max: 60,
+              class: "w-20 rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+        <span class="text-sm"><%= t("plants.form.days") %></span>
+      </div>
+      <% if adding %>
+        <p class="mt-1 text-xs text-stone-500"><%= t("plants.tasks.form.interval_help") %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= f.submit submit, class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+<% end %>

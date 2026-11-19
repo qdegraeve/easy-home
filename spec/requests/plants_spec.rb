@@ -24,7 +24,7 @@ RSpec.describe "Plantes", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À arroser aujourd&#39;hui · 1", "Arrosée : Basilic", "Toutes les plantes · 2")
+      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Arrosée : Basilic", "Toutes les plantes · 2")
       expect(response.body).to include("Terrasse · ⛅ Mi-ombre", "Sans emplacement", "dans 9 j")
       expect(response.body).to include("Plantes archivées · 1", "Fougère morte")
       expect(response.body).not_to include("Arrosée : Aloe")

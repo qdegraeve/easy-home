@@ -18,36 +18,86 @@
 </div>
 
 <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-  <section class="space-y-2 self-start rounded-2xl bg-white p-4 shadow-sm" aria-labelledby="watering">
-    <h2 id="watering" class="font-semibold"><%= t(".watering") %></h2>
-    <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
-    <% if (occurrence = @watering_task.pending_occurrence) %>
-      <div class="flex items-center justify-between gap-3">
-        <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
-        <% if @watered_today %>
-          <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800"><%= t(".watered_today") %></span>
-        <% else %>
-          <%= render "plants/water_button", plant: @plant, occurrence: %>
-        <% end %>
-      </div>
-    <% end %>
-    <% if (last = @journal.first) %>
-      <p class="text-sm text-stone-500"><%= t(".last_watered", date: l(last.completed_at.to_date, format: :day)) %></p>
-    <% end %>
-  </section>
+  <div class="space-y-6 self-start">
+    <section class="space-y-2 rounded-2xl bg-white p-4 shadow-sm" aria-labelledby="watering">
+      <h2 id="watering" class="font-semibold"><%= t(".watering") %></h2>
+      <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
+      <% if (occurrence = @watering_task.pending_occurrence) %>
+        <div class="flex items-center justify-between gap-3">
+          <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
+          <% if @done_today_task_ids.include?(@watering_task.id) %>
+            <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800"><%= t(".watered_today") %></span>
+          <% else %>
+            <%= render "tasks/complete_button", occurrence: %>
+          <% end %>
+        </div>
+      <% end %>
+      <% if @last_watered_at %>
+        <p class="text-sm text-stone-500"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
+      <% end %>
+    </section>
 
-  <section aria-labelledby="journal">
+    <section aria-labelledby="tasks">
+      <h2 id="tasks" class="font-semibold"><%= t(".tasks") %></h2>
+      <% if @other_tasks.any? %>
+        <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+          <% @other_tasks.each do |task| %>
+            <li class="space-y-2 p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="font-medium"><%= task.title %></p>
+                  <p class="text-sm text-stone-500">
+                    <%= task.once? ? t(".once") : t(".every", count: task.recurrence.interval_days) %> ·
+                    <%= render DueLabelComponent.new(due_at: task.pending_occurrence.due_at) %>
+                  </p>
+                </div>
+                <% if @done_today_task_ids.include?(task.id) %>
+                  <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800"><%= t(".done_today") %></span>
+                <% else %>
+                  <%= render "tasks/complete_button", occurrence: task.pending_occurrence %>
+                <% end %>
+              </div>
+              <div class="flex gap-2">
+                <%= link_to t(".edit_task"), edit_plant_task_path(@plant, task),
+                      aria: { label: t(".edit_task_label", title: task.title) },
+                      class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
+                <%= button_to t(".destroy_task"), plant_task_path(@plant, task), method: :delete,
+                      aria: { label: t(".destroy_task_label", title: task.title) },
+                      form: { data: { turbo_confirm: t(".destroy_task_confirm", title: task.title) } },
+                      class: "rounded-lg px-2 py-1 text-xs text-red-700 hover:bg-red-50" %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_tasks") %></p>
+      <% end %>
+      <% unless @plant.archived? %>
+        <%= link_to t(".add_task"), new_plant_task_path(@plant),
+              class: "mt-3 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-emerald-700 shadow-sm" %>
+      <% end %>
+    </section>
+  </div>
+
+  <section aria-labelledby="journal" class="self-start">
     <h2 id="journal" class="font-semibold"><%= t(".journal") %></h2>
     <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
       <% @journal.each do |entry| %>
         <% date = l(entry.completed_at.to_date, format: :day) %>
+        <% if entry.task.watering? %>
+          <% label, cancel_label, cancel_confirm = t(".watered"), t(".cancel_label", date:), t(".cancel_confirm", date:) %>
+        <% else %>
+          <% title = entry.task.title %>
+          <% label = t(".done_entry", title:) %>
+          <% cancel_label, cancel_confirm = t(".cancel_task_label", title:, date:), t(".cancel_task_confirm", title:, date:) %>
+        <% end %>
         <li class="flex items-center justify-between gap-3 p-3 text-sm">
-          <span><%= t(".watered") %></span>
+          <span><%= label %></span>
           <span class="flex items-center gap-2">
-            <span class="text-stone-500"><%= date %></span>
+            <span class="shrink-0 text-stone-500"><%= date %></span>
             <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
-                  aria: { label: t(".cancel_label", date:) },
-                  form: { data: { turbo_confirm: t(".cancel_confirm", date:) } },
+                  aria: { label: cancel_label },
+                  form: { data: { turbo_confirm: cancel_confirm } },
                   class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
           </span>
         </li>

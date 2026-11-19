@@ -7,15 +7,22 @@ class Task < ApplicationRecord
   # Les droits passent par le foyer de la tâche : il ne doit jamais diverger de celui du sujet (voir ADR 0010).
   attr_readonly :household_id
 
-  enum :recurrence_type, { sliding: "sliding" }, validate: true
+  enum :recurrence_type, { sliding: "sliding", once: "once" }, validate: true
 
-  validates :title, presence: true
+  scope :active, -> { where(active: true) }
+
+  validates :title, presence: true, length: { maximum: 100 }
   validate :subject_must_belong_to_household
   validate :recurrence_must_be_valid
 
   def recurrence
     Recurrence.build(type: recurrence_type, config: recurrence_config)
   end
+
+  # Tâche ajoutée à la main (engrais, taille…), par opposition à une tâche créée avec son sujet (arrosage).
+  def manual? = template_key.nil?
+
+  def watering? = template_key == Plant::WATERING_TEMPLATE_KEY
 
   private
 

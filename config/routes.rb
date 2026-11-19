@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :address_suggestions, only: :index
   resources :plants, except: :index do
     resource :archive, only: [ :create, :destroy ], module: :plants
+    resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
   end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences

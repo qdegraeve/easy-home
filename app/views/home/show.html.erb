@@ -19,25 +19,26 @@
   </div>
 <% else %>
   <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-    <section class="self-start" aria-labelledby="to-water">
-      <h2 id="to-water" class="font-semibold"><%= t(".to_water", count: @to_water.size) %></h2>
-      <% if @to_water.any? %>
+    <section class="self-start" aria-labelledby="due-today">
+      <h2 id="due-today" class="font-semibold"><%= t(".due_today", count: @due_today.size) %></h2>
+      <% if @due_today.any? %>
         <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
-          <% @to_water.each do |plant| %>
+          <% @due_today.each do |occurrence| %>
+            <% task = occurrence.task %>
             <li class="flex items-center justify-between gap-3 p-3">
               <div>
-                <%= link_to plant.name, plant, class: "font-medium" %>
+                <%= link_to task.subject.name, task.subject, class: "font-medium" %>
                 <p class="text-sm text-stone-500">
-                  <%= plant.location&.name || t(".no_location") %> ·
-                  <%= render DueLabelComponent.new(due_at: plant.next_watering_at) %>
+                  <%= task.watering? ? t(".watering") : task.title %> ·
+                  <%= render DueLabelComponent.new(due_at: occurrence.due_at) %>
                 </p>
               </div>
-              <%= render "plants/water_button", plant:, occurrence: plant.watering_task.pending_occurrence %>
+              <%= render "tasks/complete_button", occurrence: %>
             </li>
           <% end %>
         </ul>
       <% else %>
-        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".nothing_to_water") %></p>
+        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".nothing_due") %></p>
       <% end %>
     </section>
 

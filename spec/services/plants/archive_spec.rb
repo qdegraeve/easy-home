@@ -39,6 +39,21 @@ RSpec.describe "Archivage d'une plante" do
       expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-04 00:00"))
     end
 
+    it "reprend aussi les autres tâches : la répétée repart, l'unique déjà faite reste finie" do
+      engrais = Tasks::Add.new.call(
+        subject: plant, params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
+      ).value!
+      taille = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-16" }).value!
+      Tasks::Complete.new.call(occurrence: taille.pending_occurrence, user: create(:user))
+      Plants::Archive.new.call(plant:)
+      expect(engrais.reload.pending_occurrence).to be_nil
+
+      described_class.new.call(plant: plant.reload)
+
+      expect(engrais.reload.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-20 00:00"))
+      expect(taille.reload.pending_occurrence).to be_nil
+    end
+
     it "refuse une plante non archivée" do
       expect(described_class.new.call(plant:).failure.first).to eq(:not_archived)
     end

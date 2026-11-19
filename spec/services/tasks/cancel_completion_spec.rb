@@ -29,6 +29,15 @@ RSpec.describe Tasks::CancelCompletion do
     expect(plant.reload.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
   end
 
+  it "remet une tâche unique à faire, à sa date prévue" do
+    task = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-14" }).value!
+    Tasks::Complete.new.call(occurrence: task.pending_occurrence, user:)
+
+    described_class.new.call(occurrence: task.occurrences.done.sole)
+
+    expect(task.reload.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-14 00:00"))
+  end
+
   it "refuse une échéance qui n'est pas faite" do
     occurrence = plant.watering_task.pending_occurrence
 
