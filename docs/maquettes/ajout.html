@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajouter une plante · maquette</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800">
+  <div class="max-w-md mx-auto min-h-screen px-4 pb-10">
+    <header class="flex items-center gap-3 pt-6 pb-4">
+      <a href="index.html" class="w-10 h-10 rounded-full bg-white shadow-sm grid place-items-center">←</a>
+      <h1 class="text-xl font-bold">Ajouter une plante</h1>
+    </header>
+
+    <!-- Étape 1 : photo, emplacement, nom -->
+    <section id="step-1" class="space-y-4">
+      <button id="take-photo" class="w-full h-56 rounded-2xl border-2 border-dashed border-emerald-400 bg-emerald-50 grid place-items-center text-emerald-800">
+        <span class="text-center"><span class="text-4xl block">📷</span><span class="font-semibold">Prendre une photo</span><br><span class="text-xs">ou choisir dans la galerie</span></span>
+      </button>
+
+      <div>
+        <label class="text-sm font-semibold">Emplacement</label>
+        <input list="locations" placeholder="Ex. terrasse" class="w-full mt-1 border border-stone-300 rounded-xl px-3 py-3 bg-white">
+        <datalist id="locations"><option value="Jardin devant"><option value="Terrasse"><option value="Fond du jardin"></datalist>
+        <div class="flex gap-2 mt-2 text-xs">
+          <span class="px-2 py-1 rounded-full bg-white border">Jardin devant</span>
+          <span class="px-2 py-1 rounded-full bg-white border">Terrasse</span>
+          <span class="px-2 py-1 rounded-full bg-white border">Fond du jardin</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold">Nom <span class="font-normal text-stone-400">(facultatif)</span></label>
+        <input placeholder="Ex. le grand hibiscus" class="w-full mt-1 border border-stone-300 rounded-xl px-3 py-3 bg-white">
+        <p class="text-xs text-stone-400 mt-1">Sans nom, on utilisera l'espèce.</p>
+      </div>
+
+      <button id="submit" disabled class="w-full py-3 rounded-xl bg-emerald-700 text-white font-semibold disabled:opacity-40">Ajouter et identifier</button>
+    </section>
+
+    <!-- Étape 2 : analyse en cours -->
+    <section id="step-2" hidden class="text-center pt-10 space-y-4">
+      <div class="w-40 h-40 mx-auto rounded-2xl bg-gradient-to-br from-rose-300 to-emerald-500 grid place-items-center text-6xl animate-pulse">🌺</div>
+      <p class="font-semibold">Identification en cours…</p>
+      <p class="text-sm text-stone-500">Ça prend quelques secondes. Vous pouvez quitter la page, le résultat vous attendra.</p>
+    </section>
+
+    <!-- Étape 3 : propositions à valider -->
+    <section id="step-3" hidden class="space-y-4">
+      <div class="h-40 rounded-2xl bg-gradient-to-br from-rose-300 to-emerald-500 grid place-items-center text-6xl">🌺</div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-stone-400 font-semibold">Espèce proposée</p>
+        <p class="text-lg font-bold">Hibiscus rosa-sinensis</p>
+        <p class="text-sm text-stone-500">Hibiscus de Chine · confiance élevée</p>
+        <div id="species-actions" class="flex gap-2 mt-3">
+          <button id="confirm-species" class="flex-1 py-2 rounded-xl bg-emerald-700 text-white font-semibold">C'est bien ça</button>
+          <button id="fix-species" class="flex-1 py-2 rounded-xl bg-stone-100 font-semibold">Corriger</button>
+        </div>
+        <div id="species-form" hidden class="mt-3">
+          <input value="Hibiscus" class="w-full border border-stone-300 rounded-xl px-3 py-2">
+          <p class="text-xs text-stone-400 mt-1">Votre saisie remplace la proposition.</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-stone-400 font-semibold">Arrosage proposé</p>
+        <div class="flex items-center gap-2 mt-1">
+          <span>Tous les</span>
+          <input type="number" value="3" class="w-16 border border-stone-300 rounded-lg px-2 py-1 text-center font-bold">
+          <span>jours</span>
+        </div>
+        <p class="text-sm text-stone-500 mt-2">En extérieur à La Réunion, saison chaude : terre légèrement humide en permanence, sans eau stagnante.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-stone-400 font-semibold">État</p>
+        <p><span class="text-xs font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-800">En forme</span></p>
+        <p class="text-sm text-stone-500 mt-2">Feuillage dense et vert, boutons floraux nombreux.</p>
+      </div>
+
+      <a href="plante.html" class="block text-center w-full py-3 rounded-xl bg-emerald-700 text-white font-semibold">Enregistrer la plante</a>
+    </section>
+  </div>
+
+  <script>
+    const show = (id) => {
+      ["step-1", "step-2", "step-3"].forEach((step) => (document.getElementById(step).hidden = step !== id))
+    }
+    document.getElementById("take-photo").addEventListener("click", (event) => {
+      event.currentTarget.className = "w-full h-56 rounded-2xl bg-gradient-to-br from-rose-300 to-emerald-500 grid place-items-center text-7xl"
+      event.currentTarget.textContent = "🌺"
+      document.getElementById("submit").disabled = false
+    })
+    document.getElementById("submit").addEventListener("click", () => {
+      show("step-2")
+      setTimeout(() => show("step-3"), 1500)
+    })
+    document.getElementById("confirm-species").addEventListener("click", (event) => {
+      document.getElementById("species-actions").innerHTML = '<span class="text-sm text-emerald-700 font-semibold">✓ Espèce confirmée</span>'
+    })
+    document.getElementById("fix-species").addEventListener("click", () => {
+      document.getElementById("species-actions").hidden = true
+      document.getElementById("species-form").hidden = false
+    })
+  </script>
+</body>
+</html>

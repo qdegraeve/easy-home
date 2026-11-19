@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hibiscus · maquette</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-50 text-stone-800">
+  <div class="max-w-md mx-auto min-h-screen pb-10">
+    <div class="relative h-64 bg-gradient-to-br from-rose-300 via-pink-200 to-emerald-500 grid place-items-center text-8xl">
+      🌺
+      <a href="index.html" class="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/90 grid place-items-center text-lg">←</a>
+      <span class="absolute top-6 right-4 text-xs bg-black/50 text-white px-2 py-1 rounded-full">Photo du 12 nov.</span>
+    </div>
+
+    <div class="px-4 -mt-6 relative">
+      <div class="bg-white rounded-2xl shadow-sm p-4">
+        <h1 class="text-xl font-bold">Hibiscus de l'entrée</h1>
+        <p class="text-sm text-stone-600 italic">Hibiscus rosa-sinensis</p>
+        <div class="flex flex-wrap gap-2 mt-2 text-xs">
+          <span class="px-2 py-1 rounded-full bg-stone-100">📍 Jardin devant</span>
+          <span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-800">Espèce confirmée</span>
+          <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold">En forme</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="px-4 pt-4">
+      <div class="bg-white rounded-2xl shadow-sm p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="font-semibold">💧 Arrosage</h2>
+            <p class="text-sm text-stone-600">Tous les <strong>3 jours</strong> · <button class="underline text-stone-500" onclick="document.getElementById('interval').hidden=false">modifier</button></p>
+            <p id="water-status" class="text-sm text-sky-700 font-medium mt-1">À arroser aujourd'hui</p>
+            <p id="water-last" class="text-xs text-stone-400">Dernier arrosage : lundi 16 nov.</p>
+          </div>
+          <button id="water" class="shrink-0 px-4 py-3 rounded-xl bg-sky-600 text-white font-semibold">Arrosée</button>
+        </div>
+        <div id="interval" hidden class="mt-3 pt-3 border-t border-stone-100">
+          <label class="text-sm text-stone-600">Arroser tous les</label>
+          <div class="flex items-center gap-2 mt-1">
+            <input type="number" value="3" class="w-20 border border-stone-300 rounded-lg px-2 py-1">
+            <span class="text-sm">jours</span>
+            <button class="ml-auto px-3 py-1 rounded-lg bg-stone-800 text-white text-sm" onclick="document.getElementById('interval').hidden=true">Enregistrer</button>
+          </div>
+          <p class="text-xs text-stone-400 mt-1">Proposé par l'analyse du 2 nov. (saison chaude, plein soleil).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-4 pt-4">
+      <div class="flex items-baseline justify-between mb-2">
+        <h2 class="font-semibold">📷 Suivi photo</h2>
+        <a href="analyse.html" class="text-sm text-emerald-700 font-semibold">+ Nouvelle photo</a>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <a href="analyse.html" class="aspect-square rounded-xl bg-gradient-to-br from-rose-300 to-emerald-500 grid place-items-center text-3xl relative">🌺<span class="absolute bottom-1 left-1 text-[10px] bg-white/90 px-1 rounded">12 nov. ✓</span></a>
+        <a href="analyse.html" class="aspect-square rounded-xl bg-gradient-to-br from-rose-200 to-emerald-600 grid place-items-center text-3xl relative">🌺<span class="absolute bottom-1 left-1 text-[10px] bg-white/90 px-1 rounded">2 nov. ✓</span></a>
+        <a href="analyse.html" class="aspect-square rounded-xl bg-gradient-to-br from-yellow-200 to-emerald-600 grid place-items-center text-3xl relative">🌺<span class="absolute bottom-1 left-1 text-[10px] bg-amber-100 px-1 rounded">20 oct. !</span></a>
+      </div>
+      <p class="text-xs text-stone-400 mt-1">✓ en forme · ! à surveiller · touchez une photo pour voir son analyse</p>
+    </section>
+
+    <section class="px-4 pt-4">
+      <h2 class="font-semibold mb-2">📒 Journal</h2>
+      <ul id="journal" class="bg-white rounded-2xl shadow-sm divide-y divide-stone-100 text-sm">
+        <li class="p-3 flex justify-between"><span>💧 Arrosée</span><span class="text-stone-400">lun. 16 nov.</span></li>
+        <li class="p-3 flex justify-between"><span>🔍 Analyse : en forme</span><span class="text-stone-400">jeu. 12 nov.</span></li>
+        <li class="p-3 flex justify-between"><span>💧 Arrosée</span><span class="text-stone-400">ven. 13 nov.</span></li>
+        <li class="p-3 flex justify-between"><span>✂️ Tâche faite : retirer les fleurs fanées</span><span class="text-stone-400">mar. 10 nov.</span></li>
+        <li class="p-3 flex justify-between"><span>💧 Oubli d'arrosage</span><span class="text-red-500">sam. 7 nov.</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    document.getElementById("water").addEventListener("click", (event) => {
+      event.target.textContent = "✓ Fait"
+      event.target.disabled = true
+      event.target.className = "shrink-0 px-4 py-3 rounded-xl bg-stone-100 text-stone-500 font-semibold"
+      document.getElementById("water-status").textContent = "Prochain arrosage : dimanche 22 nov."
+      document.getElementById("water-status").className = "text-sm text-stone-600 mt-1"
+      document.getElementById("water-last").textContent = "Dernier arrosage : aujourd'hui"
+      document.getElementById("journal").insertAdjacentHTML(
+        "afterbegin",
+        '<li class="p-3 flex justify-between bg-sky-50"><span>💧 Arrosée</span><span class="text-stone-400">aujourd\'hui</span></li>'
+      )
+    })
+  </script>
+</body>
+</html>
