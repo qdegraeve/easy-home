@@ -30,7 +30,9 @@ User
 
 Household
   name, time_zone (défaut "Indian/Reunion")
-  city, altitude_m (optionnels)  # contexte climatique envoyé à l'IA
+  address (optionnel)            # libellé choisi dans l'autocomplétion
+  latitude, longitude            # issus du géocodage
+  altitude_m                     # calculée depuis la position (ADR 0009)
   has_many :memberships, :items, :tasks, :locations
 
 Location
@@ -148,7 +150,8 @@ Ajouter un élément au foyer (`Items::Add`) crée l'`Item` et instancie les `Ta
 - Ajouter une plante : création de l'`Item` et de sa première `Photo`, puis analyse en job. L'espèce proposée s'affiche
   à confirmer : acceptée telle quelle, elle remplit `properties.species` avec `species_source: ai` ; corrigée, avec
   `species_source: user`.
-- Chaque analyse reçoit le contexte : commune et altitude du foyer, exposition et abri de l'emplacement, espèce
-  confirmée, intervalle d'arrosage actuel. Ces données restent en base, jamais dans le dépôt.
+- Chaque analyse reçoit le contexte : position arrondie (environ 1 km) et altitude du foyer, exposition et abri de
+  l'emplacement, espèce confirmée, intervalle d'arrosage actuel. **L'adresse n'est jamais envoyée à l'IA**, et ces
+  données restent en base, jamais dans le dépôt.
 - Une analyse ne modifie jamais rien d'elle-même : l'espèce, l'intervalle et les actions sont des **propositions** à
   accepter. Le fournisseur d'IA est derrière `Plants::Analyzer` (ADR 0008).

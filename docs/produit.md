@@ -36,9 +36,10 @@ Les plantes cumulent tous ces problèmes : l'arrosage dépend de chaque espèce 
 
 Point de départ : une dizaine de plantes en extérieur, à La Réunion.
 
-1. **Ma maison** : la commune et l'altitude (le climat varie beaucoup d'un endroit à l'autre de l'île), et la liste des
-   emplacements (« terrasse », « jardin devant »…) avec leur exposition au soleil et leur abri du vent. L'IA en tient
-   compte pour l'arrosage et le diagnostic.
+1. **Ma maison** : l'adresse, saisie avec autocomplétion. L'app en déduit la position et l'altitude, sans rien
+   demander d'autre (le climat varie beaucoup d'un quartier à l'autre de l'île, y compris dans une même commune). Puis
+   la liste des emplacements (« terrasse », « jardin devant »…) avec leur exposition au soleil et leur abri du vent.
+   L'IA en tient compte pour l'arrosage et le diagnostic.
 2. **Inventaire** : chaque plante a un nom, une espèce, un emplacement et des photos.
 3. **Identification** : la première photo propose l'espèce automatiquement ; on la confirme ou on la corrige.
 4. **Arrosage** : chaque plante a son intervalle d'arrosage (récurrence glissante). L'IA propose l'intervalle de départ

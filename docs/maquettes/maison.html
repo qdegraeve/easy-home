@@ -16,19 +16,27 @@
     <div class="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
       <section class="bg-white rounded-2xl shadow-sm p-4 space-y-3 self-start">
         <h2 class="font-semibold">📍 Situation</h2>
-        <p class="text-sm text-stone-500">Le climat change beaucoup d'un endroit à l'autre de l'île : ces informations servent
-          aux conseils d'arrosage et aux analyses.</p>
-        <div>
-          <label class="text-sm font-semibold">Commune</label>
-          <input value="Commune exemple" class="w-full mt-1 border border-stone-300 rounded-xl px-3 py-3">
+        <p class="text-sm text-stone-500">Le climat change beaucoup d'un quartier à l'autre : votre adresse permet d'adapter
+          les conseils d'arrosage et les analyses. Elle n'est jamais transmise à l'IA.</p>
+        <div class="relative">
+          <label class="text-sm font-semibold" for="address">Adresse</label>
+          <input id="address" autocomplete="off" placeholder="Commencez à taper votre adresse"
+                 class="w-full mt-1 border border-stone-300 rounded-xl px-3 py-3">
+          <ul id="suggestions" hidden class="absolute z-10 left-0 right-0 mt-1 bg-white border border-stone-200 rounded-xl shadow-lg divide-y divide-stone-100 text-sm">
+            <li><button data-label="12 rue des Exemples, 97400 Ville-Exemple" class="w-full text-left px-3 py-3">12 rue des Exemples<br><span class="text-stone-400">97400 Ville-Exemple</span></button></li>
+            <li><button data-label="12 chemin des Exemples, 97460 Autre-Exemple" class="w-full text-left px-3 py-3">12 chemin des Exemples<br><span class="text-stone-400">97460 Autre-Exemple</span></button></li>
+          </ul>
         </div>
-        <div>
-          <label class="text-sm font-semibold">Altitude approximative</label>
-          <div class="flex items-center gap-2 mt-1">
-            <input type="number" value="150" class="w-28 border border-stone-300 rounded-xl px-3 py-3">
-            <span class="text-sm">mètres</span>
+        <div id="resolved" hidden class="rounded-xl bg-emerald-50 p-3 text-sm space-y-1">
+          <p class="text-emerald-800 font-semibold">✓ Adresse trouvée</p>
+          <p>Altitude : environ <strong id="altitude">320 m</strong>
+            <button id="edit-altitude" class="underline text-stone-500 ml-1">corriger</button></p>
+          <div id="altitude-form" hidden>
+            <div class="flex items-center gap-2">
+              <input type="number" value="320" class="w-24 border border-stone-300 rounded-lg px-2 py-1"> <span>mètres</span>
+            </div>
           </div>
-          <p class="text-xs text-stone-400 mt-1">Une estimation suffit : au bord de mer, dans les mi-pentes ou dans les Hauts.</p>
+          <p class="text-xs text-stone-500">Calculée automatiquement depuis la position.</p>
         </div>
         <button class="w-full py-3 rounded-xl bg-emerald-700 text-white font-semibold">Enregistrer</button>
       </section>
@@ -73,6 +81,20 @@
   </div>
 
   <script>
+    const address = document.getElementById("address")
+    const suggestions = document.getElementById("suggestions")
+    address.addEventListener("input", () => (suggestions.hidden = address.value.length < 3))
+    suggestions.querySelectorAll("button").forEach((button) => {
+      button.addEventListener("click", () => {
+        address.value = button.dataset.label
+        suggestions.hidden = true
+        document.getElementById("resolved").hidden = false
+      })
+    })
+    document.getElementById("edit-altitude").addEventListener("click", () => {
+      document.getElementById("altitude-form").hidden = false
+    })
+
     const form = document.getElementById("location-form")
     document.getElementById("add-location").addEventListener("click", (event) => {
       event.currentTarget.hidden = true

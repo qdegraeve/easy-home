@@ -19,7 +19,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 ## Étape 1 : maquettes
 
 - [ ] Maquettes HTML cliquables, mobile d'abord et élargies sur desktop : liste des plantes, fiche d'une plante
-  (arrosage, photos, analyses), ajout d'une plante, résultat d'une analyse, ma maison (commune, altitude, emplacements)
+  (arrosage, photos, analyses), ajout d'une plante, résultat d'une analyse, ma maison (adresse, emplacements)
 - [ ] Validation sur téléphone, corrections
 
 ## Étape 2 : première version, les plantes
@@ -27,7 +27,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [ ] Layout de base Tailwind, pensé mobile d'abord
 - [ ] Foyer minimal créé à l'inscription (`Household`, `Membership` owner)
 - [ ] Moteur de récurrence : `Recurrence::Sliding`, testé de façon exhaustive
-- [ ] Ma maison : commune, altitude, emplacements (`Location`) avec exposition et abri
+- [ ] Ma maison : adresse avec autocomplétion, position et altitude (ADR 0009), emplacements (`Location`) avec
+  exposition et abri
 - [ ] Plantes : `Item` (`kind: plant`), emplacement, espèce
 - [ ] Photos (Active Storage) et suivi photo
 - [ ] `Plants::Analyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test
