@@ -10,4 +10,11 @@ RSpec.describe Household, type: :model do
   it "refuse un fuseau horaire inconnu" do
     expect(build(:household, time_zone: "Mars/Olympus")).not_to be_valid
   end
+
+  it "refuse une position hors des bornes ou non numérique, sans erreur en base" do
+    expect(build(:household, latitude: "1000", longitude: "55")).not_to be_valid
+    expect(build(:household, latitude: "-20.9", longitude: "200")).not_to be_valid
+    expect(build(:household, latitude: "abc", longitude: "55")).not_to be_valid
+    expect(build(:household, latitude: "-20.9", longitude: "55.45")).to be_valid
+  end
 end

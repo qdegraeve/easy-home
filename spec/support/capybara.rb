@@ -3,6 +3,7 @@ require "capybara/cuprite"
 
 Capybara.default_max_wait_time = 3
 Capybara.disable_animation = true
+Capybara.enable_aria_label = true
 
 RSpec.configure do |config|
   config.before(:each, type: :system) do
