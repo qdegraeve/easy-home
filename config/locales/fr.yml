@@ -117,16 +117,14 @@ fr:
           once: "Une seule fois"
           sliding: "Tous les N jours après la dernière fois"
         due_on:
-          new: "Date (la première fois, si elle se répète)"
           once: "Date"
+          first: "Première fois"
           sliding: "Prochaine fois"
-        interval_help: "Seulement pour « Tous les N jours »."
       new:
         title: "Ajouter une tâche"
         submit: "Ajouter la tâche"
       create:
         success: "Tâche « %{title} » ajoutée."
-        subject_archived: "Cette plante est archivée : restaurez-la pour lui ajouter des tâches."
       edit:
         title: "Modifier « %{title} »"
         submit: "Enregistrer"
@@ -162,11 +160,14 @@ fr:
       back: "← Retour"
       title: "Ma maison"
       situation: "📍 Situation"
-      situation_help: "Le climat change beaucoup d'un quartier à l'autre : l'adresse sert à adapter les conseils d'arrosage et les analyses. Elle n'est jamais transmise à l'IA."
+      situation_help: >-
+        Le climat change beaucoup d'un quartier à l'autre : l'adresse sert à adapter les conseils d'arrosage et les
+        analyses. Elle n'est jamais transmise à l'IA.
       address_placeholder: "Commencez à taper votre adresse"
       meters: "mètres"
       altitude_help: "Calculée automatiquement à partir de l'adresse choisie. Vous pouvez la corriger."
-      altitude_unknown: "Altitude indisponible pour le moment : vous pouvez la saisir, ou rechoisir l'adresse plus tard."
+      altitude_unknown: >-
+        Altitude indisponible pour le moment : vous pouvez la saisir, ou rechoisir l'adresse plus tard.
       save: "Enregistrer"
       locations: "🪴 Emplacements"
       no_locations: "Aucun emplacement pour l'instant : ajoutez la terrasse, le jardin devant…"

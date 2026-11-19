@@ -1,5 +1,5 @@
-# Saisie d'une tâche manuelle d'un sujet (engrais, taille…) : une seule fois à une date, ou tous les N jours à partir
-# d'une date. Le type de répétition se choisit à la création et ne change plus ensuite.
+# Saisie d'une tâche manuelle d'un sujet (engrais, taille…) : une seule fois à une date, ou tous les N jours à
+# partir d'une date. Le type de répétition se choisit à la création et ne change plus ensuite.
 class TaskForm
   include ActiveModel::Model
   include ActiveModel::Attributes
@@ -8,13 +8,15 @@ class TaskForm
 
   attribute :title, :string
   attribute :recurrence_type, :string, default: "once"
-  attribute :due_on, :date, default: -> { Time.zone.today }
+  attribute :due_on, :date
   attribute :interval_days, :integer
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :recurrence_type, inclusion: { in: KINDS }
   validates :due_on, presence: true
-  validates :interval_days, numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS }, if: :sliding?
+  validates :interval_days,
+    numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS },
+    if: :sliding?
 
   def self.model_name = ActiveModel::Name.new(self, nil, "Task")
 

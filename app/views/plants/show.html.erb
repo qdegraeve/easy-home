@@ -52,7 +52,9 @@
                   </p>
                 </div>
                 <% if @done_today_task_ids.include?(task.id) %>
-                  <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800"><%= t(".done_today") %></span>
+                  <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800">
+                    <%= t(".done_today") %>
+                  </span>
                 <% else %>
                   <%= render "tasks/complete_button", occurrence: task.pending_occurrence %>
                 <% end %>
@@ -74,7 +76,8 @@
       <% end %>
       <% unless @plant.archived? %>
         <%= link_to t(".add_task"), new_plant_task_path(@plant),
-              class: "mt-3 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-emerald-700 shadow-sm" %>
+              class: "mt-3 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-emerald-700 " \
+                     "shadow-sm" %>
       <% end %>
     </section>
   </div>
@@ -85,11 +88,13 @@
       <% @journal.each do |entry| %>
         <% date = l(entry.completed_at.to_date, format: :day) %>
         <% if entry.task.watering? %>
-          <% label, cancel_label, cancel_confirm = t(".watered"), t(".cancel_label", date:), t(".cancel_confirm", date:) %>
+          <% label = t(".watered") %>
+          <% cancel_label, cancel_confirm = t(".cancel_label", date:), t(".cancel_confirm", date:) %>
         <% else %>
           <% title = entry.task.title %>
           <% label = t(".done_entry", title:) %>
-          <% cancel_label, cancel_confirm = t(".cancel_task_label", title:, date:), t(".cancel_task_confirm", title:, date:) %>
+          <% cancel_label = t(".cancel_task_label", title:, date:) %>
+          <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
         <% end %>
         <li class="flex items-center justify-between gap-3 p-3 text-sm">
           <span><%= label %></span>

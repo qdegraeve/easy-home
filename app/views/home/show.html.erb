@@ -5,7 +5,8 @@
     <h1 class="text-2xl font-bold"><%= t(".title") %></h1>
   </div>
   <% if policy(@household).edit? %>
-    <%= link_to t(".house"), edit_household_path(@household), class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+    <%= link_to t(".house"), edit_household_path(@household),
+          class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
   <% end %>
 </div>
 
@@ -53,7 +54,9 @@
             <li class="flex items-center justify-between gap-3 p-3">
               <%= link_to plant.name, plant, class: "font-medium" %>
               <% if plant.next_watering_at %>
-                <span class="text-sm text-stone-500"><%= render DueLabelComponent.new(due_at: plant.next_watering_at) %></span>
+                <span class="text-sm text-stone-500">
+                  <%= render DueLabelComponent.new(due_at: plant.next_watering_at) %>
+                </span>
               <% end %>
             </li>
           <% end %>

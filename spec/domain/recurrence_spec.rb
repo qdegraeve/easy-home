@@ -8,7 +8,8 @@ RSpec.describe Recurrence do
     end
 
     it "construit une récurrence unique et une date de début depuis des dates ISO 8601" do
-      expect(described_class.build(type: "once", config: { "due_on" => "2026-11-30" }).due_on).to eq(Date.new(2026, 11, 30))
+      once = described_class.build(type: "once", config: { "due_on" => "2026-11-30" })
+      expect(once.due_on).to eq(Date.new(2026, 11, 30))
       sliding = described_class.build(type: "sliding", config: { "interval_days" => 14, "start_on" => "2026-12-01" })
       expect(sliding.start_on).to eq(Date.new(2026, 12, 1))
     end

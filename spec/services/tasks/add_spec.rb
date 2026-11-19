@@ -21,7 +21,8 @@ RSpec.describe Tasks::Add do
 
   it "ajoute une tâche répétée tous les N jours à partir de la date choisie" do
     task = described_class.new.call(
-      subject: plant, params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
+      subject: plant,
+      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
     ).value!
 
     expect(task.recurrence).to have_attributes(interval_days: 14, start_on: Date.new(2026, 11, 20))

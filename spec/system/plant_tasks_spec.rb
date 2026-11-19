@@ -21,8 +21,9 @@ RSpec.describe "Tâches d'une plante", type: :system do
     # Tâche répétée, due aujourd'hui : elle apparaît dans « À faire aujourd'hui ».
     click_on "+ Ajouter une tâche"
     fill_in "Tâche", with: "Engrais"
+    expect(page).to have_no_field("Répétition")
     choose "Tous les N jours après la dernière fois"
-    fill_in "Date (la première fois, si elle se répète)", with: Date.new(2026, 11, 16)
+    fill_in "Première fois", with: Date.new(2026, 11, 16)
     fill_in "Répétition", with: "14"
     click_on "Ajouter la tâche"
     expect(page).to have_content("Tâche « Engrais » ajoutée.")
@@ -31,7 +32,8 @@ RSpec.describe "Tâches d'une plante", type: :system do
     # Tâche unique dans quelques jours, avec une erreur de saisie corrigée.
     click_on "+ Ajouter une tâche"
     fill_in "Tâche", with: "   "
-    fill_in "Date (la première fois, si elle se répète)", with: Date.new(2026, 11, 20)
+    expect(page).to have_no_field("Répétition")
+    fill_in "Date", with: Date.new(2026, 11, 20)
     click_on "Ajouter la tâche"
     expect(page).to have_content("Tâche doit être rempli(e)")
     fill_in "Tâche", with: "Tailler"

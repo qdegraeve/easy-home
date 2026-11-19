@@ -11,7 +11,9 @@ module Recurrence
       unless interval_days.is_a?(Integer) && INTERVAL_DAYS.cover?(interval_days)
         raise InvalidConfig, "interval_days must be an integer in #{INTERVAL_DAYS}, got #{interval_days.inspect}"
       end
-      raise InvalidConfig, "start_on must be a Date, got #{start_on.inspect}" unless start_on.nil? || start_on.is_a?(Date)
+      unless start_on.nil? || start_on.is_a?(Date)
+        raise InvalidConfig, "start_on must be a Date, got #{start_on.inspect}"
+      end
 
       @interval_days = interval_days
       @start_on = start_on

@@ -44,7 +44,8 @@ RSpec.describe "Plantes", type: :request do
     it "ajoute une plante au foyer actif" do
       sign_in(user)
 
-      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", last_watered_on: "2026-11-16" } }
+      post plants_path,
+        params: { plant: { name: "Basilic", watering_interval_days: "2", last_watered_on: "2026-11-16" } }
 
       plant = household.plants.sole
       expect(response).to redirect_to(plant_path(plant))
@@ -79,7 +80,8 @@ RSpec.describe "Plantes", type: :request do
 
       get plant_path(plant)
 
-      expect(response.body).to include("Tous les 2 jours", "Prochain arrosage :", "demain", "Dernier arrosage : dim 15 nov.")
+      expect(response.body).to include("Tous les 2 jours", "Prochain arrosage :", "demain")
+      expect(response.body).to include("Dernier arrosage : dim 15 nov.")
     end
 
     it "ne trouve pas la plante d'un autre foyer" do

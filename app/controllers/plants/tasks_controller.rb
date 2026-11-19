@@ -1,34 +1,34 @@
 module Plants
   # Tâches manuelles d'une plante (engrais, taille…).
   class TasksController < ApplicationController
-    before_action :set_plant
-
     def new
+      @plant = find_plant
       authorize Task.new(household: @plant.household, subject: @plant)
-      @form = TaskForm.new
+      @form = TaskForm.new(due_on: Time.zone.today)
     end
 
     def create
+      @plant = find_plant
       authorize Task.new(household: @plant.household, subject: @plant)
       result = Tasks::Add.new.call(subject: @plant, params: task_params)
 
       if result.success?
         redirect_to @plant, notice: t(".success", title: result.value!.title)
       else
-        code, @form = result.failure
-        return redirect_to(@plant, alert: t(".subject_archived")) if code == :subject_archived
-
+        _code, @form = result.failure
         render :new, status: :unprocessable_content
       end
     end
 
     def edit
-      @task = find_task
+      @plant = find_plant
+      @task = find_task(@plant)
       @form = TaskForm.from(@task)
     end
 
     def update
-      @task = find_task
+      @plant = find_plant
+      @task = find_task(@plant)
       result = Tasks::Update.new.call(task: @task, params: task_params)
 
       if result.success?
@@ -40,19 +40,20 @@ module Plants
     end
 
     def destroy
-      task = find_task
+      plant = find_plant
+      task = find_task(plant)
       task.destroy!
-      redirect_to @plant, notice: t(".success", title: task.title), status: :see_other
+      redirect_to plant, notice: t(".success", title: task.title), status: :see_other
     end
 
     private
 
-    def set_plant
-      @plant = policy_scope(Plant).find(params[:plant_id])
+    def find_plant
+      policy_scope(Plant).find(params[:plant_id])
     end
 
-    def find_task
-      policy_scope(Task).where(subject: @plant).find(params[:id]).tap { |task| authorize task }
+    def find_task(plant)
+      policy_scope(Task).where(subject: plant).find(params[:id]).tap { |task| authorize task }
     end
 
     def task_params

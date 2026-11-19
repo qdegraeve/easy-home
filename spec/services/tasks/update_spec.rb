@@ -16,7 +16,10 @@ RSpec.describe Tasks::Update do
 
     described_class.new.call(task:, params: { title: "Tailler les fleurs fanées", due_on: "2026-12-05" })
 
-    expect(task.reload).to have_attributes(title: "Tailler les fleurs fanées", recurrence_config: { "due_on" => "2026-12-05" })
+    expect(task.reload).to have_attributes(
+      title: "Tailler les fleurs fanées",
+      recurrence_config: { "due_on" => "2026-12-05" }
+    )
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-12-05 00:00"))
   end
 
@@ -30,6 +33,27 @@ RSpec.describe Tasks::Update do
     expect(task.reload).to be_sliding
     expect(task.recurrence.interval_days).to eq(21)
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-25 00:00"))
+  end
+
+  it "garde la date de début d'une tâche répétée : annuler toutes ses réalisations y revient" do
+    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-16", interval_days: "14")
+    Tasks::Complete.new.call(occurrence: task.pending_occurrence, user: create(:user))
+
+    described_class.new.call(
+      task: task.reload,
+      params: { title: "Engrais bio", due_on: "2026-11-30", interval_days: "14" }
+    )
+    Tasks::CancelCompletion.new.call(occurrence: task.occurrences.done.sole)
+
+    expect(task.reload.recurrence.start_on).to eq(Date.new(2026, 11, 16))
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-16 00:00"))
+  end
+
+  it "refuse une modification sans date au lieu de prendre aujourd'hui" do
+    task = add(title: "Tailler", recurrence_type: "once", due_on: "2026-11-30")
+
+    expect(described_class.new.call(task:, params: { title: "Tailler" }).failure.first).to eq(:invalid)
+    expect(task.pending_occurrence.reload.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
   end
 
   it "refuse une saisie invalide sans rien modifier" do

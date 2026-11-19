@@ -1,4 +1,5 @@
-<%= form_with model: form, url:, method:, class: "space-y-4" do |f| %>
+<%# À l'ajout, l'intervalle et le libellé de la date suivent le choix « Quand ? » (CSS :has, sans JavaScript). %>
+<%= form_with model: form, url:, method:, class: "group space-y-4" do |f| %>
   <%= render "shared/errors", record: form %>
 
   <div>
@@ -22,13 +23,23 @@
   <% end %>
 
   <div>
-    <%= f.label :due_on, t("plants.tasks.form.due_on.#{adding ? "new" : form.recurrence_type}"),
-          class: "block text-sm font-semibold" %>
-    <%= f.date_field :due_on, required: true, class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+    <% if adding %>
+      <%= f.label :due_on, class: "block text-sm font-semibold" do %>
+        <span class="group-has-[[value=sliding]:checked]:hidden"><%= t("plants.tasks.form.due_on.once") %></span>
+        <span class="hidden group-has-[[value=sliding]:checked]:inline">
+          <%= t("plants.tasks.form.due_on.first") %>
+        </span>
+      <% end %>
+    <% else %>
+      <%= f.label :due_on, t("plants.tasks.form.due_on.#{form.recurrence_type}"),
+            class: "block text-sm font-semibold" %>
+    <% end %>
+    <%= f.date_field :due_on, required: true,
+          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
   </div>
 
   <% if adding || form.sliding? %>
-    <div>
+    <div class="<%= "hidden group-has-[[value=sliding]:checked]:block" if adding %>">
       <%= f.label :interval_days, class: "block text-sm font-semibold" %>
       <div class="mt-1 flex items-center gap-2">
         <span class="text-sm"><%= t("plants.form.every") %></span>
@@ -36,9 +47,6 @@
               class: "w-20 rounded-xl border border-stone-300 bg-white px-3 py-3" %>
         <span class="text-sm"><%= t("plants.form.days") %></span>
       </div>
-      <% if adding %>
-        <p class="mt-1 text-xs text-stone-500"><%= t("plants.tasks.form.interval_help") %></p>
-      <% end %>
     </div>
   <% end %>
 

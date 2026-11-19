@@ -25,7 +25,8 @@ RSpec.describe "Tâches d'une plante", type: :request do
 
     expect(response).to redirect_to(plant_path(plant))
     follow_redirect!
-    expect(response.body).to include("Tâche « Tailler » ajoutée.", "Tailler", "Une fois", "dans 14 j", "Fait : Tailler (Citronnier)")
+    expect(response.body).to include("Tâche « Tailler » ajoutée.", "Une fois", "dans 14 j")
+    expect(response.body).to include("Fait : Tailler (Citronnier)")
   end
 
   it "réaffiche le formulaire sans titre" do
@@ -37,15 +38,39 @@ RSpec.describe "Tâches d'une plante", type: :request do
     expect(response.body).to include("Tâche doit être rempli(e)")
   end
 
-  it "refuse d'ajouter une tâche à une plante archivée" do
-    plant.update!(archived_at: Time.current)
+  it "sur une plante archivée, refuse l'ajout et la modification, mais permet la suppression" do
+    task = add_task
+    Plants::Archive.new.call(plant:)
     sign_in(user)
 
+    get new_plant_task_path(plant)
+    expect(response).to have_http_status(:forbidden)
     post plant_tasks_path(plant), params: once_params
+    expect(response).to have_http_status(:forbidden)
+    get edit_plant_task_path(plant, task)
+    expect(response).to have_http_status(:forbidden)
+    patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } }
+    expect(response).to have_http_status(:forbidden)
+    expect(plant.tasks.count).to eq(2)
 
+    delete plant_task_path(plant, task)
     expect(response).to redirect_to(plant_path(plant))
-    expect(flash[:alert]).to include("restaurez-la")
     expect(plant.tasks.count).to eq(1)
+  end
+
+  it "modifie une tâche répétée : prochaine fois et intervalle" do
+    task = add_task(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
+    sign_in(user)
+
+    get edit_plant_task_path(plant, task)
+    expect(response.body).to include("Prochaine fois", 'value="2026-11-20"', 'value="14"')
+    expect(response.body).not_to include("Une seule fois")
+
+    patch plant_task_path(plant, task),
+      params: { task: { title: "Engrais", due_on: "2026-11-22", interval_days: "21" } }
+
+    expect(task.reload.recurrence.interval_days).to eq(21)
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))
   end
 
   it "modifie puis supprime une tâche manuelle" do
@@ -88,7 +113,9 @@ RSpec.describe "Tâches d'une plante", type: :request do
         "formulaire d'ajout" => -> { get new_plant_task_path(plant) },
         "ajout" => -> { post plant_tasks_path(plant), params: once_params },
         "formulaire de modification" => -> { get edit_plant_task_path(plant, task) },
-        "modification" => -> { patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } } },
+        "modification" => lambda {
+          patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } }
+        },
         "suppression" => -> { delete plant_task_path(plant, task) }
       }
     end
@@ -96,7 +123,12 @@ RSpec.describe "Tâches d'une plante", type: :request do
     [ [ "un invité du foyer", :guest ], [ "un autre foyer", :other ] ].each do |label, who|
       it "répond 404 à #{label} sur chaque action, sans rien modifier" do
         task = add_task
-        intruder = who == :guest ? create(:household_member, household:, role: :guest).user : create(:user, :with_household)
+        intruder =
+          if who == :guest
+            create(:household_member, household:, role: :guest).user
+          else
+            create(:user, :with_household)
+          end
         sign_in(intruder)
 
         requests(task).each do |action, request|
@@ -110,6 +142,19 @@ RSpec.describe "Tâches d'une plante", type: :request do
   end
 
   describe "accueil" do
+    it "ne montre ni les tâches d'un autre foyer de l'utilisateur, ni les tâches arrêtées" do
+      other_household = create(:household_member, user:, role: :owner).household
+      create(:plant, :watered, household: other_household, name: "Ailleurs", interval_days: 1)
+      stopped = add_task(title: "Arrêtée", recurrence_type: "once", due_on: "2026-11-15")
+      stopped.update!(active: false)
+      sign_in(user)
+      post household_selection_path(household)
+
+      get root_path
+
+      expect(response.body).not_to include("Ailleurs", "Arrêtée")
+    end
+
     it "regroupe arrosages et autres tâches du jour (retards compris), sans les tâches à venir" do
       add_task(title: "Engrais", recurrence_type: "once", due_on: "2026-11-15")
       add_task(title: "Rempoter", recurrence_type: "once", due_on: "2026-12-15")
@@ -118,7 +163,8 @@ RSpec.describe "Tâches d'une plante", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 2", "Arrosée : Citronnier", "Fait : Engrais (Citronnier)")
+      expect(response.body).to include("À faire aujourd&#39;hui · 2", "Arrosée : Citronnier")
+      expect(response.body).to include("Fait : Engrais (Citronnier)")
       expect(response.body).to include("en retard de 1 j")
       expect(response.body).not_to include("Rempoter")
     end

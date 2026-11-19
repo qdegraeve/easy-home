@@ -11,6 +11,13 @@ RSpec.describe TaskPolicy do
 
     it { is_expected.to permit_actions(%i[create update destroy]) }
 
+    context "quand la plante est archivée" do
+      before { plant.update!(archived_at: Time.current) }
+
+      it { is_expected.to forbid_actions(%i[create update]) }
+      it { is_expected.to permit_action(:destroy) }
+    end
+
     context "sur la tâche d'arrosage (réglée depuis la plante)" do
       let(:task) { create(:task, household: plant.household, subject: plant) }
 
