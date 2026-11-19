@@ -72,12 +72,16 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 |---|---|---|
 | Connexion, déconnexion, mauvais mot de passe | `spec/system/authentication_spec.rb` | Fait |
 | Mot de passe oublié jusqu'à la reconnexion | `spec/system/password_reset_spec.rb` | À faire |
-| Tableau de bord : tâches en retard, du jour, à venir | | Étape 1 |
-| Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 1 |
-| Validation d'une tâche : journal mis à jour, échéance suivante créée | | Étape 1 |
-| Saut d'une échéance | | Étape 1 |
-| Ajout d'un élément du catalogue : les tâches sont générées | | Étape 1 |
-| Échéance manquée : marquée comme telle par le job, visible dans le journal | | Étape 1 |
+| Ajout d'une plante avec photo : espèce proposée, confirmée ou corrigée | | Étape 2 |
+| Arrosage : « Arrosée » met à jour le journal et la prochaine échéance | | Étape 2 |
+| Analyse d'une photo : état et actions affichés, action acceptée devenue tâche | | Étape 2 |
+| Analyse en échec : message visible, relance possible | | Étape 2 |
+| Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
+| Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 5 |
+| Validation d'une tâche : journal mis à jour, échéance suivante créée | | Étape 5 |
+| Saut d'une échéance | | Étape 5 |
+| Ajout d'un élément du catalogue : les tâches sont générées | | Étape 5 |
+| Échéance manquée : marquée comme telle par le job, visible dans le journal | | Étape 5 |
 | Invité : ne voit et ne valide que ses tâches ouvertes | | Étape 5 |
 
 Les specs système tournent dans un viewport mobile (390 × 844) : l'app est utilisée dans une webview Android.

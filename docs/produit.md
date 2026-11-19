@@ -10,6 +10,9 @@ Un rappel récurrent de calendrier ne suffit pas :
 - il ne connaît pas le contexte de la maison (équipements, animaux, membres du foyer) ;
 - il ne garde aucune trace de ce qui a été fait, par qui et quand.
 
+Les plantes cumulent tous ces problèmes : l'arrosage dépend de chaque espèce et de la saison, et on ne voit un problème
+(maladie, parasite, manque d'eau) que lorsqu'il est déjà avancé. C'est le besoin initial et la **première priorité**.
+
 ## Proposition
 
 1. **Rappeler au bon moment** : la veille au soir pour les poubelles, avec relance tant que ce n'est pas fait.
@@ -29,11 +32,26 @@ Un rappel récurrent de calendrier ne suffit pas :
   - **glissante** : X jours après la dernière réalisation ;
   - **basée sur l'usage** : l'intervalle est calculé depuis la capacité et le rythme d'usage, puis recalibré. Exemple : à la validation, « le voyant était-il allumé ? » ; si oui, l'intervalle raccourcit.
 
-## Périmètre du MVP
+## Première version : les plantes
+
+Point de départ : une dizaine de plantes en extérieur, à La Réunion.
+
+1. **Inventaire** : chaque plante a un nom, une espèce, un emplacement (« terrasse », « jardin devant »…) et des photos.
+2. **Identification** : la première photo propose l'espèce automatiquement ; on la confirme ou on la corrige.
+3. **Arrosage** : chaque plante a son intervalle d'arrosage (récurrence glissante). L'IA propose l'intervalle de départ
+   selon l'espèce et le climat ; on le valide ou on l'ajuste. Un bouton « Arrosée » alimente le journal.
+4. **Suivi photo** : un historique de photos par plante pour voir l'évolution.
+5. **Analyse** : sur une photo, un bouton « Analyser » donne l'état (bien / à surveiller / à traiter), ce qui est observé
+   et les actions conseillées. Une action peut devenir une tâche si on l'accepte.
+
+Foyer minimal (créé à l'inscription), sans invités ni rôles. Pas encore de notifications : l'app s'utilise depuis le
+navigateur du téléphone. Le choix du modèle d'IA est dans l'ADR 0008.
+
+## Ensuite (MVP complet)
 
 - Éléments et modèles de tâches. Catalogue minimal : poubelles, lave-vaisselle, piscine, un animal
 - Tâches manuelles
-- Récurrences fixes, glissantes et basées sur l'usage
+- Récurrences fixes et basées sur l'usage (la glissante arrive avec les plantes)
 - Notifications push avec validation depuis la notification et relance
 - Journal des tâches (faites, sautées, manquées)
 - Foyer partagé (membres) et invités limités à certaines tâches
@@ -41,16 +59,11 @@ Un rappel récurrent de calendrier ne suffit pas :
 ## Hors MVP (idées pour plus tard)
 
 - **Tournantes** et attribution automatique des tâches. La colonne `assignee` est prévue dès le MVP, optionnelle.
-- **Module plantes avec IA** :
-  - une photo permet l'identification (Pl@ntNet ou un modèle de vision) ;
-  - un LLM génère une fiche d'entretien en JSON structuré, adaptée au climat réunionnais ;
-  - des tâches sont proposées puis validées par l'utilisateur ;
-  - un diagnostic est possible sur nouvelle photo.
-
-  Clé API fournie par l'utilisateur (« bring your own key »), stockée chiffrée avec `encrypts`, derrière une couche d'abstraction du fournisseur.
+- **Plantes, au-delà de la première version** : fiche d'entretien complète, rempotage et engrais, arrosage ajusté par la
+  météo (pluie).
 - **Stocks de consommables** (croquettes, chlore, filtres), avec rappel d'achat.
 - **Relevés de mesures** (pH et chlore de la piscine, poids d'un animal) avec courbes.
-- **Déclencheurs contextuels** : météo (reporter l'arrosage), géolocalisation, tag NFC.
+- **Déclencheurs contextuels** : géolocalisation, tag NFC.
 - **Mode cyclone** : checklist de préparation.
 - Import du calendrier de collecte des déchets de la commune.
 - Mode vacances, export du journal (carnet d'entretien).

@@ -16,6 +16,10 @@
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
 | Appareil | `Device` | Téléphone d'un utilisateur : jeton push Firebase et jeton d'API natif. |
+| Plante | `Item` (`kind: plant`) | Un élément du foyer. Espèce dans `properties`. |
+| Emplacement | `Item#location` | Texte libre (« terrasse », « jardin devant »), avec les emplacements déjà saisis en suggestion. |
+| Photo | `Photo` | Une photo d'un élément, datée. L'ensemble forme le suivi photo. |
+| Analyse | `PhotoAnalysis` | Résultat de l'IA sur une photo : espèce proposée, état, observations, actions conseillées. |
 
 ## Modèle de données (esquisse)
 
@@ -34,7 +38,24 @@ Membership
 
 Item
   household, kind, name
+  location (optionnel)           # emplacement, texte libre
   properties : jsonb             # attributs variables : cycles_per_week, volume_m3…
+                                 # plante : { species, species_source (ai | user) }
+  has_many :photos
+
+Photo
+  item, taken_at
+  image (Active Storage)
+  has_one :analysis (PhotoAnalysis)
+
+PhotoAnalysis
+  photo
+  status (pending | done | failed), error
+  health (ok | watch | act)      # bien / à surveiller / à traiter
+  species_guess, species_confidence
+  observations : text
+  actions : jsonb                # [{ title, details }] ; une action acceptée devient une Task
+  provider                       # ex. "claude_cli"
 
 Task
   household
@@ -112,3 +133,13 @@ tasks:
 ```
 
 Ajouter un élément au foyer (`Items::Add`) crée l'`Item` et instancie les `Task` de son modèle.
+
+## Plantes
+
+- Le modèle `plant` du catalogue porte une seule tâche, `plant.watering`, en récurrence **glissante**. L'intervalle de
+  départ vient de l'analyse de la première photo (proposé selon l'espèce et le climat), puis reste modifiable.
+- Ajouter une plante : création de l'`Item` et de sa première `Photo`, puis analyse en job. L'espèce proposée s'affiche
+  à confirmer : acceptée telle quelle, elle remplit `properties.species` avec `species_source: ai` ; corrigée, avec
+  `species_source: user`.
+- Une analyse ne modifie jamais rien d'elle-même : l'espèce, l'intervalle et les actions sont des **propositions** à
+  accepter. Le fournisseur d'IA est derrière `Plants::Analyzer` (ADR 0008).

@@ -8,8 +8,11 @@ Une décision structurante = un fichier court : contexte, décision, alternative
 | [0002](0002-esbuild.md) | esbuild pour le JavaScript | Acceptée |
 | [0003](0003-solid-queue.md) | Solid Queue plutôt que Redis / Sidekiq | Acceptée |
 | [0004](0004-base-de-donnees.md) | PostgreSQL comme base de données | Acceptée |
-| [0005](0005-rspec.md) | RSpec pour les tests Ruby | Acceptée (installation à faire) |
+| [0005](0005-rspec.md) | RSpec pour les tests Ruby | Acceptée |
 | [0006](0006-couches-applicatives.md) | Couches : services, formulaires, queries, policies, composants | Acceptée |
+| [0008](0008-modele-ia-plantes.md) | Modèle d'IA pour les plantes : forfait Claude via `claude -p`, puis API | Acceptée |
+
+Le numéro 0007 est réservé au flux de livraison (branche `chore/flux-de-livraison`, gelée).
 
 ## Modèle
 

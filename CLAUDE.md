@@ -82,7 +82,10 @@ Détails et exemples dans `docs/architecture.md`. Principe directeur : **une str
 
 ## État actuel
 
-L'app vient d'être générée : aucun code métier. Le setup n'est pas terminé (passage à PostgreSQL fait, mais Minitest encore en place, gems d'architecture pas encore ajoutées, pas d'authentification). Voir la checklist dans `docs/roadmap.md`. **Vérifier le `Gemfile` avant de supposer qu'une gem citée ici est installée.**
+Setup terminé (RSpec, gems d'architecture, authentification, i18n, CI), aucun code métier. Priorité : la première
+version centrée sur les **plantes** (inventaire, arrosage, photos, analyse par IA via `claude -p`, ADR 0008), précédée
+de maquettes. Voir `docs/produit.md` et `docs/roadmap.md`. **Vérifier le `Gemfile` avant de supposer qu'une gem citée
+ici est installée.**
 
 ## Façon de travailler
 
