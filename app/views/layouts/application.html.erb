@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <title><%= content_for(:title) || "Easy Home" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,19 +11,28 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-stone-50 text-stone-800 antialiased">
+    <% if authenticated? %>
+      <header class="sticky top-0 z-10 border-b border-stone-200 bg-stone-50/95 backdrop-blur">
+        <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3 lg:max-w-5xl">
+          <%= link_to t(".app_name"), root_path, class: "font-semibold text-emerald-700" %>
+          <%= button_to t(".sign_out"), session_path, method: :delete,
+                class: "rounded-xl px-3 py-2 text-sm text-stone-600 hover:bg-stone-100" %>
+        </div>
+      </header>
+    <% end %>
+
+    <main class="mx-auto max-w-md px-4 pb-24 pt-6 lg:max-w-5xl">
+      <%= render "layouts/flash" %>
+      <%= yield %>
+    </main>
   </body>
 </html>

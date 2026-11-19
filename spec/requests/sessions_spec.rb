@@ -14,14 +14,14 @@ RSpec.describe "Sessions", type: :request do
 
   describe "POST /session" do
     it "signs the user in with valid credentials" do
-      post session_path, params: { email_address: user.email_address, password: "password" }
+      post session_path, params: { email: user.email, password: "password" }
 
       expect(response).to redirect_to(root_url)
       expect(user.sessions.count).to eq(1)
     end
 
     it "redirects back with a French alert on invalid credentials" do
-      post session_path, params: { email_address: user.email_address, password: "wrong" }
+      post session_path, params: { email: user.email, password: "wrong" }
 
       expect(response).to redirect_to(new_session_path)
       expect(flash[:alert]).to eq("Adresse e-mail ou mot de passe incorrect.")
@@ -30,7 +30,7 @@ RSpec.describe "Sessions", type: :request do
 
   describe "DELETE /session" do
     it "signs the user out" do
-      post session_path, params: { email_address: user.email_address, password: "password" }
+      post session_path, params: { email: user.email, password: "password" }
 
       delete session_path
 

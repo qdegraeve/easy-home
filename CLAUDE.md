@@ -43,13 +43,14 @@ bin/jobs                 # worker Solid Queue en local
 bundle exec rspec        # tests Ruby, dont end to end (yarn build && yarn build:css avant les system specs)
 yarn test                # tests JS Vitest
 bin/check-specs          # garde-fous des specs : pas de sleep, de focus, de retry, de Time.now
+bin/rails accounts:create EMAIL=moi@example.com  # crée un compte (pas d'inscription publique) ; le foyer se crée dans l'app
 ```
 
 ## Architecture : règles essentielles
 
 Détails et exemples dans `docs/architecture.md`. Principe directeur : **une structure claire et testable, sans abstraction spéculative**. On n'ajoute une couche que lorsqu'un besoin concret la justifie.
 
-- **Contrôleurs minces** : authentifier, autoriser, appeler un service (ou faire un CRUD simple), rendre ou rediriger. Le résultat d'un service est traité par pattern matching (`case ... in Success(...)`).
+- **Contrôleurs minces** : authentifier, autoriser, appeler un service (ou faire un CRUD simple), rendre ou rediriger. Le résultat d'un service se lit avec ses méthodes (`result.success?`, `result.value!`, `result.failure`), sans `include Dry::Monads` dans les contrôleurs.
 - **Modèles** : associations, scopes simples, validations d'invariants. **Pas de callbacks à effets de bord** (notification, job, appel externe) : ça va dans un service.
 - **Services** (`app/services/<domaine>/<verbe>.rb`, ex. `Tasks::Complete`) : uniquement si l'action touche plusieurs modèles ou déclenche des effets de bord. `Dry::Monads` (Result + do notation), méthode publique unique `#call` avec arguments nommés, retour `Success(valeur)` ou `Failure[:code, payload]`.
 - **Formulaires / contrats** (`app/forms`) : `ActiveModel::Validations` + `SimpleDelegator` quand la validation dépend du contexte ou couvre plusieurs modèles. Compatibles avec `form_with`.

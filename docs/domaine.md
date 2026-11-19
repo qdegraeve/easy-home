@@ -7,8 +7,8 @@
 | Français (UI) | Code | Définition |
 |---|---|---|
 | Foyer | `Household` | La maison et ses occupants. Unité de partage des données. |
-| Membre | `Membership` | Lien entre un utilisateur et un foyer, avec un rôle. |
-| Rôle | `Membership#role` | `owner` (gère le foyer), `member` (voit et fait tout), `guest` (voit uniquement les tâches qui lui sont ouvertes). |
+| Membre | `HouseholdMember` | Lien entre un utilisateur et un foyer, avec un rôle. |
+| Rôle | `HouseholdMember#role` | `owner` (gère le foyer), `member` (voit et fait tout), `guest` (voit uniquement les tâches qui lui sont ouvertes). |
 | Élément | `Item` | Ce que possède le foyer : équipement, animal, bassin, plante… |
 | Type d'élément | `Item#kind` | Clé du catalogue (`dishwasher`, `pool`, `cat`, `trash_bins`…). |
 | Modèle de tâche | `TaskTemplate` | Définition dans le catalogue YAML (pas en base). |
@@ -25,7 +25,7 @@
 
 ```
 User
-  has_many :memberships
+  has_many :household_members
   has_many :devices
 
 Household
@@ -33,7 +33,7 @@ Household
   address (optionnel)            # libellé choisi dans l'autocomplétion
   latitude, longitude            # issus du géocodage
   altitude_m                     # calculée depuis la position (ADR 0009)
-  has_many :memberships, :items, :tasks, :locations
+  has_many :members (HouseholdMember), :items, :tasks, :locations
 
 Location
   household, name
@@ -41,7 +41,7 @@ Location
   sheltered : boolean            # abrité du vent
   has_many :items
 
-Membership
+HouseholdMember
   user, household, role (owner | member | guest)
   has_many :task_accesses        # utile pour les guests uniquement
 
@@ -75,7 +75,7 @@ Task
   recurrence_type (once | fixed | sliding | usage_based)
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_offset                # quand notifier avant l'échéance (ex. la veille à 19h)
-  assignee (Membership, optionnel)   # prévu pour les tournantes, hors MVP
+  assignee (HouseholdMember, optionnel)   # prévu pour les tournantes, hors MVP
   active : boolean
 
 TaskOccurrence                   # = une ligne du journal
@@ -88,7 +88,7 @@ TaskOccurrence                   # = une ligne du journal
   notified_at, reminder_count
 
 TaskAccess
-  membership (guest), task
+  household_member (guest), task
   starts_on, ends_on (optionnels)
 
 Device
@@ -96,6 +96,14 @@ Device
   api_token_digest               # jeton d'API pour les actions natives, stocké haché
   last_seen_at
 ```
+
+## Foyers et comptes
+
+- Un compte est créé en console (`bin/rails accounts:create`), sans inscription publique. Le foyer se crée ensuite
+  dans l'app : un utilisateur sans foyer est envoyé vers « Créer un foyer » (`Households::Create`, rôle `owner`).
+- Un utilisateur peut avoir plusieurs foyers. Le **foyer actif** est mémorisé en session (`session[:household_id]`) et
+  se change depuis « Mes foyers ». À défaut, ou si la session pointe vers un foyer dont il n'est plus membre, c'est son
+  premier foyer par ordre alphabétique. Toute lecture passe par `policy_scope(Household)`.
 
 ## Cycle de vie d'une échéance
 

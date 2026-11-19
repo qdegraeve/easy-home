@@ -8,14 +8,34 @@ RSpec.describe "Home", type: :request do
       expect(response).to redirect_to(new_session_path)
     end
 
-    it "renders the page for a signed in user" do
-      user = create(:user)
-      post session_path, params: { email_address: user.email_address, password: "password" }
+    it "renders the household page for a signed in user" do
+      user = create(:user, :with_household)
+      post session_path, params: { email: user.email, password: "password" }
 
       get root_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Se déconnecter")
+      expect(response.body).to include("Maison de test", "Mes plantes", "Se déconnecter")
+    end
+
+    it "sends a user without household to the household form" do
+      user = create(:user)
+      post session_path, params: { email: user.email, password: "password" }
+
+      get root_path
+
+      expect(response).to redirect_to(new_household_path)
+    end
+
+    it "shows the first household by name when none is selected" do
+      user = create(:user)
+      create(:household_member, user:, household: create(:household, name: "Zébu"))
+      create(:household_member, user:, household: create(:household, name: "Appartement"))
+      post session_path, params: { email: user.email, password: "password" }
+
+      get root_path
+
+      expect(response.body).to include("Appartement")
     end
   end
 end

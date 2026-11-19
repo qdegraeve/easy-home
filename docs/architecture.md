@@ -53,11 +53,13 @@ class TaskOccurrences::CompletionsController < ApplicationController
     occurrence = policy_scope(TaskOccurrence).find(params[:task_occurrence_id])
     authorize occurrence, :complete?
 
-    case Tasks::Complete.new.call(occurrence:, user: Current.user, params: completion_params)
-    in Success(occurrence)
-      redirect_to occurrence.task, notice: t(".success")
-    in Failure[:invalid, form]
-      render :new, locals: { form: }, status: :unprocessable_entity
+    result = Tasks::Complete.new.call(occurrence:, user: Current.user, params: completion_params)
+
+    if result.success?
+      redirect_to result.value!.task, notice: t(".success")
+    else
+      _code, form = result.failure
+      render :new, locals: { form: }, status: :unprocessable_content
     end
   end
 
@@ -67,6 +69,9 @@ class TaskOccurrences::CompletionsController < ApplicationController
 end
 ```
 
+- Le résultat d'un service se lit avec ses propres méthodes (`success?`, `value!`, `failure`) : pas
+  d'`include Dry::Monads` dans les contrôleurs. Quand plusieurs codes d'échec appellent des réponses différentes,
+  `case result.failure in [:invalid, form] ...` reste lisible sans inclusion.
 - Préférer des contrôleurs REST supplémentaires (`CompletionsController#create`) à des actions custom (`TasksController#complete`).
 - Pas de logique métier dans le contrôleur.
 
