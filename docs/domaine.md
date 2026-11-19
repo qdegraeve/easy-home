@@ -54,7 +54,7 @@ Item
 
 Photo
   item, taken_at
-  image (Active Storage)
+  image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu
   has_one :analysis (PhotoAnalysis)
 
 PhotoAnalysis
@@ -62,8 +62,9 @@ PhotoAnalysis
   status (pending | done | failed), error
   health (ok | watch | act)      # bien / à surveiller / à traiter
   species_guess, species_confidence
+  watering_interval_days         # intervalle proposé (1 à 60), optionnel
   observations : text
-  actions : jsonb                # [{ title, details }] ; une action acceptée devient une Task
+  actions : jsonb                # [{ title, details, due_in_days }] ; une action acceptée devient une Task `once`
   provider                       # ex. "claude_cli"
 
 Task
@@ -71,7 +72,7 @@ Task
   item (optionnel)               # null pour une tâche manuelle indépendante
   title, description
   source (manual | template), template_key (ex. "dishwasher.salt")
-  recurrence_type (fixed | sliding | usage_based)
+  recurrence_type (once | fixed | sliding | usage_based)
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_offset                # quand notifier avant l'échéance (ex. la veille à 19h)
   assignee (Membership, optionnel)   # prévu pour les tournantes, hors MVP
@@ -113,6 +114,7 @@ pending ──(Fait)──────────▶ done
 
 Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 
+- `Recurrence::Once` : une seule échéance, aucune suivante après réalisation ;
 - `Recurrence::Fixed` : règle calendaire, s'appuie sur `ice_cube` ;
 - `Recurrence::Sliding` : `interval_days` après la dernière réalisation ;
 - `Recurrence::UsageBased` : intervalle = `capacity / usage_per_day`, ajusté par un facteur de calibrage issu du `feedback` des échéances précédentes.
@@ -145,13 +147,16 @@ Ajouter un élément au foyer (`Items::Add`) crée l'`Item` et instancie les `Ta
 
 ## Plantes
 
-- Le modèle `plant` du catalogue porte une seule tâche, `plant.watering`, en récurrence **glissante**. L'intervalle de
-  départ vient de l'analyse de la première photo (proposé selon l'espèce et le climat), puis reste modifiable.
+- Le modèle `plant` du catalogue porte une seule tâche, `plant.watering`, en récurrence **glissante**, créée à l'ajout
+  de la plante avec un intervalle par défaut du catalogue (3 jours). L'analyse propose de le remplacer
+  (`watering_interval_days`) ; il reste modifiable à la main. Une analyse en échec ou en attente ne bloque donc rien.
+- Une action conseillée acceptée devient une `Task` en récurrence `once`, due dans `due_in_days` jours.
 - Ajouter une plante : création de l'`Item` et de sa première `Photo`, puis analyse en job. L'espèce proposée s'affiche
   à confirmer : acceptée telle quelle, elle remplit `properties.species` avec `species_source: ai` ; corrigée, avec
   `species_source: user`.
 - Chaque analyse reçoit le contexte : position arrondie (environ 1 km) et altitude du foyer, exposition et abri de
-  l'emplacement, espèce confirmée, intervalle d'arrosage actuel. **L'adresse n'est jamais envoyée à l'IA**, et ces
-  données restent en base, jamais dans le dépôt.
+  l'emplacement, espèce confirmée, intervalle d'arrosage actuel, mois en cours (saisons de l'hémisphère sud).
+  **L'adresse n'est jamais envoyée à l'IA**, ni les métadonnées de la photo (voir ADR 0008), et ces données restent en
+  base, jamais dans le dépôt.
 - Une analyse ne modifie jamais rien d'elle-même : l'espèce, l'intervalle et les actions sont des **propositions** à
   accepter. Le fournisseur d'IA est derrière `Plants::Analyzer` (ADR 0008).
