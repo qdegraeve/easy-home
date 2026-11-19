@@ -16,7 +16,12 @@ module TaskOccurrences
       occurrence = find_occurrence
       result = Tasks::CancelCompletion.new.call(occurrence:)
 
-      notice = result.success? ? t(".success", title: occurrence.task.title) : t(".not_done")
+      notice = if result.failure?
+        t(".not_done")
+      else
+        # Tâche arrêtée (plante archivée) : la réalisation sort du journal, sans nouvelle échéance.
+        t(occurrence.task.active? ? ".success" : ".success_stopped", title: occurrence.task.title)
+      end
       redirect_back_or_to root_path, notice:, status: :see_other
     end
 

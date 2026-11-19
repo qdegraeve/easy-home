@@ -107,6 +107,7 @@ fr:
         already_done_today: "Déjà fait aujourd'hui."
       destroy:
         success: "%{title} annulé, prochaine échéance recalculée."
+        success_stopped: "%{title} annulé."
         not_done: "Rien à annuler."
   households:
     create:

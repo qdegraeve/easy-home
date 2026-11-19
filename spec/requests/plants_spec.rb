@@ -208,6 +208,53 @@ RSpec.describe "Plantes", type: :request do
     end
   end
 
+  describe "messages d'échec" do
+    let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
+
+    before { sign_in(user) }
+
+    it "refuse un second arrosage le même jour" do
+      post task_occurrence_completion_path(plant.watering_task.pending_occurrence)
+      post task_occurrence_completion_path(plant.reload.watering_task.pending_occurrence)
+
+      expect(flash[:notice]).to eq("Déjà fait aujourd'hui.")
+    end
+
+    it "refuse l'arrosage d'une tâche arrêtée" do
+      plant.watering_task.update!(active: false)
+
+      post task_occurrence_completion_path(plant.watering_task.pending_occurrence)
+
+      expect(flash[:notice]).to eq("Cette tâche est arrêtée.")
+    end
+
+    it "n'annule rien sur une échéance pas encore faite" do
+      delete task_occurrence_completion_path(plant.watering_task.pending_occurrence)
+
+      expect(flash[:notice]).to eq("Rien à annuler.")
+      expect(plant.watering_task.occurrences.count).to eq(2)
+    end
+
+    it "annule un arrosage d'une plante archivée sans recréer d'échéance" do
+      post plant_archive_path(plant)
+
+      delete task_occurrence_completion_path(plant.watering_task.occurrences.done.sole)
+
+      expect(flash[:notice]).to eq("Arrosage annulé.")
+      expect(plant.watering_task.occurrences).to be_empty
+    end
+
+    it "signale une plante déjà archivée, ou pas archivée" do
+      post plant_archive_path(plant)
+      post plant_archive_path(plant)
+      expect(flash[:notice]).to eq("« Basilic » était déjà archivée.")
+
+      delete plant_archive_path(plant)
+      delete plant_archive_path(plant)
+      expect(flash[:notice]).to eq("« Basilic » n'était pas archivée.")
+    end
+  end
+
   describe "POST /task_occurrences/:id/completion" do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
     let(:occurrence) { plant.watering_task.pending_occurrence }

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { confirmWithDialog } from "../../app/javascript/confirm_dialog"
+import { confirmWithDialog } from "../../app/javascript/lib/confirm_dialog"
 
 describe("confirmWithDialog", () => {
   beforeEach(() => {
