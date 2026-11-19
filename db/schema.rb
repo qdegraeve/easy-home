@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_124124) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_19_180002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,6 +45,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_124124) do
     t.index ["household_id", "name"], name: "index_locations_on_household_id_and_name", unique: true
   end
 
+  create_table "plants", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.bigint "location_id"
+    t.string "name", null: false
+    t.string "species"
+    t.string "species_source"
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id"], name: "index_plants_on_household_id"
+    t.index ["location_id"], name: "index_plants_on_location_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "ip_address"
@@ -52,6 +65,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_124124) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "task_occurrences", force: :cascade do |t|
+    t.bigint "task_id", null: false
+    t.datetime "due_at", null: false
+    t.string "status", default: "pending", null: false
+    t.bigint "completed_by_id"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["completed_by_id"], name: "index_task_occurrences_on_completed_by_id"
+    t.index ["task_id", "due_at"], name: "index_task_occurrences_on_task_id_and_due_at"
+    t.index ["task_id"], name: "index_task_occurrences_one_pending", unique: true, where: "((status)::text = 'pending'::text)"
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.string "subject_type"
+    t.bigint "subject_id"
+    t.string "title", null: false
+    t.string "template_key"
+    t.string "recurrence_type", null: false
+    t.jsonb "recurrence_config", default: {}, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id"], name: "index_tasks_on_household_id"
+    t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject"
   end
 
   create_table "users", force: :cascade do |t|
@@ -65,5 +106,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_124124) do
   add_foreign_key "household_members", "households"
   add_foreign_key "household_members", "users"
   add_foreign_key "locations", "households"
+  add_foreign_key "plants", "households"
+  add_foreign_key "plants", "locations"
   add_foreign_key "sessions", "users"
+  add_foreign_key "task_occurrences", "tasks"
+  add_foreign_key "task_occurrences", "users", column: "completed_by_id"
+  add_foreign_key "tasks", "households"
 end

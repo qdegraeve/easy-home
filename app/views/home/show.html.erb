@@ -9,8 +9,71 @@
   <% end %>
 </div>
 
-<div class="mt-6 rounded-2xl bg-white p-6 text-center shadow-sm">
-  <p class="text-4xl" aria-hidden="true">🪴</p>
-  <p class="mt-2 font-semibold"><%= t(".empty_title") %></p>
-  <p class="mt-1 text-sm text-stone-500"><%= t(".empty_body") %></p>
-</div>
+<% can_add = policy(Plant.new(household: @household)).create? %>
+
+<% if @plants.empty? %>
+  <div class="mt-6 rounded-2xl bg-white p-6 text-center shadow-sm">
+    <p class="text-4xl" aria-hidden="true">🪴</p>
+    <p class="mt-2 font-semibold"><%= t(".empty_title") %></p>
+    <p class="mt-1 text-sm text-stone-500"><%= t(".empty_body") %></p>
+  </div>
+<% else %>
+  <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+    <section class="self-start" aria-labelledby="to-water">
+      <h2 id="to-water" class="font-semibold"><%= t(".to_water", count: @to_water.size) %></h2>
+      <% if @to_water.any? %>
+        <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+          <% @to_water.each do |plant| %>
+            <li class="flex items-center justify-between gap-3 p-3">
+              <div>
+                <%= link_to plant.name, plant, class: "font-medium" %>
+                <p class="text-sm text-stone-500">
+                  <%= plant.location&.name || t(".no_location") %> ·
+                  <%= render DueLabelComponent.new(due_at: plant.next_watering_at) %>
+                </p>
+              </div>
+              <%= render "plants/water_button", plant:, occurrence: plant.watering_task.pending_occurrence %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".nothing_to_water") %></p>
+      <% end %>
+    </section>
+
+    <section aria-labelledby="all-plants">
+      <h2 id="all-plants" class="font-semibold"><%= t(".all", count: @plants.size) %></h2>
+      <% @plants.group_by(&:location).sort_by { |location, _| location&.name.to_s }.each do |location, plants| %>
+        <h3 class="mt-3 text-sm text-stone-500">
+          <%= location ? "#{location.name} · #{t("locations.exposures.#{location.exposure}")}" : t(".no_location") %>
+        </h3>
+        <ul class="mt-1 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+          <% plants.each do |plant| %>
+            <li class="flex items-center justify-between gap-3 p-3">
+              <%= link_to plant.name, plant, class: "font-medium" %>
+              <% if plant.next_watering_at %>
+                <span class="text-sm text-stone-500"><%= render DueLabelComponent.new(due_at: plant.next_watering_at) %></span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+  </div>
+<% end %>
+
+<% if can_add %>
+  <%= link_to t(".add"), new_plant_path,
+        class: "mt-6 block rounded-xl bg-emerald-700 py-3 text-center font-semibold text-white" %>
+<% end %>
+
+<% if @archived_plants.any? %>
+  <details class="mt-6">
+    <summary class="cursor-pointer text-sm text-stone-500"><%= t(".archived", count: @archived_plants.size) %></summary>
+    <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+      <% @archived_plants.each do |plant| %>
+        <li class="p-3"><%= link_to plant.name, plant, class: "text-stone-500" %></li>
+      <% end %>
+    </ul>
+  </details>
+<% end %>

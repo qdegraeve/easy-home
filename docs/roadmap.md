@@ -27,14 +27,16 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [x] Layout de base Tailwind, pensé mobile d'abord
 - [x] Foyers créés dans l'app, plusieurs par utilisateur, foyer actif en session ; comptes créés en console
   (`bin/rails accounts:create`)
-- [ ] Moteur de récurrence : `Recurrence::Sliding`, testé de façon exhaustive
+- [x] Moteur de récurrence : `Recurrence::Sliding`, testé de façon exhaustive
 - [x] Ma maison : adresse avec autocomplétion, position et altitude (ADR 0009), emplacements (`Location`) avec
   exposition et abri
-- [ ] Plantes : `Item` (`kind: plant`), emplacement, espèce
+- [x] Plantes : `Plant` (ADR 0010), emplacement, espèce saisie ; archivage et suppression
 - [ ] Photos (Active Storage) et suivi photo
 - [ ] `Plants::Analyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test
 - [ ] Identification de l'espèce proposée, confirmée ou corrigée
-- [ ] Arrosage : tâche `plant.watering`, bouton « Arrosée », journal
+- [x] Arrosage : tâche `plant.watering`, bouton « Arrosée », journal
+- [ ] Tâches d'une plante : liste sur la fiche, tâche manuelle (engrais, taille…) une seule fois à une date
+  (`Recurrence::Once`) ou tous les N jours après la dernière fois
 - [ ] Analyse d'une photo : état, observations, actions ; action acceptée → tâche
 - [ ] System specs des parcours : ajouter une plante, arroser, analyser une photo
 

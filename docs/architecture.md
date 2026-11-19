@@ -15,7 +15,7 @@ app/
   forms/           # contrats : ActiveModel::Validations (+ SimpleDelegator)
   services/        # cas d'usage : Dry::Monads
     tasks/complete.rb           → Tasks::Complete
-    items/add.rb                → Items::Add
+    plants/add.rb               → Plants::Add
   queries/         # query objects
     due_occurrences_query.rb    → DueOccurrencesQuery
   policies/        # Pundit
@@ -116,7 +116,7 @@ end
 
 Conventions :
 
-- Nom : `<Domaine>::<Verbe>` (`Tasks::Complete`, `Items::Add`, `Households::InviteGuest`).
+- Nom : `<Domaine>::<Verbe>` (`Tasks::Complete`, `Plants::Add`, `Households::InviteGuest`).
 - Une seule méthode publique `#call`, avec des arguments nommés.
 - Retour : `Success(valeur)` ou `Failure[:code_symbolique, payload]`. Codes courants : `:invalid` (payload = formulaire), `:not_found`, `:forbidden`, `:external_error`.
 - Avec la do notation, un `Failure` levé dans un bloc `transaction` provoque un rollback. C'est le comportement voulu.

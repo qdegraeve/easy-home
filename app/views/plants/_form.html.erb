@@ -1,0 +1,48 @@
+<%= form_with model: form, url:, method:, class: "space-y-4" do |f| %>
+  <%= render "shared/errors", record: form %>
+
+  <div>
+    <%= f.label :name, class: "block text-sm font-semibold" %>
+    <%= f.text_field :name, required: true, maxlength: 100, placeholder: t("plants.form.name_placeholder"),
+          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+  </div>
+
+  <div>
+    <%= f.label :species, class: "block text-sm font-semibold" %>
+    <%= f.text_field :species, maxlength: 100, placeholder: t("plants.form.species_placeholder"),
+          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+  </div>
+
+  <div>
+    <%= f.label :location_id, class: "block text-sm font-semibold" %>
+    <%= f.collection_select(
+      :location_id,
+      form.household.locations.order(:name),
+      :id,
+      :name,
+      { include_blank: t("plants.form.no_location") },
+      class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3"
+    ) %>
+  </div>
+
+  <div>
+    <%= f.label :watering_interval_days, class: "block text-sm font-semibold" %>
+    <div class="mt-1 flex items-center gap-2">
+      <span class="text-sm"><%= t("plants.form.every") %></span>
+      <%= f.number_field :watering_interval_days, required: true, min: 1, max: 60,
+            class: "w-20 rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+      <span class="text-sm"><%= t("plants.form.days") %></span>
+    </div>
+  </div>
+
+  <% if adding %>
+    <div>
+      <%= f.label :last_watered_on, class: "block text-sm font-semibold" %>
+      <%= f.date_field :last_watered_on, max: Time.zone.today,
+            class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+      <p class="mt-1 text-xs text-stone-500"><%= t("plants.form.last_watered_help") %></p>
+    </div>
+  <% end %>
+
+  <%= f.submit submit, class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+<% end %>
