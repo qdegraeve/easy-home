@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Journal</title>
+  <meta name="description" content="Onglet Journal : ce qui a été fait, par qui, tous domaines.">
+  <style>
+:root {
+  --paper: #F6F4EF; --surface: #FFFFFF; --line: #E4E0D6; --ink: #1D2521; --muted: #5F665F;
+  --action: #1F5C46; --action-soft: #E3EDE7; --alert: #A8402A; --alert-soft: #F6E4DF;
+  --warn: #8A6200; --warn-soft: #F5ECD3;
+  --plants: #3F7D4E; --plants-soft: #E4EEE6; --waste: #B98A00; --waste-soft: #F6EDCF;
+  --pool: #1F7A99; --pool-soft: #DDEEF3; --pets: #B0603A; --pets-soft: #F4E3D9;
+  --gear: #55657A; --gear-soft: #E3E7EC;
+  --native: #2F6FE4;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: system-ui, -apple-system, "Roboto", "Segoe UI", sans-serif; color: var(--ink);
+  background: #DAD6CC; font-size: 16px; line-height: 1.375; -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.ic { flex-shrink: 0; display: block; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Page around the phone */
+.stage { display: flex; gap: 32px; justify-content: center; align-items: flex-start; padding: 24px 16px 48px;
+  flex-wrap: wrap; }
+.notes { width: 340px; max-width: 100%; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.notes h1 { font-size: 20px; margin: 0 0 4px; }
+.notes .back { font-size: 14px; color: var(--action); display: inline-flex; gap: 6px; align-items: center;
+  margin-bottom: 12px; }
+.notes ol { padding-left: 20px; margin: 12px 0; }
+.notes li { margin-bottom: 8px; }
+.notes .legend { display: flex; gap: 8px; align-items: center; margin-top: 16px; padding: 10px 12px;
+  background: var(--surface); border-radius: 12px; }
+.notes code { font-size: 13px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 4px; }
+.toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+
+/* Phone */
+.phone { width: 390px; max-width: 100%; height: 844px; background: var(--paper); border-radius: 36px;
+  box-shadow: 0 0 0 10px #1b1b1b, 0 20px 50px rgba(0,0,0,.25); overflow: hidden; display: flex;
+  flex-direction: column; position: relative; }
+@media (max-width: 420px) { .phone { border-radius: 0; box-shadow: none; height: 100vh; }
+  .stage { padding: 0 0 32px; } .notes { padding: 0 16px; } }
+.statusbar { height: 28px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 20px; font-size: 13px; font-weight: 600; }
+.appbar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+.appbar .title { flex: 1; min-width: 0; padding: 0 8px; }
+.appbar .title b { display: block; font-size: 21px; font-weight: 600; line-height: 1.2; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.appbar .title small { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; color: var(--muted); }
+.iconbtn { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 24px; }
+.iconbtn:active { background: rgba(0,0,0,.06); }
+.textbtn { height: 40px; padding: 0 16px; border-radius: 20px; font-weight: 600; color: var(--action); }
+.content { flex: 1; overflow-y: auto; padding: 4px 16px 24px; position: relative; }
+.content::-webkit-scrollbar { display: none; }
+.tabbar { height: 80px; flex-shrink: 0; display: flex; background: #EFECE4; border-top: 1px solid var(--line);
+  padding-bottom: 12px; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-size: 12px; font-weight: 500; color: var(--muted); }
+.tab .pill { width: 64px; height: 32px; border-radius: 16px; display: grid; place-items: center; }
+.tab.on { color: var(--ink); font-weight: 600; }
+.tab.on .pill { background: var(--action-soft); color: var(--action); }
+.gesture { height: 18px; flex-shrink: 0; display: grid; place-items: center; }
+.gesture::after { content: ""; width: 120px; height: 4px; border-radius: 2px; background: #1D2521; opacity: .5; }
+
+/* Native outline toggle */
+body.show-native .native { outline: 2px dashed var(--native); outline-offset: -2px; position: relative; }
+body.show-native .native::before { content: "natif"; position: absolute; right: 6px; top: 2px; font-size: 10px;
+  font-weight: 700; color: #fff; background: var(--native); padding: 0 5px; border-radius: 4px; z-index: 5;
+  letter-spacing: .02em; }
+body.show-native .statusbar.native::before { top: 6px; }
+
+/* Content components */
+.date { font-size: 14px; color: var(--muted); margin: 4px 0 12px; }
+.group-title { font-size: 13px; font-weight: 600; color: var(--muted); margin: 20px 4px 8px; display: flex;
+  justify-content: space-between; align-items: center; }
+.group-title.alert { color: var(--alert); }
+.list { background: var(--surface); border-radius: 14px; overflow: hidden; }
+.row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; min-height: 60px; position: relative; }
+.row + .row::before { content: ""; position: absolute; top: 0; right: 0; left: 60px; border-top: 1px solid var(--line);
+  }
+.list.flat .row + .row::before { left: 12px; }
+.row .main { flex: 1; min-width: 0; }
+.row .t { font-weight: 500; }
+.row .m { font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .m.alert { color: var(--alert); font-weight: 600; }
+.row .end { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.row .end.today { color: var(--ink); font-weight: 600; }
+.dot { display: grid; place-items: center; border-radius: 50%; flex-shrink: 0; }
+.d-plants { background: var(--plants-soft); color: var(--plants); }
+.d-waste { background: var(--waste-soft); color: #8A6700; }
+.d-pool { background: var(--pool-soft); color: var(--pool); }
+.d-pets { background: var(--pets-soft); color: var(--pets); }
+.d-gear { background: var(--gear-soft); color: var(--gear); }
+.done-btn { width: 44px; height: 44px; border-radius: 22px; border: 1.5px solid var(--action); color: var(--action);
+  display: grid; place-items: center; flex-shrink: 0; }
+.done-btn:active, .row.is-done .done-btn { background: var(--action); color: #fff; }
+.row.is-done .t { text-decoration: line-through; color: var(--muted); }
+.count { font-size: 12px; font-weight: 700; background: var(--plants-soft); color: var(--plants); border-radius: 10px;
+  padding: 1px 7px; margin-left: 6px; vertical-align: 2px; }
+.btn { display: flex; width: 100%; height: 48px; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 12px; font-weight: 600; }
+.btn.primary { background: var(--action); color: #fff; }
+.btn.secondary { background: var(--action-soft); color: var(--action); }
+.btn.tertiary { color: var(--action); }
+.btn.danger { color: var(--alert); }
+.toast { position: absolute; left: 12px; right: 12px; bottom: 92px; background: var(--ink); color: #fff;
+  border-radius: 12px; padding: 0 8px 0 16px; height: 52px; display: flex; align-items: center; gap: 8px;
+  font-size: 15px; box-shadow: 0 6px 20px rgba(0,0,0,.2); z-index: 20; transition: opacity .2s, transform .2s; }
+.toast.hidden { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.toast span { flex: 1; }
+.toast button { color: #9FD3B8; font-weight: 600; padding: 0 12px; height: 44px; }
+.field label { display: block; font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+.input { width: 100%; height: 52px; border: 1px solid var(--line); background: var(--surface); border-radius: 12px;
+  padding: 0 14px; font: inherit; color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface);
+  display: inline-flex; align-items: center; gap: 6px; font-size: 15px; }
+.chip.on { background: var(--action-soft); border-color: var(--action); color: var(--action); font-weight: 600; }
+.help { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.segmented { display: flex; background: #ECE9E1; border-radius: 12px; padding: 4px; gap: 4px; margin: 16px 0 4px; }
+.segmented button { flex: 1; height: 40px; border-radius: 9px; font-size: 15px; font-weight: 500;
+  color: var(--muted); }
+.segmented button.on { background: var(--surface); color: var(--ink); font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.switch { width: 52px; height: 32px; border-radius: 16px; background: #C9C5BB; position: relative; flex-shrink: 0; }
+.switch::after { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; transition: left .15s; }
+.switch.on { background: var(--action); }
+.switch.on::after { left: 24px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600;
+  padding: 4px 10px; border-radius: 8px; }
+.status.watch { background: var(--warn-soft); color: var(--warn); }
+.status.ok { background: var(--action-soft); color: var(--action); }
+.status.act { background: var(--alert-soft); color: var(--alert); }
+.ph { display: grid; place-items: center; color: var(--plants); background:
+  repeating-linear-gradient(135deg, #DCE7DD 0 10px, #E4EEE6 10px 20px); }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(29,37,33,.45); z-index: 30; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); z-index: 31;
+  border-radius: 24px 24px 0 0; padding: 8px 16px 24px; }
+.sheet .grab { width: 36px; height: 4px; border-radius: 2px; background: #C9C5BB; margin: 6px auto 12px; }
+.menu { position: absolute; right: 8px; top: 92px; width: 220px; background: var(--surface); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18); z-index: 40; padding: 8px 0; }
+.menu a { display: flex; gap: 12px; align-items: center; height: 48px; padding: 0 16px; font-size: 16px; }
+.menu a.danger { color: var(--alert); }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+
+      <div class="statusbar native"><span class="num">8:02</span><span aria-hidden="true">▾ ▴ ▮</span></div>
+      <header class="appbar native">
+      <span style="width:8px">
+      </span>
+      <div class="title">
+      <b>Journal</b>
+      <small>Maison démo</small>
+      </div>
+      </header>
+      <main class="content">
+      <div class="chips" style="margin:4px 0 4px;flex-wrap:nowrap;overflow-x:auto">
+        <button class="chip on">Tout</button><button class="chip">Plantes</button>
+        <button class="chip">Poubelles</button><button class="chip">Piscine</button>
+        <button class="chip">Animaux</button>
+      </div>
+      <h2 class="group-title">Aujourd'hui</h2>
+      <div class="list">
+        <div class="row">
+        <span class="dot d-pets" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="4" r="2"/>
+        <circle cx="18" cy="8" r="2"/>
+        <circle cx="20" cy="16" r="2"/>
+        <path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.05Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Nourrir les poissons</div>
+        <div class="m">Alex · 7 h 40</div>
+        </div>
+        </div>
+      </div>
+      <h2 class="group-title">Hier</h2>
+      <div class="list">
+        <div class="row">
+        <span class="dot d-plants" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7
+          7z"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Arroser la terrasse</div>
+        <div class="m">Basilic, menthe, ciboulette · Sam · 18 h 10</div>
+        </div>
+        </div>
+        <div class="row">
+        <span class="dot d-waste" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 6h18"/>
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Sortir les ordures ménagères</div>
+        <div class="m">Alex · 19 h 02</div>
+        </div>
+        </div>
+        <div class="row">
+        <span class="dot d-pool" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Nettoyer le skimmer</div>
+        <div class="m">Sauté · « pluie »</div>
+        </div>
+        </div>
+      </div>
+      <h2 class="group-title">Mardi 17 novembre</h2>
+      <div class="list">
+        <div class="row">
+        <span class="dot d-plants" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7
+          7z"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Arroser le jardin devant</div>
+        <div class="m">Citronnier, bougainvillier · Alex</div>
+        </div>
+        </div>
+        <div class="row">
+        <span class="dot d-plants" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Analyse du citronnier</div>
+        <div class="m">À surveiller · 2 suggestions</div>
+        </div>
+        </div>
+      </div>
+</main>
+      <nav class="tabbar native" aria-label="Onglets">
+      <a class="tab" href="aujourdhui.html">
+      <span class="pill">
+      <svg class="ic " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect width="18" height="18" x="3" y="4" rx="2"/>
+      <path d="M16 2v4M8 2v4M3 10h18"/>
+      <path d="m9 16 2 2 4-4"/>
+      </svg>
+      </span>Aujourd'hui</a>
+      <a class="tab" href="maison.html">
+      <span class="pill">
+      <svg class="ic " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+      <path d="M3 10a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      </svg>
+      </span>Maison</a>
+      <a class="tab on" href="journal.html" aria-current="page">
+      <span class="pill">
+      <svg class="ic " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+      <path d="M3 3v5h5"/>
+      <path d="M12 7v5l4 2"/>
+      </svg>
+      </span>Journal</a>
+      </nav>
+      <div class="gesture native"></div>
+    </div>
+    <aside class="notes">
+      <a class="back" href="index.html">
+      <svg class="ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m12 19-7-7 7-7"/>
+      <path d="M19 12H5"/>
+      </svg> Toutes les maquettes</a>
+      <h1>Journal</h1>
+      <label class="toggle"><input type="checkbox" id="native-toggle" checked> Montrer ce qui est natif</label>
+      <ol>
+      <li>Le journal sort des fiches : un seul endroit pour « est-ce que c'est fait ? ».</li>
+      <li>Filtre par domaine en puces ; regroupement par jour.</li>
+      <li>Les validations groupées restent groupées (« Arroser la terrasse » + liste).</li>
+      <li>Appui sur une ligne : détail avec « Annuler » (service existant <code>Tasks::CancelCompletion</code>).</li>
+      </ol>
+    </aside>
+  </div>
+
+<script>
+  // Mockup only: highlights what would be native in the Hotwire Native shell.
+  (function () {
+    var box = document.getElementById("native-toggle");
+    if (!box) return;
+    var apply = function () { document.body.classList.toggle("show-native", box.checked); };
+    box.addEventListener("change", apply);
+    apply();
+  })();
+</script>
+
+</body>
+</html>
