@@ -3,7 +3,8 @@ module Plants
   class AnalysisQuestionsController < ApplicationController
     def create
       @plant, @analysis = find_plant_and_analysis
-      authorize PlantAnalysisQuestion.new(analysis: @analysis)
+      # By id: built from the association, the question would join analysis.questions (has_many inversing).
+      authorize PlantAnalysisQuestion.new(plant_analysis_id: @analysis.id)
       result = Plants::AskQuestion.new.call(analysis: @analysis, user: Current.user, params: question_params)
 
       if result.success?

@@ -24,8 +24,8 @@ RSpec.describe Plants::AnswerQuestion do
     expect(question.reload).to have_attributes(status: "failed", error: "external_error: claude failed: quota")
   end
 
-  it "refuses an empty or too long answer" do
-    [ " ", "a" * (PlantAnalyzer::MAX_ANSWER_LENGTH + 1) ].each do |answer|
+  it "refuses an answer that is not a text, empty or too long" do
+    [ { "answer" => "x" }, " ", "a" * (PlantAnalyzer::MAX_ANSWER_LENGTH + 1) ].each do |answer|
       question.update!(status: :pending, error: nil)
       @fake_plant_analyzer.follow_up = answer
 

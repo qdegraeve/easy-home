@@ -27,6 +27,34 @@ RSpec.describe "Plant analysis questions", type: :request do
     expect(response.body).to include("Oui, le paillis suffit.", "Envoyer la question")
   end
 
+  it "shows the thread on the analysis page, which refreshes itself when the answer comes" do
+    create(:plant_analysis_question, analysis:, body: "Faut-il pailler ?")
+    sign_in(user)
+
+    get plant_analysis_path(plant, analysis)
+
+    expect(response.body).to include("Faut-il pailler ?", "Réponse en cours", "turbo-cable-stream-source")
+    expect(response.body).to include('<meta name="turbo-refresh-method" content="morph">')
+  end
+
+  it "refuses a question on an analysis of another plant" do
+    other = create(:plant_analysis, :done, plant: create(:plant, household:))
+    sign_in(user)
+
+    post plant_analysis_questions_path(plant, other), params: { plant_analysis_question: { body: "Alors ?" } }
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "forbids a question on an analysis that is not done" do
+    analysis.update!(status: :failed)
+    sign_in(user)
+
+    post plant_analysis_questions_path(plant, analysis), params: { plant_analysis_question: { body: "Alors ?" } }
+
+    expect(response).to have_http_status(:forbidden)
+  end
+
   it "re-renders the form when the question is empty" do
     sign_in(user)
 

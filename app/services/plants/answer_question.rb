@@ -34,8 +34,10 @@ module Plants
     end
 
     def check_answer(answer)
-      text = answer.to_s.strip if answer.is_a?(String)
-      return Failure[:invalid_answer, "empty"] if text.blank?
+      return Failure[:invalid_answer, "not a text"] unless answer.is_a?(String)
+
+      text = answer.strip
+      return Failure[:invalid_answer, "empty"] if text.empty?
       return Failure[:invalid_answer, "too long"] if text.length > PlantAnalyzer::MAX_ANSWER_LENGTH
 
       Success(text)

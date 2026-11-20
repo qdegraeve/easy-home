@@ -38,7 +38,7 @@
     <p class="text-xs text-stone-500">
       <%= t("plants.analysis_questions.thread.limit", count: PlantAnalysisQuestion::MAX_PER_ANALYSIS) %>
     </p>
-  <% elsif policy(PlantAnalysisQuestion.new(analysis:)).create? %>
+  <% elsif policy(PlantAnalysisQuestion.new(plant_analysis_id: analysis.id)).create? %>
     <%= render "plants/analysis_questions/form", analysis:, form: QuestionForm.new %>
   <% end %>
 </section>
