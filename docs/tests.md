@@ -76,7 +76,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Ma maison : adresse choisie dans les suggestions, altitude affichée, ajout et suppression d'un emplacement | `spec/system/house_spec.rb` | Fait |
 | Ajout d'une plante (sans photo), arrosage unique du jour, annulation, intervalle, archivage et restauration | `spec/system/plants_spec.rb` | Fait |
 | Tâches d'une plante : ajout (unique, répétée), fait depuis l'accueil et la fiche, annulation, modification, suppression | `spec/system/plant_tasks_spec.rb` | Fait |
-| Suivi photo : photo à l'ajout d'une plante, ajout depuis la fiche, fichier refusé, affichage, suppression | `spec/system/plant_photos_spec.rb` | Fait |
+| Suivi photo : photo à l'ajout d'une plante (datée par l'EXIF), ajout depuis la fiche, fichier refusé, affichage, date corrigée, suppression | `spec/system/plant_photos_spec.rb` | Fait |
 | Ajout d'une plante avec photo : espèce proposée, confirmée ou corrigée | | Étape 2 |
 | Analyse d'une photo : état et actions affichés, action acceptée devenue tâche | | Étape 2 |
 | Analyse en échec : message visible, relance possible | | Étape 2 |

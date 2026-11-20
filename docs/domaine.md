@@ -56,7 +56,7 @@ Plant                            # un modèle par type d'élément (ADR 0010)
 # Plus tard : Pool (volume_m3…), Dishwasher (cycles_per_week…), même principe.
 
 Photo
-  plant, taken_at
+  plant, taken_at                # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
   has_one :analysis (PhotoAnalysis)

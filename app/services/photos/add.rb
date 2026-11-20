@@ -1,6 +1,7 @@
 module Photos
   # Adds a photo to a plant. The upload is normalized before being stored: rotated upright, at most 2048 px, saved
-  # as JPEG without any metadata (EXIF GPS would reveal where the house is).
+  # as JPEG without any metadata (EXIF GPS would reveal where the house is). The shooting date is read from the
+  # EXIF data first; without a plausible one, the photo is dated now.
   class Add
     include Dry::Monads[:result]
 
@@ -24,12 +25,30 @@ module Photos
         filename: "plant-#{plant.id}.jpg",
         content_type: "image/jpeg"
       )
-      Success(plant.photos.create!(taken_at: Time.current, image:))
+      Success(plant.photos.create!(taken_at: shooting_time(file) || Time.current, image:))
     ensure
       normalized&.close!
     end
 
     private
+
+    EXIF_DATE = "exif-ifd2-DateTimeOriginal".freeze
+    EXIF_OFFSET = "exif-ifd2-OffsetTimeOriginal".freeze
+    OLDEST_PLAUSIBLE = Time.utc(2000)
+
+    # EXIF dates look like "2026:11:10 08:15:00"; without an offset they are taken in the app time zone.
+    def shooting_time(file)
+      image = Vips::Image.new_from_file(file.path)
+      fields = image.get_fields
+      return unless fields.include?(EXIF_DATE)
+
+      date, time = image.get(EXIF_DATE).to_s[0, 19].split
+      offset = image.get(EXIF_OFFSET).to_s[/[+-]\d{2}:\d{2}/] if fields.include?(EXIF_OFFSET)
+      shot_at = Time.zone.parse("#{date.tr(":", "-")} #{time}#{offset}")
+      shot_at if shot_at&.between?(OLDEST_PLAUSIBLE, Time.current)
+    rescue Vips::Error, ArgumentError, NoMethodError
+      nil
+    end
 
     def normalize(file)
       ImageProcessing::Vips

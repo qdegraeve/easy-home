@@ -21,6 +21,15 @@ module PictureFiles
     uploaded_file(bytes.byteslice(0, bytes.bytesize / 2), "truncated.jpg")
   end
 
+  # A small JPEG carrying an EXIF shooting date ("2026:11:10 08:15:00") and optionally its UTC offset ("+02:00").
+  def jpeg_shot_at(date, offset: nil)
+    base = Vips::Image.black(40, 30).add(120).cast(:uchar)
+    image = base.bandjoin([ base, base ]).copy
+    image.set_type(GObject::GSTR_TYPE, "exif-ifd2-DateTimeOriginal", date)
+    image.set_type(GObject::GSTR_TYPE, "exif-ifd2-OffsetTimeOriginal", offset) if offset
+    uploaded_file(image.write_to_buffer(".jpg"), "shot.jpg")
+  end
+
   private
 
   def uploaded_file(bytes, name)

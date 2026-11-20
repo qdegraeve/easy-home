@@ -5,6 +5,16 @@
   <%= image_tag @photo.image.variant(:large), alt: t(".alt", name: @plant.name),
         class: "mt-4 w-full rounded-2xl shadow-sm" %>
 
+  <%= form_with model: @photo, url: plant_photo_path(@plant, @photo), method: :patch, class: "mt-6 space-y-2" do |f| %>
+    <%= render "shared/errors", record: @photo %>
+    <%= f.label :taken_on, class: "block text-sm font-semibold" %>
+    <div class="flex gap-2">
+      <%= f.date_field :taken_on, required: true, max: Time.zone.today,
+            class: "rounded-xl border border-stone-300 bg-white px-3 py-2" %>
+      <%= f.submit t(".save_date"), class: "rounded-xl bg-white px-3 py-2 text-sm font-semibold shadow-sm" %>
+    </div>
+  <% end %>
+
   <div class="mt-6">
     <%= button_to t(".destroy"), plant_photo_path(@plant, @photo), method: :delete,
           form: { data: { turbo_confirm: t(".destroy_confirm") } },

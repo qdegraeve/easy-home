@@ -20,6 +20,17 @@ module Plants
       @photo = find_photo(@plant)
     end
 
+    def update
+      @plant = find_plant
+      @photo = find_photo(@plant)
+
+      if @photo.update(params.expect(photo: [ :taken_on ]))
+        redirect_to plant_photo_path(@plant, @photo), notice: t(".success")
+      else
+        render :show, status: :unprocessable_content
+      end
+    end
+
     def destroy
       plant = find_plant
       find_photo(plant).destroy!

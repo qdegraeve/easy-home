@@ -2,5 +2,6 @@
 class PhotoPolicy < ApplicationPolicy
   def show? = PlantPolicy.new(user, record.plant).show?
   def create? = show? && !record.plant.archived?
+  def update? = show?
   def destroy? = show?
 end
