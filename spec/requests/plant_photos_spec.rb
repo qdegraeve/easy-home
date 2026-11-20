@@ -97,7 +97,7 @@ RSpec.describe "Plant photos", type: :request do
 
     patch plant_photo_path(plant, photo), params: { photo: { taken_on: "2026-12-01" } }
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).to include("Date de la photo ne peut pas être dans le futur")
+    expect(response.body).to include("Date de la photo ne peut pas être dans le futur", "Photo du 2 novembre 2026")
     expect(photo.reload.taken_on).to eq(Date.new(2026, 11, 2))
   end
 

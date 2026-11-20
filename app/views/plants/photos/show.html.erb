@@ -1,6 +1,9 @@
 <div class="mx-auto max-w-2xl">
   <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
-  <h1 class="mt-2 text-2xl font-bold"><%= t(".title", date: l(@photo.taken_at.to_date, format: :long)) %></h1>
+  <%# The saved date: a refused date only lives in the form. %>
+  <h1 class="mt-2 text-2xl font-bold">
+    <%= t(".title", date: l(@photo.taken_at_in_database.in_time_zone.to_date, format: :long)) %>
+  </h1>
 
   <%= image_tag @photo.image.variant(:large), alt: t(".alt", name: @plant.name),
         class: "mt-4 w-full rounded-2xl shadow-sm" %>
