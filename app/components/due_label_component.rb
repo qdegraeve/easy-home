@@ -12,7 +12,9 @@ class DueLabelComponent < ViewComponent::Base
 
   attr_reader :days
 
-  def overdue? = days.negative?
+  def overdue?
+    days.negative?
+  end
 
   def label
     case days

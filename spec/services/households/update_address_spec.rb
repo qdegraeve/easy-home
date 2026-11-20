@@ -4,7 +4,9 @@ RSpec.describe Households::UpdateAddress do
   let(:household) { create(:household) }
   let(:address) { { address: "12 Rue des Exemples", latitude: "-20.9", longitude: "55.45" } }
 
-  def call(params) = described_class.new.call(household:, params:)
+  def call(params)
+    described_class.new.call(household:, params:)
+  end
 
   it "saves the address and computes the altitude from the position" do
     expect(call(address)).to be_success

@@ -31,7 +31,7 @@ fr:
       models:
         photo:
           attributes:
-            taken_on:
+            taken_at:
               in_future: "ne peut pas être dans le futur"
     models:
       household: "Foyer"
@@ -43,7 +43,7 @@ fr:
         address: "Adresse"
         altitude_m: "Altitude"
       photo:
-        taken_on: "Date de la photo"
+        taken_at: "Date de la photo"
       location:
         name: "Nom"
         exposure: "Exposition"

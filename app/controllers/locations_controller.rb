@@ -21,5 +21,7 @@ class LocationsController < ApplicationController
 
   private
 
-  def location_params = params.expect(location: [ :name, :exposure, :sheltered ])
+  def location_params
+    params.expect(location: [ :name, :exposure, :sheltered ])
+  end
 end

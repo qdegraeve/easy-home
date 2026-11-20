@@ -7,7 +7,9 @@ RSpec.describe "Plant photos", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   # The browser runs in its own directory: it needs absolute paths.
-  def picture(name) = file_fixture(name).expand_path.to_s
+  def picture(name)
+    file_fixture(name).expand_path.to_s
+  end
 
   it "adds a plant with a photo, adds another one, rejects a non picture, redates and deletes a photo" do
     create(:user, :with_household, email: "quentin@example.com", password: "secret-password")

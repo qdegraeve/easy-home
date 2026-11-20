@@ -21,7 +21,9 @@ class PlantForm
   validate :location_must_belong_to_household
   validate :photo_must_be_a_picture, on: :create
 
-  def self.model_name = ActiveModel::Name.new(self, nil, "Plant")
+  def self.model_name
+    ActiveModel::Name.new(self, nil, "Plant")
+  end
 
   def self.from(plant)
     new(

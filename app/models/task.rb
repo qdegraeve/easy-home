@@ -20,9 +20,13 @@ class Task < ApplicationRecord
   end
 
   # Task added by hand (fertilizer, pruning…), as opposed to a task created with its subject (watering).
-  def manual? = template_key.nil?
+  def manual?
+    template_key.nil?
+  end
 
-  def watering? = template_key == Plant::WATERING_TEMPLATE_KEY
+  def watering?
+    template_key == Plant::WATERING_TEMPLATE_KEY
+  end
 
   private
 

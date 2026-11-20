@@ -118,6 +118,10 @@ Conventions :
 
 - Nom : `<Domaine>::<Verbe>` (`Tasks::Complete`, `Plants::Add`, `Households::InviteGuest`).
 - Une seule méthode publique `#call`, avec des arguments nommés.
+- `#call` se lit comme une liste d'étapes : chaque étape est une méthode privée qui renvoie `Success` ou `Failure`,
+  enchaînée avec la do notation (`yield`), sans `return` anticipé.
+- Méthodes classiques indentées (`def … end`), jamais la forme sur une ligne `def x = …` (RuboCop
+  `Style/EndlessMethod`).
 - Retour : `Success(valeur)` ou `Failure[:code_symbolique, payload]`. Codes courants : `:invalid` (payload = formulaire), `:not_found`, `:forbidden`, `:external_error`.
 - Avec la do notation, un `Failure` levé dans un bloc `transaction` provoque un rollback. C'est le comportement voulu.
 - Un service peut en appeler un autre. Au-delà de deux niveaux d'imbrication, revoir le découpage.

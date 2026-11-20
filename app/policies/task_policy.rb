@@ -2,11 +2,25 @@
 # with its subject (watering) is set up from the subject. An archived subject gets neither new tasks nor edits (it
 # must be restored first); its tasks can still be deleted.
 class TaskPolicy < ApplicationPolicy
-  def create? = manage? && !subject_archived?
-  def new? = create?
-  def update? = manage? && record.manual? && !subject_archived?
-  def edit? = update?
-  def destroy? = manage? && record.manual?
+  def create?
+    manage? && !subject_archived?
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    manage? && record.manual? && !subject_archived?
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    manage? && record.manual?
+  end
 
   class Scope < ApplicationPolicy::Scope
     def resolve

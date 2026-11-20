@@ -91,14 +91,14 @@ RSpec.describe "Plant photos", type: :request do
     photo = add_photo
     sign_in(user)
 
-    patch plant_photo_path(plant, photo), params: { photo: { taken_on: "2026-11-02" } }
+    patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-11-02" } }
     expect(response).to redirect_to(plant_photo_path(plant, photo))
-    expect(photo.reload.taken_on).to eq(Date.new(2026, 11, 2))
+    expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
 
-    patch plant_photo_path(plant, photo), params: { photo: { taken_on: "2026-12-01" } }
+    patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-12-01" } }
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.body).to include("Date de la photo ne peut pas être dans le futur", "Photo du 2 novembre 2026")
-    expect(photo.reload.taken_on).to eq(Date.new(2026, 11, 2))
+    expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
   end
 
   it "forbids adding a photo to an archived plant" do
@@ -141,9 +141,9 @@ RSpec.describe "Plant photos", type: :request do
 
         get plant_photo_path(plant, photo)
         expect(response).to have_http_status(:not_found)
-        patch plant_photo_path(plant, photo), params: { photo: { taken_on: "2026-11-01" } }
+        patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-11-01" } }
         expect(response).to have_http_status(:not_found)
-        expect(photo.reload.taken_on).to eq(Date.new(2026, 11, 16))
+        expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 16))
         delete plant_photo_path(plant, photo)
         expect(response).to have_http_status(:not_found)
         expect(Photo.exists?(photo.id)).to be(true)

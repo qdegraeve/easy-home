@@ -19,9 +19,13 @@ class Plant < ApplicationRecord
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
 
-  def archived? = archived_at.present?
+  def archived?
+    archived_at.present?
+  end
 
-  def next_watering_at = watering_task&.pending_occurrence&.due_at
+  def next_watering_at
+    watering_task&.pending_occurrence&.due_at
+  end
 
   private
 
