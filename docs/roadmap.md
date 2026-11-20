@@ -31,7 +31,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [x] Ma maison : adresse avec autocomplétion, position et altitude (ADR 0009), emplacements (`Location`) avec
   exposition et abri
 - [x] Plantes : `Plant` (ADR 0010), emplacement, espèce saisie ; archivage et suppression
-- [ ] Photos (Active Storage) et suivi photo
+- [x] Photos (Active Storage, ADR 0011) et suivi photo
 - [ ] `Plants::Analyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test
 - [ ] Identification de l'espèce proposée, confirmée ou corrigée
 - [x] Arrosage : tâche `plant.watering`, bouton « Arrosée », journal
@@ -44,6 +44,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 
 - [ ] Projet `android/`, webview pointant vers l'app
 - [ ] Une notification FCM « à arroser » qui arrive au bon moment
+- [ ] Prendre une photo directement avec l'appareil du téléphone (aujourd'hui, seule la galerie est proposée sur
+  Android) : bouton dédié (`capture`) côté web et sélecteur de fichiers/caméra dans la coque native
 
 ## Étape 4 : déploiement minimal
 

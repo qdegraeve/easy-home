@@ -1,0 +1,13 @@
+<div class="mx-auto max-w-2xl">
+  <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
+  <h1 class="mt-2 text-2xl font-bold"><%= t(".title", date: l(@photo.taken_at.to_date, format: :long)) %></h1>
+
+  <%= image_tag @photo.image.variant(:large), alt: t(".alt", name: @plant.name),
+        class: "mt-4 w-full rounded-2xl shadow-sm" %>
+
+  <div class="mt-6">
+    <%= button_to t(".destroy"), plant_photo_path(@plant, @photo), method: :delete,
+          form: { data: { turbo_confirm: t(".destroy_confirm") } },
+          class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
+  </div>
+</div>
