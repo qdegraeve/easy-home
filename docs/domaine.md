@@ -15,7 +15,7 @@
 | Tâche | `Task` | Une chose à faire de façon récurrente. |
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
-| Appareil | `Device` | Téléphone d'un utilisateur : jeton push Firebase et jeton d'API natif. |
+| Appareil | `ApplicationPushDevice` | Téléphone qui reçoit les notifications : jeton Firebase, rattaché à une session (ADR 0012). |
 | Plante | `Plant` | Un élément du foyer : nom, espèce, emplacement. Archivable (`archived_at`). |
 | Emplacement | `Location` | Zone de la maison (« terrasse », « jardin devant ») avec son exposition au soleil. |
 | Photo | `Photo` | Une photo d'un élément, datée. L'ensemble forme le suivi photo. |
@@ -104,10 +104,17 @@ TaskAccess
   household_member (guest), task
   starts_on, ends_on (optionnels)
 
-Device
-  user, platform (android), push_token
-  api_token_digest               # jeton d'API pour les actions natives, stocké haché
-  last_seen_at
+ApplicationPushDevice            # gem action_push_native (ADR 0012)
+  owner (Session)                # se déconnecter supprime l'appareil
+  platform (google), token (unique), name
+  # à venir : jeton d'API pour les actions natives (« Fait » depuis une notification), stocké haché
+
+User (réglages des notifications)
+  digest_enabled, digest_minute  # résumé du matin : activé, heure en minutes après minuit (quarts d'heure, 5 h-22 h)
+  last_digest_on                 # jour du dernier résumé : un seul par jour
+
+HouseholdMember
+  digest                         # foyer inclus dans le résumé de ce membre
 ```
 
 ## Foyers et comptes
@@ -129,7 +136,9 @@ pending ──(Fait)──────────▶ done
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
 - Une récurrence **glissante** ou **basée sur l'usage** part de la date de réalisation.
-- Un job récurrent (Solid Queue, toutes les minutes) envoie les notifications arrivées à échéance et gère les relances. Un autre marque les échéances `missed`.
+- Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
+  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). À venir : relances,
+  et un job qui marque les échéances `missed`.
 
 ## Moteur de récurrence
 

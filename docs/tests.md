@@ -83,6 +83,8 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Analyse en échec : message visible, relance avec les mêmes photos et la même remarque | `spec/system/plant_analyses_spec.rb` | Fait |
 | Discussion sur une analyse : question avec photo jointe, réponse affichée, question suivante avec le fil | `spec/system/plant_analyses_spec.rb` | Fait |
 | Propositions d'une analyse acceptées : espèce sur la fiche, intervalle d'arrosage, action devenue tâche | `spec/system/plant_analyses_spec.rb` | Fait |
+| Réglages des notifications : résumé coupé, heure, foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
+| Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
 | Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 5 |
 | Validation d'une tâche : journal mis à jour, échéance suivante créée | | Étape 5 |

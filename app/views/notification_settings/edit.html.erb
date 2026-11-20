@@ -1,0 +1,57 @@
+<div class="mx-auto max-w-2xl">
+  <%= link_to t(".back"), root_path, class: "text-sm text-stone-500 underline" %>
+  <h1 class="mt-2 text-2xl font-bold"><%= t(".title") %></h1>
+  <p class="mt-1 text-sm text-stone-500"><%= t(".intro") %></p>
+
+  <%= form_with model: @form, url: notification_settings_path, method: :patch, class: "mt-6 space-y-6" do |f| %>
+    <%= render "shared/errors", record: @form %>
+
+    <label class="flex items-center gap-3">
+      <%= f.check_box :digest_enabled, class: "h-5 w-5 rounded" %>
+      <span class="font-semibold"><%= t(".digest_enabled") %></span>
+    </label>
+
+    <div>
+      <%= f.label :digest_time, class: "block text-sm font-semibold" %>
+      <%= f.select :digest_time, NotificationSettingsForm.times, {},
+            class: "mt-1 w-32 rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+    </div>
+
+    <% if @form.memberships.many? %>
+      <fieldset>
+        <legend class="text-sm font-semibold"><%= t(".households") %></legend>
+        <ul class="mt-2 space-y-2">
+          <% @form.memberships.each do |membership| %>
+            <li>
+              <label class="flex items-center gap-3">
+                <%= check_box_tag "notification_settings[household_ids][]", membership.household_id,
+                      @form.household_ids.include?(membership.household_id),
+                      id: "household_#{membership.household_id}", class: "h-5 w-5 rounded" %>
+                <span><%= membership.household.name %></span>
+              </label>
+            </li>
+          <% end %>
+        </ul>
+      </fieldset>
+    <% else %>
+      <% @form.memberships.each do |membership| %>
+        <%= hidden_field_tag "notification_settings[household_ids][]", membership.household_id,
+              id: "household_#{membership.household_id}" %>
+      <% end %>
+    <% end %>
+
+    <%= f.submit t(".submit"), class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+  <% end %>
+
+  <section class="mt-8 rounded-2xl bg-white p-4 text-sm shadow-sm" aria-labelledby="devices">
+    <h2 id="devices" class="font-semibold"><%= t(".devices") %></h2>
+    <% if (count = Current.user.push_devices.count).positive? %>
+      <p class="mt-1"><%= t(".devices_count", count:) %></p>
+      <%= button_to t(".test"), test_notification_path,
+            class: "mt-3 rounded-xl bg-white px-3 py-2 text-sm font-semibold text-emerald-700 shadow-sm " \
+                   "ring-1 ring-stone-200" %>
+    <% else %>
+      <p class="mt-1 text-stone-500"><%= t(".no_device") %></p>
+    <% end %>
+  </section>
+</div>
