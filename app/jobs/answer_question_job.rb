@@ -1,5 +1,6 @@
 # Answers one follow-up question. It shares the concurrency group and key of the analyses (Solid Queue prefixes the
-# key with the group, the job class by default): one call to Claude at a time across the app. No automatic retry: a failed question shows its error and the user asks again (ADR 0008).
+# key with the group, the job class by default): one call to Claude at a time across the app. No automatic retry: a
+# failed question shows its error and the user asks again (ADR 0008).
 class AnswerQuestionJob < ApplicationJob
   queue_as :default
   limits_concurrency to: 1, key: "claude", group: "plant_analysis", duration: 10.minutes
