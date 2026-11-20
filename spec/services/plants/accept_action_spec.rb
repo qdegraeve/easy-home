@@ -36,6 +36,13 @@ RSpec.describe Plants::AcceptAction do
     expect(plant.tasks.where(title: "Pailler le pied").count).to eq(1)
   end
 
+  it "refuses an analysis that is not done" do
+    analysis.update!(status: :failed)
+
+    expect(described_class.new.call(analysis:, index: 0).failure.first).to eq(:not_acceptable)
+    expect(plant.tasks.count).to eq(1)
+  end
+
   it "refuses an action that does not exist" do
     [ 1, -1 ].each do |index|
       expect(described_class.new.call(analysis:, index:).failure.first).to eq(:not_acceptable)

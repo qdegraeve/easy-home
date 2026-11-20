@@ -13,6 +13,7 @@ module Plants
 
     def check_proposal(analysis)
       return Failure[:not_acceptable, analysis] unless analysis.done? && analysis.watering_interval_days
+      return Failure[:not_acceptable, analysis] unless analysis.plant.watering_task
       return Failure[:subject_archived, analysis] if analysis.plant.archived?
 
       Success(analysis)

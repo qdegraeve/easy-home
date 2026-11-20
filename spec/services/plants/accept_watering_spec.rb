@@ -28,6 +28,19 @@ RSpec.describe Plants::AcceptWatering do
     expect(plant.watering_task.reload.recurrence.interval_days).to eq(7)
   end
 
+  it "refuses an analysis that is not done" do
+    analysis.update!(status: :failed)
+
+    expect(described_class.new.call(analysis:).failure.first).to eq(:not_acceptable)
+    expect(plant.watering_task.reload.recurrence.interval_days).to eq(7)
+  end
+
+  it "refuses a plant without a watering task" do
+    plant.watering_task.destroy!
+
+    expect(described_class.new.call(analysis: analysis.reload).failure.first).to eq(:not_acceptable)
+  end
+
   it "refuses an archived plant" do
     plant.update!(archived_at: Time.current)
 
