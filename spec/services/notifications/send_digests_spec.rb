@@ -25,6 +25,12 @@ RSpec.describe Notifications::SendDigests do
     expect(described_class.new.call.value!).to eq(1)
   end
 
+  it "gives up on a digest more than two hours late: it is a morning digest" do
+    travel_to(Time.zone.parse("2026-11-16 10:01"))
+
+    expect(described_class.new.call.value!).to eq(0)
+  end
+
   it "follows the time chosen by the user, in the app time zone" do
     user.update!(digest_minute: 6 * 60 + 45)
 

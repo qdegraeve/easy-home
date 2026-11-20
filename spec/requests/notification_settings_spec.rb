@@ -45,6 +45,26 @@ RSpec.describe "Notification settings", type: :request do
     expect(user.reload.digest_minute).to eq(8 * 60)
   end
 
+  it "keeps the only household followed: its checkbox is not shown" do
+    sign_in(user)
+    get edit_notification_settings_path
+    expect(response.body).not_to include("Foyers à inclure")
+
+    patch notification_settings_path, params: {
+      notification_settings: { digest_enabled: "1", digest_time: "08:00", household_ids: [ home.id ] }
+    }
+
+    expect(user.household_members.sole.digest).to be(true)
+  end
+
+  it "refuses a request without the switch instead of failing" do
+    sign_in(user)
+
+    patch notification_settings_path, params: { notification_settings: { digest_time: "08:00" } }
+
+    expect(response).to have_http_status(:unprocessable_content)
+  end
+
   it "counts the phones that receive the notifications" do
     sign_in(user)
     create_list(:push_device, 2, owner: user.sessions.last)

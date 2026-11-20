@@ -24,11 +24,16 @@ notification « à l'échéance » partirait à minuit. Chaque membre doit pouvo
 - **Un appareil appartient à une session** (`Session`, propriétaire polymorphe de `ApplicationPushDevice`), pas
   directement à l'utilisateur : se déconnecter sur le téléphone supprime la session et l'appareil, donc un téléphone
   déconnecté ne reçoit plus rien. Un jeton est unique : un téléphone reconnecté par quelqu'un d'autre change de
+  propriétaire. Contrepartie acceptée : qui connaît le jeton Firebase d'un téléphone (accès au téléphone) peut le
+  rattacher à son compte ; il ne lit rien, mais ce téléphone reçoit ses notifications à la place de celles de son
   propriétaire.
 - **Envoi** : `SendDigestsJob`, récurrent toutes les 5 minutes (`config/recurring.yml`), appelle
   `Notifications::SendDigests`, qui retient les utilisateurs dont l'heure est passée, sans résumé ce jour-là et avec au
   moins un téléphone. `Notifications::SendDigest` réserve le jour de façon atomique (`last_digest_on`) avant d'envoyer :
   jamais deux résumés le même jour, même si deux passages se chevauchent.
+- **Retard maximal de 2 heures** : après une panne ou un déploiement, un résumé en retard part encore jusqu'à 2 heures
+  après son heure, pas au-delà. Un résumé du matin n'arrive jamais le soir (premier téléphone enregistré à 21 h, résumé
+  activé l'après-midi) : le suivant part le lendemain.
 - **Enregistrement du téléphone** : `POST /push_devices` avec le jeton Firebase, appelé par l'app Android (bridge
   component, PR suivante) dans la session de l'utilisateur connecté.
 - **Secrets** : le compte de service Firebase (`action_push_native.fcm.encryption_key`) dans les credentials Rails,

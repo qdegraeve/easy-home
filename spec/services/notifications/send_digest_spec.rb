@@ -73,4 +73,18 @@ RSpec.describe Notifications::SendDigest do
       .to have_enqueued_job(ApplicationPushNotificationJob)
       .with(anything, hash_including(body: "Arroser Citronnier"), device)
   end
+
+  it "names a task without subject by its title, and shortens a long list" do
+    create(:task, household:, subject: nil, title: "Sortir la poubelle jaune", template_key: nil,
+                  recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+      .occurrences.create!(due_at: today.in_time_zone)
+    20.times { |index| due_plant("Plante numéro #{index}") }
+
+    described_class.new.call(user:, today:)
+
+    body = enqueued_jobs.sole[:args].second["body"]
+    expect(body).to start_with("Sortir la poubelle jaune, arroser Plante numéro 0, arroser Plante numéro 1")
+    expect(body).to end_with("...")
+    expect(body.length).to eq(described_class::MAX_BODY_LENGTH)
+  end
 end

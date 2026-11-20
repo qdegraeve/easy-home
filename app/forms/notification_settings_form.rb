@@ -9,6 +9,7 @@ class NotificationSettingsForm
   attr_accessor :user
   attr_writer :household_ids
 
+  validates :digest_enabled, inclusion: { in: [ true, false ] }
   validates :digest_time, inclusion: { in: ->(_form) { times } }
   validate :households_must_be_managed
 
