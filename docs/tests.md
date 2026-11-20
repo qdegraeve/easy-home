@@ -22,6 +22,8 @@ Le code est écrit et relu par des agents, et le chef de projet ne le lit pas : 
 ### Rapides
 
 - Budget par exemple, appliqué en CI (`spec/support/time_budget.rb`) : **1 s** pour une spec non système, **8 s** pour une spec système (plus une marge pour le premier exemple de chaque sorte). Une spec qui dépasse échoue : on la rend plus rapide, on ne relève pas le budget sans ADR.
+- En test, les erreurs « rattrapables » (404, 400…) rendent la page d'erreur simple, pas le rapport détaillé de Rails
+  (`consider_all_requests_local = false`) : ce rapport coûtait environ 100 ms par réponse.
 - Une system spec suit **un parcours complet** avec plusieurs assertions, plutôt que plusieurs specs qui rejouent chacune la connexion et la navigation.
 - Données minimales, `build` / `build_stubbed` quand la base n'est pas nécessaire, pas de `create` en cascade.
 - La CI affiche les 10 specs les plus lentes (`--profile 10`) : le relecteur les regarde.
