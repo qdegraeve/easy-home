@@ -20,9 +20,30 @@ RSpec.describe Photos::Add do
 
     photo = described_class.new.call(plant:, file: upload("plant_with_gps.jpg")).value!
 
-    expect(photo).to have_attributes(plant:, taken_at: Time.zone.parse("2026-11-16 10:00"))
+    expect(photo).to have_attributes(plant:, taken_at: Time.zone.parse("2026-11-10 08:15"))
     expect(photo.image.blob.content_type).to eq("image/jpeg")
     expect(stored_image(photo).get_fields.grep(/exif|gps|xmp|iptc/i)).to be_empty
+  end
+
+  describe "shooting date" do
+    it "reads the EXIF date in the app time zone when it has no offset" do
+      photo = described_class.new.call(plant:, file: jpeg_shot_at("2026:11:12 18:30:00")).value!
+
+      expect(photo.taken_at).to eq(Time.zone.parse("2026-11-12 18:30"))
+    end
+
+    it "honours the EXIF offset of a photo taken elsewhere" do
+      photo = described_class.new.call(plant:, file: jpeg_shot_at("2026:11:12 18:30:00", offset: "+02:00")).value!
+
+      expect(photo.taken_at).to eq(Time.zone.parse("2026-11-12 20:30"))
+    end
+
+    it "dates the photo now when the EXIF date is missing, in the future or implausible" do
+      [ upload("plant.png"), jpeg_shot_at("2027:01:01 10:00:00"), jpeg_shot_at("1999:12:31 10:00:00"),
+        jpeg_shot_at("garbage") ].each do |file|
+        expect(described_class.new.call(plant:, file:).value!.taken_at).to eq(Time.current)
+      end
+    end
   end
 
   it "accepts PNG and WebP, and shrinks large pictures to 2048 px" do

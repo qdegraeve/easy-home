@@ -18,7 +18,9 @@ class TaskForm
     numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS },
     if: :sliding?
 
-  def self.model_name = ActiveModel::Name.new(self, nil, "Task")
+  def self.model_name
+    ActiveModel::Name.new(self, nil, "Task")
+  end
 
   def self.from(task)
     recurrence = task.recurrence
@@ -30,7 +32,9 @@ class TaskForm
     )
   end
 
-  def sliding? = recurrence_type == "sliding"
+  def sliding?
+    recurrence_type == "sliding"
+  end
 
   def task_attributes
     { title: title.strip, recurrence_type:, recurrence_config: }

@@ -5,6 +5,6 @@ class Photo < ApplicationRecord
     attachable.variant :large, resize_to_limit: [ 1600, 1600 ]
   end
 
-  validates :taken_at, presence: true
+  validates :taken_at, presence: true, comparison: { less_than_or_equal_to: -> { Time.current }, message: :in_future }
   validates :image, presence: true
 end

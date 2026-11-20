@@ -5,8 +5,12 @@ module Geo
   class << self
     attr_writer :geocoder, :elevation
 
-    def geocoder = @geocoder ||= IgnGeocoder.new
+    def geocoder
+      @geocoder ||= IgnGeocoder.new
+    end
 
-    def elevation = @elevation ||= OpenMeteoElevation.new
+    def elevation
+      @elevation ||= OpenMeteoElevation.new
+    end
   end
 end

@@ -20,3 +20,8 @@ Rails/Date:
 # No hardcoded text in messages (I18n).
 Rails/I18nLocaleTexts:
   Enabled: true
+
+# Classic indented methods only, no one-line `def x = ...`.
+Style/EndlessMethod:
+  Enabled: true
+  EnforcedStyle: disallow

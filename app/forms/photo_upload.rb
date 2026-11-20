@@ -13,7 +13,9 @@ class PhotoUpload
   validates :file, presence: true
   validate :file_must_be_a_picture
 
-  def self.model_name = ActiveModel::Name.new(self, nil, "Photo")
+  def self.model_name
+    ActiveModel::Name.new(self, nil, "Photo")
+  end
 
   private
 

@@ -46,7 +46,11 @@ class HouseholdsController < ApplicationController
 
   private
 
-  def household_params = params.expect(household: [ :name ])
+  def household_params
+    params.expect(household: [ :name ])
+  end
 
-  def address_params = params.expect(household: [ :address, :latitude, :longitude, :altitude_m ])
+  def address_params
+    params.expect(household: [ :address, :latitude, :longitude, :altitude_m ])
+  end
 end
