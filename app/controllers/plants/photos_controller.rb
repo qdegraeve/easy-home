@@ -4,7 +4,7 @@ module Plants
     def create
       plant = find_plant
       authorize Photo.new(plant:)
-      result = Photos::Add.new.call(plant:, file: params.dig(:photo, :file))
+      result = Photos::Add.new.call(plant:, file: params.expect(photo: [ :file ])[:file])
 
       if result.success?
         redirect_to plant, notice: t(".success")

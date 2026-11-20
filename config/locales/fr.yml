@@ -10,6 +10,7 @@ fr:
             file:
               too_large: "dépasse %{count} Mo"
               not_a_picture: "n'est pas une image JPEG, PNG ou WebP lisible"
+              too_many_pixels: "dépasse %{count} mégapixels"
     attributes:
       photo:
         file: "Photo"

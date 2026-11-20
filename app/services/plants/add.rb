@@ -1,8 +1,9 @@
 module Plants
-  # Adds a plant with its watering task (sliding recurrence) and its optional first photo. The declared last watering
-  # goes into the log and is the starting point of the first occurrence.
+  # Adds a plant with its watering task (sliding recurrence) and its optional first photo, all or nothing: a photo
+  # that cannot be read leaves no plant behind. The declared last watering goes into the log and is the starting
+  # point of the first occurrence.
   class Add
-    include Dry::Monads[:result]
+    include Dry::Monads[:result, :do]
 
     def call(household:, user:, params:)
       form = PlantForm.new(params.to_h.merge(household:))
@@ -14,14 +15,21 @@ module Plants
           species_source: (:user if form.plant_attributes[:species])
         )
         create_watering_task(plant, form, user)
+        yield add_photo(plant, form) if form.photo.present?
         plant
       end
-      Photos::Add.new.call(plant:, file: form.photo) if form.photo.present?
 
       Success(plant)
     end
 
     private
+
+    def add_photo(plant, form)
+      Photos::Add.new.call(plant:, file: form.photo).or do |(_code, upload)|
+        upload.errors.messages_for(:file).each { |message| form.errors.add(:photo, message) }
+        Failure[:invalid, form]
+      end
+    end
 
     def create_watering_task(plant, form, user)
       task = plant.tasks.create!(

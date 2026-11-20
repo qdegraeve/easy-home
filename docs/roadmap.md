@@ -44,6 +44,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 
 - [ ] Projet `android/`, webview pointant vers l'app
 - [ ] Une notification FCM « à arroser » qui arrive au bon moment
+- [ ] Prendre une photo directement avec l'appareil du téléphone (aujourd'hui, seule la galerie est proposée sur
+  Android) : bouton dédié (`capture`) côté web et sélecteur de fichiers/caméra dans la coque native
 
 ## Étape 4 : déploiement minimal
 

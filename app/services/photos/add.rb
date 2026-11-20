@@ -18,11 +18,13 @@ module Photos
         return Failure[:invalid, upload]
       end
 
-      photo = plant.photos.create!(
-        taken_at: Time.current,
-        image: { io: normalized, filename: "plant-#{plant.id}.jpg", content_type: "image/jpeg" }
+      # Uploaded right away: inside a caller's transaction, a deferred upload would run after this temp file is gone.
+      image = ActiveStorage::Blob.create_and_upload!(
+        io: normalized,
+        filename: "plant-#{plant.id}.jpg",
+        content_type: "image/jpeg"
       )
-      Success(photo)
+      Success(plant.photos.create!(taken_at: Time.current, image:))
     ensure
       normalized&.close!
     end

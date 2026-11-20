@@ -50,6 +50,25 @@ RSpec.describe Photos::Add do
     expect(result.failure.last.errors.full_messages).to eq([ "Photo dépasse 15 Mo" ])
   end
 
+  it "rejects a picture over 50 megapixels before processing it (decompression bomb)" do
+    result = described_class.new.call(plant:, file: png_bomb(30_000, 30_000))
+
+    expect(result.failure.last.errors.full_messages).to eq([ "Photo dépasse 50 mégapixels" ])
+  end
+
+  it "rejects a picture with valid headers but unreadable data" do
+    result = described_class.new.call(plant:, file: truncated_jpeg)
+
+    expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
+    expect(plant.photos).to be_empty
+  end
+
+  it "rejects something that is not an uploaded file" do
+    result = described_class.new.call(plant:, file: "not a file")
+
+    expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
+  end
+
   it "rejects a missing file" do
     expect(described_class.new.call(plant:, file: nil).failure.first).to eq(:invalid)
   end

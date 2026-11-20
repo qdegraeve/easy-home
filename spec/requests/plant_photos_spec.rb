@@ -42,6 +42,39 @@ RSpec.describe "Plant photos", type: :request do
     expect(plant.photos).to be_empty
   end
 
+  it "re-renders the new plant form when its photo is refused" do
+    sign_in(user)
+
+    post plants_path,
+      params: { plant: { name: "Basilic", watering_interval_days: "2", photo: picture("not_an_image.jpg") } }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Photo n&#39;est pas une image JPEG, PNG ou WebP lisible")
+    expect(Plant.where(name: "Basilic")).to be_empty
+  end
+
+  it "answers 400 or a validation error to malformed parameters, never 500" do
+    sign_in(user)
+
+    post plant_photos_path(plant), params: { photo: "abc" }
+    expect(response).to have_http_status(:bad_request)
+
+    post plant_photos_path(plant), params: { photo: { file: "abc" } }
+    expect(flash[:alert]).to eq("Photo n'est pas une image JPEG, PNG ou WebP lisible")
+
+    post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", photo: "abc" } }
+    expect(response).to have_http_status(:unprocessable_content)
+  end
+
+  it "hides the photo form on an archived plant" do
+    plant.update!(archived_at: Time.current)
+    sign_in(user)
+
+    get plant_path(plant)
+
+    expect(response.body).not_to include("Nouvelle photo")
+  end
+
   it "shows a photo in large, then deletes it" do
     photo = add_photo
     sign_in(user)

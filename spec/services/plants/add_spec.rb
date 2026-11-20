@@ -78,6 +78,14 @@ RSpec.describe Plants::Add do
     expect(Plant.count).to eq(0)
   end
 
+  it "leaves no plant behind when the photo cannot be read" do
+    result = described_class.new.call(household:, user:, params: params.merge(photo: truncated_jpeg))
+
+    expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
+    expect(Plant.count).to eq(0)
+    expect(Task.count).to eq(0)
+  end
+
   it "rejects a location of another household" do
     result = described_class.new.call(household:, user:, params: params.merge(location_id: create(:location).id.to_s))
 
