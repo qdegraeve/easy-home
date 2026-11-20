@@ -18,6 +18,9 @@ fr:
               not_a_picture: "n'est pas une image JPEG, PNG ou WebP lisible"
               too_many_pixels: "dépasse %{count} mégapixels"
     attributes:
+      notification_settings:
+        digest_time: "Heure du résumé"
+        household_ids: "Foyers"
       plant_analysis_question:
         body: "Question"
         photo: "Photo"
@@ -60,6 +63,40 @@ fr:
         name: "Nom"
         exposure: "Exposition"
         sheltered: "Abrité du vent"
+  notifications:
+    digest:
+      title:
+        one: "1 tâche aujourd'hui"
+        other: "%{count} tâches aujourd'hui"
+      watering: "arroser %{name}"
+      task: "%{title} (%{name})"
+  notification_settings:
+    edit:
+      back: "← Accueil"
+      title: "Notifications"
+      intro: >-
+        Chaque matin, un résumé des tâches du jour et de celles en retard, sur les téléphones où l'app
+        Easy Home est connectée. Rien n'est envoyé les jours sans tâche.
+      digest_enabled: "Recevoir le résumé du matin"
+      households: "Foyers à inclure"
+      submit: "Enregistrer"
+      devices: "Téléphones"
+      devices_count:
+        one: "1 téléphone reçoit les notifications."
+        other: "%{count} téléphones reçoivent les notifications."
+      no_device: >-
+        Aucun téléphone pour l'instant : les notifications s'activent depuis l'app Android, sur cette page.
+      test: "M'envoyer une notification de test"
+    update:
+      success: "Réglages des notifications enregistrés."
+  test_notifications:
+    create:
+      title: "Notification de test"
+      body: "Les notifications d'Easy Home arrivent bien sur ce téléphone."
+      no_device: "Aucun téléphone n'est enregistré pour les notifications."
+      success:
+        one: "Notification de test envoyée à 1 téléphone."
+        other: "Notification de test envoyée à %{count} téléphones."
   home:
     show:
       title: "Mes plantes"
@@ -349,6 +386,8 @@ fr:
     application:
       app_name: "Easy Home"
       sign_out: "Se déconnecter"
+      notifications: "🔔"
+      notifications_label: "Notifications"
   passwords:
     create:
       notice: "Si un compte existe avec cette adresse, les instructions de réinitialisation ont été envoyées."

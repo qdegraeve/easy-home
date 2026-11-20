@@ -82,18 +82,24 @@ Deux canaux coexistent :
 
 ## Notifications push
 
+Décision : ADR 0012 (résumé du matin, gem `action_push_native`, appareil rattaché à la session).
+
 **Chaîne complète** :
 
-1. Le job récurrent Solid Queue (toutes les minutes) s'exécute.
-2. `DueOccurrencesQuery` sélectionne les échéances à notifier.
-3. `Reminders::SendDue` envoie les notifications via un adaptateur, vers Firebase Cloud Messaging, puis vers l'appareil.
+1. `SendDigestsJob`, récurrent toutes les 5 minutes, s'exécute.
+2. `Notifications::SendDigests` retient les utilisateurs dont l'heure est passée ; `DueOccurrencesQuery` sélectionne
+   leurs échéances du jour et en retard.
+3. `Notifications::SendDigest` envoie une notification `ApplicationPushNotification` à chaque téléphone, via Firebase
+   Cloud Messaging.
 
 **Côté serveur** :
 
-- Gem `action_push_native` (37signals) ou `noticed` : à trancher au moment de l'implémentation, avec un ADR.
-- Toujours derrière un adaptateur (`PushNotifier`), avec un faux adaptateur en test.
-- Messages en priorité haute pour passer le mode Doze.
-- Le payload contient l'id de l'échéance et l'URL à ouvrir.
+- Gem `action_push_native` ; envoi désactivé en test par la gem, les specs vérifient les jobs mis en file.
+- Messages en priorité haute (défaut de la gem) pour passer le mode Doze.
+- Le payload contient le chemin à ouvrir (`data.path`, l'accueil pour le résumé).
+- Enregistrement : `POST /push_devices` (jeton Firebase), appelé dans la session de l'utilisateur ; l'appareil
+  appartient à cette session.
+- Réglages : page « Notifications » (🔔 dans l'en-tête), avec un bouton « M'envoyer une notification de test ».
 
 **Côté Android** :
 

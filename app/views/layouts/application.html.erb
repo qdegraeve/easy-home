@@ -24,8 +24,13 @@
       <header class="sticky top-0 z-10 border-b border-stone-200 bg-stone-50/95 backdrop-blur">
         <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3 lg:max-w-5xl">
           <%= link_to t(".app_name"), root_path, class: "font-semibold text-emerald-700" %>
-          <%= button_to t(".sign_out"), session_path, method: :delete,
-                class: "rounded-xl px-3 py-2 text-sm text-stone-600 hover:bg-stone-100" %>
+          <div class="flex items-center gap-1">
+            <%= link_to t(".notifications"), edit_notification_settings_path,
+                  aria: { label: t(".notifications_label") },
+                  class: "rounded-xl px-3 py-2 text-sm text-stone-600 hover:bg-stone-100" %>
+            <%= button_to t(".sign_out"), session_path, method: :delete,
+                  class: "rounded-xl px-3 py-2 text-sm text-stone-600 hover:bg-stone-100" %>
+          </div>
         </div>
       </header>
     <% end %>

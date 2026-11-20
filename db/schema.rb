@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_20_091331) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_120328) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_push_native_devices", force: :cascade do |t|
+    t.string "name"
+    t.string "platform", null: false
+    t.string "token", null: false
+    t.string "owner_type"
+    t.bigint "owner_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_action_push_native_devices_on_owner"
+    t.index ["token"], name: "index_action_push_native_devices_on_token", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -48,6 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_091331) do
     t.string "role", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "digest", default: true, null: false
     t.index ["household_id"], name: "index_household_members_on_household_id"
     t.index ["user_id", "household_id"], name: "index_household_members_on_user_id_and_household_id", unique: true
   end
@@ -186,6 +199,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_091331) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "digest_enabled", default: true, null: false
+    t.integer "digest_minute", default: 480, null: false
+    t.date "last_digest_on"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   resource :session
+  resource :notification_settings, only: [ :edit, :update ]
+  resources :push_devices, only: :create
+  resource :test_notification, only: :create
   get "configurations/android_v1", to: "configurations#android_v1", as: :android_v1_configuration
   resources :passwords, param: :token
 

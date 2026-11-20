@@ -49,6 +49,9 @@ gem "view_component", "~> 4.15"
 # Minimal authorization through OO design and pure Ruby classes [https://github.com/varvet/pundit]
 gem "pundit", "~> 2.5"
 
+# Push notifications to the Android app through Firebase Cloud Messaging (ADR 0012)
+gem "action_push_native", "~> 0.3"
+
 # Recurring date library for the recurrence engine [https://github.com/ice-cube-ruby/ice_cube]
 gem "ice_cube", "~> 0.17"
 

@@ -46,7 +46,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 
 - [x] Projet `android/`, webview pointant vers l'app, path configuration servie par Rails
 - [ ] Navigation et transitions plus naturelles dans l'app (titres, en-tête web, retours)
-- [ ] Une notification FCM « à arroser » qui arrive au bon moment
+- [x] Résumé du matin côté Rails : réglages, enregistrement des téléphones, envoi récurrent (ADR 0012)
+- [ ] Notifications côté Android : Firebase, permission, enregistrement du téléphone, réception
 - [x] Prendre une photo directement avec l'appareil du téléphone : fourni par la coque (sélecteur de fichiers de
   Hotwire Native, appareil photo compris), sans code dédié
 
