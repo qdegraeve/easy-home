@@ -5,8 +5,6 @@ module Plants
   class Analyze
     include Dry::Monads[:result, :do]
 
-    PHOTO_DIMENSION = 1568
-
     def call(analysis:)
       yield check_pending(analysis)
       result = answer_for(analysis)
@@ -28,7 +26,7 @@ module Plants
 
     def answer_for(analysis)
       yield check_photos(analysis)
-      images = analysis.photos_oldest_first.map { |photo| prepared_image(photo) }
+      images = analysis.photos_oldest_first.map { |photo| PlantAnalyzer::Image.from(photo) }
       raw = yield ask(images, PlantAnalyzer::Context.new(analysis).to_text)
       check_answer(raw)
     end
@@ -42,13 +40,6 @@ module Plants
     def check_answer(raw)
       answer = PlantAnalysisAnswer.new(raw)
       answer.valid? ? Success(answer) : Failure[:invalid_answer, answer.errors.attribute_names.join(", ")]
-    end
-
-    def prepared_image(photo)
-      photo.image.blob.open do |file|
-        Vips::Image.thumbnail(file.path, PHOTO_DIMENSION, height: PHOTO_DIMENSION, size: :down)
-          .write_to_buffer(".jpg", Q: 85, strip: true)
-      end
     end
 
     def record_answer(analysis, answer)

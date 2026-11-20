@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_20_072736) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_091331) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -113,6 +113,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_072736) do
     t.index ["plant_analysis_id", "photo_id"], name: "index_plant_analysis_photos_on_plant_analysis_id_and_photo_id", unique: true
   end
 
+  create_table "plant_analysis_questions", force: :cascade do |t|
+    t.bigint "plant_analysis_id", null: false
+    t.bigint "asked_by_id"
+    t.bigint "photo_id"
+    t.text "body", null: false
+    t.string "status", default: "pending", null: false
+    t.text "answer"
+    t.string "error"
+    t.string "model"
+    t.datetime "finished_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["asked_by_id"], name: "index_plant_analysis_questions_on_asked_by_id"
+    t.index ["photo_id"], name: "index_plant_analysis_questions_on_photo_id"
+    t.index ["plant_analysis_id", "created_at"], name: "idx_on_plant_analysis_id_created_at_c4c13f2068"
+    t.index ["plant_analysis_id"], name: "index_plant_analysis_questions_one_pending", unique: true, where: "((status)::text = 'pending'::text)"
+  end
+
   create_table "plants", force: :cascade do |t|
     t.bigint "household_id", null: false
     t.bigint "location_id"
@@ -181,6 +199,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_20_072736) do
   add_foreign_key "plant_analyses", "users", column: "requested_by_id"
   add_foreign_key "plant_analysis_photos", "photos"
   add_foreign_key "plant_analysis_photos", "plant_analyses"
+  add_foreign_key "plant_analysis_questions", "photos", on_delete: :nullify
+  add_foreign_key "plant_analysis_questions", "plant_analyses"
+  add_foreign_key "plant_analysis_questions", "users", column: "asked_by_id"
   add_foreign_key "plants", "households"
   add_foreign_key "plants", "locations"
   add_foreign_key "sessions", "users"

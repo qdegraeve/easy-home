@@ -18,6 +18,9 @@ fr:
               not_a_picture: "n'est pas une image JPEG, PNG ou WebP lisible"
               too_many_pixels: "dépasse %{count} mégapixels"
     attributes:
+      plant_analysis_question:
+        body: "Question"
+        photo: "Photo"
       plant_analysis:
         photo_ids: "Photos"
         note: "Une question, une remarque ? (facultatif)"
@@ -209,6 +212,30 @@ fr:
         already_accepted: "Cette action est déjà dans les tâches."
         subject_archived: "Cette plante est archivée : restaurez-la pour appliquer une proposition."
         invalid: "Cette proposition ne peut pas être appliquée."
+    analysis_questions:
+      create:
+        success: "Question envoyée : la réponse s'affichera ici dans une minute."
+        subject_archived: "Cette plante est archivée : restaurez-la pour poser une question."
+        not_done: "Cette analyse n'est pas terminée."
+        already_pending: "Une question attend déjà sa réponse."
+        too_many: "Cette analyse a atteint le nombre maximum de questions : lancez une nouvelle analyse."
+        not_failed: "Cette question a déjà sa réponse."
+      new:
+        title: "Poser une question"
+      form:
+        body: "Une question sur cette analyse ?"
+        placeholder: "Ex. faut-il couper les feuilles jaunes ? Quel paillis utiliser ?"
+        photo: "Joindre une photo (facultatif, elle rejoint le suivi photo)"
+        submit: "Envoyer la question"
+      thread:
+        title: "Questions sur cette analyse"
+        pending: "⏳ Réponse en cours… La page se mettra à jour toute seule."
+        failed: "La réponse n'a pas abouti."
+        ask_again: "Reposer la question"
+        photo_alt: "Photo jointe du %{date}"
+        limit:
+          one: "%{count} question au maximum par analyse : lancez une nouvelle analyse pour continuer."
+          other: "%{count} questions au maximum par analyse : lancez une nouvelle analyse pour continuer."
     photos:
       create:
         success: "Photo ajoutée."

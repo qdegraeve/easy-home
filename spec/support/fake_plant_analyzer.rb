@@ -10,19 +10,31 @@ class FakePlantAnalyzer
     ]
   }.freeze
 
-  attr_accessor :answer, :error
+  FOLLOW_UP = "Oui, le paillis suffit. Arrosez seulement quand la terre est sèche en surface.".freeze
+
+  # answer= sets the structured answer of an analysis; follow_up= the text answer of a question.
+  attr_writer :answer
+  attr_accessor :follow_up, :error
   attr_reader :calls
 
   def initialize
     @answer = ANSWER
+    @follow_up = FOLLOW_UP
     @calls = []
+  end
+
+  def answer(images:, text:)
+    @calls << { images:, text:, follow_up: true }
+    raise PlantAnalyzer::Error, error if error
+
+    follow_up
   end
 
   def analyze(images:, text:)
     @calls << { images:, text: }
     raise PlantAnalyzer::Error, error if error
 
-    answer
+    @answer
   end
 end
 

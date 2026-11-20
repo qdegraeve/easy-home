@@ -39,7 +39,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [x] Tâches d'une plante : liste sur la fiche, tâche manuelle (engrais, taille…) une seule fois à une date
   (`Recurrence::Once`) ou tous les N jours après la dernière fois
 - [x] Analyse d'une photo : état, observations, actions ; intervalle d'arrosage accepté, action acceptée → tâche
-- [ ] Discussion autour d'une analyse : questions complémentaires, avec photo jointe possible
+- [x] Discussion autour d'une analyse : questions complémentaires, avec photo jointe possible
 - [ ] System specs des parcours : ajouter une plante, arroser, analyser une photo
 
 ## Étape 3 : coque Hotwire Native Android et push (spike)

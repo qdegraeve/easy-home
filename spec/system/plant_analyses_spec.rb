@@ -124,4 +124,38 @@ RSpec.describe "Plant analyses", type: :system do
     expect(page).to have_content("✓ Dans les tâches")
     expect(page).to have_no_button("Ajouter « Pailler le pied » aux tâches")
   end
+
+  it "asks follow-up questions on an analysis, one of them with a new photo" do
+    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    plant = create(:plant, :watered, household: user.households.first, name: "Citronnier")
+    create(:plant_analysis, :with_proposals, plant:)
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    click_on "Citronnier"
+
+    fill_in "Une question sur cette analyse ?", with: "Quel paillis utiliser ?"
+    attach_file "Joindre une photo (facultatif, elle rejoint le suivi photo)", picture("plant.png")
+    click_on "Envoyer la question"
+    expect(page).to have_content("Question envoyée")
+    expect(page).to have_content("Réponse en cours")
+    expect(page).to have_css("img[alt='Photo jointe du lun 16 nov.']")
+    expect(page).to have_no_button("Envoyer la question")
+
+    perform_enqueued_jobs
+    refresh
+    expect(page).to have_content(FakePlantAnalyzer::FOLLOW_UP)
+    expect(@fake_plant_analyzer.calls.last[:images].size).to eq(2)
+
+    @fake_plant_analyzer.follow_up = "Une fois par semaine suffit."
+    fill_in "Une question sur cette analyse ?", with: "Et l'engrais ?"
+    click_on "Envoyer la question"
+    perform_enqueued_jobs
+    refresh
+    expect(page).to have_content("Une fois par semaine suffit.")
+    expect(@fake_plant_analyzer.calls.last[:text]).to include("You: #{FakePlantAnalyzer::FOLLOW_UP}")
+    within("section[aria-labelledby='photos']") { expect(page).to have_css("img", count: 2) }
+  end
 end

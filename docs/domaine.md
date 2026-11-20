@@ -71,6 +71,13 @@ PlantAnalysis                    # une seule en attente par plante (index unique
   observations : text
   actions : jsonb                # [{ title, details, due_in_days }] ; une action acceptée devient une Task `once`
   applied_action_indexes : int[] # positions des actions déjà devenues tâches (une fois chacune)
+  questions (PlantAnalysisQuestion, 10 au plus)
+
+PlantAnalysisQuestion            # question de suivi sur une analyse terminée ; une seule en attente par analyse
+  analysis, asked_by (User)
+  photo (optionnelle)            # photo jointe, aussi dans le suivi photo de la plante ; supprimée -> null
+  body                           # 1 000 caractères au plus
+  status (pending | done | failed), answer (texte libre de l'IA), error, model
   model                          # ex. "sonnet"
 
 Task
@@ -192,6 +199,10 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
     de l'analyse (aujourd'hui si cette date est passée), une seule fois par action.
   L'espèce et l'intervalle s'affichent comme acceptés tant que la plante y correspond ; une action, dès qu'elle est
   devenue tâche (même supprimée ensuite).
+- Sous une analyse terminée, une **discussion** : on pose une question (`Plants::AskQuestion`), avec une photo jointe
+  facultative qui rejoint le suivi photo ; l'IA répond en texte libre dans un job (`AnswerQuestionJob`), la page se
+  met à jour seule. Une question à la fois, 10 au plus par analyse ; une réponse en échec se redemande
+  (`Plants::AskAgain`).
 - Chaque analyse reçoit le contexte : position arrondie (environ 1 km) et altitude du foyer, exposition et abri de
   l'emplacement, espèce confirmée, intervalle d'arrosage actuel, mois en cours (saisons de l'hémisphère sud).
   **L'adresse n'est jamais envoyée à l'IA**, ni les métadonnées de la photo (voir ADR 0008), et ces données restent en
