@@ -7,6 +7,8 @@ class PlantAnalysis < ApplicationRecord
   belongs_to :requested_by, class_name: "User", optional: true
   has_many :analysis_photos, class_name: "PlantAnalysisPhoto", dependent: :destroy
   has_many :photos, through: :analysis_photos
+  has_many :questions, -> { in_order }, class_name: "PlantAnalysisQuestion", dependent: :destroy,
+    inverse_of: :analysis
 
   enum :status, { pending: "pending", done: "done", failed: "failed" }, validate: true
   enum :health, { ok: "ok", watch: "watch", act: "act" }, prefix: true, validate: { allow_nil: true }

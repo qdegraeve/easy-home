@@ -101,4 +101,28 @@ RSpec.describe PlantAnalyzer::ClaudeCli do
 
     expect { cli.analyze(images: [], text: "x") }.to raise_error(PlantAnalyzer::Error, "claude is not installed")
   end
+
+  describe "#answer" do
+    it "answers a follow-up question in plain text, with the follow-up prompt and no schema" do
+      cli = printing({ type: "result", is_error: false, result: "Oui, paillez le pied." })
+
+      answer = cli.answer(images: [ "JPEG-1" ], text: "New question from the owner: Paillis ?")
+
+      expect(answer).to eq("Oui, paillez le pied.")
+
+      args = dir.join("args").read
+      expect(args).to include(PlantAnalyzer::FOLLOW_UP_PROMPT.strip, "--no-session-persistence")
+      expect(args.split("\n")).not_to include("--json-schema")
+      expect(args.split("\n").each_cons(2).to_a).to include([ "--tools", "" ])
+      content = JSON.parse(dir.join("stdin").read).dig("message", "content")
+      expect(content.map { |block| block["type"] }).to eq(%w[image text])
+    end
+
+    it "raises on an error or an empty answer" do
+      expect { printing({ type: "result", is_error: true, result: "quota" }).answer(images: [], text: "x") }
+        .to raise_error(PlantAnalyzer::Error, /quota/)
+      expect { printing({ type: "result", is_error: false, result: "" }).answer(images: [], text: "x") }
+        .to raise_error(PlantAnalyzer::Error, "claude gave an empty answer")
+    end
+  end
 end

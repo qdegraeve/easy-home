@@ -1,0 +1,44 @@
+<%# Follow-up questions of a finished analysis and their answers, then the form for the next question. %>
+<section
+  class="space-y-3 border-t border-stone-100 pt-3"
+  aria-label="<%= t("plants.analysis_questions.thread.title") %>"
+>
+  <% analysis.questions.each do |question| %>
+    <div class="space-y-2 text-sm">
+      <div class="ml-8 space-y-2 rounded-2xl bg-emerald-50 p-3">
+        <%= simple_format(h(question.body)) %>
+        <% if question.photo %>
+          <%= image_tag question.photo.image.variant(:thumb), class: "h-16 w-16 rounded-lg object-cover",
+                alt: t("plants.analysis_questions.thread.photo_alt",
+                       date: l(question.photo.taken_at.to_date, format: :day)) %>
+        <% end %>
+      </div>
+      <div class="mr-8 space-y-2 rounded-2xl bg-stone-50 p-3">
+        <% if question.pending? %>
+          <p><%= t("plants.analysis_questions.thread.pending") %></p>
+        <% elsif question.failed? %>
+          <p role="alert" class="text-red-800"><%= t("plants.analysis_questions.thread.failed") %></p>
+          <% if policy(question).ask_again? %>
+            <%= button_to t("plants.analysis_questions.thread.ask_again"),
+                  ask_again_plant_analysis_question_path(analysis.plant, analysis, question),
+                  class: "mt-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold shadow-sm ring-1 ring-stone-200" %>
+          <% end %>
+        <% else %>
+          <%# Escaped first: AI text is plain text, never HTML. %>
+          <%= simple_format(h(question.answer)) %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% questions = analysis.questions %>
+  <% if questions.any?(&:pending?) %>
+    <%# Nothing: the next question waits for this answer. %>
+  <% elsif questions.size >= PlantAnalysisQuestion::MAX_PER_ANALYSIS %>
+    <p class="text-xs text-stone-500">
+      <%= t("plants.analysis_questions.thread.limit", count: PlantAnalysisQuestion::MAX_PER_ANALYSIS) %>
+    </p>
+  <% elsif policy(PlantAnalysisQuestion.new(plant_analysis_id: analysis.id)).create? %>
+    <%= render "plants/analysis_questions/form", analysis:, form: QuestionForm.new %>
+  <% end %>
+</section>

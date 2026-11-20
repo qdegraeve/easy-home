@@ -2,7 +2,7 @@
 # failed analysis shows its error and the user restarts it (ADR 0008).
 class AnalyzePlantJob < ApplicationJob
   queue_as :default
-  limits_concurrency to: 1, key: "plant_analysis", duration: 10.minutes
+  limits_concurrency to: 1, key: "claude", group: "plant_analysis", duration: 10.minutes
 
   discard_on ActiveJob::DeserializationError
 

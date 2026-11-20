@@ -1,6 +1,7 @@
 class Photo < ApplicationRecord
   belongs_to :plant
   has_many :analysis_photos, class_name: "PlantAnalysisPhoto", dependent: :destroy
+  has_many :analysis_questions, class_name: "PlantAnalysisQuestion", dependent: :nullify
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_fill: [ 320, 320 ]
     attachable.variant :large, resize_to_limit: [ 1600, 1600 ]

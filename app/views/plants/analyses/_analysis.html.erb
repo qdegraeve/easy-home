@@ -89,4 +89,8 @@
       <% end %>
     </ul>
   </footer>
+
+  <% if analysis.done? %>
+    <%= render "plants/analysis_questions/thread", analysis: %>
+  <% end %>
 </article>

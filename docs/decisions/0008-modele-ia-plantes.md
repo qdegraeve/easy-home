@@ -28,6 +28,12 @@ Contrainte : coût nul ou minimal.
 - Une analyse **ne modifie rien d'elle-même** : l'espèce, l'intervalle d'arrosage et les actions conseillées sont des
   propositions que l'utilisateur accepte une à une, d'un bouton. Une action acceptée devient une tâche ponctuelle.
   L'IA aide à remplir la fiche sans jamais l'écrire seule (une réponse détournée ne change pas la plante).
+- On peut **poser des questions** sur une analyse terminée, comme dans une discussion, avec une photo jointe
+  facultative (ajoutée au suivi photo). Le même jardinier répond en texte libre (`answer(images:, text:)`,
+  `PlantAnalyzer::FOLLOW_UP_PROMPT`, sans schéma), sans nouvelle proposition à valider. `claude -p` ne garde aucune
+  session : chaque question renvoie les photos de l'analyse et celles des questions, le résultat de l'analyse et tout
+  le fil (`PlantAnalyzer::FollowUpContext`). D'où une question à la fois et 10 questions au plus par analyse ; au-delà,
+  une nouvelle analyse repart des photos du moment. La réponse est bornée (5 000 caractères) et affichée échappée.
 - En test, un **faux adaptateur** renvoie une réponse fixe : aucun appel réel.
 
 ### Sécurité de l'appel

@@ -1,3 +1,9 @@
+<% content_for :head do %>
+  <%# The answer job refreshes the plant pages when it finishes (ADR 0008). %>
+  <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+<% end %>
+<%= turbo_stream_from @plant %>
+
 <div class="mx-auto max-w-2xl">
   <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
   <h1 class="mt-2 text-2xl font-bold"><%= t(".title", name: @plant.name) %></h1>

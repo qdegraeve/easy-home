@@ -18,6 +18,9 @@ Rails.application.routes.draw do
         post :accept_watering
         post "actions/:index/accept", action: :accept_action, as: :accept_action, constraints: { index: /\d+/ }
       end
+      resources :questions, only: :create, controller: "analysis_questions" do
+        post :ask_again, on: :member
+      end
     end
   end
   resources :task_occurrences, only: [] do
