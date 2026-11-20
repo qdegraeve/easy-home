@@ -1,6 +1,6 @@
 name: CI
 
-# A PR goes through: secrets, security, lint, tests. See docs/tests.md.
+# A PR goes through: secrets, security, lint, tests, Android build. See docs/tests.md.
 # Default pull_request triggers (opened, synchronize, reopened): a label never reruns the CI,
 # otherwise "skipped" jobs would count as passing for the required checks.
 
@@ -168,3 +168,24 @@ jobs:
 
       - name: Seeds
         run: bin/rails db:seed:replant
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build the debug app
+        run: ./gradlew assembleDebug

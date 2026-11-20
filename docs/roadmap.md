@@ -44,10 +44,11 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 
 ## Étape 3 : coque Hotwire Native Android et push (spike)
 
-- [ ] Projet `android/`, webview pointant vers l'app
+- [x] Projet `android/`, webview pointant vers l'app, path configuration servie par Rails
+- [ ] Navigation et transitions plus naturelles dans l'app (titres, en-tête web, retours)
 - [ ] Une notification FCM « à arroser » qui arrive au bon moment
-- [ ] Prendre une photo directement avec l'appareil du téléphone (aujourd'hui, seule la galerie est proposée sur
-  Android) : bouton dédié (`capture`) côté web et sélecteur de fichiers/caméra dans la coque native
+- [x] Prendre une photo directement avec l'appareil du téléphone : fourni par la coque (sélecteur de fichiers de
+  Hotwire Native, appareil photo compris), sans code dédié
 
 ## Étape 4 : déploiement minimal
 

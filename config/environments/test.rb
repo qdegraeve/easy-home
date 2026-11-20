@@ -18,8 +18,9 @@ Rails.application.configure do
   # Configure public file server for tests with cache-control for performance.
   config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
-  # Show full error reports.
-  config.consider_all_requests_local = true
+  # Plain error pages for rescuable errors (404, 400…): the full report with source extracts took about 100 ms per
+  # response and broke the spec time budget. Other errors are still raised (show_exceptions below).
+  config.consider_all_requests_local = false
   config.cache_store = :null_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.

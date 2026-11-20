@@ -20,6 +20,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 | `docs/architecture.md` | Couches applicatives, règles d'usage, exemples de code |
 | `docs/tests.md` | Exigences de test, stratégie par couche, parcours critiques |
 | `docs/hotwire-native.md` | App Android, notifications push, authentification native, déploiement |
+| `docs/android-coque.md` | Explication pas à pas de la coque Android et de Hotwire Native |
 | `docs/roadmap.md` | Étapes de construction et setup restant |
 | `docs/decisions/` | ADR : décisions structurantes et leur justification |
 
@@ -30,7 +31,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 - Hotwire (Turbo + Stimulus) ; JS bundlé par esbuild (`jsbundling-rails`) ; Tailwind CSS 4 (`cssbundling-rails`) ; Propshaft
 - Solid Queue, Solid Cache, Solid Cable (pas de Redis). En production, Solid Queue tourne dans Puma (`SOLID_QUEUE_IN_PUMA`)
 - Déploiement : Kamal + Thruster
-- À venir : Hotwire Native Android (Kotlin), notifications via Firebase Cloud Messaging
+- App Android Hotwire Native (Kotlin) dans `android/` ; à venir : notifications via Firebase Cloud Messaging
 
 ## Commandes
 
@@ -44,6 +45,7 @@ bin/jobs                 # worker Solid Queue en local
 bundle exec rspec        # tests Ruby, dont end to end (yarn build && yarn build:css avant les system specs)
 yarn test                # tests JS Vitest
 bin/check-specs          # garde-fous des specs : pas de sleep, de focus, de retry, de Time.now
+cd android && ./gradlew assembleDebug  # app Android (voir docs/hotwire-native.md pour le téléphone)
 bin/rails accounts:create EMAIL=moi@example.com  # crée un compte (pas d'inscription publique) ; le foyer se crée dans l'app
 ```
 
