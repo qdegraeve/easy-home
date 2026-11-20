@@ -19,6 +19,20 @@ class PlantAnalysis < ApplicationRecord
 
   scope :recent_first, -> { order(created_at: :desc, id: :desc) }
 
+  # The species and the interval show as accepted while the plant matches them, whoever set them. An action is
+  # accepted once, when it becomes a task.
+  def species_accepted?
+    plant.species == species_name
+  end
+
+  def watering_accepted?
+    plant.watering_task&.recurrence_config&.dig("interval_days") == watering_interval_days
+  end
+
+  def action_accepted?(index)
+    applied_action_indexes.include?(index)
+  end
+
   # In memory, so it also holds on an analysis that is not saved yet: the AI compares the photos in time order.
   def photos_oldest_first
     photos.sort_by { |photo| [ photo.taken_at, photo.id.to_i ] }

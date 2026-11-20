@@ -189,6 +189,26 @@ fr:
         note: "Votre remarque : %{note}"
         photos: "Photos analysées"
         photo_alt: "Photo analysée du %{date}"
+        accept_species: "Enregistrer l'espèce"
+        species_accepted: "✓ Sur la fiche"
+        accept_watering: "Appliquer"
+        watering_accepted: "✓ En place"
+        accept_action: "Ajouter aux tâches"
+        accept_action_label: "Ajouter « %{title} » aux tâches"
+        action_accepted: "✓ Dans les tâches"
+      accept_species:
+        success: "Espèce enregistrée : %{species}."
+      accept_watering:
+        success:
+          one: "Arrosage réglé : tous les jours."
+          other: "Arrosage réglé : tous les %{count} jours."
+      accept_action:
+        success: "Tâche ajoutée : %{title}."
+      accept:
+        not_acceptable: "Cette proposition ne peut pas être appliquée."
+        already_accepted: "Cette action est déjà dans les tâches."
+        subject_archived: "Cette plante est archivée : restaurez-la pour appliquer une proposition."
+        invalid: "Cette proposition ne peut pas être appliquée."
     photos:
       create:
         success: "Photo ajoutée."

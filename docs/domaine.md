@@ -70,6 +70,7 @@ PlantAnalysis                    # une seule en attente par plante (index unique
   watering_interval_days         # intervalle proposé (1 à 60), optionnel
   observations : text
   actions : jsonb                # [{ title, details, due_in_days }] ; une action acceptée devient une Task `once`
+  applied_action_indexes : int[] # positions des actions déjà devenues tâches (une fois chacune)
   model                          # ex. "sonnet"
 
 Task
@@ -166,7 +167,7 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
 ## Plantes
 
 - Une plante porte une seule tâche, `plant.watering`, en récurrence **glissante**, créée à l'ajout avec l'intervalle
-  saisi (1 à 60 jours). L'analyse proposera de le remplacer (`watering_interval_days`) ; il reste modifiable à la main.
+  saisi (1 à 60 jours). L'analyse propose de le remplacer (`watering_interval_days`) ; il reste modifiable à la main.
   Une analyse en échec ou en attente ne bloque donc rien.
 - À l'ajout, le « dernier arrosage » (aujourd'hui par défaut) entre au journal et sert de point de départ à la première
   échéance. Changer l'intervalle recale l'échéance ouverte depuis le dernier arrosage.
@@ -181,13 +182,19 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
   l'échéance ouverte est recalculée depuis la réalisation précédente.
 - Archiver une plante désactive sa tâche et supprime l'échéance ouverte ; restaurer la recalcule depuis le dernier
   arrosage.
-- Une action conseillée acceptée devient une `Task` en récurrence `once`, due dans `due_in_days` jours.
-- Ajouter une plante (avec photo, à venir) : création de la `Plant` et de sa première `Photo`, puis analyse en job. L'espèce proposée s'affiche
-  à confirmer : acceptée telle quelle, elle remplit `properties.species` avec `species_source: ai` ; corrigée, avec
-  `species_source: user`.
+- Ajouter une plante avec une photo : création de la `Plant` et de sa première `Photo`, puis analyse en job.
+- Les propositions d'une analyse terminée s'acceptent une à une, par un bouton (plante non archivée) :
+  - l'espèce (`Plants::AcceptSpecies`) remplit `species` avec le nom scientifique et `species_source: ai` ; corrigée
+    ensuite à la main, elle passe en `species_source: user` ;
+  - l'intervalle (`Plants::AcceptWatering`) remplace celui de la tâche d'arrosage et recale l'échéance ouverte depuis
+    le dernier arrosage ;
+  - une action (`Plants::AcceptAction`) devient une `Task` en récurrence `once`, due `due_in_days` jours après la fin
+    de l'analyse (aujourd'hui si cette date est passée), une seule fois par action.
+  L'espèce et l'intervalle s'affichent comme acceptés tant que la plante y correspond ; une action, dès qu'elle est
+  devenue tâche (même supprimée ensuite).
 - Chaque analyse reçoit le contexte : position arrondie (environ 1 km) et altitude du foyer, exposition et abri de
   l'emplacement, espèce confirmée, intervalle d'arrosage actuel, mois en cours (saisons de l'hémisphère sud).
   **L'adresse n'est jamais envoyée à l'IA**, ni les métadonnées de la photo (voir ADR 0008), et ces données restent en
   base, jamais dans le dépôt.
 - Une analyse ne modifie jamais rien d'elle-même : l'espèce, l'intervalle et les actions sont des **propositions** à
-  accepter. Le fournisseur d'IA est derrière `Plants::Analyzer` (ADR 0008).
+  accepter. Le fournisseur d'IA est derrière `PlantAnalyzer` (ADR 0008).

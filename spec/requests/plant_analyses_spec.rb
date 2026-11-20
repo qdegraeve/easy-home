@@ -119,6 +119,65 @@ RSpec.describe "Plant analyses", type: :request do
     expect(response.body).to include("Analyse de « Citronnier »", "✅ En forme", "Plante en forme.")
   end
 
+  describe "accepting the proposals" do
+    let(:analysis) { create(:plant_analysis, :with_proposals, plant:, photos: [ photo ]) }
+
+    before { sign_in(user) }
+
+    it "sets the species, the watering interval and adds an action as a task, then shows them as accepted" do
+      post accept_species_plant_analysis_path(plant, analysis)
+      expect(flash[:notice]).to eq("Espèce enregistrée : Citrus limon.")
+      post accept_watering_plant_analysis_path(plant, analysis)
+      expect(flash[:notice]).to eq("Arrosage réglé : tous les 4 jours.")
+      post accept_action_plant_analysis_path(plant, analysis, index: 0)
+      expect(flash[:notice]).to eq("Tâche ajoutée : Pailler le pied.")
+      expect(response).to redirect_to(plant_path(plant))
+
+      get plant_path(plant)
+      expect(response.body).to include("✓ Sur la fiche", "✓ En place", "✓ Dans les tâches")
+      expect(response.body).not_to include("Enregistrer l&#39;espèce", "Ajouter aux tâches")
+    end
+
+    it "goes back to the analysis page when accepted from there" do
+      post accept_species_plant_analysis_path(plant, analysis),
+        headers: { "Referer" => plant_analysis_url(plant, analysis) }
+
+      expect(response).to redirect_to(plant_analysis_url(plant, analysis))
+    end
+
+    it "refuses to add the same action twice" do
+      post accept_action_plant_analysis_path(plant, analysis, index: 0)
+
+      post accept_action_plant_analysis_path(plant, analysis, index: 0)
+
+      expect(flash[:alert]).to eq("Cette action est déjà dans les tâches.")
+      expect(plant.tasks.where(title: "Pailler le pied").count).to eq(1)
+    end
+
+    it "refuses an action that does not exist" do
+      post accept_action_plant_analysis_path(plant, analysis, index: 3)
+
+      expect(flash[:alert]).to eq("Cette proposition ne peut pas être appliquée.")
+    end
+
+    it "forbids accepting the proposals of an analysis that is not done" do
+      analysis.update!(status: :failed)
+
+      post accept_species_plant_analysis_path(plant, analysis)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(plant.reload.species).to be_nil
+    end
+
+    it "forbids accepting the proposals of an archived plant" do
+      plant.update!(archived_at: Time.current)
+
+      post accept_watering_plant_analysis_path(plant, analysis)
+
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "access denied" do
     {
       "a guest of the household" => -> { create(:household_member, household:, role: :guest).user },
@@ -136,6 +195,18 @@ RSpec.describe "Plant analyses", type: :request do
         expect(response).to have_http_status(:not_found)
         expect(plant.analyses.count).to eq(1)
       end
+    end
+
+    it "answers 404 to a guest accepting a proposal" do
+      analysis = create(:plant_analysis, :with_proposals, plant:, photos: [ photo ])
+      sign_in(create(:household_member, household:, role: :guest).user)
+
+      post accept_species_plant_analysis_path(plant, analysis)
+      expect(response).to have_http_status(:not_found)
+      post accept_action_plant_analysis_path(plant, analysis, index: 0)
+      expect(response).to have_http_status(:not_found)
+      expect(plant.reload.species).to be_nil
+      expect(plant.tasks.count).to eq(1)
     end
 
     it "forbids analysing an archived plant" do

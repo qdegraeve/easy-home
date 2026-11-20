@@ -12,7 +12,13 @@ Rails.application.routes.draw do
     resource :archive, only: [ :create, :destroy ], module: :plants
     resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
     resources :photos, only: [ :create, :show, :update, :destroy ], module: :plants
-    resources :analyses, only: [ :new, :create, :show ], module: :plants
+    resources :analyses, only: [ :new, :create, :show ], module: :plants do
+      member do
+        post :accept_species
+        post :accept_watering
+        post "actions/:index/accept", action: :accept_action, as: :accept_action, constraints: { index: /\d+/ }
+      end
+    end
   end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences

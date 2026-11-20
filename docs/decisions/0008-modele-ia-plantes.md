@@ -25,6 +25,9 @@ Contrainte : coût nul ou minimal.
 - L'analyse tourne dans un **job** Solid Queue ; à la fin, le job rafraîchit les pages ouvertes de la plante
   (`broadcast_refresh`, rafraîchissement Turbo par morphing). Un rafraîchissement plutôt qu'un fragment diffusé : les
   formulaires de la page gardent un jeton CSRF valide.
+- Une analyse **ne modifie rien d'elle-même** : l'espèce, l'intervalle d'arrosage et les actions conseillées sont des
+  propositions que l'utilisateur accepte une à une, d'un bouton. Une action acceptée devient une tâche ponctuelle.
+  L'IA aide à remplir la fiche sans jamais l'écrire seule (une réponse détournée ne change pas la plante).
 - En test, un **faux adaptateur** renvoie une réponse fixe : aucun appel réel.
 
 ### Sécurité de l'appel
