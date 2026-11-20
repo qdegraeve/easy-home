@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     resource :archive, only: [ :create, :destroy ], module: :plants
     resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
     resources :photos, only: [ :create, :show, :update, :destroy ], module: :plants
+    resources :analyses, only: [ :new, :create, :show ], module: :plants
   end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences

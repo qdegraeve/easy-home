@@ -1,0 +1,8 @@
+<div class="mx-auto max-w-2xl">
+  <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
+  <h1 class="mt-2 text-2xl font-bold"><%= t(".title", name: @plant.name) %></h1>
+
+  <div class="mt-4">
+    <%= render "plants/analyses/analysis", analysis: @analysis, restart: false %>
+  </div>
+</div>

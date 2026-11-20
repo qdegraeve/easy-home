@@ -19,7 +19,7 @@
 | Plante | `Plant` | Un élément du foyer : nom, espèce, emplacement. Archivable (`archived_at`). |
 | Emplacement | `Location` | Zone de la maison (« terrasse », « jardin devant ») avec son exposition au soleil. |
 | Photo | `Photo` | Une photo d'un élément, datée. L'ensemble forme le suivi photo. |
-| Analyse | `PhotoAnalysis` | Résultat de l'IA sur une photo : espèce proposée, état, observations, actions conseillées. |
+| Analyse | `PlantAnalysis` | Résultat de l'IA sur 1 à 5 photos d'une plante : espèce proposée, état, observations, actions conseillées. |
 
 ## Modèle de données (esquisse)
 
@@ -59,17 +59,18 @@ Photo
   plant, taken_at                # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
-  has_one :analysis (PhotoAnalysis)
 
-PhotoAnalysis
-  photo
+PlantAnalysis                    # une seule en attente par plante (index unique partiel)
+  plant, requested_by (User)
+  photos (1 à 5, via PlantAnalysisPhoto)   # la plus récente par défaut
+  user_note                      # question ou remarque facultative, transmise à l'IA
   status (pending | done | failed), error
   health (ok | watch | act)      # bien / à surveiller / à traiter
-  species_guess, species_confidence
+  species_name, species_common_name, species_confidence (low | medium | high)
   watering_interval_days         # intervalle proposé (1 à 60), optionnel
   observations : text
   actions : jsonb                # [{ title, details, due_in_days }] ; une action acceptée devient une Task `once`
-  provider                       # ex. "claude_cli"
+  model                          # ex. "sonnet"
 
 Task
   household (lecture seule)      # toujours présent : droits et listes passent par lui

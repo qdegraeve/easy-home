@@ -32,7 +32,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
   exposition et abri
 - [x] Plantes : `Plant` (ADR 0010), emplacement, espèce saisie ; archivage et suppression
 - [x] Photos (Active Storage, ADR 0011) et suivi photo
-- [ ] `Plants::Analyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test
+- [x] `PlantAnalyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test ; analyse de 1 à 5 photos
+  avec remarque de l'utilisateur, automatique sur la première photo
 - [ ] Identification de l'espèce proposée, confirmée ou corrigée
 - [x] Arrosage : tâche `plant.watering`, bouton « Arrosée », journal
 - [x] Tâches d'une plante : liste sur la fiche, tâche manuelle (engrais, taille…) une seule fois à une date

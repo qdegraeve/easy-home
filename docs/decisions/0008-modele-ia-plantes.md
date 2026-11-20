@@ -13,9 +13,18 @@ Contrainte : coût nul ou minimal.
 
 - Pendant le développement et tant que l'usage reste personnel, on utilise le **forfait Claude** du développeur via
   Claude Code en mode non interactif (`claude -p`), en lui passant une photo et un prompt qui exige une réponse JSON.
-- L'appel passe par un **adaptateur** (`Plants::Analyzer`) avec une interface unique. Le reste de l'app ne connaît pas le
-  fournisseur.
-- L'analyse tourne dans un **job** Solid Queue ; la page se met à jour en Turbo Stream à l'arrivée du résultat.
+- L'appel passe par un **adaptateur** (`PlantAnalyzer`, implémentation `PlantAnalyzer::ClaudeCli`) avec une interface
+  unique, `analyze(images:, text:)`. Le reste de l'app ne connaît pas le fournisseur. Le modèle se règle par
+  `PLANT_ANALYSIS_MODEL` (Sonnet par défaut), l'exécutable par `CLAUDE_BIN`.
+- Une **analyse porte sur une plante** et regarde de 1 à 5 de ses photos datées (la plus récente par défaut), avec un
+  texte facultatif de l'utilisateur. La première photo d'une plante est analysée d'office (identification) ; ensuite,
+  l'analyse se lance à la main.
+- Un **prompt de jardinier** spécialiste du jardinage bio et écologique (`PlantAnalyzer::SYSTEM_PROMPT`, passé en
+  `--system-prompt`) fixe ce qu'il faut regarder et interdit les traitements de synthèse ; les réponses sont en
+  français.
+- L'analyse tourne dans un **job** Solid Queue ; à la fin, le job rafraîchit les pages ouvertes de la plante
+  (`broadcast_refresh`, rafraîchissement Turbo par morphing). Un rafraîchissement plutôt qu'un fragment diffusé : les
+  formulaires de la page gardent un jeton CSRF valide.
 - En test, un **faux adaptateur** renvoie une réponse fixe : aucun appel réel.
 
 ### Sécurité de l'appel
@@ -25,11 +34,14 @@ prompt). L'appel est donc contraint :
 
 - **photo envoyée** : une copie redimensionnée (environ 1568 px) et **sans métadonnées**. Le GPS EXIF d'une photo prise
   au jardin donnerait la position exacte de la maison. La copie réduit aussi la consommation du quota ;
-- **fichier** : la copie est écrite dans un répertoire temporaire avec un nom généré par le serveur, jamais le nom envoyé
-  par l'utilisateur, puis supprimée ;
-- **commande** : lancée avec un tableau d'arguments, sans shell (`Open3`), avec un timeout ;
-- **outils** : seule la lecture de fichier est autorisée, tous les autres outils (shell, écriture, web) sont interdits.
-  Nombre de tours bas, sortie au format JSON. Les options exactes du CLI sont vérifiées à l'implémentation ;
+- **photo dans le message** : les images voyagent dans le message lui-même (`--input-format stream-json`, en base64).
+  Aucun fichier n'est lu par l'agent ;
+- **commande** : lancée avec un tableau d'arguments, sans shell (`Open3`), dans un répertoire temporaire vide, avec un
+  timeout de 3 minutes ;
+- **outils** : **aucun** (`--tools ""`), ni lecture de fichier, ni shell, ni web ; aucun serveur MCP
+  (`--strict-mcp-config`), aucun réglage ni hook chargé (`--setting-sources ""`), pas de commandes, pas de session
+  sauvegardée. La réponse est contrainte par `--json-schema`. Vérifié sur le CLI 2.1.328 : la session n'expose que
+  l'outil de sortie structurée. `--bare` n'est pas utilisable avec le forfait (il exige une clé API) ;
 - **réponse** : validée par un schéma strict (états connus, longueurs bornées, intervalle de 1 à 60 jours) et affichée
   échappée. Une réponse invalide met l'analyse en échec, avec un message.
 

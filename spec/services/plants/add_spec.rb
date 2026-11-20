@@ -61,6 +61,18 @@ RSpec.describe Plants::Add do
     expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
   end
 
+  it "analyses the first photo right away, and only when there is one" do
+    expect {
+      described_class.new.call(
+        household:, user:, params: params.merge(photo: Rack::Test::UploadedFile.new(file_fixture("plant.png")))
+      )
+    }.to have_enqueued_job(AnalyzePlantJob)
+    expect(PlantAnalysis.sole).to have_attributes(status: "pending", requested_by: user)
+
+    expect { described_class.new.call(household:, user:, params: params.merge(name: "Sans photo")) }
+      .not_to have_enqueued_job(AnalyzePlantJob)
+  end
+
   it "adds the optional first photo" do
     plant = described_class.new.call(
       household:, user:, params: params.merge(photo: Rack::Test::UploadedFile.new(file_fixture("plant.png")))
