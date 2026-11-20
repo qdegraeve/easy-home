@@ -20,6 +20,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 | `docs/architecture.md` | Couches applicatives, règles d'usage, exemples de code |
 | `docs/tests.md` | Exigences de test, stratégie par couche, parcours critiques |
 | `docs/hotwire-native.md` | App Android, notifications push, authentification native, déploiement |
+| `docs/android-coque.md` | Explication pas à pas de la coque Android et de Hotwire Native |
 | `docs/roadmap.md` | Étapes de construction et setup restant |
 | `docs/decisions/` | ADR : décisions structurantes et leur justification |
 

@@ -1,7 +1,8 @@
 # Hotwire Native (Android)
 
 > **Statut : coque en place** (étape 3 de la roadmap) : l'app Android affiche l'app Rails, avec la navigation par
-> path configuration. À venir : prise de photo directe, notifications push, déploiement.
+> path configuration ; la prise de photo directe fonctionne. À venir : notifications push, déploiement.
+> Explication pédagogique de chaque morceau : `docs/android-coque.md`.
 
 ## Objectifs
 
@@ -126,5 +127,7 @@ Noter ici ce qui a été plus simple ou plus compliqué que prévu : c'est l'un 
 - **Piège** : les motifs de la path configuration s'appliquent aussi aux écrans d'authentification. `/session/new`
   ouvert en modal a figé l'app après la connexion (la modal se ferme sur une page qui n'existe plus).
 - **`adb reverse`** évite d'exposer le serveur de dev sur le réseau et de mettre une IP dans le code.
+- **Photo directe gratuite** : le sélecteur de fichiers de Hotwire Native propose l'appareil photo ; le champ
+  `accept="image/*"` existant suffit, sans bridge ni permission à déclarer.
 - **À revoir** : transitions entre écrans et navigation jugées peu intuitives au premier essai (barre native avec
   « Easy Home » partout, en-tête web en double, liens « ← retour » web en plus du retour Android).
