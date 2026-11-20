@@ -13,7 +13,9 @@ l'analyse par l'IA (ADR 0008), qui ne doit recevoir ni l'adresse ni les métadon
 
 - **Active Storage**, service disque (`storage/`), sur le volume Kamal `easy_home_storage` en production.
 - **Contrôle du fichier sur son contenu** (`PhotoUpload`, détection par Marcel) : JPEG, PNG ou WebP, 15 Mo maximum.
-  Le nom ou le type annoncé par le navigateur ne comptent pas.
+  Le nom ou le type annoncé par le navigateur ne comptent pas. Les dimensions sont lues dans l'en-tête avant tout
+  traitement : au-delà de 100 mégapixels (bombe de décompression), le fichier est refusé. Le chargement est strict :
+  une image aux données corrompues ou tronquées est refusée au lieu d'être enregistrée abîmée.
 - **Normalisation à l'envoi** (`Photos::Add`, libvips via `image_processing`) : rotation selon l'orientation du
   téléphone, 2048 px maximum, réenregistrement en JPEG qualité 85 **sans aucune métadonnée**. Seule cette version est
   stockée : l'original n'est pas conservé.

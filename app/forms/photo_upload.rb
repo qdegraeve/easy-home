@@ -1,4 +1,4 @@
-# An uploaded picture, checked on its content rather than on its file name: JPEG, PNG or WebP, 15 MB and 50
+# An uploaded picture, checked on its content rather than on its file name: JPEG, PNG or WebP, 15 MB and 100
 # megapixels at most. Dimensions are read from the header only, so a small file declaring huge dimensions (a
 # decompression bomb) is refused before any processing.
 class PhotoUpload
@@ -6,7 +6,7 @@ class PhotoUpload
 
   CONTENT_TYPES = %w[image/jpeg image/png image/webp].freeze
   MAX_SIZE_MB = 15
-  MAX_MEGAPIXELS = 50
+  MAX_MEGAPIXELS = 100 # 50 MP phones and panoramas fit; normalization shrinks everything to 2048 px anyway
 
   attr_accessor :file
 

@@ -34,6 +34,7 @@ module Photos
     def normalize(file)
       ImageProcessing::Vips
         .source(file.path)
+        .loader(fail: true) # strict: corrupted or truncated pixel data is an error, not a half grey picture
         .autorot
         .resize_to_limit(MAX_DIMENSION, MAX_DIMENSION)
         .convert("jpg")

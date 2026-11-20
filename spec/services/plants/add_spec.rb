@@ -78,8 +78,11 @@ RSpec.describe Plants::Add do
     expect(Plant.count).to eq(0)
   end
 
-  it "leaves no plant behind when the photo cannot be read" do
-    result = described_class.new.call(household:, user:, params: params.merge(photo: truncated_jpeg))
+  it "rolls everything back when the photo passes the form checks but cannot be processed" do
+    photo = truncated_jpeg
+    expect(PhotoUpload.new(file: photo)).to be_valid
+
+    result = described_class.new.call(household:, user:, params: params.merge(photo:))
 
     expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
     expect(Plant.count).to eq(0)
