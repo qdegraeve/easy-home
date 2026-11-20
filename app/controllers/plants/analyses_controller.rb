@@ -27,7 +27,37 @@ module Plants
       @analysis = @plant.analyses.find(params[:id]).tap { |analysis| authorize analysis }
     end
 
+    def accept_species
+      analysis = find_analysis_to_accept
+      respond_to_acceptance(Plants::AcceptSpecies.new.call(analysis:), species: analysis.species_name)
+    end
+
+    def accept_watering
+      analysis = find_analysis_to_accept
+      respond_to_acceptance(Plants::AcceptWatering.new.call(analysis:), count: analysis.watering_interval_days)
+    end
+
+    def accept_action
+      analysis = find_analysis_to_accept
+      result = Plants::AcceptAction.new.call(analysis:, index: params[:index].to_i)
+      respond_to_acceptance(result, title: result.value_or(nil)&.title)
+    end
+
     private
+
+    def find_analysis_to_accept
+      @plant = find_plant
+      @plant.analyses.find(params[:id]).tap { |analysis| authorize analysis, :accept? }
+    end
+
+    # Back to the page of the button: the plant, or the analysis page.
+    def respond_to_acceptance(result, **values)
+      if result.success?
+        redirect_back_or_to @plant, notice: t(".success", **values)
+      else
+        redirect_back_or_to @plant, alert: t("plants.analyses.accept.#{result.failure.first}")
+      end
+    end
 
     def find_plant
       policy_scope(Plant).find(params[:plant_id])
