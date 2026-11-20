@@ -79,7 +79,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Suivi photo : photo à l'ajout d'une plante (datée par l'EXIF), ajout depuis la fiche, fichier refusé, affichage, date corrigée, suppression | `spec/system/plant_photos_spec.rb` | Fait |
 | Ajout d'une plante avec photo : espèce proposée, confirmée ou corrigée | | Étape 2 |
 | Analyse : automatique sur la première photo, puis sélection de photos et remarque, résultat affiché, historique | `spec/system/plant_analyses_spec.rb` | Fait |
-| Analyse en échec : message visible, relance possible | `spec/requests/plant_analyses_spec.rb` | Fait |
+| Analyse en échec : message visible, relance avec les mêmes photos et la même remarque | `spec/system/plant_analyses_spec.rb` | Fait |
 | Proposition d'une analyse acceptée (espèce, intervalle, action devenue tâche) | | Étape 2 |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
 | Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 5 |

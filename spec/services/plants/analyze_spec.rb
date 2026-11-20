@@ -51,6 +51,16 @@ RSpec.describe Plants::Analyze do
     expect(analysis.reload.error).to eq("invalid_answer: health, watering_interval_days")
   end
 
+  it "fails without calling the analyzer when its photos were deleted" do
+    analysis.photos.each(&:destroy!)
+
+    result = described_class.new.call(analysis: analysis.reload)
+
+    expect(result.failure.first).to eq(:no_photo)
+    expect(analysis.reload).to have_attributes(status: "failed", error: "no_photo: the photos were deleted")
+    expect(fake.calls).to be_empty
+  end
+
   it "does nothing on an analysis that is not pending" do
     analysis.update!(status: :failed)
 

@@ -58,14 +58,23 @@ module PlantAnalyzer
         Open3.popen3(*arguments, chdir: dir) do |stdin, stdout, stderr, wait_thread|
           output = Thread.new { stdout.read }
           errors = Thread.new { stderr.read }
-          stdin.write(input)
-          stdin.close
+          Thread.new { write(stdin, input) }
           wait_or_kill(wait_thread)
           check_exit(wait_thread.value, output.value, errors.value)
         end
       end
     rescue Errno::ENOENT
       raise Error, "claude is not installed"
+    end
+
+    # In a thread, so the timeout also covers a claude that never reads its input. A claude that exits early (expired
+    # login, quota) closes the pipe: its own error message comes on stdout.
+    def write(stdin, input)
+      stdin.write(input)
+    rescue Errno::EPIPE, IOError
+      nil
+    ensure
+      stdin.close unless stdin.closed?
     end
 
     def wait_or_kill(wait_thread)

@@ -9,12 +9,22 @@ class AnalyzePlantJob < ApplicationJob
   def perform(analysis)
     Plants::Analyze.new.call(analysis:)
   rescue StandardError => error
-    # Bypasses validations on purpose: the analysis must leave the pending state whatever its content.
+    fail_pending(analysis.reload, error)
+    raise
+  end
+
+  private
+
+  # Bypasses validations on purpose: the analysis must leave the pending state whatever its content. An analysis
+  # already done or failed keeps its result.
+  def fail_pending(analysis, error)
+    return unless analysis.pending?
+
     analysis.update_columns(
       status: "failed",
       error: "unexpected: #{error.class}".truncate(250),
       finished_at: Time.current
     )
-    raise
+    analysis.plant.broadcast_refresh
   end
 end

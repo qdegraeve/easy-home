@@ -6,7 +6,7 @@ module Plants
     def call(plant:, user:, params: {})
       yield check_plant(plant)
       request = yield validate_request(plant, params)
-      analysis = create_analysis(plant, user, request)
+      analysis = yield create_analysis(plant, user, request)
       AnalyzePlantJob.perform_later(analysis)
 
       Success(analysis)
@@ -27,7 +27,11 @@ module Plants
     end
 
     def create_analysis(plant, user, request)
-      plant.analyses.create!(requested_by: user, user_note: request.note.to_s.strip.presence, photos: request.photos)
+      Success(
+        plant.analyses.create!(requested_by: user, user_note: request.note.to_s.strip.presence, photos: request.photos)
+      )
+    rescue ActiveRecord::RecordNotUnique # two requests at the same time: the unique index lets only one through
+      Failure[:already_pending, plant]
     end
   end
 end

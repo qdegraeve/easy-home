@@ -22,7 +22,12 @@ module Plants
       analysis.pending? ? Success(analysis) : Failure[:not_pending, analysis]
     end
 
+    def check_photos(analysis)
+      analysis.photos.any? ? Success(analysis) : Failure[:no_photo, "the photos were deleted"]
+    end
+
     def answer_for(analysis)
+      yield check_photos(analysis)
       images = analysis.photos_oldest_first.map { |photo| prepared_image(photo) }
       raw = yield ask(images, PlantAnalyzer::Context.new(analysis).to_text)
       check_answer(raw)

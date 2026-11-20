@@ -14,7 +14,8 @@ class PlantAnalysis < ApplicationRecord
 
   validates :user_note, length: { maximum: 1000 }
   validates :watering_interval_days, numericality: { only_integer: true, in: 1..60 }, allow_nil: true
-  validates :photos, length: { in: 1..MAX_PHOTOS }
+  # On creation only: deleting a photo later leaves its analyses in place.
+  validates :photos, length: { in: 1..MAX_PHOTOS }, on: :create
 
   scope :recent_first, -> { order(created_at: :desc, id: :desc) }
 

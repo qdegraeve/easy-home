@@ -43,6 +43,14 @@ RSpec.describe Plants::RequestAnalysis do
       .to eq([ "Photos à analyser : choisissez parmi les photos de cette plante" ])
   end
 
+  it "answers already_pending when two requests cross each other" do
+    allow(plant.analyses).to receive(:pending).and_return(PlantAnalysis.none) # both requests saw no pending analysis
+    described_class.new.call(plant:, user:)
+
+    expect(described_class.new.call(plant:, user:).failure.first).to eq(:already_pending)
+    expect(plant.analyses.count).to eq(1)
+  end
+
   it "refuses a plant without photo, an archived plant, and a second analysis while one is pending" do
     expect(described_class.new.call(plant: create(:plant), user:).failure.first).to eq(:invalid)
 

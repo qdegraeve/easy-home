@@ -68,6 +68,21 @@ RSpec.describe PlantAnalyzer::ClaudeCli do
       .to raise_error(PlantAnalyzer::Error, "no result from claude")
   end
 
+  it "keeps claude's own message when it exits before reading a large input (expired login)" do
+    error = { type: "result", is_error: true, result: "Failed to authenticate: OAuth session expired" }
+    cli = fake_claude("echo #{error.to_json.shellescape}; exit 1")
+
+    expect { cli.analyze(images: [ "x" * 3_000_000 ], text: "x") }
+      .to raise_error(PlantAnalyzer::Error, /Failed to authenticate/)
+  end
+
+  it "applies the timeout even when claude never reads its input" do
+    stub_const("#{described_class}::TIMEOUT", 0.3)
+    cli = fake_claude("exec tail -f /dev/null")
+
+    expect { cli.analyze(images: [ "x" * 3_000_000 ], text: "x") }.to raise_error(PlantAnalyzer::Error, /timed out/)
+  end
+
   it "raises when claude crashes without output" do
     cli = fake_claude("echo boom >&2; exit 3")
 

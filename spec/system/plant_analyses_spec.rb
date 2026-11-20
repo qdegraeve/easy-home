@@ -59,4 +59,35 @@ RSpec.describe "Plant analyses", type: :system do
     expect(page).to have_content("Analyse de « Citronnier »")
     expect(page).to have_content("👀 À surveiller")
   end
+
+  it "shows a failed analysis, then restarts it with the same photos and note" do
+    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    plant = create(:plant, :watered, household: user.households.first, name: "Citronnier")
+    older = create(:photo, plant:, taken_at: Time.zone.parse("2026-11-02 09:00"))
+    create(:photo, plant:, taken_at: Time.zone.parse("2026-11-12 09:00"))
+    @fake_plant_analyzer.error = "claude failed: Failed to authenticate"
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    click_on "Citronnier"
+    click_on "Nouvelle analyse"
+    uncheck "Analyser la photo du jeu 12 nov."
+    check "Analyser la photo du lun 2 nov."
+    fill_in "Une question, une remarque ? (facultatif)", with: "Taches brunes ?"
+    click_on "Lancer l'analyse"
+    perform_enqueued_jobs
+    refresh
+    expect(page).to have_content("L'analyse n'a pas abouti")
+
+    @fake_plant_analyzer.error = nil
+    click_on "Relancer l'analyse"
+    expect(page).to have_content("Analyse lancée")
+    expect(plant.analyses.pending.sole).to have_attributes(user_note: "Taches brunes ?", photos: [ older ])
+
+    perform_enqueued_jobs
+    refresh
+    expect(page).to have_content("👀 À surveiller")
+  end
 end

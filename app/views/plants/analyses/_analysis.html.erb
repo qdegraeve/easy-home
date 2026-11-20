@@ -13,7 +13,7 @@
     <p><%= t("plants.analyses.analysis.pending") %></p>
   <% elsif analysis.failed? %>
     <p role="alert" class="text-red-800"><%= t("plants.analyses.analysis.failed") %></p>
-    <% if restart %>
+    <% if restart && analysis.photos.any? %>
       <%= button_to t("plants.analyses.analysis.restart"), plant_analyses_path(analysis.plant),
             params: { plant_analysis: { note: analysis.user_note, photo_ids: analysis.photo_ids } },
             class: "rounded-xl bg-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-stone-200" %>
@@ -28,7 +28,8 @@
         </span>
       </p>
     <% end %>
-    <%= simple_format(analysis.observations, class: "text-sm") %>
+    <%# Escaped first: AI text is plain text, never HTML (links or images could come from a prompt injection). %>
+    <%= simple_format(h(analysis.observations), class: "text-sm") %>
     <% if analysis.watering_interval_days %>
       <p class="text-sm">
         <%= t("plants.analyses.analysis.watering", count: analysis.watering_interval_days) %>

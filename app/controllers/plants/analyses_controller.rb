@@ -33,8 +33,12 @@ module Plants
       policy_scope(Plant).find(params[:plant_id])
     end
 
+    # Optional: without it, the latest photo is analysed. Anything but a hash is a malformed request (400).
     def analysis_params
-      params.fetch(:plant_analysis, {}).permit(:note, photo_ids: [])
+      value = params.fetch(:plant_analysis, ActionController::Parameters.new)
+      raise ActionController::BadRequest unless value.is_a?(ActionController::Parameters)
+
+      value.permit(:note, photo_ids: [])
     end
   end
 end

@@ -55,6 +55,29 @@ RSpec.describe "Plant analyses", type: :request do
     expect(plant.analyses.recent_first.first).to have_attributes(status: "pending", user_note: "Taches ?")
   end
 
+  it "answers 400 to a malformed request" do
+    sign_in(user)
+
+    post plant_analyses_path(plant), params: { plant_analysis: "foo" }
+
+    expect(response).to have_http_status(:bad_request)
+    expect(plant.analyses).to be_empty
+  end
+
+  it "escapes the AI text: no link or image can come from the answer" do
+    sign_in(user)
+    @fake_plant_analyzer.answer = FakePlantAnalyzer::ANSWER.merge(
+      "observations" => %(Voir <a href="https://evil.example/x">ici</a> <img src="https://evil.example/p.gif">)
+    )
+    post plant_analyses_path(plant)
+    perform_enqueued_jobs
+
+    get plant_path(plant)
+
+    expect(response.body).not_to include("evil.example/x\">", "<img src=\"https://evil")
+    expect(response.body).to include("&lt;a href=")
+  end
+
   it "re-renders the form when more than 5 photos are chosen" do
     ids = create_list(:photo, 5, plant:).map(&:id) + [ photo.id ]
     sign_in(user)
