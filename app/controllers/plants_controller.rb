@@ -3,6 +3,7 @@ class PlantsController < ApplicationController
     @plant = find_plant
     @watering_task = @plant.watering_task
     @photos = @plant.photos.with_attached_image
+    @analyses = @plant.analyses.recent_first.includes(:photos).limit(10)
     @other_tasks = @plant.tasks.active.where.not(id: @watering_task)
       .includes(:pending_occurrence).select(&:pending_occurrence).sort_by { |task| task.pending_occurrence.due_at }
     occurrences = TaskOccurrence.done.where(task: @plant.tasks)

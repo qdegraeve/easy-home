@@ -1,3 +1,9 @@
+<% content_for :head do %>
+  <%# The analysis job refreshes this page when it finishes (ADR 0008). %>
+  <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+<% end %>
+<%= turbo_stream_from @plant %>
+
 <%= link_to t("plants.back"), root_path, class: "text-sm text-stone-500 underline" %>
 
 <div class="mt-2">
@@ -83,6 +89,42 @@
   </div>
 
   <div class="space-y-6 self-start">
+    <section aria-labelledby="analysis">
+      <h2 id="analysis" class="font-semibold"><%= t(".analysis") %></h2>
+      <% latest, *older = @analyses %>
+      <div class="mt-2">
+        <% if latest %>
+          <%= render "plants/analyses/analysis", analysis: latest,
+                restart: latest.failed? && policy(PlantAnalysis.new(plant: @plant)).create? %>
+        <% else %>
+          <p class="rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_analysis") %></p>
+        <% end %>
+      </div>
+      <% if @photos.any? && !latest&.pending? && policy(PlantAnalysis.new(plant: @plant)).create? %>
+        <%= link_to t(".new_analysis"), new_plant_analysis_path(@plant),
+              class: "mt-3 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-emerald-700 " \
+                     "shadow-sm" %>
+      <% end %>
+      <% if older.any? %>
+        <details class="mt-3">
+          <summary class="cursor-pointer text-sm text-stone-500">
+            <%= t(".older_analyses", count: older.size) %>
+          </summary>
+          <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white text-sm shadow-sm">
+            <% older.each do |analysis| %>
+              <li>
+                <% state = analysis.done? ? "health.#{analysis.health}" : "status.#{analysis.status}" %>
+                <%= link_to plant_analysis_path(@plant, analysis), class: "flex justify-between gap-3 p-3" do %>
+                  <span><%= l(analysis.created_at.to_date, format: :day) %></span>
+                  <span class="text-stone-500"><%= t("plants.analyses.analysis.#{state}") %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </details>
+      <% end %>
+    </section>
+
     <section aria-labelledby="photos">
       <h2 id="photos" class="font-semibold"><%= t(".photos") %></h2>
       <% if @photos.any? %>

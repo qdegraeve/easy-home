@@ -1,0 +1,37 @@
+<div class="mx-auto max-w-2xl">
+  <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
+  <h1 class="mt-2 text-2xl font-bold"><%= t(".title") %></h1>
+  <p class="mt-1 text-sm text-stone-500"><%= t(".intro", max: PlantAnalysis::MAX_PHOTOS) %></p>
+
+  <%= form_with model: @request, url: plant_analyses_path(@plant), class: "mt-6 space-y-4" do |f| %>
+    <%= render "shared/errors", record: @request %>
+
+    <fieldset>
+      <legend class="text-sm font-semibold"><%= t(".photos") %></legend>
+      <ul class="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+        <% @plant.photos.with_attached_image.each do |photo| %>
+          <% date = l(photo.taken_at.to_date, format: :day) %>
+          <li>
+            <label class="block cursor-pointer">
+              <%= image_tag photo.image.variant(:thumb), alt: "",
+                    class: "aspect-square w-full rounded-xl object-cover" %>
+              <span class="mt-1 flex items-center justify-center gap-1 text-xs text-stone-600">
+                <%= check_box_tag "plant_analysis[photo_ids][]", photo.id, @request.photo_ids.include?(photo.id),
+                      id: "photo_#{photo.id}", aria: { label: t(".photo_label", date:) } %>
+                <%= date %>
+              </span>
+            </label>
+          </li>
+        <% end %>
+      </ul>
+    </fieldset>
+
+    <div>
+      <%= f.label :note, class: "block text-sm font-semibold" %>
+      <%= f.text_area :note, rows: 4, maxlength: 1000, placeholder: t(".note_placeholder"),
+            class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+    </div>
+
+    <%= f.submit t(".submit"), class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+  <% end %>
+</div>

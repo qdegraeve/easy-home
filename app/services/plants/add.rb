@@ -6,23 +6,36 @@ module Plants
     include Dry::Monads[:result, :do]
 
     def call(household:, user:, params:)
-      form = PlantForm.new(params.to_h.merge(household:))
-      return Failure[:invalid, form] unless form.valid?(:create)
+      form = yield validate(household, params)
+      plant = yield create_plant(household, user, form)
+      request_first_analysis(plant, user)
 
-      plant = ActiveRecord::Base.transaction do
+      Success(plant)
+    end
+
+    private
+
+    def validate(household, params)
+      form = PlantForm.new(params.to_h.merge(household:))
+      form.valid?(:create) ? Success(form) : Failure[:invalid, form]
+    end
+
+    def create_plant(household, user, form)
+      ActiveRecord::Base.transaction do
         plant = household.plants.create!(
           **form.plant_attributes,
           species_source: (:user if form.plant_attributes[:species])
         )
         create_watering_task(plant, form, user)
         yield add_photo(plant, form) if form.photo.present?
-        plant
+        Success(plant)
       end
-
-      Success(plant)
     end
 
-    private
+    # The first photo is analysed right away, mostly to identify the species (the job starts after the commit).
+    def request_first_analysis(plant, user)
+      Plants::RequestAnalysis.new.call(plant:, user:) if plant.photos.any?
+    end
 
     def add_photo(plant, form)
       Photos::Add.new.call(plant:, file: form.photo).or do |(_code, upload)|

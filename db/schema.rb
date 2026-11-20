@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_19_195935) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_20_053857) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_195935) do
     t.index ["plant_id", "taken_at"], name: "index_photos_on_plant_id_and_taken_at"
   end
 
+  create_table "plant_analyses", force: :cascade do |t|
+    t.bigint "plant_id", null: false
+    t.bigint "requested_by_id"
+    t.string "status", default: "pending", null: false
+    t.text "user_note"
+    t.string "health"
+    t.string "species_name"
+    t.string "species_common_name"
+    t.string "species_confidence"
+    t.integer "watering_interval_days"
+    t.text "observations"
+    t.jsonb "actions", default: [], null: false
+    t.string "error"
+    t.string "model"
+    t.datetime "finished_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["plant_id", "created_at"], name: "index_plant_analyses_on_plant_id_and_created_at"
+    t.index ["plant_id"], name: "index_plant_analyses_one_pending", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["requested_by_id"], name: "index_plant_analyses_on_requested_by_id"
+  end
+
+  create_table "plant_analysis_photos", force: :cascade do |t|
+    t.bigint "plant_analysis_id", null: false
+    t.bigint "photo_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["photo_id"], name: "index_plant_analysis_photos_on_photo_id"
+    t.index ["plant_analysis_id", "photo_id"], name: "index_plant_analysis_photos_on_plant_analysis_id_and_photo_id", unique: true
+  end
+
   create_table "plants", force: :cascade do |t|
     t.bigint "household_id", null: false
     t.bigint "location_id"
@@ -145,6 +176,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_19_195935) do
   add_foreign_key "household_members", "users"
   add_foreign_key "locations", "households"
   add_foreign_key "photos", "plants"
+  add_foreign_key "plant_analyses", "plants"
+  add_foreign_key "plant_analyses", "users", column: "requested_by_id"
+  add_foreign_key "plant_analysis_photos", "photos"
+  add_foreign_key "plant_analysis_photos", "plant_analyses"
   add_foreign_key "plants", "households"
   add_foreign_key "plants", "locations"
   add_foreign_key "sessions", "users"
