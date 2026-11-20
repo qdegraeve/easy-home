@@ -55,5 +55,5 @@ android {
 dependencies {
     implementation("dev.hotwire:core:1.4.1")
     implementation("dev.hotwire:navigation-fragments:1.4.1")
-    implementation("com.google.android.material:material:1.13.0")
+    implementation("com.google.android.material:material:1.14.0")
 }
