@@ -19,6 +19,10 @@ l'analyse par l'IA (ADR 0008), qui ne doit recevoir ni l'adresse ni les métadon
 - **Normalisation à l'envoi** (`Photos::Add`, libvips via `image_processing`) : rotation selon l'orientation du
   téléphone, 2048 px maximum, réenregistrement en JPEG qualité 85 **sans aucune métadonnée**. Seule cette version est
   stockée : l'original n'est pas conservé.
+- **Limite en amont** : Thruster refuse toute requête de plus de 20 Mo (`MAX_REQUEST_BODY` dans `config/deploy.yml`),
+  avant qu'elle n'atteigne Rails : un envoi géant ne remplit ni la mémoire ni le disque du serveur.
+- **Poids stocké** : une photo de téléphone 4000×3000 de 11 Mo est stockée en 2048×1536, environ 1,6 Mo dans le pire
+  cas (image très détaillée), traitée en 0,2 s.
 - **Variantes** pour l'affichage : vignette carrée 320 px et grand format 1600 px.
 - **Accès** : liens signés standard d'Active Storage, impossibles à deviner mais accessibles sans connexion à qui
   possède le lien. Acceptable parce que les photos ne portent plus de métadonnées.
