@@ -34,10 +34,12 @@
   une copie embarquée dans l'app en secours (`android/app/src/main/assets/json/path-configuration.json`). Une spec
   vérifie que les deux sont identiques.
 - Ordre de chargement : la copie embarquée, puis la version en cache, puis celle du serveur, téléchargée en arrière-plan
-  et utilisée au lancement suivant.
+  et mise en cache.
+- Les motifs sont des expressions régulières cherchées dans le chemin **et la query string** (`/plants/new?x=1`) :
+  on termine donc un chemin par `($|\?)` plutôt que par `$`.
 - Règles actuelles (la dernière règle qui correspond l'emporte) :
   - tout : écran web normal, tirer pour rafraîchir ;
-  - `/new$`, `/edit$` : formulaire en modal plein écran, sans tirer pour rafraîchir ;
+  - chemins finissant par `/new` ou `/edit` : formulaire en modal plein écran, sans tirer pour rafraîchir ;
   - `/`, `/session/new`, `/passwords/new` : remplacent toute la pile (`replace_root`). Sans cette règle, la connexion
     s'ouvrait en modal (elle finit par `/new`) et l'app restait figée après la connexion.
 - Avantage : on modifie la navigation sans republier l'app. Le chemin est versionné (`android_v1`) pour ne pas casser
@@ -55,7 +57,8 @@
    (`chrome://inspect`).
 
 `android/local.properties` (jamais versionné) contient `sdk.dir` et, au besoin, `easyhome.baseUrl` pour viser un autre
-serveur.
+serveur, sans `/` final. En debug, le http en clair n'est permis que vers `localhost` : un autre serveur doit être en
+https.
 
 ## Côté Rails
 

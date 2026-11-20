@@ -14,7 +14,8 @@ class EasyHomeApplication : Application() {
         Hotwire.config.applicationUserAgentPrefix = "EasyHome Android;"
         Hotwire.config.logger.logLevel = if (BuildConfig.DEBUG) HotwireLogLevel.DEBUG else HotwireLogLevel.NONE
 
-        // Navigation rules: the bundled copy first, then the one served by Rails (cached for the next launch).
+        // Navigation rules: the bundled copy first, then the cached one, then the one served by Rails (downloaded in
+        // the background, then cached).
         Hotwire.loadPathConfiguration(
             context = this,
             location = PathConfiguration.Location(

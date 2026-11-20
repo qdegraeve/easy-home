@@ -8,16 +8,17 @@ RSpec.describe "Configurations", type: :request do
     expect(response.media_type).to eq("application/json")
     rules = response.parsed_body["rules"].to_h { |rule| [ rule["patterns"], rule["properties"] ] }
     expect(rules[[ ".*" ]]).to include("context" => "default", "uri" => "hotwire://fragment/web")
-    expect(rules[[ "/new$", "/edit$" ]]).to include("context" => "modal", "pull_to_refresh_enabled" => false)
+    expect(rules[[ "/new($|\\?)", "/edit($|\\?)" ]]).to include("context" => "modal", "pull_to_refresh_enabled" => false)
   end
 
+  # Patterns are matched against the path and the query string: "($|\\?)" ends the path, with or without a query.
   # The last matching rule wins: the sign-in page ends with /new but must never open as a modal (the app froze after
   # signing in), and the home page clears the stack so that "back" never returns to the sign-in page.
   it "opens the sign-in pages and the home page in place of the whole stack, after the modal rule" do
     get android_v1_configuration_path
 
     patterns, properties = response.parsed_body["rules"].last.values_at("patterns", "properties")
-    expect(patterns).to eq([ "^/$", "/session/new$", "/passwords/new$" ])
+    expect(patterns).to eq([ "^/($|\\?)", "/session/new($|\\?)", "/passwords/new($|\\?)" ])
     expect(properties).to include("context" => "default", "presentation" => "replace_root")
   end
 
