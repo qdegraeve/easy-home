@@ -1,6 +1,7 @@
 # Hotwire Native (Android)
 
-> **Statut : à construire** (étapes 2 à 4 de la roadmap). Ce document fixe les intentions ; le compléter au fil de l'implémentation.
+> **Statut : coque en place** (étape 3 de la roadmap) : l'app Android affiche l'app Rails, avec la navigation par
+> path configuration. À venir : prise de photo directe, notifications push, déploiement.
 
 ## Objectifs
 
@@ -9,8 +10,13 @@
 
 ## Organisation
 
-- Projet Android dans le dossier `android/` de ce dépôt (proposition : un seul dépôt tant que le projet est personnel).
-- Kotlin, Android Studio, bibliothèque `dev.hotwire:core` et `dev.hotwire:navigation-fragments`.
+- Projet Android dans le dossier `android/` de ce dépôt (un seul dépôt tant que le projet est personnel).
+- Kotlin, Android Studio, bibliothèques `dev.hotwire:core` et `dev.hotwire:navigation-fragments` (1.4.1).
+- Identifiant de l'app : `app.easyhome.android` (neutre, aucun vrai domaine ; à revoir avant une publication).
+- Build : Android Gradle Plugin 9.4 (Kotlin intégré), Gradle 9.9 (wrapper versionné), compileSdk et targetSdk 37,
+  minSdk 28, Java 17. La CI construit l'APK de debug (job « Android ») ; Dependabot suit les dépendances Gradle.
+- Code : `EasyHomeApplication` (configuration Hotwire, chargement de la path configuration) et `MainActivity`
+  (un seul navigateur, sans onglets).
 - **Le Kotlin reste de la plomberie** : navigation, notifications, stockage sécurisé, bridge. Toute logique métier vit dans Rails.
 
 ## Ce qui est web et ce qui est natif
@@ -24,9 +30,32 @@
 
 ## Path configuration
 
-- Fichier JSON **servi par Rails** (ex. `GET /configurations/android_v1.json`), avec une copie embarquée dans l'app en secours.
-- Il définit les règles de navigation par motif d'URL : `/new$` et `/edit$` en modal, rafraîchissement après soumission, écrans natifs éventuels.
-- Avantage : on modifie la navigation sans republier l'app. Versionner le chemin (`android_v1`) pour ne pas casser les anciennes versions installées.
+- Fichier JSON **servi par Rails** (`GET /configurations/android_v1`, source `config/hotwire/android_v1.json`), avec
+  une copie embarquée dans l'app en secours (`android/app/src/main/assets/json/path-configuration.json`). Une spec
+  vérifie que les deux sont identiques.
+- Ordre de chargement : la copie embarquée, puis la version en cache, puis celle du serveur, téléchargée en arrière-plan
+  et utilisée au lancement suivant.
+- Règles actuelles (la dernière règle qui correspond l'emporte) :
+  - tout : écran web normal, tirer pour rafraîchir ;
+  - `/new$`, `/edit$` : formulaire en modal plein écran, sans tirer pour rafraîchir ;
+  - `/`, `/session/new`, `/passwords/new` : remplacent toute la pile (`replace_root`). Sans cette règle, la connexion
+    s'ouvrait en modal (elle finit par `/new`) et l'app restait figée après la connexion.
+- Avantage : on modifie la navigation sans republier l'app. Le chemin est versionné (`android_v1`) pour ne pas casser
+  les anciennes versions installées.
+
+## Développer sur un vrai téléphone
+
+1. Sur le téléphone : options pour les développeurs, puis « Débogage USB » ; brancher au Mac et accepter.
+2. Sur le Mac : `bin/dev`, puis `adb reverse tcp:3000 tcp:3000` (à refaire à chaque branchement). Le téléphone joint
+   ainsi le serveur du Mac par le câble, sur `http://localhost:3000` : aucune adresse IP dans le dépôt, rien d'ouvert
+   sur le Wi-Fi. Le http en clair n'est autorisé qu'en debug et que pour `localhost`
+   (`android/app/src/debug/res/xml/network_security_config.xml`).
+3. Construire et installer : `cd android && ./gradlew installDebug` (ou depuis Android Studio).
+4. Journaux : `adb logcat --pid=$(adb shell pidof app.easyhome.android)` ; la webview se débogue depuis Chrome
+   (`chrome://inspect`).
+
+`android/local.properties` (jamais versionné) contient `sdk.dir` et, au besoin, `easyhome.baseUrl` pour viser un autre
+serveur.
 
 ## Côté Rails
 
@@ -87,4 +116,12 @@ Deux canaux coexistent :
 
 Noter ici ce qui a été plus simple ou plus compliqué que prévu : c'est l'un des objectifs du projet.
 
-- _(vide)_
+- **Mise en place (novembre 2026)** : rien n'était installé sur le Mac (ni Java, ni SDK). Android Studio par Homebrew
+  apporte un JDK (JetBrains Runtime 25) ; le SDK s'installe ensuite avec `sdkmanager`. Compter environ une heure.
+- **Plus simple que prévu** : la coque tient en deux classes Kotlin et un layout. Connexion par cookie, formulaires,
+  redirections et rafraîchissements Turbo marchent sans rien toucher côté Rails.
+- **Piège** : les motifs de la path configuration s'appliquent aussi aux écrans d'authentification. `/session/new`
+  ouvert en modal a figé l'app après la connexion (la modal se ferme sur une page qui n'existe plus).
+- **`adb reverse`** évite d'exposer le serveur de dev sur le réseau et de mettre une IP dans le code.
+- **À revoir** : transitions entre écrans et navigation jugées peu intuitives au premier essai (barre native avec
+  « Easy Home » partout, en-tête web en double, liens « ← retour » web en plus du retour Android).

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tailwind emerald-700 and stone-50, as in the web app. -->
+    <color name="brand">#047857</color>
+    <color name="background">#FAFAF9</color>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A simple leaf on the adaptive icon safe zone (108dp canvas, 66dp visible). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,72 C36,48 52,36 74,34 C72,56 60,72 36,72 Z" />
+    <path
+        android:strokeColor="#047857"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M38,70 L64,44" />
+</vector>

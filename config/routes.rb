@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resource :session
+  get "configurations/android_v1", to: "configurations#android_v1", as: :android_v1_configuration
   resources :passwords, param: :token
 
   resources :households, only: [ :index, :new, :create, :edit, :update ] do
