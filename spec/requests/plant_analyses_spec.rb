@@ -55,6 +55,18 @@ RSpec.describe "Plant analyses", type: :request do
     expect(plant.analyses.recent_first.first).to have_attributes(status: "pending", user_note: "Taches ?")
   end
 
+  it "hides the restart button of a failed analysis whose photos were deleted" do
+    analysis = create(:plant_analysis, plant:, photos: [ photo ])
+    analysis.update!(status: :failed, error: "x")
+    photo.destroy!
+    sign_in(user)
+
+    get plant_path(plant)
+
+    expect(response.body).to include("L&#39;analyse n&#39;a pas abouti")
+    expect(response.body).not_to include("Relancer l&#39;analyse")
+  end
+
   it "answers 400 to a malformed request" do
     sign_in(user)
 

@@ -9,7 +9,7 @@ class AnalyzePlantJob < ApplicationJob
   def perform(analysis)
     Plants::Analyze.new.call(analysis:)
   rescue StandardError => error
-    fail_pending(analysis.reload, error)
+    fail_pending(PlantAnalysis.find_by(id: analysis.id), error) # gone when the plant was deleted meanwhile
     raise
   end
 
@@ -18,7 +18,7 @@ class AnalyzePlantJob < ApplicationJob
   # Bypasses validations on purpose: the analysis must leave the pending state whatever its content. An analysis
   # already done or failed keeps its result.
   def fail_pending(analysis, error)
-    return unless analysis.pending?
+    return unless analysis&.pending?
 
     analysis.update_columns(
       status: "failed",
