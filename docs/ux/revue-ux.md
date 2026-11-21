@@ -360,6 +360,31 @@ exactement ce qui fait décrocher d'une app de rappels.
 - **Plus tard** : tenir compte de la taille du pot ou du besoin en eau de l'espèce (une plante en pot sous un auvent
   partiel ne reçoit pas toute la pluie), et des prévisions (ne pas arroser s'il pleut demain).
 
+### Changement d'emplacement et analyses (proposition, à valider avant la PR 6)
+
+L'analyse d'une plante tient compte de son lieu (exposition, abri du vent). Si l'emplacement change (emplacement
+modifié, plante déplacée, emplacement supprimé), ses observations et ses propositions (intervalle d'arrosage, actions)
+peuvent ne plus être justes. Aujourd'hui, rien ne le signale : une analyse ne garde pas le lieu dans lequel elle a été
+faite.
+
+- **Garder le lieu de l'analyse** : à la création, l'analyse enregistre le contexte envoyé à l'IA (nom de
+  l'emplacement, exposition, abri). L'historique peut alors dire « analysée en mi-ombre, abritée ».
+- **Signaler, ne pas relancer tout seul** : quand le lieu actuel de la plante diffère de celui de sa dernière analyse,
+  la fiche affiche une carte discrète : « Exposition changée depuis la dernière analyse (mi-ombre → plein soleil). Les
+  conseils peuvent ne plus être à jour. » avec un bouton « Relancer l'analyse ». Pas de relance automatique : une
+  analyse coûte, et une photo récente vaut mieux que celles d'avant le déménagement.
+- **Relance guidée** : la remarque est pré-remplie (« La plante est passée de mi-ombre à plein soleil le 3 décembre »),
+  les photos récentes sont proposées, et les nouvelles propositions passent par le flux existant (un bouton par
+  proposition) : l'intervalle d'arrosage ne change que si l'utilisateur l'accepte.
+- **Modifier un emplacement qui contient des plantes** : la confirmation dit combien de plantes sont concernées
+  (« 3 plantes ; leurs analyses seront signalées à revoir »). Un simple changement de nom ne déclenche rien.
+- **Vue d'ensemble** : dans Maison, un badge « 3 analyses à revoir » mène à la liste des plantes concernées, pour ne
+  pas avoir à ouvrir chaque fiche.
+- **Questions pour le propriétaire** : relancer plante par plante, ou proposer « relancer les 3 » d'un coup ? Une
+  plante déplacée temporairement (rentrée pour l'hiver) doit-elle aussi être signalée ?
+- **Impacts sur les données** : colonne `plant_analyses.context` (jsonb : emplacement, exposition, abri) ; la
+  comparaison avec le lieu actuel se fait à l'affichage, sans état « à revoir » stocké.
+
 ### Impacts sur le modèle de données (à signaler, non implémentés)
 
 - **1, 2, 5** : Aucun. Une requête qui charge `task: { subject: :location }` et un regroupement en Ruby (query object ou
@@ -579,8 +604,9 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   Contrôles attendus. Effort S, priorité P3.
 - **46. `households/index`** : En modal, avec rôle et accès à « Lieux de la maison ». Pourquoi : Choix du foyer
   cohérent. Effort S, priorité P2.
-- **47. `households/edit`** : Séparer Adresse et Emplacements ; modifier un emplacement. Pourquoi : Écrans plus courts,
-  édition possible. Effort M, priorité P3.
+- **47. `households/edit`** : Séparer Adresse et Emplacements ; modifier un emplacement (nom, exposition, abri).
+  Pourquoi : Écrans plus courts ; aujourd'hui il faut recréer l'emplacement et y déplacer chaque plante. Effort M,
+  priorité P2. Va avec #57 (analyses à revoir).
 - **48. `households/new`** : Après création : proposer adresse puis premier emplacement (2 étapes passables). Pourquoi :
   Démarrage guidé. Effort M, priorité P3.
 - **49. `sessions/new`** : Rediriger si déjà connecté ; logo (`docs/maquettes/v2/logo.html`) ; sans sur-titre.
@@ -602,6 +628,9 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
 - **56. Mise en page large** : sur ordinateur (≥ 768 px), la barre d'onglets web devient une colonne latérale et
   les listes passent à une largeur de lecture (≈ 640 px). Pourquoi : l'usage navigateur reste important pour faire
   tester l'app facilement. Effort M, priorité P2.
+- **57. Analyses et changement de lieu** : signaler qu'une analyse a été faite dans un autre lieu (voir « Changement
+  d'emplacement et analyses »). Pourquoi : un conseil donné pour la mi-ombre ne vaut plus en plein soleil. Effort M,
+  priorité P2. À concevoir avec le propriétaire avant la PR 6.
 
 ## Découpage en PR
 
@@ -617,8 +646,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    appliqués à l'accueil et à la fiche sans les restructurer.
 5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #15, #16, #55) : regroupement, validation groupée, toast Annuler. Le
    cœur de la remarque 1.
-6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46) : les trois racines web, prêtes pour les onglets
-   (dans le navigateur, une barre d'onglets web en bas les remplace).
+6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46, #47, #57) : les trois racines web, prêtes
+   pour les onglets (dans le navigateur, une barre d'onglets web en bas les remplace).
 7. **PR 7 · Onglets natifs** (#7) : la coque passe à trois navigateurs.
 8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
