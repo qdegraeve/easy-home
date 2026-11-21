@@ -22,7 +22,9 @@ RSpec.describe "Plant photos", type: :system do
     click_on "Ajouter une plante"
     fill_in "Nom", with: "Citronnier"
     fill_in "Arrosage", with: "3"
+    expect(page).to have_button("Prendre ou choisir une photo")
     attach_file "Photo", picture("plant_with_gps.jpg")
+    expect(page).to have_content("plant_with_gps.jpg") # the name of the chosen file, next to the button
     click_on "Ajouter la plante"
     expect(page).to have_content("Plante « Citronnier » ajoutée.")
     # Dated from its EXIF shooting date, not from the upload.
@@ -51,6 +53,13 @@ RSpec.describe "Plant photos", type: :system do
     expect(page).to have_content("Photo du 8 novembre 2026")
     expect(page).to have_content("Photo de couverture")
     expect(page).to have_no_button("Utiliser comme photo de couverture")
+
+    # From one photo to the other, to follow the growth.
+    click_on "Plus récente"
+    expect(page).to have_content("Photo du 18 novembre 2026")
+    expect(page).to have_no_link("Plus récente")
+    click_on "Plus ancienne"
+    expect(page).to have_content("Photo du 8 novembre 2026")
     click_on "Supprimer la photo"
     expect(page).to have_css("dialog[open] button[data-tone=danger]", text: "Supprimer la photo")
     within("dialog") { click_on "Supprimer la photo" }

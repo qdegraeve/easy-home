@@ -139,7 +139,7 @@ RSpec.describe "Plant analyses", type: :request do
       expect(response).to redirect_to(plant_analysis_path(plant, analysis))
 
       get plant_analysis_path(plant, analysis)
-      expect(response.body).to include("Sur la fiche", "En place", "Dans les tâches")
+      expect(response.parsed_body.text.scan("Ajouté").size).to eq(3)
       expect(response.body).not_to include("Enregistrer l&#39;espèce", "Ajouter aux tâches")
     end
 

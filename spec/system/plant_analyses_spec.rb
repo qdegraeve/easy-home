@@ -45,7 +45,7 @@ RSpec.describe "Plant analyses", type: :system do
     @fake_plant_analyzer.answer = FakePlantAnalyzer::ANSWER.merge("health" => "ok", "actions" => [])
     open_plant_tab("Soins")
     click_on "Nouvelle analyse"
-    check "Analyser la photo du mar 10 nov."
+    check "Analyser la photo du mar 10 nov.", allow_label_click: true # the photo is the target
     fill_in "Une question, une remarque ? (facultatif)", with: "Est-ce que ça va mieux ?"
     click_on "Lancer l'analyse"
     expect(page).to have_content("Analyse lancée")
@@ -83,8 +83,8 @@ RSpec.describe "Plant analyses", type: :system do
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Nouvelle analyse"
-    uncheck "Analyser la photo du jeu 12 nov."
-    check "Analyser la photo du lun 2 nov."
+    uncheck "Analyser la photo du jeu 12 nov.", allow_label_click: true # the photo is the target
+    check "Analyser la photo du lun 2 nov.", allow_label_click: true # the photo is the target
     fill_in "Une question, une remarque ? (facultatif)", with: "Taches brunes ?"
     click_on "Lancer l'analyse"
     perform_enqueued_jobs
@@ -123,13 +123,13 @@ RSpec.describe "Plant analyses", type: :system do
     # The proposals are taken on the analysis page...
     click_on "Enregistrer l'espèce"
     expect(page).to have_content("Espèce enregistrée : Citrus limon.")
-    expect(page).to have_content("Sur la fiche")
+    expect(page).to have_content("Ajouté", count: 1)
     click_on "Appliquer"
     expect(page).to have_content("Arrosage réglé : tous les 4 jours.")
-    expect(page).to have_content("En place")
+    expect(page).to have_content("Ajouté", count: 2)
     click_on "Ajouter « Pailler le pied » aux tâches"
     expect(page).to have_content("Tâche ajoutée : Pailler le pied.")
-    expect(page).to have_content("Dans les tâches")
+    expect(page).to have_content("Ajouté", count: 3)
     expect(page).to have_no_button("Ajouter « Pailler le pied » aux tâches")
 
     # ... and show on the plant page.

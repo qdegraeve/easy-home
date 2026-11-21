@@ -18,6 +18,7 @@ module Plants
     def show
       @plant = find_plant
       @photo = find_photo(@plant)
+      find_neighbours
     end
 
     def update
@@ -27,6 +28,7 @@ module Plants
       if @photo.update(params.expect(photo: [ :taken_at ]))
         redirect_to plant_photo_path(@plant, @photo), notice: t(".success")
       else
+        find_neighbours
         render :show, status: :unprocessable_content
       end
     end
@@ -41,6 +43,14 @@ module Plants
 
     def find_plant
       policy_scope(Plant).find(params[:plant_id])
+    end
+
+    # The plant's photos are newest first: "previous" is the older one, "next" the newer one, to follow its growth.
+    def find_neighbours
+      photos = @plant.photos.to_a
+      position = photos.index(@photo)
+      @older = photos[position + 1]
+      @newer = position.positive? ? photos[position - 1] : nil
     end
 
     def find_photo(plant)

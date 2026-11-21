@@ -1,15 +1,31 @@
+<%# Adding a plant (UX review #36): the photo first (the analysis proposes the species and the watering from it), the
+    name, the place, and a watering prefilled with 7 days; the rest is folded. Editing: the same fields, open. %>
 <%= form_with model: form, url:, method:, class: "space-y-4" do |f| %>
   <%= render "shared/errors", record: form %>
+
+  <% if adding %>
+    <div data-controller="photo-picker" data-photo-picker-send-value="false">
+      <%= f.label :photo, class: "block text-sm font-semibold" %>
+      <%# Hidden from screen readers too: the button below is the way to choose. %>
+      <%= f.file_field :photo, accept: "image/*", class: "sr-only", tabindex: -1, aria: { hidden: true },
+            data: { photo_picker_target: "input", action: "photo-picker#chosen" } %>
+      <div class="mt-1 flex items-center gap-3">
+        <%= button_tag type: "button", class: button_class(:secondary), data: { action: "photo-picker#choose" } do %>
+          <%= icon(:camera) %><%= t("plants.form.choose_photo") %>
+        <% end %>
+        <span class="min-w-0 truncate text-sm text-muted" aria-live="polite" data-photo-picker-target="name"></span>
+      </div>
+      <%# A browser never fills a file field again: after a refused form, the photo has to be chosen again. %>
+      <% if form.photo.present? %>
+        <p class="mt-1 text-sm font-semibold text-warn"><%= t("plants.form.photo_again") %></p>
+      <% end %>
+      <p class="mt-1 text-xs text-muted"><%= t("plants.form.photo_help") %></p>
+    </div>
+  <% end %>
 
   <div>
     <%= f.label :name, class: "block text-sm font-semibold" %>
     <%= f.text_field :name, required: true, maxlength: 100, placeholder: t("plants.form.name_placeholder"),
-          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
-  </div>
-
-  <div>
-    <%= f.label :species, class: "block text-sm font-semibold" %>
-    <%= f.text_field :species, maxlength: 100, placeholder: t("plants.form.species_placeholder"),
           class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
   </div>
 
@@ -33,24 +49,37 @@
             class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
       <span class="text-sm"><%= t("plants.form.days") %></span>
     </div>
+    <% if adding %>
+      <p class="mt-1 text-xs text-muted"><%= t("plants.form.watering_help") %></p>
+    <% end %>
   </div>
 
-  <% if adding %>
+  <% species = capture do %>
     <div>
-      <%= f.label :photo, class: "block text-sm font-semibold" %>
-      <%= f.file_field :photo, accept: "image/*",
-            class: "mt-1 block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-surface file:px-3 " \
-                   "file:py-2 file:shadow-sm" %>
-      <p class="mt-1 text-xs text-muted"><%= t("plants.form.photo_help") %></p>
-    </div>
-
-    <div>
-      <%= f.label :last_watered_on, class: "block text-sm font-semibold" %>
-      <%= f.date_field :last_watered_on, max: Time.zone.today,
+      <%= f.label :species, class: "block text-sm font-semibold" %>
+      <%= f.text_field :species, maxlength: 100, placeholder: t("plants.form.species_placeholder"),
             class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
-      <p class="mt-1 text-xs text-muted"><%= t("plants.form.last_watered_help") %></p>
     </div>
   <% end %>
 
-  <%= f.submit submit, class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
+  <% if adding %>
+    <%# Open again when one of these fields was refused. %>
+    <% refused = form.errors.include?(:species) || form.errors.include?(:last_watered_on) %>
+    <details class="group" <%= "open" if refused %>>
+      <summary class="cursor-pointer py-2 text-sm font-semibold text-action"><%= t("plants.form.more") %></summary>
+      <div class="mt-2 space-y-4">
+        <%= species %>
+        <div>
+          <%= f.label :last_watered_on, class: "block text-sm font-semibold" %>
+          <%= f.date_field :last_watered_on, max: Time.zone.today,
+                class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+          <p class="mt-1 text-xs text-muted"><%= t("plants.form.last_watered_help") %></p>
+        </div>
+      </div>
+    </details>
+  <% else %>
+    <%= species %>
+  <% end %>
+
+  <%= f.submit submit, class: button_class(:primary, block: true) %>
 <% end %>

@@ -20,6 +20,7 @@ RSpec.describe "Plants", type: :system do
     fill_in "Nom", with: "   "
     select "Terrasse", from: "Emplacement"
     fill_in "Arrosage", with: "2"
+    find("summary", text: "Plus de détails").click
     fill_in "Dernier arrosage", with: Date.new(2026, 11, 14)
     click_on "Ajouter la plante"
     expect(page).to have_content("Nom doit être rempli(e)")

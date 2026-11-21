@@ -46,6 +46,43 @@ RSpec.describe "Plants", type: :request do
     end
   end
 
+  describe "GET /plants/new" do
+    it "asks for the photo first and a few fields, the watering prefilled, the rest folded" do
+      sign_in(user)
+
+      get new_plant_path
+
+      page = response.parsed_body
+      labels = page.css("form label").map { |label| label.text.squish }
+      expect(labels.first(4)).to eq([ "Photo", "Nom", "Emplacement", "Arrosage" ])
+      expect(page.at_css("input[name='plant[watering_interval_days]']")["value"]).to eq("7")
+      expect(page.at_css("details summary").text).to include("Plus de détails")
+      expect(page.at_css("details input[name='plant[species]']")).to be_present
+    end
+  end
+
+  describe "POST /plants refused" do
+    it "opens the folded details again when one of their fields is refused, and only then" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", species: "x" * 101 } }
+      expect(response.parsed_body.at_css("details[open] input[name='plant[species]']")).to be_present
+
+      post plants_path, params: { plant: { name: "", watering_interval_days: "2" } }
+      expect(response.parsed_body.at_css("details")["open"]).to be_nil
+    end
+
+    it "asks to choose the photo again, which a browser never keeps" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "", watering_interval_days: "2",
+                                           photo: fixture_file_upload("plant.png", "image/png") } }
+
+      expect(response.body).to include("Choisissez la photo à nouveau")
+      expect(household.plants).to be_empty
+    end
+  end
+
   describe "POST /plants" do
     it "adds a plant to the current household" do
       sign_in(user)
