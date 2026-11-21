@@ -191,9 +191,9 @@ dans le **contenu saisi** par l'utilisateur, jamais dans l'interface.
 - **Groupe de liste** : titre de groupe 13 px graphite au-dessus, surface blanche, filets, rayon 14 px, sans ombre.
 - **Bouton** : principal plein vert sapin, hauteur 48, rayon 12 ; secondaire fond vert 10 % ; tertiaire texte ;
   destructif texte brique, toujours derrière une confirmation.
-- **Badge d'échéance** : texte seul, pas de pastille de couleur. « Aujourd'hui » en encre, « Demain », « Jeu. 27 »
-  en graphite, « Depuis hier » en graphite pour une tâche souple, « En retard · 2 j » en brique pour une tâche à ne pas
-  rater uniquement.
+- **Badge d'échéance** : texte seul, pas de pastille de couleur. « aujourd'hui » en encre et gras, « demain »,
+  « dans 4 j » en graphite, « prévu hier », « prévu il y a 3 j » en graphite pour une tâche souple (fait en PR 4,
+  `DueLabelComponent`) ; « En retard · 2 j » en brique pour une tâche à ne pas rater uniquement (PR 10).
 - **État vide** : icône au trait 32 px graphite, une phrase, un bouton secondaire. Pas d'emoji géant centré.
 - **Toast** : en bas, au-dessus de la barre d'onglets, fond encre, texte blanc, action « Annuler », 5 s, ne décale
   jamais le contenu (remplace les flashs en haut de page).
@@ -642,8 +642,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    configuration revue, formulaires qui se ferment. Le ressenti « transitions » change déjà.
 3. **PR 3 · Jetons et icônes** (#25, #26, #27, #52, fait) : palette en `@theme`, `IconComponent`, retrait des emojis de
    `fr.yml`, couleurs de la coque. Les écrans gardent leur structure.
-4. **PR 4 · Composants de base** (#28, #29, #30, #17, #18, fait) : ligne de tâche, groupe de liste, état vide, bouton, toast ;
-   appliqués à l'accueil et à la fiche sans les restructurer.
+4. **PR 4 · Composants de base** (#28, #29, #30, #17, #18, fait) : ligne de tâche, groupe de liste, état vide, bouton,
+   toast ; appliqués à l'accueil et à la fiche sans les restructurer.
 5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #15, #16, #55) : regroupement, validation groupée, toast Annuler. Le
    cœur de la remarque 1.
 6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46, #47, #57) : les trois racines web, prêtes

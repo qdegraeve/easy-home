@@ -30,5 +30,11 @@ RSpec.describe "Authentication", type: :system do
 
     expect(page).to have_content("Adresse e-mail ou mot de passe incorrect.")
     expect(page).to have_no_css("h1", text: "Mes plantes")
+
+    # The error stays until closed, and screen readers hear it through the live region.
+    expect(page).to have_css("#announcer[aria-live=assertive]", text: "Adresse e-mail ou mot de passe incorrect.",
+                                                                visible: :all)
+    click_on "Fermer le message"
+    expect(page).to have_no_content("Adresse e-mail ou mot de passe incorrect.")
   end
 end

@@ -23,15 +23,15 @@ class TaskRowComponent < ViewComponent::Base
     task.watering? ? :droplet : :list_todo
   end
 
+  # Button name for screen readers: "Arrosée : Citronnier", "Fait : Tailler (Citronnier)", "Fait : Poubelle jaune".
   def done_label
-    if task.watering?
-      t("plants.water_label", name: task.subject.name)
-    else
-      t("tasks.done_label", title: task.title, subject: task.subject.name)
-    end
+    return t(".done_watering", name: task.subject.name) if task.watering?
+    return t(".done_with_subject", title: task.title, subject: task.subject.name) if task.subject
+
+    t(".done", title: task.title)
   end
 
   def done_today_label
-    task.watering? ? t("plants.show.watered_today") : t("plants.show.done_today")
+    task.watering? ? t(".watered_today") : t(".done_today")
   end
 end

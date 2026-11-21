@@ -110,6 +110,12 @@ fr:
       no_location: "Sans emplacement"
       add: "+ Ajouter une plante"
       archived: "Plantes archivées · %{count}"
+  task_row_component:
+    done_watering: "Arrosée : %{name}"
+    done_with_subject: "Fait : %{title} (%{subject})"
+    done: "Fait : %{title}"
+    watered_today: "Arrosée aujourd'hui"
+    done_today: "Fait aujourd'hui"
   due_label:
     overdue:
       one: "prévu hier"

@@ -37,10 +37,12 @@
       </header>
     <% end %>
 
-    <main class="mx-auto max-w-md px-4 pb-24 pt-6 lg:max-w-5xl">
+    <main class="mx-auto max-w-md px-4 pb-40 pt-6 lg:max-w-5xl">
       <%= render "layouts/flash" %>
       <%= yield %>
     </main>
     <%= render "shared/confirm_dialog" %>
+    <%# Live region for the toasts (toast_controller.js): permanent, so that screen readers notice its changes. %>
+    <div id="announcer" class="sr-only" aria-live="polite" data-turbo-permanent></div>
   </body>
 </html>

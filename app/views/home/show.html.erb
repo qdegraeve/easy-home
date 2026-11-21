@@ -64,7 +64,7 @@
 
 <% if @archived_plants.any? %>
   <details class="mt-6">
-    <summary class="flex min-h-11 cursor-pointer items-center text-sm text-muted">
+    <summary class="cursor-pointer py-3 text-sm text-muted">
       <%= t(".archived", count: @archived_plants.size) %>
     </summary>
     <ul class="mt-2 divide-y divide-line overflow-hidden rounded-2xl bg-surface">

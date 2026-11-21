@@ -37,8 +37,11 @@ module ApplicationHelper
   # Classes of a button or a link styled as one (UX review, "Bouton"): 48 px high, one action color.
   # Destructive actions use :danger, always behind a confirmation.
   def button_class(variant = :primary, block: false)
-    [ "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-sm", BUTTON_VARIANTS.fetch(variant),
-      ("w-full" if block) ].compact.join(" ")
+    class_names(
+      "inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 text-sm",
+      BUTTON_VARIANTS.fetch(variant),
+      "w-full": block
+    )
   end
 
   # Small secondary action next to a row (edit, delete, cancel): small text, but a 44 px touch target.

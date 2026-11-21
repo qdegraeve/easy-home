@@ -7,7 +7,7 @@ class EmptyStateComponent < ViewComponent::Base
   end
 
   def call
-    tag.div(class: "rounded-2xl bg-surface p-4 text-sm text-muted #{'text-center' if @icon}") do
+    tag.div(class: class_names("rounded-2xl bg-surface p-4 text-sm text-muted", "text-center": @icon)) do
       safe_join([
         (helpers.icon(@icon, size: 32, class: "mx-auto mb-2 block") if @icon),
         (tag.p(@title, class: "font-semibold text-ink") if @title),

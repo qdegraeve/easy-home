@@ -41,6 +41,12 @@ RSpec.describe "Plants", type: :system do
 
     click_on "Basilic"
     expect(page).to have_content("Prochain arrosage : dans 2 j")
+    # Back to the home page: the message of the watering is not shown again from Turbo's cache.
+    page.go_back
+    expect(page).to have_content("Rien à faire aujourd'hui.")
+    expect(page).to have_no_content("Arrosage noté pour « Basilic ».")
+    page.go_forward
+    expect(page).to have_content("Prochain arrosage : dans 2 j")
     expect(page).to have_content("Arrosée aujourd'hui")
     expect(page).to have_no_button("Arrosée : Basilic")
 
