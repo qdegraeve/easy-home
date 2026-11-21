@@ -6,9 +6,9 @@
 
 <%= back_link_to t("plants.back"), plants_path %>
 
-<%# Who the plant is: its latest photo (its face), name, species and place. %>
+<%# Who the plant is: its face (the cover photo, or the latest), name, species and place. %>
 <div class="mt-2 flex items-center gap-4">
-  <% if (face = @plant.cover_photo || @photos.first) %>
+  <% if (face = @plant.face) %>
     <%= link_to plant_photo_path(@plant, face), class: "shrink-0" do %>
       <%= image_tag face.image.variant(:thumb), alt: t(".face_alt", name: @plant.name),
             class: "size-16 rounded-2xl object-cover" %>

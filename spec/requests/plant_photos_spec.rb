@@ -178,7 +178,17 @@ RSpec.describe "Plant photos", type: :request do
       photo = add_photo
       sign_in(create(:household_member, household:, role: :guest).user)
       post plant_photo_cover_path(plant, photo)
+      expect(response).to have_http_status(:not_found)
       expect(plant.reload.cover_photo).to be_nil
+    end
+
+    it "still lets the face of an archived plant be chosen" do
+      photo = add_photo
+      plant.update!(archived_at: Time.current)
+      sign_in(user)
+
+      post plant_photo_cover_path(plant, photo)
+      expect(plant.reload.cover_photo).to eq(photo)
     end
   end
 end

@@ -54,6 +54,19 @@ describe("bridge components", () => {
     expect(click).toHaveBeenCalledOnce()
   })
 
+  it("sends the label and the order of a second button, then drops it when it leaves the page", async () => {
+    await mount(`<a href="#analysis" data-controller="bridge--button" data-bridge-title="Nouvelle analyse"
+                    data-bridge-label="Analyse" data-bridge-icon="analysis" data-bridge-order="2">Analyse</a>`)
+
+    expect(app.messages[0].data).toMatchObject({ title: "Nouvelle analyse", label: "Analyse", icon: "analysis", order: 2,
+                                           key: "Nouvelle analyse" })
+
+    document.querySelector("a").remove()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(app.messages.at(-1)).toMatchObject({ component: "button", event: "disconnect",
+                                                data: { key: "Nouvelle analyse" } })
+  })
+
   it("lists the actions in the app's menu, and clicks the chosen one", async () => {
     await mount(`
       <div data-controller="bridge--menu">

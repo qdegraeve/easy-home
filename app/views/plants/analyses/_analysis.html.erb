@@ -1,4 +1,5 @@
-<%# One analysis: pending, failed (with a restart button) or done. Rendered on the plant page and on its own page. %>
+<%# One analysis in full: pending, failed (with a restart button) or done, with its proposals and questions. Rendered
+    on its own page; the plant page shows a summary (_summary). %>
 <article class="space-y-3 rounded-2xl bg-surface p-4 shadow-sm">
   <header class="flex items-center justify-between gap-3 text-sm text-muted">
     <span><%= t("plants.analyses.analysis.requested_on", date: l(analysis.created_at.to_date, format: :day)) %></span>

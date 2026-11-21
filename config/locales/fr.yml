@@ -273,7 +273,6 @@ fr:
       no_analysis: "Pas encore d'analyse : ajoutez une photo, puis lancez une analyse."
       new_analysis: "Nouvelle analyse"
       new_analysis_label: "Analyse"
-      older_analyses: "Analyses précédentes · %{count}"
       no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
       photo_alt: "Photo du %{date}"
       new_photo: "Nouvelle photo"

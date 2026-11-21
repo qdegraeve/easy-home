@@ -46,8 +46,9 @@ RSpec.describe "Plant photos", type: :system do
     # The face of the plant: chosen among its photos.
     click_on "Utiliser comme photo de couverture"
     expect(page).to have_content("Photo de couverture choisie.")
-    expect(page).to have_css("img[alt='Photo de Citronnier']")
-    find("img[alt='Photo du dim 8 nov.']").click
+    # The header shows it now, instead of the latest photo (18 November).
+    find("img[alt='Photo de Citronnier']").click
+    expect(page).to have_content("Photo du 8 novembre 2026")
     expect(page).to have_content("Photo de couverture")
     expect(page).to have_no_button("Utiliser comme photo de couverture")
     click_on "Supprimer la photo"

@@ -26,7 +26,8 @@
       <span class="text-sm text-muted"><%= l(analysis.created_at.to_date, format: :day) %></span>
     </div>
     <p class="mt-2 text-sm"><%= analysis.observations.to_s.truncate(160) %></p>
-    <% open = analysis.open_proposals_count %>
+    <%# Only when they can be taken (not on an archived plant, not for a guest). %>
+    <% open = policy(analysis).accept? ? analysis.open_proposals_count : 0 %>
     <% if open.positive? %>
       <p class="mt-2 text-sm font-semibold text-action"><%= t("plants.analyses.summary.proposals", count: open) %></p>
     <% end %>

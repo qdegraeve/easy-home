@@ -50,6 +50,7 @@ Plant                            # un modèle par type d'élément (ADR 0010)
   location (Location, optionnel)
   species, species_source (user | ai)
   archived_at                    # archivée : plus de rappel, journal conservé
+  cover_photo (Photo, optionnel) # photo de couverture choisie ; sinon la plus récente (Plant#face)
   has_many :tasks, as: :subject
   has_many :photos
 

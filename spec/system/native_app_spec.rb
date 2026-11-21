@@ -84,4 +84,33 @@ RSpec.describe "In the Android app", type: :system do
     within("dialog", text: "Supprimer définitivement") { click_on "Supprimer" }
     expect(page).to have_content("Plante « Basilic » supprimée.")
   end
+
+  it "shows the native Tâche and Analyse buttons on the care tab, and opens the task form from the first" do
+    page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [button menu]")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    plant = create(:plant, :watered, household: user.households.sole, name: "Basilic")
+    create(:photo, plant:)
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    visit plant_path(plant)
+    page.execute_script(FAKE_APP)
+
+    expect(page).to have_no_link("Ajouter une tâche") # shown by the app, not in the page
+    buttons = page.evaluate_script(<<~JS)
+      window.appMessages.filter((message) => message.component == "button").map((message) => message.data)
+    JS
+    expect(buttons).to contain_exactly(
+      include("label" => "Tâche", "order" => 1),
+      include("label" => "Analyse", "order" => 2)
+    )
+
+    page.execute_script(<<~JS)
+      const message = window.appMessages.find((message) => message.data.label == "Tâche")
+      window.HotwireNative.web.receive({ ...message, data: {} })
+    JS
+    expect(page).to have_css("h1", text: "Ajouter une tâche")
+  end
 end
