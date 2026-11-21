@@ -14,7 +14,6 @@ RSpec.describe "Pages in the Android app", type: :request do
     page = response.parsed_body
     expect(page.at_css("header")).to be_nil
     expect(page.at_css("main a[aria-label='Réglages']")["href"]).to eq(settings_path)
-    expect(page.at_css("nav[aria-label=Sections]")).to be_present
   end
 
   it "keeps the web header, with the settings, in the browser" do
@@ -54,23 +53,20 @@ RSpec.describe "Pages in the Android app", type: :request do
     expect(response.parsed_body.at_css("nav[aria-label=Compte]").text).to include("Notifications", "Se déconnecter")
   end
 
-  it "hides the web tab bar on the pages the app opens as modals, where a tab would close the modal" do
-    get edit_plant_path(plant), headers: in_app
+  it "leaves the tabs to the app, which has native ones, and keeps the web tab bar in the browser" do
+    get plant_path(plant), headers: in_app
     expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_nil
 
-    get plant_path(plant), headers: in_app
-    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_present
-
-    get edit_plant_path(plant)
+    get plant_path(plant)
     expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_present
   end
 
-  it "goes back to the home page after deleting a plant in the app, to the plants in the browser" do
-    delete plant_path(plant), headers: in_app
-    expect(response).to redirect_to(root_path)
+  it "deletes a plant in place of its page, so that \"back\" never shows it again in the app" do
+    get plant_path(plant), headers: in_app
+    delete_form = response.parsed_body.at_css("form[action='#{plant_path(plant)}'][data-turbo-confirm]")
+    expect(delete_form["data-turbo-action"]).to eq("replace")
 
-    other = create(:plant, :watered, household: user.households.sole)
-    delete plant_path(other)
+    delete plant_path(plant), headers: in_app
     expect(response).to redirect_to(plants_path)
   end
 end

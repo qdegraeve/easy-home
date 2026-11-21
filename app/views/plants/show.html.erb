@@ -205,7 +205,14 @@
           form: { data: confirm_data(t(".archive_confirm"), button: t(".archive")) },
           class: button_class(:secondary) %>
   <% end %>
-  <%= button_to t(".destroy"), plant_path(@plant), method: :delete,
-        form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
-        class: button_class(:danger) %>
+  <%# Replace: in the Android app, the deleted plant leaves the stack ("back" never shows it again). %>
+  <%= button_to(
+    t(".destroy"),
+    plant_path(@plant),
+    method: :delete,
+    form: {
+      data: { turbo_action: "replace", **confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) }
+    },
+    class: button_class(:danger)
+  ) %>
 </div>

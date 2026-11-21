@@ -9,4 +9,9 @@
         <item name="colorOnSurfaceVariant">@color/ink</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
+
+    <!-- Pill behind the selected tab, as the web tab bar (action-soft). -->
+    <style name="Widget.EasyHome.TabIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/action_soft</item>
+    </style>
 </resources>
