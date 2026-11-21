@@ -110,9 +110,6 @@ fr:
       no_location: "Sans emplacement"
       add: "+ Ajouter une plante"
       archived: "Plantes archivées · %{count}"
-      account: "Compte"
-      notifications: "Notifications"
-      households: "Mes foyers"
   due_label:
     overdue:
       one: "en retard de %{count} j"
@@ -387,6 +384,10 @@ fr:
       partial_shade: "⛅ Mi-ombre"
       shade: "☁️ Ombre"
   shared:
+    account_nav:
+      label: "Compte"
+      notifications: "Notifications"
+      households: "Mes foyers"
     confirm_dialog:
       cancel: "Revenir"
       confirm: "Confirmer"

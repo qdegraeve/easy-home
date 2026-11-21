@@ -30,11 +30,30 @@ RSpec.describe "Pages in the Android app", type: :request do
   end
 
   it "hides the back links in the app only" do
-    get plant_path(plant), headers: in_app
-    expect(response.body).to include("Citronnier")
-    expect(response.body).not_to include("← Mes plantes")
+    pages = {
+      plant_path(plant) => "← Mes plantes",
+      new_plant_path => "← Mes plantes",
+      edit_plant_path(plant) => "← Mes plantes",
+      new_plant_task_path(plant) => "← Citronnier",
+      edit_notification_settings_path => "← Accueil",
+      edit_household_path(user.households.sole) => "← Retour"
+    }
 
-    get plant_path(plant)
-    expect(response.body).to include("← Mes plantes")
+    pages.each do |path, back_link|
+      get path, headers: in_app
+      expect(response.body).not_to include(back_link), path
+
+      get path
+      expect(response.body).to include(back_link), path
+    end
+  end
+
+  it "shows the account links on the first household form, the only page of a user without household" do
+    other = create(:user)
+    post session_path, params: { email: other.email, password: "password" }
+
+    get new_household_path, headers: in_app
+
+    expect(response.parsed_body.at_css("nav[aria-label=Compte]").text).to include("Notifications", "Se déconnecter")
   end
 end

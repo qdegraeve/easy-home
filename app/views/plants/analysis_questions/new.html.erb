@@ -1,5 +1,7 @@
 <div class="mx-auto max-w-2xl">
-  <%= back_link_to t("plants.tasks.back", name: @plant.name), @plant %>
+  <%# Kept in the Android app too: this page only shows a refused question, rendered in place of the plant page (its
+      URL stays the plant's). Native "back" would leave the plant; this link reloads it instead. %>
+  <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
 
   <div class="mt-6">

@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.EasyHome" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Light theme only for now: the web pages have no dark theme yet (UX review, change 53). With DayNight, a phone in
+         dark mode got a dark top bar whose back arrow was hard to see, above light pages. -->
+    <style name="Theme.EasyHome" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/brand</item>
+        <item name="colorSurface">@color/background</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="colorOnSurfaceVariant">@color/ink</item>
         <item name="android:windowBackground">@color/background</item>
     </style>
 </resources>
