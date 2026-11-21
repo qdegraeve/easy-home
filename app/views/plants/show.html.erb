@@ -196,8 +196,14 @@
   </div>
 </div>
 
-<%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu). %>
-<div class="mt-8 flex flex-wrap gap-3" data-controller="bridge--menu">
+<%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu). The id changes with
+    the state of the plant: a morph refresh then replaces the whole block, and the menu is sent again with the right
+    actions (a morph would otherwise only rename "Archiver" into "Restaurer" in place). %>
+<div
+  id="plant-actions-<%= @plant.archived? ? "archived" : "active" %>"
+  class="mt-8 flex flex-wrap gap-3"
+  data-controller="bridge--menu"
+>
   <%= link_to t(".edit"), edit_plant_path(@plant),
         class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% if @plant.archived? %>

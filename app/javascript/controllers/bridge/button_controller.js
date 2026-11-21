@@ -1,6 +1,6 @@
 import { BridgeComponent } from "@hotwired/hotwire-native-bridge"
 
-// The main action of a page as a button of the native top bar (Android app): "+" to add a plant. Tapping it clicks
+// The main action of a page as the floating button of the Android app: "+" to add a plant. Tapping it clicks
 // this element (a link or a button). In the browser, or with an app that does not know the component, the element
 // stays where it is (see the CSS of application.tailwind.css).
 //

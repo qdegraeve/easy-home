@@ -5,4 +5,5 @@
     <string name="tab_house">Maison</string>
     <string name="tab_journal">Journal</string>
     <string name="settings">Réglages</string>
+    <string name="main_action">Action principale</string>
 </resources>

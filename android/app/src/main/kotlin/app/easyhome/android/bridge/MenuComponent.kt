@@ -25,16 +25,19 @@ class MenuComponent(
 
         toolbar.menu.removeGroup(GROUP_ID)
         for (position in 0 until items.length()) {
-            val item = items.getJSONObject(position)
-            val index = item.getInt("index")
-            toolbar.menu.add(GROUP_ID, Menu.NONE, Menu.CATEGORY_SECONDARY + position, item.getString("title")).apply {
+            // A malformed entry is skipped: the page is never trusted to send a well-formed message.
+            val item = items.optJSONObject(position) ?: continue
+            val index = item.optInt("index", -1)
+            val title = item.optString("title")
+            if (index < 0 || title.isBlank()) continue
+            toolbar.menu.add(GROUP_ID, Menu.NONE, Menu.CATEGORY_SECONDARY + position, title).apply {
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
                 setOnMenuItemClickListener { replyTo("connect", """{"selectedIndex":$index}""") }
             }
         }
     }
 
-    private companion object {
+    companion object {
         const val GROUP_ID = 2001
     }
 }

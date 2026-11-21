@@ -30,7 +30,7 @@ describe("bridge components", () => {
 
   beforeEach(() => { app.messages = [] })
 
-  afterEach(() => application.stop())
+  afterEach(() => application?.stop())
 
   const mount = async (html) => {
     document.body.innerHTML = html
@@ -40,7 +40,7 @@ describe("bridge components", () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
 
-  it("asks the app for a top bar button, and clicks the element when it is tapped", async () => {
+  it("asks the app for the floating button, and clicks the element when it is tapped", async () => {
     await mount(`<a href="#added" data-controller="bridge--button" data-bridge-title="Ajouter une plante"
                     data-bridge-icon="plus">Ajouter une plante</a>`)
     const click = vi.fn((event) => event.preventDefault())
@@ -68,6 +68,18 @@ describe("bridge components", () => {
 
     app.reply(message, { selectedIndex: 1 })
     expect(deleted).toHaveBeenCalledOnce()
+  })
+
+  it("sends the menu again when its actions change (a morph swaps them), with the new titles", async () => {
+    await mount(`
+      <div data-controller="bridge--menu">
+        <button data-bridge--menu-target="item">Archiver</button>
+      </div>`)
+    document.querySelector("button").outerHTML = `<button data-bridge--menu-target="item">Restaurer</button>`
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    const last = app.messages.filter((message) => message.component === "menu").at(-1)
+    expect(last.data.items).toEqual([{ title: "Restaurer", index: 0 }])
   })
 
   it("marks the page with the components the app supports, to hide their web elements", () => {

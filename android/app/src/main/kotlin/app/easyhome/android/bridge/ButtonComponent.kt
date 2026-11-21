@@ -7,6 +7,7 @@ import dev.hotwire.core.bridge.BridgeComponent
 import dev.hotwire.core.bridge.BridgeDelegate
 import dev.hotwire.core.bridge.Message
 import dev.hotwire.navigation.destinations.HotwireDestination
+import java.lang.ref.WeakReference
 import java.util.WeakHashMap
 import org.json.JSONObject
 
@@ -26,7 +27,7 @@ class ButtonComponent(
     override fun onReceive(message: Message) {
         if (message.event != "connect") return
         data = JSONObject(message.jsonData)
-        declared[delegate.destination] = this
+        declared[delegate.destination] = WeakReference(this)
         val button = button() ?: return
         if (button.tag === delegate.destination) show(button) // already the page on screen
     }
@@ -45,14 +46,21 @@ class ButtonComponent(
 
     companion object {
         private val ICONS = mapOf("plus" to R.drawable.ic_plus)
-        private val declared = WeakHashMap<HotwireDestination, ButtonComponent>()
+        // Weak both ways: the component holds its destination, so a strong value would keep every page alive.
+        private val declared = WeakHashMap<HotwireDestination, WeakReference<ButtonComponent>>()
 
         // The page now on screen: its button if it declared one, none otherwise. A page that declares its button
         // later (it is still loading) shows it on arrival (onReceive).
         fun showFor(destination: HotwireDestination?, button: FloatingActionButton) {
             button.tag = destination
-            val component = destination?.let { declared[it] } ?: return button.hide()
+            val component = destination?.let { declared[it]?.get() } ?: return button.hide()
             component.show(button)
+        }
+
+        // The page is loaded again from scratch (its scripts and replies are gone): it declares its button again, or
+        // none.
+        fun forget(destination: HotwireDestination) {
+            declared.remove(destination)
         }
     }
 }
