@@ -4,13 +4,13 @@
   <div>
     <%= f.label :name, class: "block text-sm font-semibold" %>
     <%= f.text_field :name, required: true, maxlength: 100, placeholder: t("plants.form.name_placeholder"),
-          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
   </div>
 
   <div>
     <%= f.label :species, class: "block text-sm font-semibold" %>
     <%= f.text_field :species, maxlength: 100, placeholder: t("plants.form.species_placeholder"),
-          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
   </div>
 
   <div>
@@ -21,7 +21,7 @@
       :id,
       :name,
       { include_blank: t("plants.form.no_location") },
-      class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3"
+      class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3"
     ) %>
   </div>
 
@@ -30,7 +30,7 @@
     <div class="mt-1 flex items-center gap-2">
       <span class="text-sm"><%= t("plants.form.every") %></span>
       <%= f.number_field :watering_interval_days, required: true, min: 1, max: 60,
-            class: "w-20 rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+            class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
       <span class="text-sm"><%= t("plants.form.days") %></span>
     </div>
   </div>
@@ -39,18 +39,18 @@
     <div>
       <%= f.label :photo, class: "block text-sm font-semibold" %>
       <%= f.file_field :photo, accept: "image/*",
-            class: "mt-1 block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-white file:px-3 " \
+            class: "mt-1 block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-surface file:px-3 " \
                    "file:py-2 file:shadow-sm" %>
-      <p class="mt-1 text-xs text-stone-500"><%= t("plants.form.photo_help") %></p>
+      <p class="mt-1 text-xs text-muted"><%= t("plants.form.photo_help") %></p>
     </div>
 
     <div>
       <%= f.label :last_watered_on, class: "block text-sm font-semibold" %>
       <%= f.date_field :last_watered_on, max: Time.zone.today,
-            class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
-      <p class="mt-1 text-xs text-stone-500"><%= t("plants.form.last_watered_help") %></p>
+            class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+      <p class="mt-1 text-xs text-muted"><%= t("plants.form.last_watered_help") %></p>
     </div>
   <% end %>
 
-  <%= f.submit submit, class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+  <%= f.submit submit, class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
 <% end %>

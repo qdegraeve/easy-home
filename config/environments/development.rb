@@ -1,6 +1,9 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  # IconComponent reads app/assets/images/icons when it loads: reload it when an icon file is added.
+  config.watchable_dirs["app/assets/images/icons"] = [ :svg ]
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Make code changes take effect immediately without server restart.

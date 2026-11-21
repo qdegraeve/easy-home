@@ -164,7 +164,8 @@ encre, un vert sombre pour agir, et une couleur discrète par domaine pour se re
 
 Règles : une seule couleur d'action (vert sapin) ; les couleurs de domaine ne servent qu'aux **pastilles et icônes**,
 jamais aux boutons ni aux grands aplats ; pas de dégradé ; ombres réservées aux feuilles modales et au toast. Un thème
-sombre se déduit des mêmes jetons (à faire plus tard, la coque est déjà en `DayNight`).
+sombre se déduit des mêmes jetons (à faire plus tard ; la coque est en thème clair fixe). Mis en place en PR 3
+(ADR 0013).
 
 **Typographie** : la police système (Roboto sur Android, San Francisco sur iOS). Dans une webview, c'est ce qui donne
 l'impression « app native » et ça ne coûte aucun téléchargement. Échelle courte : titre d'écran 22/28 semi-gras,
@@ -639,7 +640,7 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    libellés de confirmation, anti double appui. Aucun changement visuel majeur.
 2. **PR 2 · Coque sans doublons** (#3, #4, #5, #6) : en-tête web masqué dans l'app, liens retour masqués, path
    configuration revue, formulaires qui se ferment. Le ressenti « transitions » change déjà.
-3. **PR 3 · Jetons et icônes** (#25, #26, #27, #52) : palette en `@theme`, `IconComponent`, retrait des emojis de
+3. **PR 3 · Jetons et icônes** (#25, #26, #27, #52, fait) : palette en `@theme`, `IconComponent`, retrait des emojis de
    `fr.yml`, couleurs de la coque. Les écrans gardent leur structure.
 4. **PR 4 · Composants de base** (#28, #29, #30, #17, #18) : ligne de tâche, groupe de liste, état vide, bouton, toast ;
    appliqués à l'accueil et à la fiche sans les restructurer.

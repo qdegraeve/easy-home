@@ -1,16 +1,16 @@
 <%# In the Android app, the web header is hidden: its links live here until the native tabs and menu (UX review).
     Shown at the bottom of the home page, and of the first household form (no other way out of it). %>
 <% if hotwire_native_app? %>
-  <nav aria-label="<%= t(".label") %>" class="mt-10 flex flex-wrap items-center gap-2 border-t border-stone-200 pt-4">
+  <nav aria-label="<%= t(".label") %>" class="mt-10 flex flex-wrap items-center gap-2 border-t border-line pt-4">
     <%= link_to(
       t(".notifications"),
       edit_notification_settings_path,
-      class: "rounded-xl px-3 py-3 text-sm text-stone-600 hover:bg-stone-100"
+      class: "rounded-xl px-3 py-3 text-sm text-muted hover:bg-subtle"
     ) %>
     <%= link_to(
       t(".households"),
       households_path,
-      class: "rounded-xl px-3 py-3 text-sm text-stone-600 hover:bg-stone-100"
+      class: "rounded-xl px-3 py-3 text-sm text-muted hover:bg-subtle"
     ) %>
     <%= button_to(
       t("layouts.application.sign_out"),
@@ -19,7 +19,7 @@
       form: {
         data: confirm_data(t("layouts.application.sign_out_confirm"), button: t("layouts.application.sign_out"))
       },
-      class: "rounded-xl px-3 py-3 text-sm text-stone-600 hover:bg-stone-100"
+      class: "rounded-xl px-3 py-3 text-sm text-muted hover:bg-subtle"
     ) %>
   </nav>
 <% end %>

@@ -3,10 +3,10 @@
   <%= f.label :body, t("plants.analysis_questions.form.body"), class: "block text-sm font-semibold" %>
   <%= f.text_area :body, rows: 3, maxlength: 1000, required: true,
         placeholder: t("plants.analysis_questions.form.placeholder"),
-        class: "w-full rounded-xl border border-stone-300 bg-white px-3 py-3 text-sm" %>
-  <%= f.label :photo, t("plants.analysis_questions.form.photo"), class: "block text-xs text-stone-500" %>
+        class: "w-full rounded-xl border border-field bg-surface px-3 py-3 text-sm" %>
+  <%= f.label :photo, t("plants.analysis_questions.form.photo"), class: "block text-xs text-muted" %>
   <%= f.file_field :photo, accept: "image/*",
-        class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-stone-100 file:px-3 file:py-2" %>
+        class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-subtle file:px-3 file:py-2" %>
   <%= f.submit t("plants.analysis_questions.form.submit"),
-        class: "w-full rounded-xl bg-emerald-700 py-3 text-sm font-semibold text-white" %>
+        class: "w-full rounded-xl bg-action py-3 text-sm font-semibold text-white" %>
 <% end %>

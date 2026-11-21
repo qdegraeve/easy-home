@@ -5,7 +5,7 @@ class DueLabelComponent < ViewComponent::Base
   end
 
   def call
-    content_tag(:span, label, class: overdue? ? "font-semibold text-red-700" : nil)
+    content_tag(:span, label, class: overdue? ? "font-semibold text-alert" : nil)
   end
 
   private

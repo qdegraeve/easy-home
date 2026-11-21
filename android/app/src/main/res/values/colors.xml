@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tailwind emerald-700 and stone-50, as in the web app. -->
-    <color name="brand">#047857</color>
-    <color name="background">#FAFAF9</color>
-    <!-- Text and icons of the native top bar (stone-800). -->
-    <color name="ink">#292524</color>
+    <!-- "Carnet de maison" palette, as the web tokens (app/assets/stylesheets/application.tailwind.css). -->
+    <color name="brand">#1F5C46</color>
+    <color name="background">#F6F4EF</color>
+    <!-- Text and icons of the native top bar. -->
+    <color name="ink">#1D2521</color>
 </resources>

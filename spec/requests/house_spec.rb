@@ -16,7 +16,7 @@ RSpec.describe "My house", type: :request do
       get edit_household_path(household)
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Ma maison", "Terrasse", "⛅ Mi-ombre", "abrité du vent")
+      expect(response.parsed_body.text.squish).to include("Ma maison", "Terrasse", "Mi-ombre · abrité du vent")
     end
 
     it "asks before deleting a location, telling how many plants lose it" do

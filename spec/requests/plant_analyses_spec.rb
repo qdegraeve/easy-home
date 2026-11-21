@@ -38,7 +38,7 @@ RSpec.describe "Plant analyses", type: :request do
 
     perform_enqueued_jobs
     get plant_path(plant)
-    expect(response.body).to include("👀 À surveiller", "Citrus limon", "(Citronnier)", "identification sûre")
+    expect(response.body).to include("À surveiller", "Citrus limon", "(Citronnier)", "identification sûre")
     expect(response.body).to include("Arrosage conseillé : tous les 4 jours", "Pailler le pied", "dans 3 j")
   end
 
@@ -116,7 +116,7 @@ RSpec.describe "Plant analyses", type: :request do
 
     get plant_analysis_path(plant, analysis)
 
-    expect(response.body).to include("Analyse de « Citronnier »", "✅ En forme", "Plante en forme.")
+    expect(response.body).to include("Analyse de « Citronnier »", "En forme", "Plante en forme.")
   end
 
   describe "accepting the proposals" do
@@ -134,7 +134,7 @@ RSpec.describe "Plant analyses", type: :request do
       expect(response).to redirect_to(plant_path(plant))
 
       get plant_path(plant)
-      expect(response.body).to include("✓ Sur la fiche", "✓ En place", "✓ Dans les tâches")
+      expect(response.body).to include("Sur la fiche", "En place", "Dans les tâches")
       expect(response.body).not_to include("Enregistrer l&#39;espèce", "Ajouter aux tâches")
     end
 

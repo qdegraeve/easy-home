@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A simple leaf on the adaptive icon safe zone (108dp canvas, 66dp visible). -->
+<!-- Easy Home mark (docs/maquettes/v2/logo.html): a roof and a check, "the house, done". 64-unit logo grid scaled
+     into the 66dp safe zone of the 108dp adaptive icon canvas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M36,72 C36,48 52,36 74,34 C72,56 60,72 36,72 Z" />
-    <path
-        android:strokeColor="#047857"
-        android:strokeWidth="2.5"
+        android:strokeColor="#F6F4EF"
+        android:strokeWidth="5.67"
         android:strokeLineCap="round"
-        android:pathData="M38,70 L64,44" />
+        android:strokeLineJoin="round"
+        android:pathData="M36.47,52.97 L54.00,35.44 L71.53,52.97" />
+    <path
+        android:strokeColor="#F6F4EF"
+        android:strokeWidth="5.67"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M43.69,63.28 L50.39,69.98 L65.34,55.03" />
 </vector>

@@ -22,6 +22,6 @@ RSpec.describe DueLabelComponent, type: :component do
   it "highlights a late occurrence" do
     render_inline(described_class.new(due_at: Time.zone.parse("2026-11-15 00:00")))
 
-    expect(page).to have_css("span.text-red-700")
+    expect(page).to have_css("span.text-alert")
   end
 end

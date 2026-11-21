@@ -49,13 +49,13 @@ RSpec.describe "Plant tasks", type: :system do
     click_on "Citronnier"
     expect(page).to have_content("Tous les 14 jours · dans 14 j")
     expect(page).to have_content("Fait aujourd'hui")
-    expect(page).to have_content("✅ Engrais")
+    within("section[aria-labelledby=journal]") { expect(page).to have_content("Engrais") }
 
     # One-off task done: it leaves the list, stays in the log; cancelled, it comes back.
     click_on "Fait : Tailler (Citronnier)"
     expect(page).to have_content("Tailler noté pour « Citronnier ».")
     expect(page).to have_no_button("Fait : Tailler (Citronnier)")
-    expect(page).to have_content("✅ Tailler")
+    within("section[aria-labelledby=journal]") { expect(page).to have_content("Tailler") }
     click_on "Annuler « Tailler » du lun 16 nov."
     within("dialog", text: "Annuler « Tailler »") { click_on "Oui, annuler" }
     expect(page).to have_content("Tailler annulé, prochaine échéance recalculée.")
