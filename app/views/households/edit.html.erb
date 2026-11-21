@@ -1,5 +1,5 @@
 <%= link_to t(".back"), root_path, class: "text-sm text-stone-500 underline" %>
-<h1 class="mt-2 text-2xl font-bold"><%= t(".title") %></h1>
+<h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
 
 <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
   <section class="space-y-3 self-start rounded-2xl bg-white p-4 shadow-sm">
@@ -49,7 +49,7 @@
   <section class="space-y-3">
     <h2 class="font-semibold"><%= t(".locations") %></h2>
 
-    <% locations = @household.locations.order(:name) %>
+    <% locations = @household.locations.includes(:plants).order(:name) %>
     <% if locations.any? %>
       <ul class="divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
         <% locations.each do |location| %>
@@ -63,6 +63,13 @@
             </div>
             <%= button_to t(".delete"), location_path(location), method: :delete,
                   aria: { label: t(".delete_label", name: location.name) },
+                  form: {
+                    data: confirm_data(
+                      t(".delete_confirm", name: location.name, count: location.plants.size),
+                      button: t(".delete"),
+                      danger: true
+                    )
+                  },
                   class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
           </li>
         <% end %>

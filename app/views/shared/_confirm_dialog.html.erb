@@ -1,15 +1,17 @@
-<%# Used by app/javascript/lib/confirm_dialog.js for data-turbo-confirm forms. %>
+<%# Used by app/javascript/lib/confirm_dialog.js for data-turbo-confirm forms (see ApplicationHelper#confirm_data). %>
 <dialog id="confirm-dialog" aria-labelledby="confirm-dialog-message"
         class="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl p-5 shadow-xl backdrop:bg-stone-900/40">
   <form method="dialog" class="space-y-4">
     <p id="confirm-dialog-message" data-confirm-message class="text-stone-800"></p>
     <div class="flex justify-end gap-2">
-      <button value="cancel" class="rounded-xl px-4 py-2 text-sm text-stone-600 hover:bg-stone-100">
+      <button value="cancel" class="rounded-xl px-4 py-3 text-sm text-stone-600 hover:bg-stone-100">
         <%= t("shared.confirm_dialog.cancel") %>
       </button>
-      <button value="confirm" class="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">
-        <%= t("shared.confirm_dialog.confirm") %>
-      </button>
+      <button
+        value="confirm"
+        data-default-label="<%= t("shared.confirm_dialog.confirm") %>"
+        class="rounded-xl bg-emerald-700 px-4 py-3 text-sm font-semibold text-white data-[tone=danger]:bg-red-700"
+      ><%= t("shared.confirm_dialog.confirm") %></button>
     </div>
   </form>
 </dialog>

@@ -45,7 +45,7 @@ RSpec.describe "Plant photos", type: :system do
     expect(page).to have_content("Date de la photo enregistrée.")
     expect(page).to have_content("Photo du 8 novembre 2026")
     click_on "Supprimer la photo"
-    within("dialog") { click_on "Oui, confirmer" }
+    within("dialog") { click_on "Supprimer la photo" }
     expect(page).to have_content("Photo supprimée.")
     expect(page).to have_no_css("img[alt='Photo du dim 8 nov.']")
     expect(page).to have_css("img[alt='Photo du mer 18 nov.']")

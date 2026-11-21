@@ -57,7 +57,7 @@ RSpec.describe "Plant tasks", type: :system do
     expect(page).to have_no_button("Fait : Tailler (Citronnier)")
     expect(page).to have_content("✅ Tailler")
     click_on "Annuler « Tailler » du lun 16 nov."
-    within("dialog", text: "Annuler « Tailler »") { click_on "Oui, confirmer" }
+    within("dialog", text: "Annuler « Tailler »") { click_on "Oui, annuler" }
     expect(page).to have_content("Tailler annulé, prochaine échéance recalculée.")
     expect(page).to have_content("Une fois · dans 4 j")
 
@@ -69,7 +69,7 @@ RSpec.describe "Plant tasks", type: :system do
     expect(page).to have_content("Une fois · dans 9 j")
 
     click_on "Supprimer « Tailler les gourmands »"
-    within("dialog") { click_on "Oui, confirmer" }
+    within("dialog") { click_on "Supprimer" }
     expect(page).to have_content("Tâche « Tailler les gourmands » supprimée.")
     expect(page).to have_no_link("Modifier « Tailler les gourmands »")
   end

@@ -27,9 +27,18 @@ RSpec.describe "My house", type: :system do
     expect(page).to have_content("Emplacement « Terrasse » ajouté.")
     expect(page).to have_content("⛅ Mi-ombre · abrité du vent")
 
+    lemon = create(:plant, household: Household.sole, location: Location.find_by!(name: "Terrasse"), name: "Citronnier")
+    refresh
     click_on "Supprimer l'emplacement « Terrasse »"
+    within("dialog", text: "Sa plante restera, sans emplacement.") { click_on "Revenir" }
+    expect(page).to have_no_css("dialog[open]")
+    expect(page).to have_content("⛅ Mi-ombre · abrité du vent")
+
+    click_on "Supprimer l'emplacement « Terrasse »"
+    within("dialog", text: "Supprimer l'emplacement « Terrasse » ?") { click_on "Supprimer" }
 
     expect(page).to have_content("Emplacement « Terrasse » supprimé.")
     expect(page).to have_no_content("⛅ Mi-ombre · abrité du vent")
+    expect(lemon.reload.location).to be_nil
   end
 end

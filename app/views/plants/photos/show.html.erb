@@ -2,7 +2,7 @@
   <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-stone-500 underline" %>
   <%# The saved date: a refused date only lives in the form. %>
   <h1 class="mt-2 text-2xl font-bold">
-    <%= t(".title", date: l(@photo.taken_at_in_database.in_time_zone.to_date, format: :long)) %>
+    <%= page_title t(".title", date: l(@photo.taken_at_in_database.in_time_zone.to_date, format: :long)) %>
   </h1>
 
   <%= image_tag @photo.image.variant(:large), alt: t(".alt", name: @plant.name),
@@ -20,7 +20,7 @@
 
   <div class="mt-6">
     <%= button_to t(".destroy"), plant_photo_path(@plant, @photo), method: :delete,
-          form: { data: { turbo_confirm: t(".destroy_confirm") } },
+          form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
           class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
   </div>
 </div>

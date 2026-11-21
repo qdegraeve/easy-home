@@ -179,6 +179,7 @@ fr:
       cancel: "Annuler"
       cancel_label: "Annuler l'arrosage du %{date}"
       cancel_confirm: "Annuler l'arrosage du %{date} ? Le prochain arrosage sera recalculé."
+      cancel_confirm_button: "Oui, annuler"
       archived_on: "Archivée le %{date} : plus de rappel, l'historique reste consultable."
       edit: "Modifier"
       archive: "Archiver"
@@ -354,6 +355,10 @@ fr:
       exposed: "exposé au vent"
       delete: "Supprimer"
       delete_label: "Supprimer l'emplacement « %{name} »"
+      delete_confirm:
+        zero: "Supprimer l'emplacement « %{name} » ?"
+        one: "Supprimer l'emplacement « %{name} » ? Sa plante restera, sans emplacement."
+        other: "Supprimer l'emplacement « %{name} » ? Ses %{count} plantes resteront, sans emplacement."
       new_location: "Ajouter un emplacement"
       location_placeholder: "Ex. bord de piscine"
       add_location: "Ajouter"
@@ -380,12 +385,13 @@ fr:
       shade: "☁️ Ombre"
   shared:
     confirm_dialog:
-      cancel: "Non, revenir"
-      confirm: "Oui, confirmer"
+      cancel: "Revenir"
+      confirm: "Confirmer"
   layouts:
     application:
       app_name: "Easy Home"
       sign_out: "Se déconnecter"
+      sign_out_confirm: "Se déconnecter ?"
       notifications: "🔔"
       notifications_label: "Notifications"
   passwords:
