@@ -189,6 +189,18 @@ Ce que montrent les journaux (`adb logcat`) quand tu touches « + Ajouter une pl
 À la soumission du formulaire, Rails répond par une redirection vers la fiche de la plante. Cette URL n'est pas une
 modal : la coque **ferme la modal** et affiche la fiche dans la pile principale.
 
+Plus précisément (code de `NavigatorRule` et `Navigator`, version 1.4.1), la coque ferme la modal puis rejoue la
+redirection sur l'écran d'en dessous :
+
+- si la redirection mène **à l'écran d'en dessous** (modifier une plante depuis sa fiche, ajouter une tâche), cet
+  écran est **remplacé** par une version fraîche : la modal se ferme et la fiche est à jour, sans écran en plus ;
+- sinon (ajouter une plante depuis l'accueil), la nouvelle page est **empilée** dans la pile principale ;
+- si elle mène à une URL `replace_root` (l'accueil), la pile entière est remplacée.
+
+Une simple redirection Rails suffit donc. Les helpers `recede_or_redirect_to` / `refresh_or_redirect_to` de
+turbo-rails ne sont pas nécessaires ici, et `recede` ferait même revenir d'un écran de trop : la modal fermée, la coque
+rejoue « revenir » sur l'écran d'en dessous.
+
 ### 4.3 La path configuration (règles de navigation)
 
 Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les règles actuelles
@@ -198,6 +210,7 @@ Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les
 |---|---|
 | `.*` (tout) | Écran normal empilé ; tirer vers le bas pour rafraîchir |
 | `/new($\|\?)`, `/edit($\|\?)` | Formulaire en **modal** plein écran, sans tirer pour rafraîchir |
+| `/households($\|\?)` | Choix du foyer en **modal** ; le choix redirige vers l'accueil, qui remplace la pile |
 | `^/($\|\?)`, `/session/new…`, `/passwords/new…` | Écran normal qui **remplace toute la pile** |
 
 Ce qu'il faut savoir :

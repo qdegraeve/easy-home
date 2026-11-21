@@ -110,6 +110,9 @@ fr:
       no_location: "Sans emplacement"
       add: "+ Ajouter une plante"
       archived: "Plantes archivées · %{count}"
+      account: "Compte"
+      notifications: "Notifications"
+      households: "Mes foyers"
   due_label:
     overdue:
       one: "en retard de %{count} j"

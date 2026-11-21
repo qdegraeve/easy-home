@@ -22,6 +22,13 @@ RSpec.describe "Configurations", type: :request do
     expect(properties).to include("context" => "default", "presentation" => "replace_root")
   end
 
+  it "opens the household choice as a modal, closed by the redirect to the home page" do
+    get android_v1_configuration_path
+
+    rule = response.parsed_body["rules"].find { |candidate| candidate["patterns"] == [ "/households($|\\?)" ] }
+    expect(rule["properties"]).to include("context" => "modal")
+  end
+
   it "matches the copy bundled in the Android app, used when the server cannot be reached" do
     bundled = Rails.root.join("android/app/src/main/assets/json/path-configuration.json")
 
