@@ -30,6 +30,13 @@ Rails.application.routes.draw do
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences
   end
+  # Several occurrences at once: "Arroser · 4" on the home page, and the "Annuler" of a toast.
+  resource :task_occurrences_batch_completion, only: [ :create, :destroy ], path: "task_occurrences/completions",
+                                               controller: "task_occurrences/batch_completions"
+  namespace :today do
+    # Detail of the watering line of the home page: the plants to water, to uncheck those not done.
+    resource :watering, only: :show
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

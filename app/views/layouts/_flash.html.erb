@@ -10,8 +10,18 @@
       data-turbo-temporary
       data-controller="toast"
       data-toast-duration-value="5000"
-      class="pointer-events-auto break-words rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-lg"
-    ><%= notice %></div>
+      class="pointer-events-auto flex items-center justify-between gap-3 rounded-xl bg-ink px-4 py-3 text-sm
+             text-white shadow-lg"
+    >
+      <span data-toast-target="message" class="min-w-0 break-words"><%= notice %></span>
+      <% if flash[:undo_ids].present? %>
+        <%# Undo what was just done (a completion, or several): an error of the finger, repaired on the spot. %>
+        <%= button_to t(".undo"), task_occurrences_batch_completion_path, method: :delete,
+              params: { occurrence_ids: flash[:undo_ids] },
+              class: "-my-2 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 font-semibold " \
+                     "text-action-soft hover:bg-white/10" %>
+      <% end %>
+    </div>
   <% end %>
   <% if alert.present? %>
     <div

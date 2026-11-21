@@ -5,6 +5,7 @@ module TaskOccurrences
       result = Tasks::Complete.new.call(occurrence:, user: Current.user)
 
       notice = if result.success?
+        flash[:undo_ids] = [ occurrence.id ]
         t(".success", title: occurrence.task.title, subject: occurrence.task.subject&.name)
       else
         t(".#{result.failure.first}")

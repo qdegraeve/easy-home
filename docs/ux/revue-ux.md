@@ -644,8 +644,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    `fr.yml`, couleurs de la coque. Les écrans gardent leur structure.
 4. **PR 4 · Composants de base** (#28, #29, #30, #17, #18, fait) : ligne de tâche, groupe de liste, état vide, bouton,
    toast ; appliqués à l'accueil et à la fiche sans les restructurer.
-5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #15, #16, #55) : regroupement, validation groupée, toast Annuler. Le
-   cœur de la remarque 1.
+5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #14, #15, #16, #55, fait ; l'inventaire des plantes reste sur l'accueil
+   jusqu'à la PR 6) : regroupement, validation groupée, toast Annuler. Le cœur de la remarque 1.
 6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46, #47, #57) : les trois racines web, prêtes
    pour les onglets (dans le navigateur, une barre d'onglets web en bas les remplace).
 7. **PR 7 · Onglets natifs** (#7) : la coque passe à trois navigateurs.

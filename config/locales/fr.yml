@@ -105,11 +105,35 @@ fr:
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
       due_today: "À faire aujourd'hui · %{count}"
       nothing_due: "Rien à faire aujourd'hui."
+      upcoming: "Bientôt · %{count}"
+      water_plant: "Arroser %{name}"
       watering: "Arrosage"
       all: "Toutes les plantes · %{count}"
       no_location: "Sans emplacement"
       add: "+ Ajouter une plante"
       archived: "Plantes archivées · %{count}"
+  today:
+    waterings:
+      show:
+        back: "← Aujourd'hui"
+        title:
+          one: "Arroser %{count} plante"
+          other: "Arroser %{count} plantes"
+        hint: "Décochez celles que vous n'avez pas arrosées."
+        no_location: "Sans emplacement"
+        every:
+          one: "tous les jours"
+          other: "tous les %{count} jours"
+        submit: "Valider les arrosages cochés"
+        nothing: "Rien à arroser aujourd'hui."
+  task_list_component:
+    water: "Arroser"
+    water_all:
+      one: "Tout arroser : %{count} plante"
+      other: "Tout arroser : %{count} plantes"
+    watering: "Arrosage"
+    once: "Tâche"
+    no_location: "sans emplacement"
   task_row_component:
     done_watering: "Arrosée : %{name}"
     done_with_subject: "Fait : %{title} (%{subject})"
@@ -339,6 +363,21 @@ fr:
         success: "%{title} annulé, prochaine échéance recalculée."
         success_stopped: "%{title} annulé."
         not_done: "Rien à annuler."
+    batch_completions:
+      create:
+        waterings:
+          one: "Arrosage noté."
+          other: "%{count} arrosages notés."
+        tasks:
+          one: "Tâche notée."
+          other: "%{count} tâches notées."
+        nothing_done: "C'était déjà fait."
+        none_selected: "Aucun arrosage coché."
+      destroy:
+        success:
+          one: "Annulé, prochaine échéance recalculée."
+          other: "%{count} annulés, prochaines échéances recalculées."
+        nothing_cancelled: "Rien à annuler."
   households:
     create:
       success: "Foyer « %{name} » créé."
@@ -400,6 +439,7 @@ fr:
   layouts:
     flash:
       close: "Fermer le message"
+      undo: "Annuler"
     application:
       app_name: "Easy Home"
       sign_out: "Se déconnecter"
