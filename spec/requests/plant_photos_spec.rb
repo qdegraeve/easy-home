@@ -21,12 +21,12 @@ RSpec.describe "Plant photos", type: :request do
     Photos::Add.new.call(plant:, file: picture).value!
   end
 
-  it "adds a photo and shows it on the plant page" do
+  it "adds a photo and shows it in the photos of the plant" do
     sign_in(user)
 
     post plant_photos_path(plant), params: { photo: { file: picture } }
 
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     follow_redirect!
     expect(response.body).to include("Photo ajoutée.", "Photo du ")
     expect(plant.photos.count).to eq(1)
@@ -37,7 +37,7 @@ RSpec.describe "Plant photos", type: :request do
 
     post plant_photos_path(plant), params: { photo: { file: picture("not_an_image.jpg") } }
 
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     expect(flash[:alert]).to eq("Photo n'est pas une image JPEG, PNG ou WebP lisible")
     expect(plant.photos).to be_empty
   end
@@ -83,7 +83,7 @@ RSpec.describe "Plant photos", type: :request do
     expect(response.body).to include("Photo du 16 novembre 2026", "Supprimer la photo")
 
     delete plant_photo_path(plant, photo)
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     expect(Photo.exists?(photo.id)).to be(false)
   end
 

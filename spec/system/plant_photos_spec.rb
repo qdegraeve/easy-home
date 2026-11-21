@@ -26,6 +26,7 @@ RSpec.describe "Plant photos", type: :system do
     click_on "Ajouter la plante"
     expect(page).to have_content("Plante « Citronnier » ajoutée.")
     # Dated from its EXIF shooting date, not from the upload.
+    open_plant_tab("Photos")
     expect(page).to have_css("img[alt='Photo du mar 10 nov.']")
 
     attach_file "Nouvelle photo", picture("not_an_image.jpg")

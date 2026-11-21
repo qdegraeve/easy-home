@@ -8,10 +8,10 @@ module Plants
       result = Plants::AskQuestion.new.call(analysis: @analysis, user: Current.user, params: question_params)
 
       if result.success?
-        redirect_back_or_to @plant, notice: t(".success")
+        redirect_back_or_to plant_analysis_path(@plant, @analysis), notice: t(".success")
       else
         code, @form = result.failure
-        return redirect_back_or_to(@plant, alert: t(".#{code}")) unless code == :invalid
+        return redirect_back_or_to(plant_analysis_path(@plant, @analysis), alert: t(".#{code}")) unless code == :invalid
 
         render :new, status: :unprocessable_content
       end
@@ -23,9 +23,9 @@ module Plants
       result = Plants::AskAgain.new.call(question:)
 
       if result.success?
-        redirect_back_or_to @plant, notice: t("plants.analysis_questions.create.success")
+        redirect_back_or_to plant_analysis_path(@plant, @analysis), notice: t("plants.analysis_questions.create.success")
       else
-        redirect_back_or_to @plant, alert: t("plants.analysis_questions.create.#{result.failure.first}")
+        redirect_back_or_to plant_analysis_path(@plant, @analysis), alert: t("plants.analysis_questions.create.#{result.failure.first}")
       end
     end
 

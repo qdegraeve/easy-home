@@ -7,11 +7,11 @@ module Plants
       result = Photos::Add.new.call(plant:, file: params.expect(photo: [ :file ])[:file])
 
       if result.success?
-        redirect_to plant, notice: t(".success")
+        redirect_to plant_path(plant, tab: "photos"), notice: t(".success")
       else
         code, upload = result.failure
         alert = code == :invalid ? upload.errors.full_messages.to_sentence : t(".#{code}")
-        redirect_to plant, alert:
+        redirect_to plant_path(plant, tab: "photos"), alert:
       end
     end
 
@@ -34,7 +34,7 @@ module Plants
     def destroy
       plant = find_plant
       find_photo(plant).destroy!
-      redirect_to plant, notice: t(".success"), status: :see_other
+      redirect_to plant_path(plant, tab: "photos"), notice: t(".success"), status: :see_other
     end
 
     private
