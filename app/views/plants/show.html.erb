@@ -7,7 +7,7 @@
 <%= link_to t("plants.back"), root_path, class: "text-sm text-stone-500 underline" %>
 
 <div class="mt-2">
-  <h1 class="text-2xl font-bold"><%= @plant.name %></h1>
+  <h1 class="text-2xl font-bold"><%= page_title @plant.name %></h1>
   <% if @plant.species %>
     <p class="italic text-stone-600"><%= @plant.species %></p>
   <% end %>
@@ -71,7 +71,13 @@
                       class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
                 <%= button_to t(".destroy_task"), plant_task_path(@plant, task), method: :delete,
                       aria: { label: t(".destroy_task_label", title: task.title) },
-                      form: { data: { turbo_confirm: t(".destroy_task_confirm", title: task.title) } },
+                      form: {
+                        data: confirm_data(
+                          t(".destroy_task_confirm", title: task.title),
+                          button: t(".destroy"),
+                          danger: true
+                        )
+                      },
                       class: "rounded-lg px-2 py-1 text-xs text-red-700 hover:bg-red-50" %>
               </div>
             </li>
@@ -175,7 +181,7 @@
               <span class="shrink-0 text-stone-500"><%= date %></span>
               <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
                     aria: { label: cancel_label },
-                    form: { data: { turbo_confirm: cancel_confirm } },
+                    form: { data: confirm_data(cancel_confirm, button: t(".cancel_confirm_button")) },
                     class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
             </span>
           </li>
@@ -192,10 +198,10 @@
           class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
   <% else %>
     <%= button_to t(".archive"), plant_archive_path(@plant),
-          form: { data: { turbo_confirm: t(".archive_confirm") } },
+          form: { data: confirm_data(t(".archive_confirm"), button: t(".archive")) },
           class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
   <% end %>
   <%= button_to t(".destroy"), plant_path(@plant), method: :delete,
-        form: { data: { turbo_confirm: t(".destroy_confirm") } },
+        form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
         class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
 </div>

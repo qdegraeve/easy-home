@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { confirmWithDialog } from "../../app/javascript/lib/confirm_dialog"
+import { confirmWithDialog, confirmOptions } from "../../app/javascript/lib/confirm_dialog"
 
 describe("confirmWithDialog", () => {
   beforeEach(() => {
@@ -8,7 +8,7 @@ describe("confirmWithDialog", () => {
         <form method="dialog">
           <p data-confirm-message></p>
           <button value="cancel">Non</button>
-          <button value="confirm">Oui</button>
+          <button value="confirm" data-default-label="Confirmer">Confirmer</button>
         </form>
       </dialog>`
   })
@@ -23,6 +23,31 @@ describe("confirmWithDialog", () => {
     dialog().close("confirm")
 
     await expect(answer).resolves.toBe(true)
+  })
+
+  it("names the confirm button after the action, in red when destructive, then resets it", async () => {
+    const button = () => dialog().querySelector("button[value=confirm]")
+
+    const deletion = confirmWithDialog("Supprimer la photo ?", { button: "Supprimer", danger: true })
+    expect(button().textContent).toBe("Supprimer")
+    expect(button().dataset.tone).toBe("danger")
+    dialog().close("cancel")
+    await deletion
+
+    const other = confirmWithDialog("Archiver ?")
+    expect(button().textContent).toBe("Confirmer")
+    expect(button().dataset.tone).toBe("")
+    dialog().close()
+    await other
+  })
+
+  it("reads the options from the submitted form", () => {
+    const form = document.createElement("form")
+    expect(confirmOptions(form)).toEqual({ button: undefined, danger: false })
+
+    form.dataset.confirmButton = "Supprimer"
+    form.dataset.confirmTone = "danger"
+    expect(confirmOptions(form)).toEqual({ button: "Supprimer", danger: true })
   })
 
   it("answers no on going back or closing (Escape)", async () => {
@@ -43,6 +68,28 @@ describe("confirmWithDialog", () => {
     const second = confirmWithDialog("B ?")
     dialog().close()
     await expect(second).resolves.toBe(false)
+  })
+
+  it("answers no to a confirmation left pending when another one starts", async () => {
+    const first = confirmWithDialog("A ?")
+    dialog().removeAttribute("open") // closed without a "close" event, as a page morph would
+    const second = confirmWithDialog("B ?")
+
+    await expect(first).resolves.toBe(false)
+    dialog().close("confirm")
+    await expect(second).resolves.toBe(true)
+  })
+
+  it("ignores a late close event of a previous opening", async () => {
+    let answered = false
+    const pending = confirmWithDialog("B ?").then((value) => { answered = true; return value })
+
+    dialog().dispatchEvent(new Event("close")) // queued from an earlier close, delivered while reopened
+    await Promise.resolve()
+    expect(answered).toBe(false)
+
+    dialog().close("confirm")
+    await expect(pending).resolves.toBe(true)
   })
 
   it("falls back to window.confirm without an in-page dialog", async () => {

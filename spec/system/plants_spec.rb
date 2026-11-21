@@ -46,7 +46,7 @@ RSpec.describe "Plants", type: :system do
 
     # Correction: today's watering was a mistake.
     click_on "Annuler l'arrosage du lun 16 nov."
-    within("dialog", text: "Le prochain arrosage sera recalculé.") { click_on "Oui, confirmer" }
+    within("dialog", text: "Le prochain arrosage sera recalculé.") { click_on "Oui, annuler" }
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")
     expect(page).to have_content("Prochain arrosage : aujourd'hui")
     expect(page).to have_content("Dernier arrosage : sam 14 nov.")
@@ -62,11 +62,12 @@ RSpec.describe "Plants", type: :system do
 
     # Archiving: no more reminders, the log remains.
     click_on "Archiver"
-    within("dialog") { click_on "Non, revenir" }
+    within("dialog") { click_on "Revenir" }
     expect(page).to have_no_css("dialog[open]")
     expect(page).to have_no_content("Plante « Basilic » archivée.")
     click_on "Archiver"
-    within("dialog", text: "Les rappels s'arrêtent") { click_on "Oui, confirmer" }
+    expect(page).to have_css("dialog[open] button[data-tone='']", text: "Archiver")
+    within("dialog", text: "Les rappels s'arrêtent") { click_on "Archiver" }
     expect(page).to have_content("Plante « Basilic » archivée.")
     expect(page).to have_content("plus de rappel")
     expect(page).to have_no_button("Arrosée : Basilic")

@@ -19,6 +19,22 @@ RSpec.describe "My house", type: :request do
       expect(response.body).to include("Ma maison", "Terrasse", "⛅ Mi-ombre", "abrité du vent")
     end
 
+    it "asks before deleting a location, telling how many plants lose it" do
+      create(:location, household:, name: "Abri")
+      create_list(:plant, 1, household:, location: create(:location, household:, name: "Salon"))
+      create_list(:plant, 2, household:, location: create(:location, household:, name: "Terrasse"))
+      sign_in(user)
+
+      get edit_household_path(household)
+
+      forms = response.parsed_body.css("form[data-confirm-tone=danger]")
+      expect(forms.map { |form| form["data-turbo-confirm"] }).to eq([
+        "Supprimer l'emplacement « Abri » ?",
+        "Supprimer l'emplacement « Salon » ? Sa plante restera, sans emplacement.",
+        "Supprimer l'emplacement « Terrasse » ? Ses 2 plantes resteront, sans emplacement."
+      ])
+    end
+
     it "does not find the household of someone else" do
       sign_in(user)
 

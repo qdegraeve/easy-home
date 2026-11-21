@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+/* Turbo disables the submit button while its form is sent (no double tap): make it visible. */
+@layer base {
+  form[aria-busy="true"] :is(button, input[type="submit"]):disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+}

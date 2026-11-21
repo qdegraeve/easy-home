@@ -14,6 +14,7 @@ RSpec.describe "Authentication", type: :system do
     expect(page).to have_css("h1", text: "Mes plantes")
 
     click_on "Se déconnecter"
+    within("dialog", text: "Se déconnecter ?") { click_on "Se déconnecter" }
 
     expect(page).to have_button("Se connecter")
     visit root_path
