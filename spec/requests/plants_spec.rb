@@ -46,6 +46,21 @@ RSpec.describe "Plants", type: :request do
     end
   end
 
+  describe "GET /plants/new" do
+    it "asks for the photo first and a few fields, the watering prefilled, the rest folded" do
+      sign_in(user)
+
+      get new_plant_path
+
+      page = response.parsed_body
+      labels = page.css("form label").map { |label| label.text.squish }
+      expect(labels.first(4)).to eq([ "Photo", "Nom", "Emplacement", "Arrosage" ])
+      expect(page.at_css("input[name='plant[watering_interval_days]']")["value"]).to eq("7")
+      expect(page.at_css("details summary").text).to include("Plus de détails")
+      expect(page.at_css("details input[name='plant[species]']")).to be_present
+    end
+  end
+
   describe "POST /plants" do
     it "adds a plant to the current household" do
       sign_in(user)

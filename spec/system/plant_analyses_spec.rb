@@ -123,13 +123,13 @@ RSpec.describe "Plant analyses", type: :system do
     # The proposals are taken on the analysis page...
     click_on "Enregistrer l'espèce"
     expect(page).to have_content("Espèce enregistrée : Citrus limon.")
-    expect(page).to have_content("Sur la fiche")
+    expect(page).to have_content("Ajouté", count: 1)
     click_on "Appliquer"
     expect(page).to have_content("Arrosage réglé : tous les 4 jours.")
-    expect(page).to have_content("En place")
+    expect(page).to have_content("Ajouté", count: 2)
     click_on "Ajouter « Pailler le pied » aux tâches"
     expect(page).to have_content("Tâche ajoutée : Pailler le pied.")
-    expect(page).to have_content("Dans les tâches")
+    expect(page).to have_content("Ajouté", count: 3)
     expect(page).to have_no_button("Ajouter « Pailler le pied » aux tâches")
 
     # ... and show on the plant page.

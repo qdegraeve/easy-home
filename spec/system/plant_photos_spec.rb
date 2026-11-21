@@ -51,6 +51,13 @@ RSpec.describe "Plant photos", type: :system do
     expect(page).to have_content("Photo du 8 novembre 2026")
     expect(page).to have_content("Photo de couverture")
     expect(page).to have_no_button("Utiliser comme photo de couverture")
+
+    # From one photo to the other, to follow the growth.
+    click_on "Plus récente"
+    expect(page).to have_content("Photo du 18 novembre 2026")
+    expect(page).to have_no_link("Plus récente")
+    click_on "Plus ancienne"
+    expect(page).to have_content("Photo du 8 novembre 2026")
     click_on "Supprimer la photo"
     expect(page).to have_css("dialog[open] button[data-tone=danger]", text: "Supprimer la photo")
     within("dialog") { click_on "Supprimer la photo" }
