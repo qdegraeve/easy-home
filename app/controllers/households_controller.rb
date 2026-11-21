@@ -1,6 +1,7 @@
 class HouseholdsController < ApplicationController
   def index
     @households = policy_scope(Household).order(:name, :id)
+    @roles = Current.user.household_members.pluck(:household_id, :role).to_h
     @current_household = current_household
   end
 

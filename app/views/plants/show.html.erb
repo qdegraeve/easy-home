@@ -87,6 +87,23 @@
   <div class="space-y-6 self-start">
     <section aria-labelledby="analysis">
       <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis")) %></h2>
+      <%# Not while an analysis runs (the restart itself), nor for an archived plant (nothing to offer). %>
+      <% change = @plant.place_change_since_analysis unless @plant.archived? || @analyses.first&.pending? %>
+      <% if change %>
+        <%# The place changed since the last analysis: its advice may be wrong. Offered, never run by itself. %>
+        <div role="note" class="mt-2 rounded-2xl bg-warn-soft p-4 text-sm">
+          <p class="font-semibold"><%= heading_with_icon(:map_pin, t(".place_changed"), icon_class: "text-warn") %></p>
+          <p class="mt-1">
+            <%= t(".place_changed_detail", before: place_label(change.first), after: place_label(change.last)) %>
+          </p>
+          <% if @photos.any? && policy(PlantAnalysis.new(plant: @plant)).create? %>
+            <%= link_to t(".reanalyse"),
+                  new_plant_analysis_path(@plant, note: t(".reanalyse_note", before: place_label(change.first),
+                                                                              after: place_label(change.last))),
+                  class: "mt-3 #{button_class(:secondary)}" %>
+          <% end %>
+        </div>
+      <% end %>
       <% latest, *older = @analyses %>
       <div class="mt-2">
         <% if latest %>

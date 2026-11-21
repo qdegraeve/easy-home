@@ -1,18 +1,21 @@
 <h1 class="text-2xl font-bold"><%= page_title t(".title") %></h1>
 
-<ul class="mt-6 divide-y divide-line rounded-2xl bg-surface shadow-sm">
+<%= render ListGroupComponent.new do |group| %>
   <% @households.each do |household| %>
-    <li class="flex items-center justify-between gap-3 p-4">
-      <span class="font-medium"><%= household.name %></span>
-      <% if household == @current_household %>
-        <span class="text-sm font-semibold text-action"><%= t(".current") %></span>
-      <% else %>
-        <%= button_to t(".select"), household_selection_path(household),
-              class: "rounded-xl bg-subtle px-3 py-2 text-sm font-semibold" %>
-      <% end %>
-    </li>
+    <% group.with_row do %>
+      <div class="flex min-h-14 items-center justify-between gap-3 px-3 py-2">
+        <span>
+          <span class="block font-medium"><%= household.name %></span>
+          <span class="text-sm text-muted"><%= t(".roles.#{@roles[household.id]}") %></span>
+        </span>
+        <% if household == @current_household %>
+          <span class="text-sm font-semibold text-action"><%= t(".current") %></span>
+        <% else %>
+          <%= button_to t(".select"), household_selection_path(household), class: button_class(:secondary) %>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
-</ul>
+<% end %>
 
-<%= link_to t(".new"), new_household_path,
-      class: "mt-4 block rounded-xl border-2 border-dashed border-action py-3 text-center font-semibold text-action" %>
+<%= link_to t(".new"), new_household_path, class: "mt-4 #{button_class(:tertiary, block: true)}" %>

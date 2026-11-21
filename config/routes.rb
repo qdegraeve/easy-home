@@ -10,7 +10,7 @@ Rails.application.routes.draw do
     resource :selection, only: :create, module: :households
     resources :locations, only: :create
   end
-  resources :locations, only: :destroy
+  resources :locations, only: [ :edit, :update, :destroy ]
   resources :address_suggestions, only: :index
   # The three sections of the app (UX review): Aujourd'hui (root), Maison, Journal; and the settings.
   get "house", to: "house#show", as: :house

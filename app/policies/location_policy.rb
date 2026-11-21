@@ -3,6 +3,14 @@ class LocationPolicy < ApplicationPolicy
     HouseholdPolicy.new(user, record.household).update?
   end
 
+  def update?
+    create?
+  end
+
+  def edit?
+    update?
+  end
+
   def destroy?
     create?
   end

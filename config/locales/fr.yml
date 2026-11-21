@@ -123,6 +123,9 @@ fr:
         one: "%{count} plante"
         other: "%{count} plantes"
       more_soon: "Poubelles, piscine, animaux et équipements viendront ici."
+      to_review:
+        one: "%{count} analyse à revoir"
+        other: "%{count} analyses à revoir"
       places: "Lieux de la maison"
       address_and_locations: "Adresse et emplacements"
       no_address: "Adresse à renseigner"
@@ -151,6 +154,10 @@ fr:
       preferences: "Préférences"
       notifications: "Notifications"
       households: "Mes foyers"
+  places:
+    none: "sans emplacement"
+    sheltered: "abrité du vent"
+    exposed: "exposé au vent"
   tab_bar:
     label: "Sections"
     today: "Aujourd'hui"
@@ -206,6 +213,7 @@ fr:
       no_location: "Sans emplacement"
       add: "Ajouter une plante"
       archived: "Plantes archivées · %{count}"
+      to_review: "Analyse à revoir : le lieu a changé"
     water: "Arrosée"
     water_label: "Arrosée : %{name}"
     watering_task_title: "Arrosage"
@@ -243,6 +251,11 @@ fr:
       tasks: "Autres tâches"
       photos: "Suivi photo"
       analysis: "Analyse"
+      place_changed: "Analyse à revoir : le lieu a changé"
+      place_changed_detail: >-
+        Lors de la dernière analyse : %{before}. Maintenant : %{after}. Ses conseils peuvent ne plus être à jour.
+      reanalyse: "Relancer l'analyse"
+      reanalyse_note: "Lieu changé depuis la dernière analyse : avant %{before}, maintenant %{after}."
       no_analysis: "Pas encore d'analyse : ajoutez une photo, puis lancez une analyse."
       new_analysis: "Nouvelle analyse"
       older_analyses: "Analyses précédentes · %{count}"
@@ -455,16 +468,20 @@ fr:
       exposed: "exposé au vent"
       delete: "Supprimer"
       delete_label: "Supprimer l'emplacement « %{name} »"
+      edit_label: "Modifier l'emplacement « %{name} »"
       delete_confirm:
         "0": "Supprimer l'emplacement « %{name} » ?"
         one: "Supprimer l'emplacement « %{name} » ? Sa plante restera, sans emplacement."
         other: "Supprimer l'emplacement « %{name} » ? Ses %{count} plantes resteront, sans emplacement."
       new_location: "Ajouter un emplacement"
-      location_placeholder: "Ex. bord de piscine"
       add_location: "Ajouter"
     update:
       success: "Adresse enregistrée."
     index:
+      roles:
+        owner: "Propriétaire"
+        member: "Membre"
+        guest: "Invité"
       title: "Mes foyers"
       current: "Foyer actif"
       select: "Choisir"
@@ -479,6 +496,17 @@ fr:
       success: "Emplacement « %{name} » ajouté."
     destroy:
       success: "Emplacement « %{name} » supprimé."
+    update:
+      success: "Emplacement « %{name} » modifié."
+    edit:
+      back: "← Ma maison"
+      title: "Modifier « %{name} »"
+      plants_hint:
+        one: "Changer l'exposition ou l'abri signalera l'analyse de sa plante à revoir."
+        other: "Changer l'exposition ou l'abri signalera les analyses de ses %{count} plantes à revoir."
+      submit: "Enregistrer"
+    fields:
+      placeholder: "Ex. bord de piscine"
     exposures:
       full_sun: "Plein soleil"
       partial_shade: "Mi-ombre"

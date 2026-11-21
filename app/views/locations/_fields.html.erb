@@ -1,0 +1,30 @@
+<%# Name, exposure and shelter of a location: the form to add one (house page) and to change one. %>
+<%= render "shared/errors", record: form.object %>
+
+<%= form.label :name, class: "block text-sm font-semibold" %>
+<%= form.text_field(
+  :name,
+  required: true,
+  placeholder: t("locations.fields.placeholder"),
+  class: "w-full rounded-xl border border-field px-3 py-3"
+) %>
+
+<fieldset>
+  <legend class="text-sm font-semibold"><%= Location.human_attribute_name(:exposure) %></legend>
+  <div class="mt-1 grid grid-cols-3 gap-2 text-sm">
+    <% Location.exposures.each_key do |exposure| %>
+      <label
+        class="flex min-h-11 items-center justify-center rounded-xl border border-field bg-surface p-2 text-center
+               has-[:checked]:border-action has-[:checked]:bg-action-soft"
+      >
+        <%= form.radio_button :exposure, exposure, class: "sr-only", required: true %>
+        <%= exposure_label(exposure) %>
+      </label>
+    <% end %>
+  </div>
+</fieldset>
+
+<label class="flex min-h-11 items-center gap-2 text-sm">
+  <%= form.check_box :sheltered, class: "h-5 w-5" %>
+  <%= Location.human_attribute_name(:sheltered) %>
+</label>

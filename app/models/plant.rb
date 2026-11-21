@@ -28,6 +28,22 @@ class Plant < ApplicationRecord
     watering_task&.pending_occurrence&.due_at
   end
 
+  # The growing conditions of the plant's place, as recorded on an analysis: a change makes its advice doubtful. The
+  # name of the location does not count (renaming it changes nothing for the plant).
+  def place
+    { "exposure" => location&.exposure, "sheltered" => location&.sheltered? || false }
+  end
+
+  # The place of the last finished analysis and the current one, when they differ (UX review, "Changement
+  # d'emplacement et analyses"). Nil when they match, or when the analysis predates the recording of places. Moving
+  # the plant back to its former place clears it.
+  def place_change_since_analysis
+    analysis = analyses.select(&:done?).max_by { |candidate| [ candidate.created_at, candidate.id ] }
+    return if analysis&.place.nil? || analysis.place == place
+
+    [ analysis.place, place ]
+  end
+
   private
 
   def location_must_belong_to_household

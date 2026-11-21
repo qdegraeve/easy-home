@@ -17,6 +17,14 @@ RSpec.describe Plants::RequestAnalysis do
     expect(analysis).to have_attributes(status: "pending", requested_by: user, user_note: nil, photos: [ new_photo ])
   end
 
+  it "records the place of the plant, to tell later when it has changed" do
+    plant.update!(location: create(:location, household: plant.household, exposure: :shade, sheltered: true))
+
+    analysis = described_class.new.call(plant:, user:).value!
+
+    expect(analysis.place).to eq({ "exposure" => "shade", "sheltered" => true })
+  end
+
   it "analyses the chosen photos with the user's note" do
     analysis = described_class.new.call(
       plant:, user:, params: { photo_ids: [ old_photo.id.to_s, new_photo.id.to_s, "" ], note: " Feuilles jaunes ? " }

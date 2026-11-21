@@ -8,14 +8,14 @@ RSpec.describe "Households", type: :request do
   end
 
   describe "GET /households" do
-    it "lists only the user's households" do
-      create(:household_member, user:, household: create(:household, name: "Ma maison"))
+    it "lists only the user's households, with the user's role in each" do
+      create(:household_member, user:, role: :guest, household: create(:household, name: "Ma maison"))
       create(:household, name: "Foyer d'un autre")
       sign_in(user)
 
       get households_path
 
-      expect(response.body).to include("Ma maison")
+      expect(response.parsed_body.text.squish).to include("Ma maison Invité")
       expect(response.body).not_to include("Foyer d&#39;un autre")
     end
   end
