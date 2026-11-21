@@ -10,11 +10,6 @@
     <h1 class="text-2xl font-bold"><%= page_title t(".title") %></h1>
     <p class="text-sm text-muted"><%= l(Time.zone.today, format: :long).upcase_first %></p>
   </div>
-  <% if hotwire_native_app? %>
-    <%# In the app, the web header is hidden: the settings are reached from here (native button in a later step). %>
-    <%= link_to icon(:sliders_horizontal, size: 22), settings_path, aria: { label: t(".settings") },
-          class: "-mr-2 grid size-11 place-items-center rounded-full text-muted hover:bg-subtle" %>
-  <% end %>
 </div>
 
 <div class="mt-6 space-y-6 lg:max-w-2xl">

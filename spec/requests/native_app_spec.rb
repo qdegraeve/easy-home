@@ -8,12 +8,12 @@ RSpec.describe "Pages in the Android app", type: :request do
 
   before { post session_path, params: { email: user.email, password: "password" } }
 
-  it "hides the web header in the app, the settings being reached from the home page" do
+  it "hides the web header in the app, whose native top bar has the settings (WebFragment)" do
     get root_path, headers: in_app
 
     page = response.parsed_body
     expect(page.at_css("header")).to be_nil
-    expect(page.at_css("main a[aria-label='Réglages']")["href"]).to eq(settings_path)
+    expect(page.at_css("a[href='#{settings_path}']")).to be_nil
   end
 
   it "keeps the web header, with the settings, in the browser" do

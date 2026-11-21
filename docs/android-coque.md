@@ -63,7 +63,8 @@ android/
         │   ├── kotlin/app/easyhome/android/
         │   │   ├── EasyHomeApplication.kt
         │   │   ├── MainActivity.kt
-        │   │   └── MainTabs.kt
+        │   │   ├── MainTabs.kt
+        │   │   └── WebFragment.kt
         │   ├── assets/json/path-configuration.json
         │   └── res/             ← ressources : écrans XML, textes, couleurs, thème, icône
         └── debug/               ← ajouts valables seulement en debug
@@ -212,7 +213,8 @@ rejoue « revenir » sur l'écran d'en dessous.
 
 Dans l'app, l'en-tête web et les liens « ← … » sont masqués (`hotwire_native_app?`, helper `back_link_to`) : la barre
 native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les réglages
-(notifications, foyers, déconnexion) s'ouvrent depuis un bouton de la page « Aujourd'hui » ; le premier formulaire de
+(notifications, foyers, déconnexion) s'ouvrent depuis l'icône de la barre native du haut, sur chaque écran
+(`WebFragment`, sauf sur les réglages, la connexion et dans une modal) ; le premier formulaire de
 foyer garde ses liens de compte (`shared/_account_nav`). La barre d'onglets web n'est pas affichée dans l'app (helper
 `show_tabs?`) : les onglets y sont natifs.
 
@@ -222,8 +224,10 @@ Comportements propres aux onglets (`MainActivity`) :
   Journal, un changement de foyer dans Maison).
 - **Retour du téléphone** : dans un onglet, il remonte sa pile ; à la page de départ de Maison ou de Journal, il ramène
   à Aujourd'hui ; à la page de départ d'Aujourd'hui, il quitte l'app.
-- **Déconnexion** : sur les pages de connexion, la barre d'onglets est masquée et tous les onglets repartent
-  d'Aujourd'hui ; une fois reconnecté, la barre revient et chaque onglet se recharge pour la nouvelle session.
+- **Déconnexion** : sur les pages de connexion, la barre d'onglets est masquée et l'app revient sur Aujourd'hui, où
+  l'on se reconnecte ; une fois reconnecté, la barre revient et Maison et Journal repartent de zéro pour la nouvelle
+  session. Aujourd'hui n'est jamais réinitialisé : il affiche la page d'après la connexion (le réinitialiser à ce
+  moment laissait un écran blanc).
 - **Insets** : la barre d'onglets se place au-dessus de la barre système ; masquée (modal, clavier), ce sont les pages
   qui prennent cette marge, pour que leur bas (toasts, boutons) reste visible.
 - **Supprimer une plante** (`data-turbo-action="replace"`) : la fiche quitte la pile. Depuis Maison > Plantes, on

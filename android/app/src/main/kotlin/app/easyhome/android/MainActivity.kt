@@ -24,6 +24,7 @@ class MainActivity : HotwireActivity() {
     private lateinit var bottomNavigation: HotwireBottomNavigationController
     private lateinit var navigatorHosts: View
     private var signedOut = false
+    private val navigators = mutableMapOf<String, Navigator>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Dark system bar icons even when the phone is in dark mode: the app is light only for now (themes.xml).
@@ -60,11 +61,14 @@ class MainActivity : HotwireActivity() {
     override fun navigatorConfigurations() = tabs.navigatorConfigurations
 
     override fun onNavigatorReady(navigator: Navigator) {
+        navigators[navigator.configuration.name] = navigator
         navigator.host.navController.addOnDestinationChangedListener { _, _, _ -> onPageChanged(navigator) }
     }
 
-    // Signed out (from the settings, or a session that expired in any tab): no tabs on the sign-in pages, and every
-    // tab starts again from "Aujourd'hui". Signed in again: the tabs come back, reloaded for the new session.
+    // Signed out (from the settings, or a session that expired in any tab): no tabs on the sign-in pages, and the app
+    // goes back to "Aujourd'hui", where the sign-in happens. Signed in again: the tabs come back, and the other tabs
+    // start over for the new session. "Aujourd'hui" itself is never reset: it is showing the page after signing in.
+    // The resets wait for the current navigation to end (posted).
     private fun onPageChanged(navigator: Navigator) {
         val path = navigator.location?.let { Uri.parse(it).path } ?: return
         val signInPage = SIGN_IN_PATHS.any { path.startsWith(it) }
@@ -72,15 +76,17 @@ class MainActivity : HotwireActivity() {
         if (signInPage && !signedOut) {
             signedOut = true
             bottomNavigation.visibility = Visibility.HIDDEN
-            if (bottomNavigation.view.selectedItemId != 0) {
-                bottomNavigation.selectTab(0)
-                delegate.resetNavigators()
-            }
+            if (bottomNavigation.view.selectedItemId != 0) bottomNavigation.selectTab(0)
+            navigatorHosts.post { resetOtherTabs() }
         } else if (!signInPage && signedOut) {
             signedOut = false
             bottomNavigation.visibility = Visibility.DEFAULT
-            delegate.resetNavigators()
+            navigatorHosts.post { resetOtherTabs() }
         }
+    }
+
+    private fun resetOtherTabs() {
+        navigators.filterKeys { it != TODAY }.values.forEach { it.reset() }
     }
 
     // "Back" at the start page of "Maison" or "Journal" returns to "Aujourd'hui" instead of leaving the app; inside a
@@ -119,6 +125,7 @@ class MainActivity : HotwireActivity() {
 
     private companion object {
         const val SELECTED_TAB = "selected_tab"
+        const val TODAY = "today"
         val SIGN_IN_PATHS = listOf("/session/new", "/passwords")
     }
 }
