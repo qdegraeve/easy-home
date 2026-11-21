@@ -7,9 +7,7 @@ class HomeController < ApplicationController
     return redirect_to(new_household_path) unless @household
 
     authorize @household
-    plants = policy_scope(Plant).where(household: @household).order(:name)
-    @plants = plants.active.includes(:location, watering_task: :pending_occurrence)
-    @archived_plants = plants.archived
+    @has_plants = policy_scope(Plant).where(household: @household).active.exists?
     occurrences = DueOccurrencesQuery.new(policy_scope(TaskOccurrence))
       .call(household_ids: @household.id, days_ahead: UPCOMING_DAYS)
       .includes(task: { subject: :location }).order(:due_at, :id).to_a

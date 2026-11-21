@@ -19,7 +19,7 @@ RSpec.describe "Plant photos", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
 
-    click_on "+ Ajouter une plante"
+    click_on "Ajouter une plante"
     fill_in "Nom", with: "Citronnier"
     fill_in "Arrosage", with: "3"
     attach_file "Photo", picture("plant_with_gps.jpg")

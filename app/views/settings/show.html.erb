@@ -1,0 +1,44 @@
+<div class="mx-auto max-w-2xl">
+  <h1 class="text-2xl font-bold"><%= page_title t(".title") %></h1>
+
+  <div class="mt-6 space-y-6">
+    <%= render ListGroupComponent.new(title: t(".account"), id: "account") do |group| %>
+      <% group.with_row do %>
+        <div class="flex min-h-14 items-center gap-3 px-3 py-2">
+          <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-muted">
+            <%= icon(:user) %>
+          </span>
+          <span class="min-w-0 flex-1 break-words"><%= Current.user.email %></span>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= render ListGroupComponent.new(title: t(".preferences"), id: "preferences") do |group| %>
+      <% [
+        [ :bell, t(".notifications"), edit_notification_settings_path ],
+        [ :house, t(".households"), households_path ]
+      ].each do |icon_name, label, path| %>
+        <% group.with_row do %>
+          <%= link_to path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-muted">
+              <%= icon(icon_name) %>
+            </span>
+            <span class="flex-1 font-medium"><%= label %></span>
+            <%= icon(:chevron_right, class: "text-muted") %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= button_to(
+      session_path,
+      method: :delete,
+      form: {
+        data: confirm_data(t("layouts.application.sign_out_confirm"), button: t("layouts.application.sign_out"))
+      },
+      class: button_class(:danger, block: true)
+    ) do %>
+      <%= icon(:log_out) %><%= t("layouts.application.sign_out") %>
+    <% end %>
+  </div>
+</div>

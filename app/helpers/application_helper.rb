@@ -50,6 +50,26 @@ module ApplicationHelper
     "inline-flex min-h-11 items-center rounded-lg px-2 text-xs #{color}"
   end
 
+  SECTIONS = {
+    today: %w[home today/waterings],
+    house: %w[house plants plants/tasks plants/photos plants/analyses plants/analysis_questions households locations],
+    journal: %w[journal]
+  }.freeze
+
+  # The tab bar is shown once signed in with a household (not on the sign-in pages, nor on the first household form).
+  def show_tabs?
+    return @show_tabs if defined?(@show_tabs)
+
+    @show_tabs = authenticated? && Current.user.present? && policy_scope(Household).exists?
+  end
+
+  # Section of the tab bar the current page belongs to (nil for the settings).
+  def current_tab
+    return if controller_path == "households" && action_name == "index"
+
+    SECTIONS.find { |_, paths| paths.include?(controller_path) }&.first
+  end
+
   # "← …" link at the top of a page, for the browser only: in the Android app, the native top bar and the system
   # back already go back, and a web link would push a new screen instead of going back.
   def back_link_to(text, url)

@@ -224,7 +224,7 @@ Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les
 | `/new($\|\?)`, `/edit($\|\?)` | Formulaire en **modal** plein écran, sans tirer pour rafraîchir |
 | `/households($\|\?)` | Choix du foyer en **modal** ; le choix redirige vers l'accueil, qui remplace la pile |
 | `/today/watering($\|\?)` | Détail de l'arrosage du jour en **modal** ; la validation ramène à l'accueil |
-| `^/($\|\?)`, `/session/new…`, `/passwords/new…` | Écran normal qui **remplace toute la pile** |
+| `^/…`, `^/house…`, `^/journal…`, `/session/new…`, `/passwords/new…` | Remplace **toute la pile** (sections, connexion) |
 
 Ce qu'il faut savoir :
 

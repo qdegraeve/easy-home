@@ -1,0 +1,47 @@
+<div class="mx-auto max-w-2xl">
+  <%= back_link_to t(".back"), house_path %>
+  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <p class="text-sm text-muted"><%= t(".count", count: @plants.size) %></p>
+
+  <% if @plants.empty? %>
+    <div class="mt-6"><%= render EmptyStateComponent.new(icon: :sprout, text: t(".empty")) %></div>
+  <% else %>
+    <div class="mt-2">
+      <% @plants.group_by(&:location).sort_by { |location, _| [ location ? 0 : 1, location&.name.to_s ] }
+          .each do |location, plants| %>
+        <% place = safe_join([ location.name, exposure_label(location.exposure) ], " · ") if location %>
+        <%= render ListGroupComponent.new(title: place || t(".no_location"), heading: :h2) do |group| %>
+          <% plants.each do |plant| %>
+            <% group.with_row do %>
+              <%= link_to plant, class: "flex min-h-12 items-center justify-between gap-3 px-3 py-2" do %>
+                <span class="font-medium"><%= plant.name %></span>
+                <% if plant.next_watering_at %>
+                  <span class="text-sm text-muted">
+                    <%= render DueLabelComponent.new(due_at: plant.next_watering_at) %>
+                  </span>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if policy(Plant.new(household: @household)).create? %>
+    <%= link_to t(".add"), new_plant_path, class: "mt-6 #{button_class(:primary, block: true)}" %>
+  <% end %>
+
+  <% if @archived_plants.any? %>
+    <details class="mt-6">
+      <summary class="cursor-pointer py-3 text-sm text-muted">
+        <%= t(".archived", count: @archived_plants.size) %>
+      </summary>
+      <ul class="mt-2 divide-y divide-line overflow-hidden rounded-2xl bg-surface">
+        <% @archived_plants.each do |plant| %>
+          <li><%= link_to plant.name, plant, class: "flex min-h-12 items-center px-3 text-muted" %></li>
+        <% end %>
+      </ul>
+    </details>
+  <% end %>
+</div>

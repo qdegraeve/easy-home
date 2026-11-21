@@ -14,7 +14,7 @@ RSpec.describe "Plants", type: :system do
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
-    click_on "+ Ajouter une plante"
+    click_on "Ajouter une plante"
 
     # Invalid input (the browser blocks the others): the server error shows and values are kept.
     fill_in "Nom", with: "   "
@@ -33,19 +33,19 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_content("Dernier arrosage : sam 14 nov.")
 
     # Watering from the home page, once a day.
-    click_on "← Mes plantes"
+    go_to_tab("Aujourd'hui")
     expect(page).to have_content("À faire aujourd'hui · 1")
     click_on "Arrosée : Basilic"
     expect(page).to have_content("Arrosage noté pour « Basilic ».")
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
-    click_on "Basilic"
-    expect(page).to have_content("Prochain arrosage : dans 2 j")
     # Back to the home page: the message of the watering is not shown again from Turbo's cache.
+    go_to_tab("Maison")
     page.go_back
     expect(page).to have_content("Rien à faire aujourd'hui.")
     expect(page).to have_no_content("Arrosage noté pour « Basilic ».")
-    page.go_forward
+
+    open_plant("Basilic")
     expect(page).to have_content("Prochain arrosage : dans 2 j")
     expect(page).to have_content("Arrosée aujourd'hui")
     expect(page).to have_no_button("Arrosée : Basilic")
@@ -77,7 +77,7 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_content("Plante « Basilic » archivée.")
     expect(page).to have_content("plus de rappel")
     expect(page).to have_no_button("Arrosée : Basilic")
-    click_on "← Mes plantes"
+    click_on "← Plantes"
     expect(page).to have_content("Plantes archivées · 1")
 
     # Restore a few days later: watering resumes, late.

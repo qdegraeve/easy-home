@@ -34,7 +34,7 @@
       }
     },
     {
-      "patterns": ["^/($|\\?)", "/session/new($|\\?)", "/passwords/new($|\\?)"],
+      "patterns": ["^/($|\\?)", "^/house($|\\?)", "^/journal($|\\?)", "/session/new($|\\?)", "/passwords/new($|\\?)"],
       "properties": {
         "context": "default",
         "uri": "hotwire://fragment/web",
