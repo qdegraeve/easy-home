@@ -2,6 +2,5 @@
 class SettingsController < ApplicationController
   def show
     authorize Current.user, :update?, policy_class: UserPolicy
-    @household = current_household
   end
 end

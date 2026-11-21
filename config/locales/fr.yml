@@ -75,7 +75,7 @@ fr:
       task: "%{title} (%{name})"
   notification_settings:
     edit:
-      back: "← Accueil"
+      back: "← Réglages"
       title: "Notifications"
       intro: >-
         Chaque matin, un résumé des tâches du jour et de celles en retard, sur les téléphones où l'app
@@ -437,7 +437,7 @@ fr:
     create:
       success: "Foyer « %{name} » créé."
     edit:
-      back: "← Retour"
+      back: "← Maison"
       title: "Ma maison"
       situation: "Situation"
       situation_help: >-

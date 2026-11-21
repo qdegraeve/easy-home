@@ -9,7 +9,7 @@ class JournalController < ApplicationController
 
     authorize @household
     @entries = policy_scope(TaskOccurrence).done.joins(:task).where(tasks: { household_id: @household.id })
-      .where(completed_at: DAYS.days.ago..).includes(:completed_by, task: :subject)
+      .where(completed_at: (DAYS - 1).days.ago.beginning_of_day..).includes(:completed_by, task: :subject)
       .order(completed_at: :desc, id: :desc)
       .group_by { |occurrence| occurrence.completed_at.to_date }
   end

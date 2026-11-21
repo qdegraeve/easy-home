@@ -26,29 +26,29 @@
       empty: (t(".nothing_due") if @due_today.empty?)
     ) %>
 
-  <% if @upcoming.any? %>
-    <details>
-      <summary class="cursor-pointer py-3 font-semibold"><%= t(".upcoming", count: @upcoming.size) %></summary>
-      <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
-        <% @upcoming.each do |occurrence| %>
-          <% task = occurrence.task %>
-          <li class="flex min-h-12 items-center justify-between gap-3 px-3 py-2 text-sm">
-            <%
-              label = if task.watering?
-                t(".water_plant", name: task.subject.name)
-              elsif task.subject
-                t(".task_of", title: task.title, name: task.subject.name)
-              else
-                task.title
-              end
-            %>
-            <span><%= label %></span>
-            <span class="shrink-0 text-muted"><%= render DueLabelComponent.new(due_at: occurrence.due_at) %></span>
-          </li>
-        <% end %>
-      </ul>
-    </details>
-  <% end %>
+    <% if @upcoming.any? %>
+      <details>
+        <summary class="cursor-pointer py-3 font-semibold"><%= t(".upcoming", count: @upcoming.size) %></summary>
+        <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
+          <% @upcoming.each do |occurrence| %>
+            <% task = occurrence.task %>
+            <li class="flex min-h-12 items-center justify-between gap-3 px-3 py-2 text-sm">
+              <%
+                label = if task.watering?
+                  t(".water_plant", name: task.subject.name)
+                elsif task.subject
+                  t(".task_of", title: task.title, name: task.subject.name)
+                else
+                  task.title
+                end
+              %>
+              <span><%= label %></span>
+              <span class="shrink-0 text-muted"><%= render DueLabelComponent.new(due_at: occurrence.due_at) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
   <% else %>
     <%= render EmptyStateComponent.new(icon: :sprout, title: t(".empty_title"), text: t(".empty_body")) do %>
       <% if policy(Plant.new(household: @household)).create? %>

@@ -32,8 +32,8 @@ RSpec.describe "Pages in the Android app", type: :request do
       edit_plant_path(plant) => "← Citronnier",
       plants_path => "← Maison",
       new_plant_task_path(plant) => "← Citronnier",
-      edit_notification_settings_path => "← Accueil",
-      edit_household_path(user.households.sole) => "← Retour"
+      edit_notification_settings_path => "← Réglages",
+      edit_household_path(user.households.sole) => "← Maison"
     }
 
     pages.each do |path, back_link|
@@ -52,5 +52,25 @@ RSpec.describe "Pages in the Android app", type: :request do
     get new_household_path, headers: in_app
 
     expect(response.parsed_body.at_css("nav[aria-label=Compte]").text).to include("Notifications", "Se déconnecter")
+  end
+
+  it "hides the web tab bar on the pages the app opens as modals, where a tab would close the modal" do
+    get edit_plant_path(plant), headers: in_app
+    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_nil
+
+    get plant_path(plant), headers: in_app
+    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_present
+
+    get edit_plant_path(plant)
+    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_present
+  end
+
+  it "goes back to the home page after deleting a plant in the app, to the plants in the browser" do
+    delete plant_path(plant), headers: in_app
+    expect(response).to redirect_to(root_path)
+
+    other = create(:plant, :watered, household: user.households.sole)
+    delete plant_path(other)
+    expect(response).to redirect_to(plants_path)
   end
 end

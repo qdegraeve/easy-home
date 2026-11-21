@@ -7,12 +7,16 @@
 ] %>
 <nav
   aria-label="<%= t("tab_bar.label") %>"
-  class="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-paper/95 pb-[env(safe-area-inset-bottom)]
-         backdrop-blur md:inset-x-auto md:top-[61px] md:left-0 md:w-56 md:flex-col md:border-r md:border-t-0 md:p-3"
+  class="<%= class_names(
+    "fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-paper/95 backdrop-blur",
+    "md:inset-x-auto md:left-0 md:w-56 md:flex-col md:border-r md:border-t-0 md:p-3",
+    hotwire_native_app? ? "md:top-0" : "md:top-[61px]"
+  ) %>"
 >
   <% tabs.each do |tab, icon_name, path| %>
     <% current = current_tab == tab %>
-    <%= link_to path, aria: { current: (current ? "page" : nil) },
+    <%# "page" on the section's own page, "true" on a page inside the section (a plant in Maison). %>
+    <%= link_to path, aria: { current: (current_page?(path) ? "page" : ("true" if current)) },
           class: class_names(
             "flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-xs md:flex-none md:flex-row",
             "md:justify-start md:gap-3 md:rounded-xl md:px-3 md:text-sm",

@@ -69,7 +69,9 @@ class PlantsController < ApplicationController
   def destroy
     plant = find_plant
     plant.destroy!
-    redirect_to plants_path, notice: t(".success", name: plant.name), status: :see_other
+    # In the Android app, the home page replaces the whole stack: "back" never shows the deleted plant again.
+    destination = hotwire_native_app? ? root_path : plants_path
+    redirect_to destination, notice: t(".success", name: plant.name), status: :see_other
   end
 
   private

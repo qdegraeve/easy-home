@@ -57,15 +57,22 @@ module ApplicationHelper
   }.freeze
 
   # The tab bar is shown once signed in with a household (not on the sign-in pages, nor on the first household form).
+  # In the Android app, not on the pages opened as modals (path configuration): a tab would close the modal.
   def show_tabs?
     return @show_tabs if defined?(@show_tabs)
 
-    @show_tabs = authenticated? && Current.user.present? && policy_scope(Household).exists?
+    @show_tabs = authenticated? && Current.user.present? && !(hotwire_native_app? && modal_page?) &&
+      policy_scope(Household).exists?
+  end
+
+  # Pages the Android app opens as modals (config/hotwire/android_v1.json).
+  def modal_page?
+    request.path.match?(%r{/(new|edit)\z|\A/households\z|\A/today/watering\z})
   end
 
   # Section of the tab bar the current page belongs to (nil for the settings).
   def current_tab
-    return if controller_path == "households" && action_name == "index"
+    return if controller_path == "households" && action_name.in?(%w[index new create])
 
     SECTIONS.find { |_, paths| paths.include?(controller_path) }&.first
   end

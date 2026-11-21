@@ -204,9 +204,13 @@ turbo-rails ne sont pas nécessaires ici, et `recede` ferait même revenir d'un 
 rejoue « revenir » sur l'écran d'en dessous.
 
 Dans l'app, l'en-tête web et les liens « ← … » sont masqués (`hotwire_native_app?`, helper `back_link_to`) : la barre
-native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les liens de
-compte (notifications, foyers, déconnexion) sont en bas de l'accueil (`shared/_account_nav`) en attendant les onglets
-natifs. Limite connue : si la session a expiré sur une page qui s'ouvre en modal (un formulaire, « Mes foyers »), la
+native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les réglages
+(notifications, foyers, déconnexion) s'ouvrent depuis un bouton de la page « Aujourd'hui » ; le premier formulaire de
+foyer garde ses liens de compte (`shared/_account_nav`). En attendant les onglets natifs (PR 7), la barre d'onglets
+web est affichée, sauf sur les pages ouvertes en modal (un onglet fermerait la modal) ; Maison et Journal s'empilent
+au-dessus d'Aujourd'hui, pour que le retour du téléphone y ramène au lieu de quitter l'app.
+
+Limite connue : si la session a expiré sur une page qui s'ouvre en modal (un formulaire, « Mes foyers »), la
 reconnexion ramène à cette page en modal par-dessus l'écran de connexion ; fermer la modal ramène à cet écran.
 
 La coque est en **thème clair fixe** (`themes.xml`, `MainActivity`) tant que le web n'a pas de thème sombre : avec un
@@ -224,7 +228,7 @@ Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les
 | `/new($\|\?)`, `/edit($\|\?)` | Formulaire en **modal** plein écran, sans tirer pour rafraîchir |
 | `/households($\|\?)` | Choix du foyer en **modal** ; le choix redirige vers l'accueil, qui remplace la pile |
 | `/today/watering($\|\?)` | Détail de l'arrosage du jour en **modal** ; la validation ramène à l'accueil |
-| `^/…`, `^/house…`, `^/journal…`, `/session/new…`, `/passwords/new…` | Remplace **toute la pile** (sections, connexion) |
+| `^/($\|\?)`, `/session/new…`, `/passwords/new…` | Écran normal qui **remplace toute la pile** |
 
 Ce qu'il faut savoir :
 

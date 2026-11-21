@@ -42,4 +42,38 @@ RSpec.describe "Journal", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).not_to include("Basilic")
   end
+
+  it "shows only the current household of a user who belongs to two" do
+    second = create(:household, name: "Case des Hauts")
+    create(:household_member, household: second, user:, role: :member)
+    watered("Basilic", by: user)
+    watered("Fougère", by: user, household: second)
+    sign_in(user)
+    post household_selection_path(household)
+
+    get journal_path
+
+    expect(response.body).to include("Basilic")
+    expect(response.body).not_to include("Fougère")
+  end
+
+  it "keeps the last 60 days, whole days" do
+    watered("Basilic", by: user, at: Time.zone.parse("2026-09-18 07:00"))
+    watered("Fougère", by: user, at: Time.zone.parse("2026-09-17 21:00"))
+    sign_in(user)
+
+    get journal_path
+
+    expect(response.body).to include("Basilic")
+    expect(response.body).not_to include("Fougère")
+  end
+
+  it "sends a user without household to the household form" do
+    sign_in(create(:user))
+
+    [ journal_path, house_path, plants_path ].each do |path|
+      get path
+      expect(response).to redirect_to(new_household_path), path
+    end
+  end
 end
