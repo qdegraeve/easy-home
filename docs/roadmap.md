@@ -21,6 +21,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [ ] Maquettes HTML cliquables, mobile d'abord et élargies sur desktop : liste des plantes, fiche d'une plante
   (arrosage, photos, analyses), ajout d'une plante, résultat d'une analyse, ma maison (adresse, emplacements)
 - [ ] Validation sur téléphone, corrections
+- [x] Revue UX et maquettes v2 de la refonte (`docs/ux/revue-ux.md`, `docs/maquettes/v2/`), logo et icône
+- [ ] Refonte en 11 PR, dans l'ordre du découpage de `docs/ux/revue-ux.md`
 
 ## Étape 2 : première version, les plantes
 

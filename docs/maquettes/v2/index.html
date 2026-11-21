@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maquettes v2</title>
+  <meta name="description" content="Maquettes de la refonte d'Easy Home : navigation native, Aujourd'hui groupé,
+    identité carnet de maison.">
+  <style>
+:root {
+  --paper: #F6F4EF; --surface: #FFFFFF; --line: #E4E0D6; --ink: #1D2521; --muted: #5F665F;
+  --action: #1F5C46; --action-soft: #E3EDE7; --alert: #A8402A; --alert-soft: #F6E4DF;
+  --warn: #8A6200; --warn-soft: #F5ECD3;
+  --plants: #3F7D4E; --plants-soft: #E4EEE6; --waste: #B98A00; --waste-soft: #F6EDCF;
+  --pool: #1F7A99; --pool-soft: #DDEEF3; --pets: #B0603A; --pets-soft: #F4E3D9;
+  --gear: #55657A; --gear-soft: #E3E7EC;
+  --native: #2F6FE4;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: system-ui, -apple-system, "Roboto", "Segoe UI", sans-serif; color: var(--ink);
+  background: #DAD6CC; font-size: 16px; line-height: 1.375; -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.ic { flex-shrink: 0; display: block; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Page around the phone */
+.stage { display: flex; gap: 32px; justify-content: center; align-items: flex-start; padding: 24px 16px 48px;
+  flex-wrap: wrap; }
+.notes { width: 340px; max-width: 100%; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.notes h1 { font-size: 20px; margin: 0 0 4px; }
+.notes .back { font-size: 14px; color: var(--action); display: inline-flex; gap: 6px; align-items: center;
+  margin-bottom: 12px; }
+.notes ol { padding-left: 20px; margin: 12px 0; }
+.notes li { margin-bottom: 8px; }
+.notes .legend { display: flex; gap: 8px; align-items: center; margin-top: 16px; padding: 10px 12px;
+  background: var(--surface); border-radius: 12px; }
+.notes code { font-size: 13px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 4px; }
+.toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+
+/* Phone */
+.phone { width: 390px; max-width: 100%; height: 844px; background: var(--paper); border-radius: 36px;
+  box-shadow: 0 0 0 10px #1b1b1b, 0 20px 50px rgba(0,0,0,.25); overflow: hidden; display: flex;
+  flex-direction: column; position: relative; }
+@media (max-width: 420px) { .phone { border-radius: 0; box-shadow: none; height: 100vh; }
+  .stage { padding: 0 0 32px; } .notes { padding: 0 16px; } }
+.statusbar { height: 28px; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 20px; font-size: 13px; font-weight: 600; }
+.appbar { height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+.appbar .title { flex: 1; min-width: 0; padding: 0 8px; }
+.appbar .title b { display: block; font-size: 21px; font-weight: 600; line-height: 1.2; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.appbar .title small { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; color: var(--muted); }
+.iconbtn { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 24px; }
+.iconbtn:active { background: rgba(0,0,0,.06); }
+.textbtn { height: 40px; padding: 0 16px; border-radius: 20px; font-weight: 600; color: var(--action); }
+.content { flex: 1; overflow-y: auto; padding: 4px 16px 24px; position: relative; }
+.content::-webkit-scrollbar { display: none; }
+.tabbar { height: 80px; flex-shrink: 0; display: flex; background: #EFECE4; border-top: 1px solid var(--line);
+  padding-bottom: 12px; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-size: 12px; font-weight: 500; color: var(--muted); }
+.tab .pill { width: 64px; height: 32px; border-radius: 16px; display: grid; place-items: center; }
+.tab.on { color: var(--ink); font-weight: 600; }
+.tab.on .pill { background: var(--action-soft); color: var(--action); }
+.gesture { height: 18px; flex-shrink: 0; display: grid; place-items: center; }
+.gesture::after { content: ""; width: 120px; height: 4px; border-radius: 2px; background: #1D2521; opacity: .5; }
+
+/* Native outline toggle */
+body.show-native .native { outline: 2px dashed var(--native); outline-offset: -2px; position: relative; }
+body.show-native .native::before { content: "natif"; position: absolute; right: 6px; top: 2px; font-size: 10px;
+  font-weight: 700; color: #fff; background: var(--native); padding: 0 5px; border-radius: 4px; z-index: 5;
+  letter-spacing: .02em; }
+body.show-native .statusbar.native::before { top: 6px; }
+
+/* Content components */
+.date { font-size: 14px; color: var(--muted); margin: 4px 0 12px; }
+.group-title { font-size: 13px; font-weight: 600; color: var(--muted); margin: 20px 4px 8px; display: flex;
+  justify-content: space-between; align-items: center; }
+.group-title.alert { color: var(--alert); }
+.list { background: var(--surface); border-radius: 14px; overflow: hidden; }
+.row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; min-height: 60px; position: relative; }
+.row + .row::before { content: ""; position: absolute; top: 0; right: 0; left: 60px; border-top: 1px solid var(--line);
+  }
+.list.flat .row + .row::before { left: 12px; }
+.row .main { flex: 1; min-width: 0; }
+.row .t { font-weight: 500; }
+.row .m { font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .m.alert { color: var(--alert); font-weight: 600; }
+.row .end { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.row .end.today { color: var(--ink); font-weight: 600; }
+.dot { display: grid; place-items: center; border-radius: 50%; flex-shrink: 0; }
+.d-plants { background: var(--plants-soft); color: var(--plants); }
+.d-waste { background: var(--waste-soft); color: #8A6700; }
+.d-pool { background: var(--pool-soft); color: var(--pool); }
+.d-pets { background: var(--pets-soft); color: var(--pets); }
+.d-gear { background: var(--gear-soft); color: var(--gear); }
+.done-btn { width: 44px; height: 44px; border-radius: 22px; border: 1.5px solid var(--action); color: var(--action);
+  display: grid; place-items: center; flex-shrink: 0; }
+.done-btn:active, .row.is-done .done-btn { background: var(--action); color: #fff; }
+.row.is-done .t { text-decoration: line-through; color: var(--muted); }
+.count { font-size: 12px; font-weight: 700; background: var(--plants-soft); color: var(--plants); border-radius: 10px;
+  padding: 1px 7px; margin-left: 6px; vertical-align: 2px; }
+.btn { display: flex; width: 100%; height: 48px; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 12px; font-weight: 600; }
+.btn.primary { background: var(--action); color: #fff; }
+.btn.secondary { background: var(--action-soft); color: var(--action); }
+.btn.tertiary { color: var(--action); }
+.btn.danger { color: var(--alert); }
+.toast { position: absolute; left: 12px; right: 12px; bottom: 92px; background: var(--ink); color: #fff;
+  border-radius: 12px; padding: 0 8px 0 16px; height: 52px; display: flex; align-items: center; gap: 8px;
+  font-size: 15px; box-shadow: 0 6px 20px rgba(0,0,0,.2); z-index: 20; transition: opacity .2s, transform .2s; }
+.toast.hidden { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.toast span { flex: 1; }
+.toast button { color: #9FD3B8; font-weight: 600; padding: 0 12px; height: 44px; }
+.field label { display: block; font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+.input { width: 100%; height: 52px; border: 1px solid var(--line); background: var(--surface); border-radius: 12px;
+  padding: 0 14px; font: inherit; color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface);
+  display: inline-flex; align-items: center; gap: 6px; font-size: 15px; }
+.chip.on { background: var(--action-soft); border-color: var(--action); color: var(--action); font-weight: 600; }
+.help { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.segmented { display: flex; background: #ECE9E1; border-radius: 12px; padding: 4px; gap: 4px; margin: 16px 0 4px; }
+.segmented button { flex: 1; height: 40px; border-radius: 9px; font-size: 15px; font-weight: 500;
+  color: var(--muted); }
+.segmented button.on { background: var(--surface); color: var(--ink); font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.switch { width: 52px; height: 32px; border-radius: 16px; background: #C9C5BB; position: relative; flex-shrink: 0; }
+.switch::after { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; transition: left .15s; }
+.switch.on { background: var(--action); }
+.switch.on::after { left: 24px; }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600;
+  padding: 4px 10px; border-radius: 8px; }
+.status.watch { background: var(--warn-soft); color: var(--warn); }
+.status.ok { background: var(--action-soft); color: var(--action); }
+.status.act { background: var(--alert-soft); color: var(--alert); }
+.ph { display: grid; place-items: center; color: var(--plants); background:
+  repeating-linear-gradient(135deg, #DCE7DD 0 10px, #E4EEE6 10px 20px); }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(29,37,33,.45); z-index: 30; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); z-index: 31;
+  border-radius: 24px 24px 0 0; padding: 8px 16px 24px; }
+.sheet .grab { width: 36px; height: 4px; border-radius: 2px; background: #C9C5BB; margin: 6px auto 12px; }
+.menu { position: absolute; right: 8px; top: 92px; width: 220px; background: var(--surface); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18); z-index: 40; padding: 8px 0; }
+.menu a { display: flex; gap: 12px; align-items: center; height: 48px; padding: 0 16px; font-size: 16px; }
+.menu a.danger { color: var(--alert); }
+.hidden { display: none; }
+
+.doc { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+.doc h1 { font-size: 28px; margin: 0 0 8px; }
+.doc h2 { font-size: 20px; margin: 40px 0 12px; }
+.doc p, .doc li { font-size: 15px; line-height: 1.55; }
+.doc .lead { color: var(--muted); max-width: 680px; }
+.doc .card { background: var(--paper); border-radius: 16px; padding: 16px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.screen-link { display: flex; gap: 12px; align-items: flex-start; background: var(--paper); border-radius: 14px;
+  padding: 14px; }
+.screen-link b { display: block; }
+.screen-link span.d { font-size: 14px; color: var(--muted); }
+.swatch { border-radius: 12px; overflow: hidden; background: var(--surface); font-size: 13px; }
+.swatch div:first-child { height: 56px; }
+.swatch div:last-child { padding: 8px 10px; }
+pre { background: #1D2521; color: #E8EDE9; padding: 16px; border-radius: 12px; overflow-x: auto; font-size: 13px;
+  line-height: 1.5; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; background: var(--paper); border-radius: 12px;
+  overflow: hidden; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); }
+.mini { transform-origin: top left; }
+.compare { display: flex; gap: 32px; flex-wrap: wrap; }
+.compare figure { margin: 0; }
+.compare figcaption { font-weight: 600; margin-bottom: 8px; }
+.phone.small { height: 640px; }
+.webheader { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+  border-bottom: 1px solid #E7E5E4; font-size: 14px; background: #FAFAF9; }
+.flag { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; background: var(--alert);
+  border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; }
+
+    body { background: var(--surface); }
+  </style>
+</head>
+<body>
+  <main class="doc">
+
+
+    <h1 style="margin-top:16px">Easy Home · maquettes v2</h1>
+    <p class="lead">Refonte proposée dans <code>docs/ux/revue-ux.md</code>. Écrans mobiles 390 px, données fictives.
+      Les éléments en pointillés bleus seraient <b>natifs</b> dans la coque Hotwire Native (case « Montrer ce qui est
+      natif » sur chaque écran) ; tout le reste est rendu par Rails.</p>
+    <h2>Écrans</h2>
+    <div class="grid">
+    <a class="screen-link" href="aujourdhui.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect width="18" height="18" x="3" y="4" rx="2"/>
+    <path d="M16 2v4M8 2v4M3 10h18"/>
+    <path d="m9 16 2 2 4-4"/>
+    </svg>
+    </span>
+    <span>
+    <b>Aujourd'hui</b>
+    <span class="d">Onglet d'accueil : à faire, groupé par geste, toast Annuler.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="groupe.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+    </svg>
+    </span>
+    <span>
+    <b>Détail d'un groupe</b>
+    <span class="d">Feuille pour valider un groupe en partie ou le décaler.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="maison.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+    <path d="M3 10a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    </svg>
+    </span>
+    <span>
+    <b>Maison</b>
+    <span class="d">Onglet inventaire : un domaine par ligne.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="plantes.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+    </svg>
+    </span>
+    <span>
+    <b>Plantes</b>
+    <span class="d">Liste d'un domaine, par emplacement.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="plante.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+    </svg>
+    </span>
+    <span>
+    <b>Fiche d'une plante</b>
+    <span class="d">Prochaine action, état, Soins / Photos / Historique, menu ⋮.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="ajout.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M5 12h14"/>
+    <path d="M12 5v14"/>
+    </svg>
+    </span>
+    <span>
+    <b>Ajout rapide</b>
+    <span class="d">Modal : photo, nom, emplacement ; le reste replié.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="poubelles.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 6h18"/>
+    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+    </svg>
+    </span>
+    <span>
+    <b>Poubelles</b>
+    <span class="d">Autre domaine sur le même gabarit.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="journal.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+    <path d="M3 3v5h5"/>
+    <path d="M12 7v5l4 2"/>
+    </svg>
+    </span>
+    <span>
+    <b>Journal</b>
+    <span class="d">Onglet historique, tous domaines.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="reglages.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>
+    </svg>
+    </span>
+    <span>
+    <b>Réglages</b>
+    <span class="d">Notifications, foyers, membres, compte.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="navigation.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M14.1 4.4a2 2 0 0 0-1.79 0L8.1 6.5a2 2 0 0 1-1.79 0L3.45 5.07A1 1 0 0 0 2 5.97v12.76a1 1 0 0 0 .55.9l4.4
+      2.2a2 2 0 0 0 1.79 0l4.21-2.1a2 2 0 0 1 1.79 0l4.4 2.2a1 1 0 0 0 1.45-.9V6.27a1 1 0 0 0-.55-.9z"/>
+    <path d="M15 5.76v15M9 3.24v15"/>
+    </svg>
+    </span>
+    <span>
+    <b>Navigation native</b>
+    <span class="d">Avant / après, onglets, path configuration, transitions.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="composants.html">
+    <span class="dot d-plants" style="width:40px;height:40px">
+    <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect width="18" height="18" x="3" y="3" rx="2"/>
+    <circle cx="9" cy="9" r="2"/>
+    <path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
+    </svg>
+    </span>
+    <span>
+    <b>Identité et composants</b>
+    <span class="d">Palette, typographie, icônes, briques de base.</span>
+    </span>
+    </a>
+    <a class="screen-link" href="logo.html">
+    <img src="logo.svg" width="40" height="40" alt="">
+    <span>
+    <b>Logo et icône</b>
+    <span class="d">Un toit et une coche : la maison, c'est fait.</span>
+    </span>
+    </a>
+    </div>
+    <h2>Parcours à essayer</h2>
+    <ol>
+      <li>Aujourd'hui : appuyer sur un rond « Fait », puis « Annuler » dans le toast.</li>
+      <li>Aujourd'hui → « Arroser · 4 » → détail du groupe (par emplacement).</li>
+      <li>Maison → Plantes → Citronnier : onglets Soins / Photos / Historique, puis menu ⋮.</li>
+      <li>Maison → Poubelles : le même système pour un autre domaine.</li>
+    </ol>
+    <p style="font-size:13px;color:var(--muted)">Icônes dessinées d'après le jeu Lucide (licence ISC). Aucune
+      ressource externe : CSS et SVG en ligne, police système.</p>
+
+  </main>
+
+<script>
+  // Mockup only: highlights what would be native in the Hotwire Native shell.
+  (function () {
+    var box = document.getElementById("native-toggle");
+    if (!box) return;
+    var apply = function () { document.body.classList.toggle("show-native", box.checked); };
+    box.addEventListener("change", apply);
+    apply();
+  })();
+</script>
+
+</body>
+</html>
