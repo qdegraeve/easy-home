@@ -56,3 +56,28 @@ html:has([data-floating-action]) #toasts {
 html[data-bridge-components~="button"]:has([data-controller~="bridge--button"][data-bridge-order="2"]) #toasts {
   padding-bottom: 9.5rem;
 }
+
+/* Photo viewer: from a photo to the next, the photo slides in from the side it comes from (view transition of Turbo,
+   enabled by the meta of the viewer page only; Turbo skips it when the user prefers reduced motion). */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 150ms;
+  }
+
+  ::view-transition-old(photo),
+  ::view-transition-new(photo) {
+    animation-duration: 220ms;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  html[data-photo-direction="older"]::view-transition-old(photo) { animation-name: photo-out-to-right; }
+  html[data-photo-direction="older"]::view-transition-new(photo) { animation-name: photo-in-from-left; }
+  html[data-photo-direction="newer"]::view-transition-old(photo) { animation-name: photo-out-to-left; }
+  html[data-photo-direction="newer"]::view-transition-new(photo) { animation-name: photo-in-from-right; }
+}
+
+@keyframes photo-out-to-right { to { transform: translateX(30%); opacity: 0; } }
+@keyframes photo-in-from-left { from { transform: translateX(-30%); opacity: 0; } }
+@keyframes photo-out-to-left { to { transform: translateX(-30%); opacity: 0; } }
+@keyframes photo-in-from-right { from { transform: translateX(30%); opacity: 0; } }

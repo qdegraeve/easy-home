@@ -95,10 +95,28 @@ RSpec.describe "Plant photos", type: :request do
     expect(response).to redirect_to(plant_photo_path(plant, photo))
     expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
 
+    get edit_plant_photo_path(plant, photo)
+    expect(response.body).to include("Date de la photo", "2026-11-02")
+
     patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-12-01" } }
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).to include("Date de la photo ne peut pas être dans le futur", "Photo du 2 novembre 2026")
+    expect(response.body).to include("Date de la photo ne peut pas être dans le futur")
     expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
+  end
+
+  it "goes on to the next photo after a deletion: the newer one, else the older one" do
+    oldest, middle, newest = add_photo, add_photo, add_photo
+    oldest.update!(taken_at: 3.days.ago)
+    middle.update!(taken_at: 2.days.ago)
+    sign_in(user)
+
+    get plant_photo_path(plant, middle)
+    expect(response.body).to include("2 / 3")
+
+    delete plant_photo_path(plant, middle)
+    expect(response).to redirect_to(plant_photo_path(plant, newest))
+    delete plant_photo_path(plant, newest)
+    expect(response).to redirect_to(plant_photo_path(plant, oldest))
   end
 
   it "forbids adding a photo to an archived plant" do
@@ -135,11 +153,13 @@ RSpec.describe "Plant photos", type: :request do
         expect(plant.photos).to be_empty
       end
 
-      it "answers 404 to #{intruder_label} on show, update and destroy" do
+      it "answers 404 to #{intruder_label} on show, edit, update and destroy" do
         photo = add_photo
         sign_in(instance_exec(&intruder))
 
         get plant_photo_path(plant, photo)
+        expect(response).to have_http_status(:not_found)
+        get edit_plant_photo_path(plant, photo)
         expect(response).to have_http_status(:not_found)
         patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-11-01" } }
         expect(response).to have_http_status(:not_found)
@@ -157,7 +177,7 @@ RSpec.describe "Plant photos", type: :request do
       sign_in(user)
 
       post plant_photo_cover_path(plant, older)
-      expect(response).to redirect_to(plant_path(plant, tab: "photos"))
+      expect(response).to redirect_to(plant_photo_path(plant, older)) # stays in the viewer
       expect(plant.reload.face).to eq(older)
 
       get plant_photo_path(plant, older)

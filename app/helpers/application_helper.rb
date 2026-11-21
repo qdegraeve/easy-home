@@ -40,7 +40,10 @@ module ApplicationHelper
     primary: "bg-action font-semibold text-white hover:bg-action-strong",
     secondary: "bg-action-soft font-semibold text-action hover:bg-subtle",
     tertiary: "font-semibold text-action hover:bg-subtle",
-    danger: "font-semibold text-alert hover:bg-alert-soft"
+    danger: "font-semibold text-alert hover:bg-alert-soft",
+    # On the dark photo viewer: white text, the danger tone is carried by the confirmation.
+    on_dark: "font-semibold text-white/90 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 " \
+             "focus-visible:outline-white"
   }.freeze
 
   # Classes of a button or a link styled as one (UX review, "Bouton"): 48 px high, one action color.

@@ -6,7 +6,7 @@ module Plants
       photo = plant.photos.find(params[:photo_id]).tap { |record| authorize record, :update? }
 
       plant.update!(cover_photo: photo)
-      redirect_to plant_path(plant, tab: "photos"), notice: t(".success"), status: :see_other
+      redirect_to plant_photo_path(plant, photo), notice: t(".success"), status: :see_other
     end
   end
 end

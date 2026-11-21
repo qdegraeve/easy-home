@@ -1,0 +1,20 @@
+<% months.each do |month, month_photos| %>
+  <h3 class="mb-2 mt-4 text-[13px] font-semibold text-muted"><%= l(month, format: :month_year) %></h3>
+  <ul class="-mx-4 grid grid-cols-3 gap-0.5 sm:mx-0 sm:grid-cols-4 sm:gap-1 lg:grid-cols-6">
+    <% month_photos.each do |photo| %>
+      <li class="relative">
+        <%= link_to helpers.plant_photo_path(plant, photo),
+              class: "block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action" do %>
+          <%= image_tag photo.image.variant(:thumb), alt: alt(photo), loading: "lazy", decoding: "async",
+                width: 320, height: 320, class: "aspect-square w-full bg-subtle object-cover sm:rounded-md" %>
+          <% if cover?(photo) %>
+            <span class="absolute left-1.5 top-1.5 rounded-full bg-ink/75 px-2 py-0.5 text-[11px] font-semibold
+                         text-white">
+              <%= t("plants.show.cover_badge") %>
+            </span>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

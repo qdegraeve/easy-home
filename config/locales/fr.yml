@@ -2,6 +2,7 @@ fr:
   date:
     formats:
       day: "%a %-d %b"
+      month_year: "%B %Y"
   time:
     formats:
       hour: "%-H h %M"
@@ -283,7 +284,10 @@ fr:
       new_photo: "Nouvelle photo"
       add_photo: "Ajouter une photo"
       add_photo_label: "Photo"
-      cover: "couverture"
+      cover_badge: "Couverture"
+      photos_count:
+        one: "1 photo"
+        other: "%{count} photos"
       no_tasks: "Aucune autre tâche : engrais, taille, rempotage…"
       add_task: "Ajouter une tâche"
       add_task_label: "Tâche"
@@ -409,7 +413,9 @@ fr:
         subject_archived: "Cette plante est archivée : restaurez-la pour ajouter des photos."
       show:
         title: "Photo du %{date}"
-        alt: "%{name}"
+        alt: "%{name}, photo du %{date}"
+        position: "%{position} / %{count}"
+        edit_date: "Modifier la date"
         destroy: "Supprimer la photo"
         destroy_confirm: "Supprimer cette photo ?"
         cover: "Photo de couverture"
@@ -417,6 +423,9 @@ fr:
         browse: "Autres photos"
         older: "Plus ancienne"
         newer: "Plus récente"
+      edit:
+        title: "Date de la photo"
+        back: "← La photo"
         save_date: "Enregistrer la date"
       update:
         success: "Date de la photo enregistrée."

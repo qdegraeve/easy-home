@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   resources :plants do
     resource :archive, only: [ :create, :destroy ], module: :plants
     resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
-    resources :photos, only: [ :create, :show, :update, :destroy ], module: :plants do
+    resources :photos, only: [ :create, :show, :edit, :update, :destroy ], module: :plants do
       # This photo becomes the face of the plant.
       resource :cover, only: :create, controller: "/plants/covers"
     end
