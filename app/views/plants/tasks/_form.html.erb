@@ -5,7 +5,7 @@
   <div>
     <%= f.label :title, class: "block text-sm font-semibold" %>
     <%= f.text_field :title, required: true, maxlength: 100, placeholder: t("plants.tasks.form.title_placeholder"),
-          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+          class: "mt-1 w-full rounded-xl border border-line bg-surface px-3 py-3" %>
   </div>
 
   <% if adding %>
@@ -13,7 +13,7 @@
       <legend class="text-sm font-semibold"><%= t("plants.tasks.form.repeat") %></legend>
       <div class="mt-1 space-y-2">
         <% TaskForm::KINDS.each do |kind| %>
-          <label class="flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-3 py-3">
+          <label class="flex items-center gap-2 rounded-xl border border-line bg-surface px-3 py-3">
             <%= f.radio_button :recurrence_type, kind %>
             <span><%= t("plants.tasks.form.kinds.#{kind}") %></span>
           </label>
@@ -35,7 +35,7 @@
             class: "block text-sm font-semibold" %>
     <% end %>
     <%= f.date_field :due_on, required: true,
-          class: "mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+          class: "mt-1 w-full rounded-xl border border-line bg-surface px-3 py-3" %>
   </div>
 
   <% if adding || form.sliding? %>
@@ -44,11 +44,11 @@
       <div class="mt-1 flex items-center gap-2">
         <span class="text-sm"><%= t("plants.form.every") %></span>
         <%= f.number_field :interval_days, min: 1, max: 60,
-              class: "w-20 rounded-xl border border-stone-300 bg-white px-3 py-3" %>
+              class: "w-20 rounded-xl border border-line bg-surface px-3 py-3" %>
         <span class="text-sm"><%= t("plants.form.days") %></span>
       </div>
     </div>
   <% end %>
 
-  <%= f.submit submit, class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+  <%= f.submit submit, class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
 <% end %>

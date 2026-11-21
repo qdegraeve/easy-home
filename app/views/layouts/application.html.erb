@@ -19,19 +19,19 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="bg-stone-50 text-stone-800 antialiased">
+  <body class="bg-paper text-ink antialiased">
     <%# In the Android app, the native top bar replaces this header (account links: bottom of the home page). %>
     <% if authenticated? && !hotwire_native_app? %>
-      <header class="sticky top-0 z-10 border-b border-stone-200 bg-stone-50/95 backdrop-blur">
+      <header class="sticky top-0 z-10 border-b border-line bg-paper/95 backdrop-blur">
         <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3 lg:max-w-5xl">
-          <%= link_to t(".app_name"), root_path, class: "font-semibold text-emerald-700" %>
+          <%= link_to t(".app_name"), root_path, class: "font-semibold text-action" %>
           <div class="flex items-center gap-1">
-            <%= link_to t(".notifications"), edit_notification_settings_path,
+            <%= link_to icon(:bell), edit_notification_settings_path,
                   aria: { label: t(".notifications_label") },
-                  class: "rounded-xl px-3 py-3 text-sm text-stone-600 hover:bg-stone-100" %>
+                  class: "rounded-xl px-3 py-3 text-sm text-muted hover:bg-subtle" %>
             <%= button_to t(".sign_out"), session_path, method: :delete,
                   form: { data: confirm_data(t(".sign_out_confirm"), button: t(".sign_out")) },
-                  class: "rounded-xl px-3 py-2 text-sm text-stone-600 hover:bg-stone-100" %>
+                  class: "rounded-xl px-3 py-2 text-sm text-muted hover:bg-subtle" %>
           </div>
         </div>
       </header>

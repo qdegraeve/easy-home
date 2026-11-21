@@ -9,15 +9,15 @@
 <div class="mt-2">
   <h1 class="text-2xl font-bold"><%= page_title @plant.name %></h1>
   <% if @plant.species %>
-    <p class="italic text-stone-600"><%= @plant.species %></p>
+    <p class="italic text-muted"><%= @plant.species %></p>
   <% end %>
   <% if @plant.location %>
-    <p class="mt-1 text-sm text-stone-500">
-      📍 <%= @plant.location.name %> · <%= t("locations.exposures.#{@plant.location.exposure}") %>
+    <p class="mt-1 text-sm text-muted">
+      <%= icon(:map_pin, size: 16) %> <%= @plant.location.name %> · <%= exposure_label(@plant.location.exposure) %>
     </p>
   <% end %>
   <% if @plant.archived? %>
-    <p class="mt-2 rounded-xl bg-stone-100 px-3 py-2 text-sm">
+    <p class="mt-2 rounded-xl bg-subtle px-3 py-2 text-sm">
       <%= t(".archived_on", date: l(@plant.archived_at.to_date, format: :long)) %>
     </p>
   <% end %>
@@ -25,40 +25,40 @@
 
 <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
   <div class="space-y-6 self-start">
-    <section class="space-y-2 rounded-2xl bg-white p-4 shadow-sm" aria-labelledby="watering">
-      <h2 id="watering" class="font-semibold"><%= t(".watering") %></h2>
+    <section class="space-y-2 rounded-2xl bg-surface p-4 shadow-sm" aria-labelledby="watering">
+      <h2 id="watering" class="font-semibold"><%= heading_with_icon(:droplet, t(".watering"), icon_class: "text-plants") %></h2>
       <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
       <% if (occurrence = @watering_task.pending_occurrence) %>
         <div class="flex items-center justify-between gap-3">
           <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
           <% if @done_today_task_ids.include?(@watering_task.id) %>
-            <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800"><%= t(".watered_today") %></span>
+            <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action"><%= t(".watered_today") %></span>
           <% else %>
             <%= render "tasks/complete_button", occurrence: %>
           <% end %>
         </div>
       <% end %>
       <% if @last_watered_at %>
-        <p class="text-sm text-stone-500"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
+        <p class="text-sm text-muted"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
       <% end %>
     </section>
 
     <section aria-labelledby="tasks">
-      <h2 id="tasks" class="font-semibold"><%= t(".tasks") %></h2>
+      <h2 id="tasks" class="font-semibold"><%= heading_with_icon(:list_todo, t(".tasks"), icon_class: "text-muted") %></h2>
       <% if @other_tasks.any? %>
-        <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+        <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface shadow-sm">
           <% @other_tasks.each do |task| %>
             <li class="space-y-2 p-3">
               <div class="flex items-center justify-between gap-3">
                 <div>
                   <p class="font-medium"><%= task.title %></p>
-                  <p class="text-sm text-stone-500">
+                  <p class="text-sm text-muted">
                     <%= task.once? ? t(".once") : t(".every", count: task.recurrence.interval_days) %> ·
                     <%= render DueLabelComponent.new(due_at: task.pending_occurrence.due_at) %>
                   </p>
                 </div>
                 <% if @done_today_task_ids.include?(task.id) %>
-                  <span class="shrink-0 rounded-xl bg-sky-50 px-3 py-2 text-sm text-sky-800">
+                  <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action">
                     <%= t(".done_today") %>
                   </span>
                 <% else %>
@@ -68,7 +68,7 @@
               <div class="flex gap-2">
                 <%= link_to t(".edit_task"), edit_plant_task_path(@plant, task),
                       aria: { label: t(".edit_task_label", title: task.title) },
-                      class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
+                      class: "rounded-lg px-2 py-1 text-xs text-muted hover:bg-subtle" %>
                 <%= button_to t(".destroy_task"), plant_task_path(@plant, task), method: :delete,
                       aria: { label: t(".destroy_task_label", title: task.title) },
                       form: {
@@ -78,17 +78,17 @@
                           danger: true
                         )
                       },
-                      class: "rounded-lg px-2 py-1 text-xs text-red-700 hover:bg-red-50" %>
+                      class: "rounded-lg px-2 py-1 text-xs text-alert hover:bg-alert-soft" %>
               </div>
             </li>
           <% end %>
         </ul>
       <% else %>
-        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_tasks") %></p>
+        <p class="mt-2 rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_tasks") %></p>
       <% end %>
       <% unless @plant.archived? %>
         <%= link_to t(".add_task"), new_plant_task_path(@plant),
-              class: "mt-3 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-emerald-700 " \
+              class: "mt-3 block rounded-xl bg-surface py-3 text-center text-sm font-semibold text-action " \
                      "shadow-sm" %>
       <% end %>
     </section>
@@ -96,33 +96,33 @@
 
   <div class="space-y-6 self-start">
     <section aria-labelledby="analysis">
-      <h2 id="analysis" class="font-semibold"><%= t(".analysis") %></h2>
+      <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis"), icon_class: "text-muted") %></h2>
       <% latest, *older = @analyses %>
       <div class="mt-2">
         <% if latest %>
           <%= render "plants/analyses/analysis", analysis: latest,
                 restart: latest.failed? && policy(PlantAnalysis.new(plant: @plant)).create? %>
         <% else %>
-          <p class="rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_analysis") %></p>
+          <p class="rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_analysis") %></p>
         <% end %>
       </div>
       <% if @photos.any? && !latest&.pending? && policy(PlantAnalysis.new(plant: @plant)).create? %>
         <%= link_to t(".new_analysis"), new_plant_analysis_path(@plant),
-              class: "mt-3 block rounded-xl bg-white py-3 text-center text-sm font-semibold text-emerald-700 " \
+              class: "mt-3 block rounded-xl bg-surface py-3 text-center text-sm font-semibold text-action " \
                      "shadow-sm" %>
       <% end %>
       <% if older.any? %>
         <details class="mt-3">
-          <summary class="cursor-pointer text-sm text-stone-500">
+          <summary class="cursor-pointer text-sm text-muted">
             <%= t(".older_analyses", count: older.size) %>
           </summary>
-          <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white text-sm shadow-sm">
+          <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface text-sm shadow-sm">
             <% older.each do |analysis| %>
               <li>
                 <% state = analysis.done? ? "health.#{analysis.health}" : "status.#{analysis.status}" %>
                 <%= link_to plant_analysis_path(@plant, analysis), class: "flex justify-between gap-3 p-3" do %>
                   <span><%= l(analysis.created_at.to_date, format: :day) %></span>
-                  <span class="text-stone-500"><%= t("plants.analyses.analysis.#{state}") %></span>
+                  <span class="text-muted"><%= t("plants.analyses.analysis.#{state}") %></span>
                 <% end %>
               </li>
             <% end %>
@@ -132,7 +132,7 @@
     </section>
 
     <section aria-labelledby="photos">
-      <h2 id="photos" class="font-semibold"><%= t(".photos") %></h2>
+      <h2 id="photos" class="font-semibold"><%= heading_with_icon(:camera, t(".photos"), icon_class: "text-muted") %></h2>
       <% if @photos.any? %>
         <ul class="mt-2 grid grid-cols-3 gap-2">
           <% @photos.each do |photo| %>
@@ -141,13 +141,13 @@
               <%= link_to plant_photo_path(@plant, photo), class: "block" do %>
                 <%= image_tag photo.image.variant(:thumb), alt: t(".photo_alt", date:),
                       class: "aspect-square w-full rounded-xl object-cover" %>
-                <span class="mt-1 block text-center text-xs text-stone-500"><%= date %></span>
+                <span class="mt-1 block text-center text-xs text-muted"><%= date %></span>
               <% end %>
             </li>
           <% end %>
         </ul>
       <% else %>
-        <p class="mt-2 rounded-2xl bg-white p-4 text-sm text-stone-500 shadow-sm"><%= t(".no_photos") %></p>
+        <p class="mt-2 rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_photos") %></p>
       <% end %>
       <% if policy(Photo.new(plant: @plant)).create? %>
         <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3 space-y-2" do |f| %>
@@ -156,14 +156,14 @@
                 class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-white file:px-3 " \
                        "file:py-2 file:shadow-sm" %>
           <%= f.submit t(".add_photo"),
-                class: "w-full rounded-xl bg-white py-3 text-sm font-semibold text-emerald-700 shadow-sm" %>
+                class: "w-full rounded-xl bg-surface py-3 text-sm font-semibold text-action shadow-sm" %>
         <% end %>
       <% end %>
     </section>
 
     <section aria-labelledby="journal">
-      <h2 id="journal" class="font-semibold"><%= t(".journal") %></h2>
-      <ul class="mt-2 divide-y divide-stone-100 rounded-2xl bg-white shadow-sm">
+      <h2 id="journal" class="font-semibold"><%= heading_with_icon(:history, t(".journal"), icon_class: "text-muted") %></h2>
+      <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface shadow-sm">
         <% @journal.each do |entry| %>
           <% date = l(entry.completed_at.to_date, format: :day) %>
           <% if entry.task.watering? %>
@@ -176,13 +176,13 @@
             <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
           <% end %>
           <li class="flex items-center justify-between gap-3 p-3 text-sm">
-            <span><%= label %></span>
+            <span><%= heading_with_icon(entry.task.watering? ? :droplet : :check, label) %></span>
             <span class="flex items-center gap-2">
-              <span class="shrink-0 text-stone-500"><%= date %></span>
+              <span class="shrink-0 text-muted"><%= date %></span>
               <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
                     aria: { label: cancel_label },
                     form: { data: confirm_data(cancel_confirm, button: t(".cancel_confirm_button")) },
-                    class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
+                    class: "rounded-lg px-2 py-1 text-xs text-muted hover:bg-subtle" %>
             </span>
           </li>
         <% end %>
@@ -192,16 +192,16 @@
 </div>
 
 <div class="mt-8 flex flex-wrap gap-3">
-  <%= link_to t(".edit"), edit_plant_path(@plant), class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+  <%= link_to t(".edit"), edit_plant_path(@plant), class: "rounded-xl bg-surface px-3 py-2 text-sm shadow-sm" %>
   <% if @plant.archived? %>
     <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete,
-          class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+          class: "rounded-xl bg-surface px-3 py-2 text-sm shadow-sm" %>
   <% else %>
     <%= button_to t(".archive"), plant_archive_path(@plant),
           form: { data: confirm_data(t(".archive_confirm"), button: t(".archive")) },
-          class: "rounded-xl bg-white px-3 py-2 text-sm shadow-sm" %>
+          class: "rounded-xl bg-surface px-3 py-2 text-sm shadow-sm" %>
   <% end %>
   <%= button_to t(".destroy"), plant_path(@plant), method: :delete,
         form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
-        class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
+        class: "rounded-xl px-3 py-2 text-sm text-alert hover:bg-alert-soft" %>
 </div>

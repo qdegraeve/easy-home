@@ -30,7 +30,7 @@ RSpec.describe "Plant analyses", type: :system do
 
     perform_enqueued_jobs
     refresh
-    expect(page).to have_content("👀 À surveiller")
+    expect(page).to have_content("À surveiller")
     expect(page).to have_content("Citrus limon (Citronnier) · identification sûre")
     expect(page).to have_content("Pailler le pied · dans 3 j")
 
@@ -48,7 +48,7 @@ RSpec.describe "Plant analyses", type: :system do
 
     perform_enqueued_jobs
     refresh
-    expect(page).to have_content("✅ En forme")
+    expect(page).to have_content("En forme")
     expect(page).to have_css("img[alt='Photo analysée du mar 10 nov.']")
     expect(page).to have_css("img[alt='Photo analysée du lun 16 nov.']")
     expect(@fake_plant_analyzer.calls.last[:images].size).to eq(2)
@@ -57,7 +57,7 @@ RSpec.describe "Plant analyses", type: :system do
     find("summary", text: "Analyses précédentes · 1").click
     within("details") { click_on "lun 16 nov." }
     expect(page).to have_content("Analyse de « Citronnier »")
-    expect(page).to have_content("👀 À surveiller")
+    expect(page).to have_content("À surveiller")
   end
 
   it "shows a failed analysis, then restarts it with the same photos and note" do
@@ -88,7 +88,7 @@ RSpec.describe "Plant analyses", type: :system do
 
     perform_enqueued_jobs
     refresh
-    expect(page).to have_content("👀 À surveiller")
+    expect(page).to have_content("À surveiller")
   end
 
   it "accepts the species, the watering interval and an action proposed by the AI" do
@@ -110,18 +110,18 @@ RSpec.describe "Plant analyses", type: :system do
     click_on "Enregistrer l'espèce"
     expect(page).to have_content("Espèce enregistrée : Citrus limon.")
     expect(page).to have_css("p.italic", text: "Citrus limon")
-    expect(page).to have_content("✓ Sur la fiche")
+    expect(page).to have_content("Sur la fiche")
 
     within("section[aria-labelledby='watering']") { expect(page).to have_content("Tous les 7 jours") }
     click_on "Appliquer"
     expect(page).to have_content("Arrosage réglé : tous les 4 jours.")
     within("section[aria-labelledby='watering']") { expect(page).to have_content("Tous les 4 jours") }
-    expect(page).to have_content("✓ En place")
+    expect(page).to have_content("En place")
 
     click_on "Ajouter « Pailler le pied » aux tâches"
     expect(page).to have_content("Tâche ajoutée : Pailler le pied.")
     within("section[aria-labelledby='tasks']") { expect(page).to have_content("Pailler le pied") }
-    expect(page).to have_content("✓ Dans les tâches")
+    expect(page).to have_content("Dans les tâches")
     expect(page).to have_no_button("Ajouter « Pailler le pied » aux tâches")
   end
 

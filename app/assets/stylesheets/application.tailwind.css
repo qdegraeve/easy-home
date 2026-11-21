@@ -1,5 +1,28 @@
 @import "tailwindcss";
 
+/* "Carnet de maison" palette (docs/ux/revue-ux.md, Identité): classes such as bg-paper, text-ink, bg-action.
+   One action color (green); domain colors only for small marks and icons; brick red only for what must not be missed. */
+@theme {
+  --color-paper: #f6f4ef;
+  --color-surface: #ffffff;
+  --color-subtle: #edeae2;
+  --color-line: #e4e0d6;
+  --color-ink: #1d2521;
+  --color-muted: #5f665f;
+  --color-action: #1f5c46;
+  --color-action-strong: #174a38;
+  --color-action-soft: #e3ede7;
+  --color-alert: #a8402a;
+  --color-alert-soft: #f6e4df;
+  --color-warn: #8a6200;
+  --color-warn-soft: #f5ecd3;
+  --color-plants: #3f7d4e;
+  --color-waste: #b98a00;
+  --color-pool: #1f7a99;
+  --color-pets: #b0603a;
+  --color-gear: #55657a;
+}
+
 /* Turbo disables the submit button while its form is sent (no double tap): make it visible. */
 @layer base {
   form[aria-busy="true"] :is(button, input[type="submit"]):disabled {

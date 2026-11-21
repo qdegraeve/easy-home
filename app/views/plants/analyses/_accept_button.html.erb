@@ -1,9 +1,11 @@
 <%# One proposal of an analysis: accepted already, or a button to accept it (owner and member, plant not archived). %>
 <% if accepted %>
-  <span class="shrink-0 rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-800"><%= accepted_label %></span>
+  <span class="inline-flex shrink-0 items-center gap-1 rounded-xl bg-action-soft px-3 py-2 text-xs text-action">
+    <%= icon(:check, size: 14) %><%= accepted_label %>
+  </span>
 <% elsif acceptable %>
   <%= button_to label, url,
         aria: { label: local_assigns[:aria_label] },
-        class: "shrink-0 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm " \
-               "ring-1 ring-stone-200" %>
+        class: "shrink-0 rounded-xl bg-surface px-3 py-2 text-xs font-semibold text-action shadow-sm " \
+               "ring-1 ring-line" %>
 <% end %>

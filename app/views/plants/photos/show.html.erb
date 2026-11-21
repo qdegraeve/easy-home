@@ -13,14 +13,14 @@
     <%= f.label :taken_at, class: "block text-sm font-semibold" %>
     <div class="flex gap-2">
       <%= f.date_field :taken_at, required: true, max: Time.zone.today,
-            class: "rounded-xl border border-stone-300 bg-white px-3 py-2" %>
-      <%= f.submit t(".save_date"), class: "rounded-xl bg-white px-3 py-2 text-sm font-semibold shadow-sm" %>
+            class: "rounded-xl border border-line bg-surface px-3 py-2" %>
+      <%= f.submit t(".save_date"), class: "rounded-xl bg-surface px-3 py-2 text-sm font-semibold shadow-sm" %>
     </div>
   <% end %>
 
   <div class="mt-6">
     <%= button_to t(".destroy"), plant_photo_path(@plant, @photo), method: :delete,
           form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
-          class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
+          class: "rounded-xl px-3 py-2 text-sm text-alert hover:bg-alert-soft" %>
   </div>
 </div>

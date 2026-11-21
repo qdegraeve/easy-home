@@ -9,7 +9,7 @@ RSpec.describe "My house", type: :system do
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
-    click_on "🏡 Ma maison"
+    click_on "Ma maison"
 
     fill_in "Adresse", with: "12 exemples ville"
     click_on "12 Rue des Exemples 97400 Ville-Exemple"
@@ -20,25 +20,25 @@ RSpec.describe "My house", type: :system do
     expect(page).to have_field("Altitude", with: "320")
 
     fill_in "Nom", with: "Terrasse"
-    find("label", text: "⛅ Mi-ombre").click
+    find("label", text: "Mi-ombre").click
     check "Abrité du vent"
     click_on "Ajouter"
 
     expect(page).to have_content("Emplacement « Terrasse » ajouté.")
-    expect(page).to have_content("⛅ Mi-ombre · abrité du vent")
+    expect(page).to have_content("Mi-ombre · abrité du vent")
 
     lemon = create(:plant, household: Household.sole, location: Location.find_by!(name: "Terrasse"), name: "Citronnier")
     refresh
     click_on "Supprimer l'emplacement « Terrasse »"
     within("dialog", text: "Sa plante restera, sans emplacement.") { click_on "Revenir" }
     expect(page).to have_no_css("dialog[open]")
-    expect(page).to have_content("⛅ Mi-ombre · abrité du vent")
+    expect(page).to have_content("Mi-ombre · abrité du vent")
 
     click_on "Supprimer l'emplacement « Terrasse »"
     within("dialog", text: "Supprimer l'emplacement « Terrasse » ?") { click_on "Supprimer" }
 
     expect(page).to have_content("Emplacement « Terrasse » supprimé.")
-    expect(page).to have_no_content("⛅ Mi-ombre · abrité du vent")
+    expect(page).to have_no_content("Mi-ombre · abrité du vent")
     expect(lemon.reload.location).to be_nil
   end
 end

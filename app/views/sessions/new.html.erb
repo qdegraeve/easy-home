@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-sm pt-10">
-  <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700"><%= t("layouts.application.app_name") %></p>
+  <p class="text-xs font-semibold uppercase tracking-wide text-action"><%= t("layouts.application.app_name") %></p>
   <h1 class="mb-6 text-2xl font-bold"><%= page_title t(".title") %></h1>
 
   <%= form_with url: session_path, class: "space-y-4" do |form| %>
@@ -11,7 +11,7 @@
       autocomplete: "username",
       placeholder: t(".email_placeholder"),
       value: params[:email],
-      class: "w-full rounded-xl border border-stone-300 bg-white px-3 py-3"
+      class: "w-full rounded-xl border border-line bg-surface px-3 py-3"
     ) %>
     <%= form.label :password, t(".password_label"), class: "block text-sm font-semibold" %>
     <%= form.password_field(
@@ -20,12 +20,12 @@
       autocomplete: "current-password",
       placeholder: t(".password_placeholder"),
       maxlength: 72,
-      class: "w-full rounded-xl border border-stone-300 bg-white px-3 py-3"
+      class: "w-full rounded-xl border border-line bg-surface px-3 py-3"
     ) %>
-    <%= form.submit t(".submit"), class: "w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white" %>
+    <%= form.submit t(".submit"), class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
   <% end %>
 
   <p class="mt-6 text-center text-sm">
-    <%= link_to t(".forgot_password"), new_password_path, class: "text-stone-500 underline" %>
+    <%= link_to t(".forgot_password"), new_password_path, class: "text-muted underline" %>
   </p>
 </div>
