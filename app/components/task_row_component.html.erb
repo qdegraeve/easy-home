@@ -1,0 +1,27 @@
+<div class="flex items-center gap-3 px-3 py-2">
+  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
+    <%= helpers.icon(mark_icon) %>
+  </span>
+  <div class="min-w-0 flex-1 py-1">
+    <% if href %>
+      <%= link_to title, href, class: "block font-medium" %>
+    <% else %>
+      <p class="font-medium"><%= title %></p>
+    <% end %>
+    <p class="text-sm text-muted"><%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
+    <% if actions? %>
+      <div class="mt-1 flex gap-1"><%= actions %></div>
+    <% end %>
+  </div>
+  <% if done_today %>
+    <span class="shrink-0 text-sm text-action"><%= done_today_label %></span>
+  <% else %>
+    <%= button_to(
+      task_occurrence_completion_path(occurrence),
+      aria: { label: done_label },
+      class: "grid size-11 shrink-0 place-items-center rounded-full bg-action text-white hover:bg-action-strong"
+    ) do %>
+      <%= helpers.icon(:check, size: 22) %>
+    <% end %>
+  <% end %>
+</div>

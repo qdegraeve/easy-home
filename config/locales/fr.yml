@@ -112,8 +112,8 @@ fr:
       archived: "Plantes archivées · %{count}"
   due_label:
     overdue:
-      one: "en retard de %{count} j"
-      other: "en retard de %{count} j"
+      one: "prévu hier"
+      other: "prévu il y a %{count} j"
     today: "aujourd'hui"
     tomorrow: "demain"
     later:
@@ -392,6 +392,8 @@ fr:
       cancel: "Revenir"
       confirm: "Confirmer"
   layouts:
+    flash:
+      close: "Fermer le message"
     application:
       app_name: "Easy Home"
       sign_out: "Se déconnecter"

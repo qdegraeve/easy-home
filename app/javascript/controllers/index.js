@@ -9,3 +9,6 @@ application.register("address-autocomplete", AddressAutocompleteController)
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import ToastController from "./toast_controller"
+application.register("toast", ToastController)

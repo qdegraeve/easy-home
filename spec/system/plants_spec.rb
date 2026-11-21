@@ -80,7 +80,7 @@ RSpec.describe "Plants", type: :system do
     click_on "Basilic"
     click_on "Restaurer"
     expect(page).to have_content("Plante « Basilic » restaurée.")
-    expect(page).to have_content("Prochain arrosage : en retard de 4 j")
+    expect(page).to have_content("Prochain arrosage : prévu il y a 4 j")
     expect(page).to have_button("Arrosée : Basilic")
   end
 end

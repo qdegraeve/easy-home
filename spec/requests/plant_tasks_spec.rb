@@ -162,7 +162,7 @@ RSpec.describe "Plant tasks", type: :request do
 
       expect(response.body).to include("À faire aujourd&#39;hui · 2", "Arrosée : Citronnier")
       expect(response.body).to include("Fait : Engrais (Citronnier)")
-      expect(response.body).to include("en retard de 1 j")
+      expect(response.body).to include("prévu hier")
       expect(response.body).not_to include("Rempoter")
     end
   end
