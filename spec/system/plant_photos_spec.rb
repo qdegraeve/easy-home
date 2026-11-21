@@ -22,7 +22,9 @@ RSpec.describe "Plant photos", type: :system do
     click_on "Ajouter une plante"
     fill_in "Nom", with: "Citronnier"
     fill_in "Arrosage", with: "3"
+    expect(page).to have_button("Prendre ou choisir une photo")
     attach_file "Photo", picture("plant_with_gps.jpg")
+    expect(page).to have_content("plant_with_gps.jpg") # the name of the chosen file, next to the button
     click_on "Ajouter la plante"
     expect(page).to have_content("Plante « Citronnier » ajoutée.")
     # Dated from its EXIF shooting date, not from the upload.

@@ -663,7 +663,9 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
 7. **PR 7 · Onglets natifs** (#7, fait) : la coque passe à trois navigateurs (`HotwireBottomNavigationController`).
 8. **PR 8 · Bridge bouton et menu** (#9, #10, fait ; ADR 0014) : + et ⋮ natifs ; Réglages dans la barre du haut
    de chaque écran (fait en PR 7).
-9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
+9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41, fait en 9a : onglets Soins, Photos, Historique,
+   analyse résumée avec sa page, photo en un geste, photo de couverture) et **ajout rapide** (#36, #39, #40, #42,
+   fait en 9b : photo d'abord, champs repliés, vignettes cliquables, navigation entre photos).
 10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24) : marge proportionnelle, report tracé, catalogue,
     résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
     concrète.
@@ -672,7 +674,7 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.
 
-Ensuite, au fil de l'eau : #14, #39, #40, #42, #45, #47, #48, #49, #53, #54.
+Ensuite, au fil de l'eau : #14, #45, #47, #48, #49, #53, #54.
 
 ## Décisions du propriétaire (21 novembre 2026)
 

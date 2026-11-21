@@ -6,14 +6,19 @@
   <% if adding %>
     <div data-controller="photo-picker" data-photo-picker-send-value="false">
       <%= f.label :photo, class: "block text-sm font-semibold" %>
-      <%= f.file_field :photo, accept: "image/*", class: "sr-only", tabindex: -1,
+      <%# Hidden from screen readers too: the button below is the way to choose. %>
+      <%= f.file_field :photo, accept: "image/*", class: "sr-only", tabindex: -1, aria: { hidden: true },
             data: { photo_picker_target: "input", action: "photo-picker#chosen" } %>
       <div class="mt-1 flex items-center gap-3">
         <%= button_tag type: "button", class: button_class(:secondary), data: { action: "photo-picker#choose" } do %>
           <%= icon(:camera) %><%= t("plants.form.choose_photo") %>
         <% end %>
-        <span class="min-w-0 truncate text-sm text-muted" data-photo-picker-target="name"></span>
+        <span class="min-w-0 truncate text-sm text-muted" aria-live="polite" data-photo-picker-target="name"></span>
       </div>
+      <%# A browser never fills a file field again: after a refused form, the photo has to be chosen again. %>
+      <% if form.photo.present? %>
+        <p class="mt-1 text-sm font-semibold text-warn"><%= t("plants.form.photo_again") %></p>
+      <% end %>
       <p class="mt-1 text-xs text-muted"><%= t("plants.form.photo_help") %></p>
     </div>
   <% end %>

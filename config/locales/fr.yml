@@ -239,6 +239,7 @@ fr:
       photo_help: >-
         Facultative : avec elle, l'analyse propose l'espèce et l'arrosage. JPEG, PNG ou WebP, 15 Mo maximum.
       choose_photo: "Prendre ou choisir une photo"
+      photo_again: "Choisissez la photo à nouveau : elle n'a pas pu être gardée."
       watering_help: "Une valeur courante pour commencer : l'analyse de la photo proposera la bonne."
       more: "Plus de détails (espèce, dernier arrosage)"
     new:

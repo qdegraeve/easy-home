@@ -61,6 +61,28 @@ RSpec.describe "Plants", type: :request do
     end
   end
 
+  describe "POST /plants refused" do
+    it "opens the folded details again when one of their fields is refused, and only then" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", species: "x" * 101 } }
+      expect(response.parsed_body.at_css("details[open] input[name='plant[species]']")).to be_present
+
+      post plants_path, params: { plant: { name: "", watering_interval_days: "2" } }
+      expect(response.parsed_body.at_css("details")["open"]).to be_nil
+    end
+
+    it "asks to choose the photo again, which a browser never keeps" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "", watering_interval_days: "2",
+                                           photo: fixture_file_upload("plant.png", "image/png") } }
+
+      expect(response.body).to include("Choisissez la photo à nouveau")
+      expect(household.plants).to be_empty
+    end
+  end
+
   describe "POST /plants" do
     it "adds a plant to the current household" do
       sign_in(user)

@@ -76,10 +76,10 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Premier foyer à la première connexion, second foyer, changement de foyer | `spec/system/households_spec.rb` | Fait |
 | Mot de passe oublié jusqu'à la reconnexion | `spec/system/password_reset_spec.rb` | À faire |
 | Ma maison : adresse choisie dans les suggestions, altitude affichée, ajout et suppression d'un emplacement | `spec/system/house_spec.rb` | Fait |
-| Ajout d'une plante (sans photo), arrosage unique du jour, annulation, intervalle, archivage et restauration | `spec/system/plants_spec.rb` | Fait |
+| Ajout rapide d'une plante (photo d'abord, arrosage prérempli à 7 jours, espèce et dernier arrosage repliés), arrosage unique du jour, annulation, intervalle, archivage et restauration | `spec/system/plants_spec.rb` | Fait |
 | Tâches d'une plante : ajout (unique, répétée), fait depuis l'accueil et la fiche, annulation, modification, suppression | `spec/system/plant_tasks_spec.rb` | Fait |
-| Suivi photo : photo à l'ajout d'une plante (datée par l'EXIF), ajout depuis la fiche, fichier refusé, affichage, date corrigée, suppression | `spec/system/plant_photos_spec.rb` | Fait |
-| Analyse : automatique sur la première photo, puis sélection de photos et remarque, résultat affiché, historique | `spec/system/plant_analyses_spec.rb` | Fait |
+| Suivi photo : photo à l'ajout d'une plante (sélecteur en français, datée par l'EXIF), ajout en un geste depuis l'onglet Photos, fichier refusé, affichage, navigation entre photos, date corrigée, photo de couverture (en tête de fiche), suppression | `spec/system/plant_photos_spec.rb` | Fait |
+| Analyse : automatique sur la première photo, résumée sur la fiche, puis sélection de photos (la vignette entière se coche) et remarque, résultat affiché, historique | `spec/system/plant_analyses_spec.rb` | Fait |
 | Analyse en échec : message visible, relance avec les mêmes photos et la même remarque | `spec/system/plant_analyses_spec.rb` | Fait |
 | Discussion sur une analyse : question avec photo jointe, réponse affichée, question suivante avec le fil | `spec/system/plant_analyses_spec.rb` | Fait |
 | Propositions d'une analyse acceptées : espèce sur la fiche, intervalle d'arrosage, action devenue tâche | `spec/system/plant_analyses_spec.rb` | Fait |
@@ -87,7 +87,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Aujourd'hui : tout l'arrosage du jour en un geste, annulé depuis le toast, puis détail par emplacement avec une plante décochée ; « Bientôt » replié | `spec/system/today_spec.rb` | Fait |
 | Sections : Aujourd'hui, Maison, Plantes, une plante, puis Journal avec une validation annulée | `spec/system/sections_spec.rb` | Fait |
 | Emplacement modifié : analyse signalée à revoir (Maison, Plantes, fiche), relance avec la remarque pré-remplie | `spec/system/location_change_spec.rb` | Fait |
-| Dans l'app : actions de la plante dans le menu natif, à jour après un archivage, suppression confirmée | `spec/system/native_app_spec.rb` | Fait |
+| Dans l'app : actions de la plante dans le menu natif, à jour après un archivage, suppression confirmée ; boutons natifs « Tâche » et « Analyse » de l'onglet Soins ; couverture et suppression d'une photo dans le menu natif | `spec/system/native_app_spec.rb` | Fait |
 | Réglages des notifications : résumé coupé, heure, foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
