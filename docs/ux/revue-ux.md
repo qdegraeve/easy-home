@@ -317,9 +317,11 @@ le nom « easy » promet d'éviter.
    salon 1 ». Une ligne, un bouton « Fait » qui valide les quatre. Appui sur la ligne : feuille avec les plantes
    cochées, rangées par emplacement ; on décoche celles qu'on n'a pas faites. Une échéance seule s'affiche comme
    aujourd'hui. Les tâches manuelles ne se regroupent pas.
-2. **Validation groupée** : un service `Tasks::CompleteMany` qui appelle `Tasks::Complete` pour chaque échéance dans
-   une transaction, et renvoie la liste pour le toast « 3 arrosages notés · Annuler » (l'annulation appelle
-   `Tasks::CancelCompletion` pour chacune).
+2. **Validation groupée** (fait en PR 5) : `Tasks::CompleteMany` appelle `Tasks::Complete` pour chaque échéance, **une
+   par une** et non dans une transaction globale : une échéance déjà faite (double appui, autre membre du foyer) est
+   ignorée sans bloquer les autres, et chaque tâche reste verrouillée le temps de sa validation. Le toast « 3 arrosages
+   notés · Annuler » appelle `Tasks::CancelMany` (même principe). Le titre « À faire aujourd'hui · N » compte les
+   tâches, comme le résumé du matin, pas les lignes.
 3. **Importance** : chaque tâche est **souple** (arrosage, entretien, engrais) ou **à ne pas rater** (poubelle,
    médicament, vermifuge). Seules les « à ne pas rater » apparaissent en rouge, en tête, et déclenchent une relance.
    Valeur par défaut fixée par le modèle de tâche du catalogue ; modifiable par tâche.
@@ -379,8 +381,9 @@ faite.
   (« 3 plantes ; leurs analyses seront signalées à revoir »). Un simple changement de nom ne déclenche rien.
 - **Vue d'ensemble** : dans Maison, un badge « 3 analyses à revoir » mène à la liste des plantes concernées, pour ne
   pas avoir à ouvrir chaque fiche.
-- **Questions pour le propriétaire** : relancer plante par plante, ou proposer « relancer les 3 » d'un coup ? Une
-  plante déplacée temporairement (rentrée pour l'hiver) doit-elle aussi être signalée ?
+- **Décidé (21 novembre 2026)** : relance **plante par plante** (pas de « relancer les 3 » d'un coup) ; **tout**
+  changement de lieu est signalé, y compris temporaire. Le signal disparaît dès que la plante revient dans le lieu de
+  sa dernière analyse.
 - **Impacts sur les données** : colonne `plant_analyses.context` (jsonb : emplacement, exposition, abri) ; la
   comparaison avec le lieu actuel se fait à l'affichage, sans état « à revoir » stocké.
 
@@ -536,11 +539,12 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   endroit pour le jour. Effort M, priorité P1.
 - **12. Query object** : `TodayQuery` / presenter : regroupement par `template_key`, détail rangé par emplacement.
   Pourquoi : Une ligne par geste. Effort M, priorité P1.
-- **13. Service** : `Tasks::CompleteMany` (transaction, résultat pour le toast). Pourquoi : Valider un groupe d'un
+- **13. Service** : `Tasks::CompleteMany` (une par une, résultat pour le toast). Pourquoi : Valider un groupe d'un
   geste. Effort M, priorité P1.
 - **14. Vue + route** : Feuille « détail d'un groupe » avec cases à décocher. Pourquoi : Exception sans perdre la
   rapidité. Effort M, priorité P2.
-- **15. Completions** : Réponse Turbo Stream : retire la ligne, toast en bas. Pourquoi : Pas de rechargement ni de
+- **15. Completions** : Redirection vers l'accueil rafraîchi par morph (défilement et `<details>` ouverts conservés),
+  toast en bas. Pourquoi : Pas de rechargement ni de
   décalage. Effort M, priorité P1.
 - **16. Toast + Stimulus** : « Annuler » 5 s, appelle `CancelCompletion`. Pourquoi : Erreur de doigt réparable sur
   place. Effort M, priorité P1.

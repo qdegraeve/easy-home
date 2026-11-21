@@ -8,14 +8,27 @@ export default class extends Controller {
   static targets = ["message"]
   static values = { duration: Number, assertive: Boolean }
 
+  // The countdown pauses while the toast is pointed at or has the focus, so that "Annuler" stays reachable (keyboard,
+  // screen reader, slow finger), then starts again from the beginning.
   connect() {
-    if (this.durationValue > 0) this.timer = setTimeout(() => this.close(), this.durationValue)
+    this.start()
+    this.pause = () => clearTimeout(this.timer)
+    this.resume = () => this.start()
+    this.element.addEventListener("pointerenter", this.pause)
+    this.element.addEventListener("focusin", this.pause)
+    this.element.addEventListener("pointerleave", this.resume)
+    this.element.addEventListener("focusout", this.resume)
     this.announce()
   }
 
   disconnect() {
     clearTimeout(this.timer)
     clearTimeout(this.announceTimer)
+  }
+
+  start() {
+    clearTimeout(this.timer)
+    if (this.durationValue > 0) this.timer = setTimeout(() => this.close(), this.durationValue)
   }
 
   // Closed by hand or by time: the live region forgets the message too.

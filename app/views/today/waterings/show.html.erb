@@ -5,7 +5,8 @@
 
   <%= form_with url: task_occurrences_batch_completion_path, method: :post, class: "mt-4 space-y-4" do %>
     <% @by_location.each do |location, occurrences| %>
-      <%= render ListGroupComponent.new(title: location&.name || t(".no_location"), heading: :h2) do |group| %>
+      <% id = "location-#{location&.id || 'none'}" %>
+      <%= render ListGroupComponent.new(title: location&.name || t(".no_location"), id:) do |group| %>
         <% occurrences.each do |occurrence| %>
           <% plant = occurrence.task.subject %>
           <% group.with_row do %>

@@ -11,12 +11,21 @@ RSpec.describe "Today", type: :system do
     user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
     household = user.households.sole
     terrace = create(:location, household:, name: "Terrasse")
-    watered = Time.zone.parse("2026-11-12 08:00")
-    create(:plant, :watered, household:, name: "Basilic", location: terrace, interval_days: 3, last_watered_at: watered)
-    create(:plant, :watered, household:, name: "Menthe", location: terrace, interval_days: 3, last_watered_at: watered)
-    create(:plant, :watered, household:, name: "Aloe", interval_days: 3, last_watered_at: watered)
-    create(:plant, :watered, household:, name: "Cactus", interval_days: 3,
-                             last_watered_at: Time.zone.parse("2026-11-15 08:00"))
+    plant = ->(name, location: nil, watered: "2026-11-12 08:00") do
+      create(
+        :plant,
+        :watered,
+        household:,
+        name:,
+        location:,
+        interval_days: 3,
+        last_watered_at: Time.zone.parse(watered)
+      )
+    end
+    plant.call("Basilic", location: terrace)
+    plant.call("Menthe", location: terrace)
+    plant.call("Aloe")
+    plant.call("Cactus", watered: "2026-11-15 08:00")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
@@ -34,6 +43,8 @@ RSpec.describe "Today", type: :system do
     click_on "Tout arroser : 3 plantes"
     expect(page).to have_content("3 arrosages notés.")
     expect(page).to have_content("Rien à faire aujourd'hui.")
+    # The page is refreshed in place: "Bientôt", opened by the user, stays open.
+    expect(page).to have_css("details[open]", text: "Arroser Cactus")
 
     # A wrong tap is repaired on the spot.
     within("[data-controller=toast]") { click_on "Annuler" }
@@ -48,6 +59,12 @@ RSpec.describe "Today", type: :system do
 
     expect(page).to have_content("2 arrosages notés.")
     expect(page).to have_content("À faire aujourd'hui · 1")
+
+    # A single completion can be undone from its toast too.
+    click_on "Arrosée : Menthe"
+    expect(page).to have_content("Rien à faire aujourd'hui.")
+    within("[data-controller=toast]") { click_on "Annuler" }
+    expect(page).to have_content("Annulé, prochaine échéance recalculée.")
     expect(page).to have_button("Arrosée : Menthe")
   end
 end

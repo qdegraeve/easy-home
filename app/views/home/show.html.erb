@@ -38,7 +38,16 @@
             <% @upcoming.each do |occurrence| %>
               <% task = occurrence.task %>
               <li class="flex min-h-12 items-center justify-between gap-3 px-3 py-2 text-sm">
-                <span><%= task.watering? ? t(".water_plant", name: task.subject.name) : task.title %></span>
+                <%
+                  label = if task.watering?
+                    t(".water_plant", name: task.subject.name)
+                  elsif task.subject
+                    t(".task_of", title: task.title, name: task.subject.name)
+                  else
+                    task.title
+                  end
+                %>
+                <span><%= label %></span>
                 <span class="shrink-0 text-muted"><%= render DueLabelComponent.new(due_at: occurrence.due_at) %></span>
               </li>
             <% end %>

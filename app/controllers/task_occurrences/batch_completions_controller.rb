@@ -3,7 +3,7 @@ module TaskOccurrences
   class BatchCompletionsController < ApplicationController
     def create
       occurrences = find_occurrences
-      return redirect_to(root_path, notice: t(".none_selected"), status: :see_other) if occurrences.empty?
+      return redirect_to(today_watering_path, notice: t(".none_selected"), status: :see_other) if occurrences.empty?
 
       result = Tasks::CompleteMany.new.call(occurrences:, user: Current.user)
 

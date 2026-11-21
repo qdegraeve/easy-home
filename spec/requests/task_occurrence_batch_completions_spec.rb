@@ -11,9 +11,19 @@ RSpec.describe "Batch completions", type: :request do
   before { post session_path, params: { email: user.email, password: "password" } }
 
   def due_watering(name, household: self.household)
-    plant = create(:plant, :watered, household:, name:, interval_days: 3,
-                                     last_watered_at: Time.zone.parse("2026-11-12 08:00"))
+    plant = create(
+      :plant,
+      :watered,
+      household:,
+      name:,
+      interval_days: 3,
+      last_watered_at: Time.zone.parse("2026-11-12 08:00")
+    )
     plant.watering_task.pending_occurrence
+  end
+
+  def done_watering(name, household: self.household)
+    Tasks::Complete.new.call(occurrence: due_watering(name, household:), user: create(:user)).value!
   end
 
   it "waters several plants at once, then offers to undo it" do
@@ -38,7 +48,17 @@ RSpec.describe "Batch completions", type: :request do
     post task_occurrences_batch_completion_path, params: { occurrence_ids: [ other.id ] }
 
     expect(other.reload).to be_pending
+    expect(response).to redirect_to(today_watering_path)
     expect(flash[:notice]).to eq("Aucun arrosage coché.")
+  end
+
+  it "does not undo the completions of another household" do
+    other = done_watering("Voisin", household: create(:household))
+
+    delete task_occurrences_batch_completion_path, params: { occurrence_ids: [ other.id ] }
+
+    expect(other.reload).to be_done
+    expect(flash[:notice]).to eq("Rien à annuler.")
   end
 
   it "does not let a guest do the tasks" do
@@ -47,7 +67,10 @@ RSpec.describe "Batch completions", type: :request do
     lemon = due_watering("Citronnier")
 
     post task_occurrences_batch_completion_path, params: { occurrence_ids: [ lemon.id ] }
-
     expect(lemon.reload).to be_pending
+
+    done = done_watering("Basilic")
+    delete task_occurrences_batch_completion_path, params: { occurrence_ids: [ done.id ] }
+    expect(done.reload).to be_done
   end
 end

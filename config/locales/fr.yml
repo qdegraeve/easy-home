@@ -107,6 +107,7 @@ fr:
       nothing_due: "Rien à faire aujourd'hui."
       upcoming: "Bientôt · %{count}"
       water_plant: "Arroser %{name}"
+      task_of: "%{title} (%{name})"
       watering: "Arrosage"
       all: "Toutes les plantes · %{count}"
       no_location: "Sans emplacement"
