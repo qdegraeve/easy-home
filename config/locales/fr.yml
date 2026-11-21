@@ -223,6 +223,7 @@ fr:
       empty: "Aucune plante pour l'instant."
       no_location: "Sans emplacement"
       add: "Ajouter une plante"
+      add_label: "Plante"
       archived: "Plantes archivées · %{count}"
       to_review: "Analyse à revoir : le lieu a changé"
     water: "Arrosée"
@@ -262,7 +263,7 @@ fr:
       tasks: "Autres tâches"
       photos: "Suivi photo"
       analysis: "Analyse"
-      face_alt: "Dernière photo de %{name}"
+      face_alt: "Photo de %{name}"
       analyses: "Analyses"
       place_changed: "Analyse à revoir : le lieu a changé"
       place_changed_detail: >-
@@ -271,13 +272,17 @@ fr:
       reanalyse_note: "Lieu changé depuis la dernière analyse : avant %{before}, maintenant %{after}."
       no_analysis: "Pas encore d'analyse : ajoutez une photo, puis lancez une analyse."
       new_analysis: "Nouvelle analyse"
+      new_analysis_label: "Analyse"
       older_analyses: "Analyses précédentes · %{count}"
       no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
       photo_alt: "Photo du %{date}"
       new_photo: "Nouvelle photo"
-      add_photo: "Ajouter la photo"
+      add_photo: "Ajouter une photo"
+      add_photo_label: "Photo"
+      cover: "couverture"
       no_tasks: "Aucune autre tâche : engrais, taille, rempotage…"
-      add_task: "+ Ajouter une tâche"
+      add_task: "Ajouter une tâche"
+      add_task_label: "Tâche"
       once: "Une fois"
       edit_task: "Modifier"
       edit_task_label: "Modifier « %{title} »"
@@ -391,6 +396,9 @@ fr:
         limit:
           one: "%{count} question au maximum par analyse : lancez une nouvelle analyse pour continuer."
           other: "%{count} questions au maximum par analyse : lancez une nouvelle analyse pour continuer."
+    covers:
+      create:
+        success: "Photo de couverture choisie."
     photos:
       create:
         success: "Photo ajoutée."
@@ -400,6 +408,8 @@ fr:
         alt: "%{name}"
         destroy: "Supprimer la photo"
         destroy_confirm: "Supprimer cette photo ?"
+        cover: "Photo de couverture"
+        make_cover: "Utiliser comme photo de couverture"
         save_date: "Enregistrer la date"
       update:
         success: "Date de la photo enregistrée."

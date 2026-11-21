@@ -13,6 +13,16 @@ export default class extends BridgeComponent {
     super.connect()
     const title = this.bridgeElement.bridgeAttribute("title")
     const icon = this.bridgeElement.bridgeAttribute("icon")
-    this.send("connect", { title, icon }, () => this.element.click())
+    const label = this.bridgeElement.bridgeAttribute("label") // the word on the button: "Tâche"
+    // order: the main button is the lowest (1 by default); key: the same button when it connects again (morph).
+    const order = Number(this.bridgeElement.bridgeAttribute("order") || 1)
+    this.key = title
+    this.send("connect", { title, label, icon, order, key: title }, () => this.element.click())
+  }
+
+  // The element leaves the page (another tab, a refresh that no longer has it): the app drops its button.
+  disconnect() {
+    this.send("disconnect", { key: this.key })
+    super.disconnect()
   }
 }

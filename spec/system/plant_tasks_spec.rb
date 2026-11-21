@@ -19,7 +19,7 @@ RSpec.describe "Plant tasks", type: :system do
     expect(page).to have_content("Aucune autre tâche")
 
     # Repeating task due today: it shows up in "À faire aujourd'hui".
-    click_on "+ Ajouter une tâche"
+    click_on "Ajouter une tâche"
     fill_in "Tâche", with: "Engrais"
     expect(page).to have_no_field("Répétition")
     choose "Tous les N jours après la dernière fois"
@@ -30,7 +30,7 @@ RSpec.describe "Plant tasks", type: :system do
     expect(page).to have_content("Tous les 14 jours · aujourd'hui")
 
     # One-off task in a few days, with an input error fixed.
-    click_on "+ Ajouter une tâche"
+    click_on "Ajouter une tâche"
     fill_in "Tâche", with: "   "
     expect(page).to have_no_field("Répétition")
     fill_in "Date", with: Date.new(2026, 11, 20)

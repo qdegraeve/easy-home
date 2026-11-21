@@ -3,6 +3,8 @@ class Plant < ApplicationRecord
 
   belongs_to :household
   belongs_to :location, optional: true
+  # The face of the plant, chosen among its photos (otherwise the latest one: #face).
+  belongs_to :cover_photo, class_name: "Photo", optional: true
   has_many :tasks, as: :subject, dependent: :destroy
   has_many :photos, -> { order(taken_at: :desc, id: :desc) }, dependent: :destroy, inverse_of: :plant
   has_many :analyses, class_name: "PlantAnalysis", dependent: :destroy
@@ -16,12 +18,17 @@ class Plant < ApplicationRecord
   validates :name, presence: true, length: { maximum: 100 }
   validates :species, length: { maximum: 100 }
   validate :location_must_belong_to_household
+  validate :cover_photo_must_be_one_of_its_photos
 
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
 
   def archived?
     archived_at.present?
+  end
+
+  def face
+    cover_photo || photos.first
   end
 
   def next_watering_at
@@ -45,6 +52,12 @@ class Plant < ApplicationRecord
   end
 
   private
+
+  def cover_photo_must_be_one_of_its_photos
+    return if cover_photo.nil? || cover_photo.plant_id == id
+
+    errors.add(:cover_photo, :invalid)
+  end
 
   def location_must_belong_to_household
     return if location.nil? || location.household_id == household_id

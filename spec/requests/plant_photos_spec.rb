@@ -150,4 +150,35 @@ RSpec.describe "Plant photos", type: :request do
       end
     end
   end
+
+  describe "cover photo" do
+    it "makes a photo the face of the plant, until it is deleted" do
+      older, newer = add_photo, add_photo
+      sign_in(user)
+
+      post plant_photo_cover_path(plant, older)
+      expect(response).to redirect_to(plant_path(plant, tab: "photos"))
+      expect(plant.reload.face).to eq(older)
+
+      get plant_photo_path(plant, older)
+      expect(response.body).to include("Photo de couverture")
+      expect(response.body).not_to include("Utiliser comme photo de couverture")
+
+      delete plant_photo_path(plant, older)
+      expect(plant.reload.cover_photo).to be_nil
+      expect(plant.face).to eq(newer)
+    end
+
+    it "does not take the photo of another plant, nor let a guest choose" do
+      other_photo = Photos::Add.new.call(plant: create(:plant, household:), file: picture).value!
+      sign_in(user)
+      post plant_photo_cover_path(plant, other_photo)
+      expect(response).to have_http_status(:not_found)
+
+      photo = add_photo
+      sign_in(create(:household_member, household:, role: :guest).user)
+      post plant_photo_cover_path(plant, photo)
+      expect(plant.reload.cover_photo).to be_nil
+    end
+  end
 end

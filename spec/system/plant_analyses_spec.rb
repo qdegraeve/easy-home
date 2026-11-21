@@ -39,8 +39,7 @@ RSpec.describe "Plant analyses", type: :system do
     click_on "← Citronnier"
 
     open_plant_tab("Photos")
-    attach_file "Nouvelle photo", picture("plant.png")
-    click_on "Ajouter la photo"
+    attach_file "Nouvelle photo", picture("plant.png") # sent once chosen
     expect(page).to have_content("Photo ajoutée.")
 
     @fake_plant_analyzer.answer = FakePlantAnalyzer::ANSWER.merge("health" => "ok", "actions" => [])

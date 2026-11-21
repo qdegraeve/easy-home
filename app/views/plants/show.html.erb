@@ -8,7 +8,7 @@
 
 <%# Who the plant is: its latest photo (its face), name, species and place. %>
 <div class="mt-2 flex items-center gap-4">
-  <% if (face = @photos.first) %>
+  <% if (face = @plant.cover_photo || @photos.first) %>
     <%= link_to plant_photo_path(@plant, face), class: "shrink-0" do %>
       <%= image_tag face.image.variant(:thumb), alt: t(".face_alt", name: @plant.name),
             class: "size-16 rounded-2xl object-cover" %>
@@ -36,7 +36,9 @@
   </p>
 <% end %>
 
-<div class="mt-6 space-y-6 lg:max-w-2xl">
+<%# On a computer, the plant page uses the width: the parts of a tab side by side (lists elsewhere keep a reading
+    width). %>
+<div class="mt-6 space-y-6">
   <%# The next action first: watering. %>
   <section class="space-y-2 rounded-2xl bg-surface p-4" aria-labelledby="watering">
     <h2 id="watering" class="font-semibold">
@@ -62,7 +64,7 @@
 
   <%= render "plants/tabs", plant: @plant, current: @tab %>
 
-  <div class="space-y-6">
+  <div class="space-y-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
     <%= render "plants/tab_#{@tab}" %>
   </div>
 </div>

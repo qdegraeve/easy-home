@@ -95,7 +95,7 @@ class MainActivity : HotwireActivity() {
     // destination is then the current one of the current tab.
     private fun updateMainAction() {
         navigatorHosts.post {
-            ButtonComponent.showFor(delegate.currentNavigator?.currentDestination, findViewById(R.id.main_action))
+            ButtonComponent.showFor(delegate.currentNavigator?.currentDestination, this)
         }
     }
 

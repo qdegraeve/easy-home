@@ -29,13 +29,11 @@ RSpec.describe "Plant photos", type: :system do
     open_plant_tab("Photos")
     expect(page).to have_css("img[alt='Photo du mar 10 nov.']")
 
-    attach_file "Nouvelle photo", picture("not_an_image.jpg")
-    click_on "Ajouter la photo"
+    attach_file "Nouvelle photo", picture("not_an_image.jpg") # sent once chosen
     expect(page).to have_content("Photo n'est pas une image JPEG, PNG ou WebP lisible")
 
     travel 2.days
-    attach_file "Nouvelle photo", picture("plant.png")
-    click_on "Ajouter la photo"
+    attach_file "Nouvelle photo", picture("plant.png") # sent once chosen
     expect(page).to have_content("Photo ajoutée.")
     expect(page).to have_css("img[alt='Photo du mer 18 nov.']")
 
@@ -45,6 +43,13 @@ RSpec.describe "Plant photos", type: :system do
     click_on "Enregistrer la date"
     expect(page).to have_content("Date de la photo enregistrée.")
     expect(page).to have_content("Photo du 8 novembre 2026")
+    # The face of the plant: chosen among its photos.
+    click_on "Utiliser comme photo de couverture"
+    expect(page).to have_content("Photo de couverture choisie.")
+    expect(page).to have_css("img[alt='Photo de Citronnier']")
+    find("img[alt='Photo du dim 8 nov.']").click
+    expect(page).to have_content("Photo de couverture")
+    expect(page).to have_no_button("Utiliser comme photo de couverture")
     click_on "Supprimer la photo"
     expect(page).to have_css("dialog[open] button[data-tone=danger]", text: "Supprimer la photo")
     within("dialog") { click_on "Supprimer la photo" }

@@ -86,4 +86,16 @@ RSpec.describe Plant, type: :model do
       expect(plant.reload.place_change_since_analysis.first).to eq({ "exposure" => "shade", "sheltered" => false })
     end
   end
+
+  describe "cover photo" do
+    it "must be one of the plant's photos" do
+      plant = create(:plant)
+      other = create(:photo)
+
+      plant.cover_photo = other
+
+      expect(plant).not_to be_valid
+      expect(plant.errors[:cover_photo]).to be_present
+    end
+  end
 end

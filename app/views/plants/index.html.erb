@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-2xl">
+<div class="max-w-2xl">
   <%= back_link_to t(".back"), house_path %>
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
   <p class="text-sm text-muted"><%= t(".count", count: @plants.size) %></p>
@@ -36,7 +36,8 @@
   <% if policy(Plant.new(household: @household)).create? %>
     <%# In the Android app, a "+" button of the native top bar (bridge--button). %>
     <%= link_to t(".add"), new_plant_path, class: "mt-6 #{button_class(:primary, block: true)}",
-          data: { controller: "bridge--button", bridge_title: t(".add"), bridge_icon: "plus" } %>
+          data: { controller: "bridge--button", bridge_title: t(".add"), bridge_label: t(".add_label"),
+                  bridge_icon: "plus" } %>
   <% end %>
 
   <% if @archived_plants.any? %>
