@@ -20,7 +20,8 @@
   </head>
 
   <body class="bg-stone-50 text-stone-800 antialiased">
-    <% if authenticated? %>
+    <%# In the Android app, the native top bar replaces this header (account links: bottom of the home page). %>
+    <% if authenticated? && !hotwire_native_app? %>
       <header class="sticky top-0 z-10 border-b border-stone-200 bg-stone-50/95 backdrop-blur">
         <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3 lg:max-w-5xl">
           <%= link_to t(".app_name"), root_path, class: "font-semibold text-emerald-700" %>

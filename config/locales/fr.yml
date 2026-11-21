@@ -384,6 +384,10 @@ fr:
       partial_shade: "⛅ Mi-ombre"
       shade: "☁️ Ombre"
   shared:
+    account_nav:
+      label: "Compte"
+      notifications: "Notifications"
+      households: "Mes foyers"
     confirm_dialog:
       cancel: "Revenir"
       confirm: "Confirmer"

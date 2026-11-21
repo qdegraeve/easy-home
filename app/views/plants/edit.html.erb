@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-md">
-  <%= link_to t("plants.back"), @plant, class: "text-sm text-stone-500 underline" %>
+  <%= back_link_to t("plants.back"), @plant %>
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", name: @plant.name) %></h1>
 
   <div class="mt-6">

@@ -18,6 +18,14 @@
       }
     },
     {
+      "patterns": ["/households($|\\?)"],
+      "properties": {
+        "context": "modal",
+        "uri": "hotwire://fragment/web",
+        "pull_to_refresh_enabled": false
+      }
+    },
+    {
       "patterns": ["^/($|\\?)", "/session/new($|\\?)", "/passwords/new($|\\?)"],
       "properties": {
         "context": "default",

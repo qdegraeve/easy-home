@@ -3,4 +3,6 @@
     <!-- Tailwind emerald-700 and stone-50, as in the web app. -->
     <color name="brand">#047857</color>
     <color name="background">#FAFAF9</color>
+    <!-- Text and icons of the native top bar (stone-800). -->
+    <color name="ink">#292524</color>
 </resources>

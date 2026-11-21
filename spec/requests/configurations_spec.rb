@@ -22,6 +22,26 @@ RSpec.describe "Configurations", type: :request do
     expect(properties).to include("context" => "default", "presentation" => "replace_root")
   end
 
+  # Effective properties of a path, as the app computes them: every matching rule, the last one wins.
+  def properties_for(path)
+    response.parsed_body["rules"]
+      .select { |rule| rule["patterns"].any? { |pattern| Regexp.new(pattern).match?(path) } }
+      .reduce({}) { |properties, rule| properties.merge(rule["properties"]) }
+  end
+
+  it "opens the forms and the household choice as modals, and the home page in place of the whole stack" do
+    get android_v1_configuration_path
+
+    expect(properties_for("/plants/12")).to include("context" => "default")
+    expect(properties_for("/plants/12/edit")).to include("context" => "modal")
+    expect(properties_for("/households")).to include("context" => "modal")
+    expect(properties_for("/households/new")).to include("context" => "modal")
+    expect(properties_for("/households/3/edit")).to include("context" => "modal")
+    expect(properties_for("/")).to include("context" => "default", "presentation" => "replace_root")
+    expect(properties_for("/?notice=1")).to include("presentation" => "replace_root")
+    expect(properties_for("/session/new")).to include("context" => "default", "presentation" => "replace_root")
+  end
+
   it "matches the copy bundled in the Android app, used when the server cannot be reached" do
     bundled = Rails.root.join("android/app/src/main/assets/json/path-configuration.json")
 

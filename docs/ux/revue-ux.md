@@ -229,7 +229,7 @@ Voir la section suivante pour l'architecture complète. En bref :
 4. **Actions dans la barre native** par bridge components : bouton « Ajouter » (+), menu ⋮ (Modifier, Archiver,
    Supprimer).
 5. **Formulaires en modal qui se referment** après envoi, avec rafraîchissement de l'écran précédent
-   (`refresh_or_redirect_to` / `recede_or_redirect_to` de turbo-rails).
+   (déjà le comportement de Hotwire Native après une redirection vers l'écran d'en dessous).
 
 ## Architecture de l'information et navigation cible
 
@@ -292,11 +292,9 @@ Réglages (depuis Aujourd'hui)     ← compte, notifications, foyers et membres,
 - `^/($|\?)`, `/maison($|\?)`, `/journal($|\?)` → `default`, `replace_root` dans **leur** onglet : Racines d'onglet ; un
   lien vers une racine bascule d'onglet au lieu d'empiler.
 - `/session/new`, `/passwords/new` → `default`, `replace_root` : Inchangé (piège documenté).
-- `/recede_historical_location`… → routes fournies : Routes de turbo-rails : fermer la modal et revenir.
 
-Après un formulaire en modal : `recede_or_redirect_to` (ferme et revient) pour une modification,
-`refresh_or_redirect_to` (ferme et rafraîchit l'écran d'en dessous) pour un ajout. Plus d'écran de résultat empilé
-par-dessus une modal.
+Après un formulaire en modal : une redirection Rails ordinaire vers l'écran d'en dessous ferme la modal et recharge
+cet écran (comportement de Hotwire Native Android, vérifié dans son code ; voir `docs/android-coque.md`, 4.2).
 
 Transitions : push latéral pour descendre dans l'arborescence, feuille montante pour les formulaires, aucun
 `replace_root` hors racines d'onglet et authentification. C'est ce qui corrigera l'impression de « mauvaises
@@ -522,8 +520,9 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   qui empile. Effort S, priorité P1.
 - **5. `android_v1.json` + copie Android** : Règles modal / push / racines d'onglet, `/households` en modal. Pourquoi :
   Transitions et pile cohérentes. Effort S, priorité P1.
-- **6. Contrôleurs de formulaires** : `refresh_or_redirect_to` / `recede_or_redirect_to` après envoi. Pourquoi : Fermer
-  la modal au lieu d'empiler. Effort M, priorité P1.
+- **6. Contrôleurs de formulaires** : ~~`refresh_or_redirect_to` / `recede_or_redirect_to` après envoi~~. Vérifié dans
+  le code de Hotwire Native Android 1.4.1 : une redirection vers l'écran d'en dessous ferme déjà la modal et recharge
+  cet écran (`docs/android-coque.md`, 4.2). Rien à changer côté contrôleurs.
 - **7. `MainActivity` + layout** : Barre d'onglets native : Aujourd'hui, Maison, Journal. Pourquoi : Navigation
   principale absente. Effort M, priorité P1.
 - **8. Routes + contrôleurs** : Routes racines `/` (Aujourd'hui), `/maison`, `/journal`. Pourquoi : Une racine par

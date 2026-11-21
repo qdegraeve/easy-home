@@ -189,6 +189,30 @@ Ce que montrent les journaux (`adb logcat`) quand tu touches « + Ajouter une pl
 À la soumission du formulaire, Rails répond par une redirection vers la fiche de la plante. Cette URL n'est pas une
 modal : la coque **ferme la modal** et affiche la fiche dans la pile principale.
 
+Plus précisément (code de `NavigatorRule` et `Navigator`, version 1.4.1), la coque ferme la modal puis rejoue la
+redirection sur l'écran d'en dessous :
+
+- si la redirection mène **à l'écran d'en dessous** (modifier une plante depuis sa fiche, ajouter une tâche), cet
+  écran est **remplacé** par une version fraîche : la modal se ferme et la fiche est à jour, sans écran en plus ;
+- sinon (ajouter une plante depuis l'accueil), la nouvelle page est **empilée** dans la pile principale ;
+- si elle mène à une URL `replace_root` (l'accueil), la pile entière est remplacée ;
+- si elle mène **à la modal elle-même** (Ma maison, ses emplacements, les réglages de notifications), la modal reste
+  ouverte et se recharge, avec le message de confirmation : on enchaîne plusieurs réglages sans la rouvrir.
+
+Une simple redirection Rails suffit donc. Les helpers `recede_or_redirect_to` / `refresh_or_redirect_to` de
+turbo-rails ne sont pas nécessaires ici, et `recede` ferait même revenir d'un écran de trop : la modal fermée, la coque
+rejoue « revenir » sur l'écran d'en dessous.
+
+Dans l'app, l'en-tête web et les liens « ← … » sont masqués (`hotwire_native_app?`, helper `back_link_to`) : la barre
+native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les liens de
+compte (notifications, foyers, déconnexion) sont en bas de l'accueil (`shared/_account_nav`) en attendant les onglets
+natifs. Limite connue : si la session a expiré sur une page qui s'ouvre en modal (un formulaire, « Mes foyers »), la
+reconnexion ramène à cette page en modal par-dessus l'écran de connexion ; fermer la modal ramène à cet écran.
+
+La coque est en **thème clair fixe** (`themes.xml`, `MainActivity`) tant que le web n'a pas de thème sombre : avec un
+téléphone en mode sombre, le thème `DayNight` donnait une barre sombre dont la flèche retour se voyait mal, et des
+icônes système claires sur fond clair.
+
 ### 4.3 La path configuration (règles de navigation)
 
 Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les règles actuelles
@@ -198,6 +222,7 @@ Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les
 |---|---|
 | `.*` (tout) | Écran normal empilé ; tirer vers le bas pour rafraîchir |
 | `/new($\|\?)`, `/edit($\|\?)` | Formulaire en **modal** plein écran, sans tirer pour rafraîchir |
+| `/households($\|\?)` | Choix du foyer en **modal** ; le choix redirige vers l'accueil, qui remplace la pile |
 | `^/($\|\?)`, `/session/new…`, `/passwords/new…` | Écran normal qui **remplace toute la pile** |
 
 Ce qu'il faut savoir :
