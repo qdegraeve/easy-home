@@ -36,3 +36,16 @@
     cursor: progress;
   }
 }
+
+/* In the Android app, the elements handled by a native bridge component (floating button, "⋮" menu) are hidden
+   from the page: the app shows them. The bridge marks <html> with the components the app supports. Outside any
+   layer, so that it wins over the display utilities of the element (inline-flex…). */
+[data-bridge-components~="button"] [data-controller~="bridge--button"],
+[data-bridge-components~="menu"] [data-controller~="bridge--menu"] {
+  display: none;
+}
+
+/* The toasts stay above the floating button of the app (56 dp and its 16 dp margin), on the pages that have one. */
+html[data-bridge-components~="button"]:has([data-controller~="bridge--button"]) #toasts {
+  padding-bottom: 5.5rem;
+}

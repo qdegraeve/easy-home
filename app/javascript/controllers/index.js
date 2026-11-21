@@ -4,6 +4,12 @@
 
 import { application } from "./application"
 
+import BridgeButtonController from "./bridge/button_controller"
+application.register("bridge--button", BridgeButtonController)
+
+import BridgeMenuController from "./bridge/menu_controller"
+application.register("bridge--menu", BridgeMenuController)
+
 import AddressAutocompleteController from "./address_autocomplete_controller"
 application.register("address-autocomplete", AddressAutocompleteController)
 

@@ -297,15 +297,36 @@ La WebView garde ses cookies comme Chrome. Le cookie de session Rails (authentif
 fonctionne donc sans rien changer, et reste valable d'un lancement à l'autre. Un vidage des données de l'app
 (`adb shell pm clear app.easyhome.android`) déconnecte.
 
-### 4.7 Les bridge components (pas encore utilisés)
+### 4.7 Les bridge components
 
-Le pont permet à une page web de demander quelque chose au natif, par exemple « affiche un bouton Enregistrer dans la
-barre du haut ». Il a deux moitiés :
+Le pont permet à une page web de demander quelque chose au natif, par exemple « affiche un bouton + flottant ». Il a
+deux moitiés, qui s'échangent des messages JSON (ADR 0014) :
 
-- un **contrôleur Stimulus** côté Rails (`app/javascript/controllers/bridge/`) ;
-- un **composant Kotlin** enregistré dans `EasyHomeApplication`.
+- un **contrôleur Stimulus** côté Rails (`app/javascript/controllers/bridge/`, bibliothèque
+  `@hotwired/hotwire-native-bridge`) ;
+- un **composant Kotlin** (`android/…/bridge/`), enregistré dans `EasyHomeApplication`.
 
-Ils s'échangent des messages JSON. Ce sera utile pour rendre la navigation plus naturelle (boutons natifs, menus).
+Deux composants pour l'instant :
+
+- **`button`** : côté page, `data-controller="bridge--button"` avec `data-bridge-title` et `data-bridge-icon` sur un
+  lien ; côté app, le **bouton flottant** en bas à droite, au-dessus des onglets (convention Android : il sert à
+  créer ; la barre du haut garde la navigation, les Réglages et le menu ⋮), dont l'appui clique le lien. Utilisé pour
+  le « + » de la page Plantes. Il suit la page à l'écran : `MainActivity` appelle `ButtonComponent.showFor()` après
+  chaque navigation et changement d'onglet, et une page qui n'en déclare pas n'en a pas.
+- **`menu`** : côté page, `data-controller="bridge--menu"` et des cibles `item` ; côté app, les entrées du menu ⋮,
+  dont le choix clique l'élément (sa confirmation s'affiche comme d'habitude). Utilisé pour Modifier, Archiver et
+  Supprimer d'une plante.
+
+L'app annonce ses composants dans son user agent ; la bibliothèque le lit et marque `<html>` avec
+`data-bridge-components="button menu"`. Une règle CSS (`application.tailwind.css`) masque alors les éléments web pris
+en charge par la barre native. Dans le navigateur, rien ne change : les éléments restent dans la page. Pour ajouter un
+bouton ailleurs, il suffit des attributs dans la vue (et d'une icône dans `ICONS` de `ButtonComponent` si elle est
+nouvelle).
+
+Le menu ⋮ est renvoyé dès que les actions de la page changent ; sur la fiche plante, le bloc d'actions change d'id
+avec l'état (archivée ou non) pour qu'un rafraîchissement le remplace en entier. Une page rechargée de zéro
+(`WebFragment.onColdBootPageStarted`) oublie son bouton et son menu, qu'elle redéclare si elle en a encore. Testé dans
+un vrai navigateur qui joue le rôle de l'app (`spec/system/native_app_spec.rb`).
 
 ## 5. Côté Rails
 

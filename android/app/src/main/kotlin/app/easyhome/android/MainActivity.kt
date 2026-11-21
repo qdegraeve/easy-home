@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import app.easyhome.android.bridge.ButtonComponent
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dev.hotwire.navigation.activities.HotwireActivity
 import dev.hotwire.navigation.navigator.Navigator
@@ -47,6 +48,7 @@ class MainActivity : HotwireActivity() {
         // "Journal" without pulling down. (A tab shown for the first time loads anyway: no destination yet.)
         bottomNavigation.setOnTabSelectedListener { _, _ ->
             delegate.currentNavigator?.currentDestination?.refresh(displayProgress = false)
+            updateMainAction()
         }
 
         applyBottomInsets(bottomNavigationView)
@@ -62,7 +64,10 @@ class MainActivity : HotwireActivity() {
 
     override fun onNavigatorReady(navigator: Navigator) {
         navigators[navigator.configuration.name] = navigator
-        navigator.host.navController.addOnDestinationChangedListener { _, _, _ -> onPageChanged(navigator) }
+        navigator.host.navController.addOnDestinationChangedListener { _, _, _ ->
+            onPageChanged(navigator)
+            updateMainAction()
+        }
     }
 
     // Signed out (from the settings, or a session that expired): no tabs on the sign-in pages. Signed in again: the
@@ -83,6 +88,14 @@ class MainActivity : HotwireActivity() {
             // from "Maison" lands on the home page, which must not become the root of "Maison". After the current
             // navigation ends (posted).
             navigatorHosts.post { delegate.resetNavigators() }
+        }
+    }
+
+    // The floating button of the page on screen (bridge "button"), once the navigation has settled (posted): the new
+    // destination is then the current one of the current tab.
+    private fun updateMainAction() {
+        navigatorHosts.post {
+            ButtonComponent.showFor(delegate.currentNavigator?.currentDestination, findViewById(R.id.main_action))
         }
     }
 

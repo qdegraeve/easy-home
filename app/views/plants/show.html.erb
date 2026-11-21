@@ -196,14 +196,23 @@
   </div>
 </div>
 
-<div class="mt-8 flex flex-wrap gap-3">
-  <%= link_to t(".edit"), edit_plant_path(@plant), class: button_class(:secondary) %>
+<%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu). The id changes with
+    the state of the plant: a morph refresh then replaces the whole block, and the menu is sent again with the right
+    actions (a morph would otherwise only rename "Archiver" into "Restaurer" in place). %>
+<div
+  id="plant-actions-<%= @plant.archived? ? "archived" : "active" %>"
+  class="mt-8 flex flex-wrap gap-3"
+  data-controller="bridge--menu"
+>
+  <%= link_to t(".edit"), edit_plant_path(@plant),
+        class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% if @plant.archived? %>
-    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete, class: button_class(:secondary) %>
+    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete,
+          class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% else %>
     <%= button_to t(".archive"), plant_archive_path(@plant),
           form: { data: confirm_data(t(".archive_confirm"), button: t(".archive")) },
-          class: button_class(:secondary) %>
+          class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% end %>
   <%# Replace: in the Android app, the deleted plant leaves the stack ("back" never shows it again). %>
   <%= button_to(
@@ -213,6 +222,7 @@
     form: {
       data: { turbo_action: "replace", **confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) }
     },
-    class: button_class(:danger)
+    class: button_class(:danger),
+    data: { bridge__menu_target: "item" }
   ) %>
 </div>

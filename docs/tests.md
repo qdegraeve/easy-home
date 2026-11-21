@@ -87,6 +87,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Aujourd'hui : tout l'arrosage du jour en un geste, annulé depuis le toast, puis détail par emplacement avec une plante décochée ; « Bientôt » replié | `spec/system/today_spec.rb` | Fait |
 | Sections : Aujourd'hui, Maison, Plantes, une plante, puis Journal avec une validation annulée | `spec/system/sections_spec.rb` | Fait |
 | Emplacement modifié : analyse signalée à revoir (Maison, Plantes, fiche), relance avec la remarque pré-remplie | `spec/system/location_change_spec.rb` | Fait |
+| Dans l'app : actions de la plante dans le menu natif, à jour après un archivage, suppression confirmée | `spec/system/native_app_spec.rb` | Fait |
 | Réglages des notifications : résumé coupé, heure, foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
@@ -111,7 +112,7 @@ Tester avec Vitest uniquement les contrôleurs qui contiennent de la logique (ca
 
 ## Mobile
 
-- Le Kotlin reste mince, donc peu de tests natifs : le gestionnaire de l'action « Fait » d'une notification, le stockage du jeton, le parsing des messages des bridge components.
+- Le Kotlin reste mince, donc peu de tests natifs : le gestionnaire de l'action « Fait » d'une notification, le stockage du jeton. Les bridge components sont testés depuis le web : messages en Vitest (`spec/javascript/bridge_components.test.js`), parcours dans un navigateur qui joue l'app (`spec/system/native_app_spec.rb`).
 - Maestro : 2 ou 3 tests de fumée (lancement, connexion, validation d'une tâche).
 - Notifications push : un bouton « m'envoyer une notification de test » dans les réglages, plus une checklist manuelle avant chaque release.
 

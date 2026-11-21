@@ -6,6 +6,8 @@ import android.view.View
 import dev.hotwire.core.turbo.config.context
 import dev.hotwire.core.turbo.nav.PresentationContext
 import dev.hotwire.navigation.destinations.HotwireDestinationDeepLink
+import app.easyhome.android.bridge.ButtonComponent
+import app.easyhome.android.bridge.MenuComponent
 import dev.hotwire.navigation.fragments.HotwireWebFragment
 
 // Every web screen of the app, with the settings in its native top bar, so that they are always at hand. Not on the
@@ -15,6 +17,13 @@ class WebFragment : HotwireWebFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (showsSettings()) addSettingsButton()
+    }
+
+    // Loaded again from scratch (a refreshed tab): what the former page declared through the bridge is gone with it.
+    override fun onColdBootPageStarted(location: String) {
+        super.onColdBootPageStarted(location)
+        ButtonComponent.forget(this)
+        toolbarForNavigation()?.menu?.removeGroup(MenuComponent.GROUP_ID)
     }
 
     private fun showsSettings(): Boolean {

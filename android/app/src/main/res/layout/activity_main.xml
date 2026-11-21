@@ -33,6 +33,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:defaultNavHost="false" />
+
+        <!-- The main action of the page shown ("+" to add a plant), declared by the page (bridge "button"). -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/main_action"
+            android:contentDescription="@string/main_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/brand"
+            app:tint="@android:color/white" />
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

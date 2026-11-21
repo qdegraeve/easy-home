@@ -227,7 +227,8 @@ Voir la section suivante pour l'architecture complète. En bref :
 2. **Titre natif par page** via `content_for(:title)` ; **en-tête web masqué** quand `hotwire_native_app?`.
 3. **Liens « ← » web supprimés dans l'app** (gardés seulement dans le navigateur, ou remplacés par un fil d'Ariane sur
    grand écran).
-4. **Actions dans la barre native** par bridge components : bouton « Ajouter » (+), menu ⋮ (Modifier, Archiver,
+4. **Actions natives** par bridge components : bouton « Ajouter » (+, en bouton flottant : fait en PR 8), menu ⋮
+   (Modifier, Archiver,
    Supprimer).
 5. **Formulaires en modal qui se referment** après envoi, avec rafraîchissement de l'écran précédent
    (déjà le comportement de Hotwire Native après une redirection vers l'écran d'en dessous).
@@ -260,7 +261,7 @@ Réglages (depuis Aujourd'hui)     ← compte, notifications, foyers et membres,
 
 - 5 onglets par domaine (Plantes, Poubelles…) ne tiennent pas : le nombre de domaines grandit, et un foyer sans
   piscine aurait un onglet vide. Les domaines sont des **sections de Maison**, affichées seulement si le foyer en a.
-- « Ajouter » n'est pas un onglet : c'est une action contextuelle (bouton + de la barre native), qui ouvre une feuille
+- « Ajouter » n'est pas un onglet : c'est une action contextuelle (bouton + flottant de l'app), qui ouvre une feuille
   « Que voulez-vous ajouter ? » depuis Maison, ou directement le bon formulaire depuis une liste de domaine.
 - Réglages et foyer sont rares : hors des onglets. Le **foyer actif** est le titre de l'onglet Aujourd'hui (appui :
   feuille de choix du foyer), comme un sélecteur de compte.
@@ -535,7 +536,8 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   principale absente. Effort M, priorité P1.
 - **8. Routes + contrôleurs** : Routes racines `/` (Aujourd'hui), `/maison`, `/journal`. Pourquoi : Une racine par
   onglet. Effort M, priorité P1.
-- **9. Bridge `button` (Stimulus + Kotlin)** : Bouton d'action dans la barre native (+, Enregistrer). Pourquoi : Action
+- **9. Bridge `button` (Stimulus + Kotlin)** : Bouton d'action principal en bouton flottant (+), décidé avec le
+  propriétaire à la place de la barre du haut (Réglages y restent seuls). Pourquoi : Action
   principale toujours visible. Effort M, priorité P2.
 - **10. Bridge `menu` (Stimulus + Kotlin)** : Menu ⋮ natif : Modifier, Archiver, Supprimer. Pourquoi : Actions rares
   hors du flux. Effort M, priorité P2.
@@ -659,7 +661,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    **PR 6b** (#46, #47, #57, fait) : modifier un emplacement, analyses à revoir après un changement de lieu, rôle dans
    « Mes foyers ».
 7. **PR 7 · Onglets natifs** (#7, fait) : la coque passe à trois navigateurs (`HotwireBottomNavigationController`).
-8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
+8. **PR 8 · Bridge bouton et menu** (#9, #10, fait ; ADR 0014) : + et ⋮ natifs ; Réglages dans la barre du haut
+   de chaque écran (fait en PR 7).
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
 10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24) : marge proportionnelle, report tracé, catalogue,
     résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
