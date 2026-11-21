@@ -3,7 +3,9 @@
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", name: @location.name_in_database) %></h1>
 
   <% if @analysed_plants_count.positive? %>
-    <p class="mt-2 rounded-xl bg-warn-soft px-3 py-2 text-sm"><%= t(".plants_hint", count: @analysed_plants_count) %></p>
+    <p class="mt-2 rounded-xl bg-warn-soft px-3 py-2 text-sm">
+      <%= t(".plants_hint", count: @analysed_plants_count) %>
+    </p>
   <% end %>
 
   <%= form_with model: @location, class: "mt-4 space-y-3 rounded-2xl bg-surface p-4" do |form| %>
