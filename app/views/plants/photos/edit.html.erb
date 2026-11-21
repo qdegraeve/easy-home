@@ -1,0 +1,14 @@
+<div class="mx-auto max-w-md">
+  <%= back_link_to t("plants.photos.edit.back"), plant_photo_path(@plant, @photo) %>
+  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+
+  <%= form_with model: @photo, url: plant_photo_path(@plant, @photo), method: :patch, class: "mt-6 space-y-4" do |f| %>
+    <%= render "shared/errors", record: @photo %>
+    <div>
+      <%= f.label :taken_at, class: "block text-sm font-semibold" %>
+      <%= f.date_field :taken_at, required: true, max: Time.zone.today,
+            class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    </div>
+    <%= f.submit t(".save_date"), class: button_class(:primary, block: true) %>
+  <% end %>
+</div>

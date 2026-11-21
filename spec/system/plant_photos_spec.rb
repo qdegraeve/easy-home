@@ -37,10 +37,16 @@ RSpec.describe "Plant photos", type: :system do
     travel 2.days
     attach_file "Nouvelle photo", picture("plant.png") # sent once chosen
     expect(page).to have_content("Photo ajoutée.")
-    expect(page).to have_css("img[alt='Photo du mer 18 nov.']")
+    # A gallery: grouped by month, the date in the alternative text only.
+    within("section[aria-labelledby=photos]") do
+      expect(page).to have_content("2 photos")
+      expect(page).to have_css("h3", text: "novembre 2026")
+    end
 
     find("img[alt='Photo du mar 10 nov.']").click
     expect(page).to have_content("Photo du 10 novembre 2026")
+    expect(page).to have_content("1 / 2")
+    click_on "Modifier la date"
     fill_in "Date de la photo", with: Date.new(2026, 11, 8)
     click_on "Enregistrer la date"
     expect(page).to have_content("Date de la photo enregistrée.")
@@ -49,22 +55,27 @@ RSpec.describe "Plant photos", type: :system do
     click_on "Utiliser comme photo de couverture"
     expect(page).to have_content("Photo de couverture choisie.")
     # The header shows it now, instead of the latest photo (18 November).
-    find("img[alt='Photo de Citronnier']").click
-    expect(page).to have_content("Photo du 8 novembre 2026")
+    open_plant_tab("Photos")
+    within("li", text: "Couverture") { expect(page).to have_css("img[alt='Photo du dim 8 nov.']") }
+    find("img[alt='Photo du dim 8 nov.']").click
     expect(page).to have_content("Photo de couverture")
     expect(page).to have_no_button("Utiliser comme photo de couverture")
 
-    # From one photo to the other, to follow the growth.
+    # From one photo to the other, to follow the growth: with the links, or the arrow keys.
     click_on "Plus récente"
     expect(page).to have_content("Photo du 18 novembre 2026")
+    expect(page).to have_content("2 / 2")
     expect(page).to have_no_link("Plus récente")
-    click_on "Plus ancienne"
+    find("body").send_keys(:left)
     expect(page).to have_content("Photo du 8 novembre 2026")
+    expect(page).to have_content("1 / 2")
+
+    # Deleted: on to the next photo, as in a gallery.
     click_on "Supprimer la photo"
     expect(page).to have_css("dialog[open] button[data-tone=danger]", text: "Supprimer la photo")
     within("dialog") { click_on "Supprimer la photo" }
     expect(page).to have_content("Photo supprimée.")
-    expect(page).to have_no_css("img[alt='Photo du dim 8 nov.']")
-    expect(page).to have_css("img[alt='Photo du mer 18 nov.']")
+    expect(page).to have_content("Photo du 18 novembre 2026")
+    expect(page).to have_content("1 / 1")
   end
 end

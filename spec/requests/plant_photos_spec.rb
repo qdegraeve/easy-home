@@ -95,10 +95,28 @@ RSpec.describe "Plant photos", type: :request do
     expect(response).to redirect_to(plant_photo_path(plant, photo))
     expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
 
+    get edit_plant_photo_path(plant, photo)
+    expect(response.body).to include("Date de la photo", "2026-11-02")
+
     patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-12-01" } }
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).to include("Date de la photo ne peut pas être dans le futur", "Photo du 2 novembre 2026")
+    expect(response.body).to include("Date de la photo ne peut pas être dans le futur")
     expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
+  end
+
+  it "goes on to the next photo after a deletion: the newer one, else the older one" do
+    oldest, middle, newest = add_photo, add_photo, add_photo
+    oldest.update!(taken_at: 3.days.ago)
+    middle.update!(taken_at: 2.days.ago)
+    sign_in(user)
+
+    get plant_photo_path(plant, middle)
+    expect(response.body).to include("2 / 3")
+
+    delete plant_photo_path(plant, middle)
+    expect(response).to redirect_to(plant_photo_path(plant, newest))
+    delete plant_photo_path(plant, newest)
+    expect(response).to redirect_to(plant_photo_path(plant, oldest))
   end
 
   it "forbids adding a photo to an archived plant" do

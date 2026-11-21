@@ -114,7 +114,7 @@ RSpec.describe "In the Android app", type: :system do
     expect(page).to have_css("h1", text: "Ajouter une tâche")
   end
 
-  it "moves the cover and delete actions of a photo to the native menu, and still asks before deleting" do
+  it "moves the date, cover and delete actions of a photo to the native menu, and still asks before deleting" do
     page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [button menu]")
     user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
     plant = create(:plant, :watered, household: user.households.sole, name: "Basilic")
@@ -128,13 +128,13 @@ RSpec.describe "In the Android app", type: :system do
     page.execute_script(FAKE_APP)
 
     expect(page).to have_no_button("Supprimer la photo") # shown by the app, not in the page
-    expect(menu_titles).to eq([ "Utiliser comme photo de couverture", "Supprimer la photo" ])
+    expect(menu_titles).to eq([ "Modifier la date", "Utiliser comme photo de couverture", "Supprimer la photo" ])
 
     choose_in_menu("Utiliser comme photo de couverture")
     expect(page).to have_content("Photo de couverture choisie.")
     visit plant_photo_path(plant, photo)
     page.execute_script(FAKE_APP)
-    expect(menu_titles).to eq([ "Supprimer la photo" ])
+    expect(menu_titles).to eq([ "Modifier la date", "Supprimer la photo" ])
 
     choose_in_menu("Supprimer la photo")
     within("dialog") { click_on "Supprimer la photo" }

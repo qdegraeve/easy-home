@@ -19,7 +19,8 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="bg-paper text-ink antialiased">
+  <%# A page can change the background (the photo viewer is dark). %>
+  <body class="<%= content_for(:body_class) || "bg-paper text-ink" %> antialiased">
     <%# In the Android app, the native top bar replaces this header (settings: button of the "Aujourd'hui" page). %>
     <% if authenticated? && !hotwire_native_app? %>
       <header class="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur">

@@ -12,6 +12,10 @@ class PhotoPolicy < ApplicationPolicy
     show?
   end
 
+  def edit?
+    update?
+  end
+
   def destroy?
     show?
   end
