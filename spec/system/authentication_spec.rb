@@ -11,8 +11,9 @@ RSpec.describe "Authentication", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
 
-    expect(page).to have_css("h1", text: "Mes plantes")
+    expect(page).to have_css("h1", text: "Aujourd'hui")
 
+    click_on "Réglages"
     click_on "Se déconnecter"
     within("dialog", text: "Se déconnecter ?") { click_on "Se déconnecter" }
 
@@ -29,6 +30,12 @@ RSpec.describe "Authentication", type: :system do
     click_on "Se connecter"
 
     expect(page).to have_content("Adresse e-mail ou mot de passe incorrect.")
-    expect(page).to have_no_css("h1", text: "Mes plantes")
+    expect(page).to have_no_css("h1", text: "Aujourd'hui")
+
+    # The error stays until closed, and screen readers hear it through the live region.
+    expect(page).to have_css("#announcer[aria-live=assertive]", text: "Adresse e-mail ou mot de passe incorrect.",
+                                                                visible: :all)
+    click_on "Fermer le message"
+    expect(page).to have_no_content("Adresse e-mail ou mot de passe incorrect.")
   end
 end

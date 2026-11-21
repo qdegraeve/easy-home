@@ -53,16 +53,17 @@ RSpec.describe "My house", type: :request do
     end
   end
 
-  describe "GET /" do
-    it "shows the \"Ma maison\" link to the owner, not to a guest" do
+  describe "GET /house" do
+    it "shows the inventory to everyone, and the places of the house to the owner, not to a guest" do
+      create(:plant, :watered, household:, name: "Basilic")
       sign_in(user)
-      get root_path
-      expect(response.body).to include("Ma maison")
+      get house_path
+      expect(response.parsed_body.text.squish).to include("Plantes 1 plante", "Adresse et emplacements")
 
       delete session_path
       sign_in(create(:household_member, household:, role: :guest).user)
-      get root_path
-      expect(response.body).not_to include("Ma maison")
+      get house_path
+      expect(response.body).not_to include("Adresse et emplacements")
     end
   end
 

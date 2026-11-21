@@ -1,0 +1,17 @@
+<section <%= tag.attributes(aria: { labelledby: id }) if title %>>
+  <% if title %>
+    <%= content_tag(heading, id:, class: heading == :h2 ? "mb-2 font-semibold" : "mb-1 mt-3 text-sm text-muted") do %>
+      <% if icon %><%= helpers.icon(icon, class: icon_class) %><% end %>
+      <%= title %>
+    <% end %>
+  <% end %>
+  <% if rows? %>
+    <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
+      <% rows.each do |row| %>
+        <li><%= row %></li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= content %>
+  <% end %>
+</section>

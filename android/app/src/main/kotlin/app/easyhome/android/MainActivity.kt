@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import dev.hotwire.navigation.activities.HotwireActivity
 import dev.hotwire.navigation.navigator.NavigatorConfiguration
-import dev.hotwire.navigation.util.applyDefaultImeWindowInsets
 
 class MainActivity : HotwireActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +20,13 @@ class MainActivity : HotwireActivity() {
         )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        findViewById<View>(R.id.main_nav_host).applyDefaultImeWindowInsets()
+        // Keep the pages above the system navigation bar and the keyboard: the app is drawn edge to edge, and the
+        // bottom of a page (toasts, last buttons) would otherwise slide under the navigation bar.
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById<View>(R.id.main_nav_host)) { view, insets ->
+            val bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.ime())
+            view.updatePadding(bottom = bottom.bottom)
+            insets
+        }
     }
 
     override fun navigatorConfigurations() = listOf(

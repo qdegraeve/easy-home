@@ -39,6 +39,11 @@ RSpec.describe "Configurations", type: :request do
     expect(properties_for("/households/3/edit")).to include("context" => "modal")
     expect(properties_for("/")).to include("context" => "default", "presentation" => "replace_root")
     expect(properties_for("/?notice=1")).to include("presentation" => "replace_root")
+    # Until the native tabs, Maison and Journal are pushed: "back" returns to Aujourd'hui instead of leaving the app.
+    expect(properties_for("/house")).not_to have_key("presentation")
+    expect(properties_for("/journal")).not_to have_key("presentation")
+    expect(properties_for("/settings")).to include("context" => "default")
+    expect(properties_for("/settings")).not_to have_key("presentation")
     expect(properties_for("/session/new")).to include("context" => "default", "presentation" => "replace_root")
   end
 

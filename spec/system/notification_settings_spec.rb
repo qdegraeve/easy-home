@@ -12,6 +12,7 @@ RSpec.describe "Notification settings", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
 
+    click_on "Réglages"
     click_on "Notifications"
     expect(page).to have_checked_field("Recevoir le résumé du matin")
     uncheck "Recevoir le résumé du matin"

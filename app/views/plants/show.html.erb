@@ -4,7 +4,7 @@
 <% end %>
 <%= turbo_stream_from @plant %>
 
-<%= back_link_to t("plants.back"), root_path %>
+<%= back_link_to t("plants.back"), plants_path %>
 
 <div class="mt-2">
   <h1 class="text-2xl font-bold"><%= page_title @plant.name %></h1>
@@ -25,7 +25,7 @@
 
 <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
   <div class="space-y-6 self-start">
-    <section class="space-y-2 rounded-2xl bg-surface p-4 shadow-sm" aria-labelledby="watering">
+    <section class="space-y-2 rounded-2xl bg-surface p-4" aria-labelledby="watering">
       <h2 id="watering" class="font-semibold">
         <%= heading_with_icon(:droplet, t(".watering"), icon_class: "text-plants") %>
       </h2>
@@ -47,32 +47,20 @@
       <% end %>
     </section>
 
-    <section aria-labelledby="tasks">
-      <h2 id="tasks" class="font-semibold"><%= heading_with_icon(:list_todo, t(".tasks")) %></h2>
-      <% if @other_tasks.any? %>
-        <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface shadow-sm">
-          <% @other_tasks.each do |task| %>
-            <li class="space-y-2 p-3">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="font-medium"><%= task.title %></p>
-                  <p class="text-sm text-muted">
-                    <%= task.once? ? t(".once") : t(".every", count: task.recurrence.interval_days) %> ·
-                    <%= render DueLabelComponent.new(due_at: task.pending_occurrence.due_at) %>
-                  </p>
-                </div>
-                <% if @done_today_task_ids.include?(task.id) %>
-                  <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action">
-                    <%= t(".done_today") %>
-                  </span>
-                <% else %>
-                  <%= render "tasks/complete_button", occurrence: task.pending_occurrence %>
-                <% end %>
-              </div>
-              <div class="flex gap-2">
+    <div>
+      <%= render ListGroupComponent.new(title: t(".tasks"), id: "tasks", icon: :list_todo) do |group| %>
+        <% @other_tasks.each do |task| %>
+          <% group.with_row do %>
+            <%= render TaskRowComponent.new(
+              occurrence: task.pending_occurrence,
+              title: task.title,
+              detail: task.once? ? t(".once") : t(".every", count: task.recurrence.interval_days),
+              done_today: @done_today_task_ids.include?(task.id)
+            ) do |row| %>
+              <% row.with_actions do %>
                 <%= link_to t(".edit_task"), edit_plant_task_path(@plant, task),
                       aria: { label: t(".edit_task_label", title: task.title) },
-                      class: "rounded-lg px-2 py-1 text-xs text-muted hover:bg-subtle" %>
+                      class: "-ml-2 #{small_action_class}" %>
                 <%= button_to t(".destroy_task"), plant_task_path(@plant, task), method: :delete,
                       aria: { label: t(".destroy_task_label", title: task.title) },
                       form: {
@@ -82,49 +70,64 @@
                           danger: true
                         )
                       },
-                      class: "rounded-lg px-2 py-1 text-xs text-alert hover:bg-alert-soft" %>
-              </div>
-            </li>
+                      class: small_action_class(:danger) %>
+              <% end %>
+            <% end %>
           <% end %>
-        </ul>
-      <% else %>
-        <p class="mt-2 rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_tasks") %></p>
+        <% end %>
+        <%= render EmptyStateComponent.new(text: t(".no_tasks")) %>
       <% end %>
       <% unless @plant.archived? %>
         <%= link_to t(".add_task"), new_plant_task_path(@plant),
-              class: "mt-3 block rounded-xl bg-surface py-3 text-center text-sm font-semibold text-action " \
-                     "shadow-sm" %>
+              class: "mt-3 #{button_class(:secondary, block: true)}" %>
       <% end %>
-    </section>
+    </div>
   </div>
 
   <div class="space-y-6 self-start">
     <section aria-labelledby="analysis">
       <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis")) %></h2>
+      <%# Not while an analysis runs (the restart itself), nor for an archived plant (nothing to offer). %>
+      <% change = @plant.place_change_since_analysis unless @plant.archived? || @analyses.first&.pending? %>
+      <% if change %>
+        <%# The place changed since the last analysis: its advice may be wrong. Offered, never run by itself. %>
+        <div role="note" class="mt-2 rounded-2xl bg-warn-soft p-4 text-sm">
+          <p class="font-semibold"><%= heading_with_icon(:map_pin, t(".place_changed"), icon_class: "text-warn") %></p>
+          <p class="mt-1">
+            <%= t(".place_changed_detail", before: place_label(change.first), after: place_label(change.last)) %>
+          </p>
+          <% if @photos.any? && policy(PlantAnalysis.new(plant: @plant)).create? %>
+            <%= link_to t(".reanalyse"),
+                  new_plant_analysis_path(@plant, note: t(".reanalyse_note", before: place_label(change.first),
+                                                                              after: place_label(change.last))),
+                  class: "mt-3 #{button_class(:secondary)}" %>
+          <% end %>
+        </div>
+      <% end %>
       <% latest, *older = @analyses %>
       <div class="mt-2">
         <% if latest %>
           <%= render "plants/analyses/analysis", analysis: latest,
                 restart: latest.failed? && policy(PlantAnalysis.new(plant: @plant)).create? %>
         <% else %>
-          <p class="rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_analysis") %></p>
+          <%= render EmptyStateComponent.new(text: t(".no_analysis")) %>
         <% end %>
       </div>
       <% if @photos.any? && !latest&.pending? && policy(PlantAnalysis.new(plant: @plant)).create? %>
         <%= link_to t(".new_analysis"), new_plant_analysis_path(@plant),
-              class: "mt-3 block rounded-xl bg-surface py-3 text-center text-sm font-semibold text-action " \
-                     "shadow-sm" %>
+              class: "mt-3 #{button_class(:secondary, block: true)}" %>
       <% end %>
       <% if older.any? %>
         <details class="mt-3">
-          <summary class="cursor-pointer text-sm text-muted">
+          <summary class="cursor-pointer py-3 text-sm text-muted">
             <%= t(".older_analyses", count: older.size) %>
           </summary>
-          <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface text-sm shadow-sm">
+          <ul class="mt-2 divide-y divide-line overflow-hidden rounded-2xl bg-surface text-sm">
             <% older.each do |analysis| %>
               <li>
                 <% state = analysis.done? ? "health.#{analysis.health}" : "status.#{analysis.status}" %>
-                <%= link_to plant_analysis_path(@plant, analysis), class: "flex justify-between gap-3 p-3" do %>
+                <%= link_to plant_analysis_path(@plant, analysis),
+                      class: "flex min-h-12 items-center justify-between gap-3 px-3" do %>
                   <span><%= l(analysis.created_at.to_date, format: :day) %></span>
                   <span class="text-muted"><%= t("plants.analyses.analysis.#{state}") %></span>
                 <% end %>
@@ -151,61 +154,58 @@
           <% end %>
         </ul>
       <% else %>
-        <p class="mt-2 rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_photos") %></p>
+        <div class="mt-2"><%= render EmptyStateComponent.new(text: t(".no_photos")) %></div>
       <% end %>
       <% if policy(Photo.new(plant: @plant)).create? %>
         <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3 space-y-2" do |f| %>
           <%= f.label :file, t(".new_photo"), class: "block text-sm font-semibold" %>
           <%= f.file_field :file, accept: "image/*", required: true,
-                class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-surface file:px-3 " \
-                       "file:py-2 file:shadow-sm" %>
-          <%= f.submit t(".add_photo"),
-                class: "w-full rounded-xl bg-surface py-3 text-sm font-semibold text-action shadow-sm" %>
+                class: "block w-full text-sm file:mr-3 file:min-h-11 file:rounded-xl file:border-0 " \
+                       "file:bg-action-soft file:px-3 file:font-semibold file:text-action" %>
+          <%= f.submit t(".add_photo"), class: button_class(:secondary, block: true) %>
         <% end %>
       <% end %>
     </section>
 
-    <section aria-labelledby="journal">
-      <h2 id="journal" class="font-semibold"><%= heading_with_icon(:history, t(".journal")) %></h2>
-      <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface shadow-sm">
-        <% @journal.each do |entry| %>
-          <% date = l(entry.completed_at.to_date, format: :day) %>
-          <% if entry.task.watering? %>
-            <% label = t(".watered") %>
-            <% cancel_label, cancel_confirm = t(".cancel_label", date:), t(".cancel_confirm", date:) %>
-          <% else %>
-            <% title = entry.task.title %>
-            <% label = t(".done_entry", title:) %>
-            <% cancel_label = t(".cancel_task_label", title:, date:) %>
-            <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
-          <% end %>
-          <li class="flex items-center justify-between gap-3 p-3 text-sm">
+    <%= render ListGroupComponent.new(title: t(".journal"), id: "journal", icon: :history) do |group| %>
+      <% @journal.each do |entry| %>
+        <% date = l(entry.completed_at.to_date, format: :day) %>
+        <% if entry.task.watering? %>
+          <% label = t(".watered") %>
+          <% cancel_label, cancel_confirm = t(".cancel_label", date:), t(".cancel_confirm", date:) %>
+        <% else %>
+          <% title = entry.task.title %>
+          <% label = t(".done_entry", title:) %>
+          <% cancel_label = t(".cancel_task_label", title:, date:) %>
+          <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
+        <% end %>
+        <% group.with_row do %>
+          <div class="flex min-h-12 items-center justify-between gap-3 pl-3 text-sm">
             <span><%= heading_with_icon(entry.task.watering? ? :droplet : :check, label) %></span>
-            <span class="flex items-center gap-2">
+            <span class="flex items-center gap-1">
               <span class="shrink-0 text-muted"><%= date %></span>
               <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
                     aria: { label: cancel_label },
                     form: { data: confirm_data(cancel_confirm, button: t(".cancel_confirm_button")) },
-                    class: "rounded-lg px-2 py-1 text-xs text-muted hover:bg-subtle" %>
+                    class: small_action_class %>
             </span>
-          </li>
+          </div>
         <% end %>
-      </ul>
-    </section>
+      <% end %>
+    <% end %>
   </div>
 </div>
 
 <div class="mt-8 flex flex-wrap gap-3">
-  <%= link_to t(".edit"), edit_plant_path(@plant), class: "rounded-xl bg-surface px-3 py-2 text-sm shadow-sm" %>
+  <%= link_to t(".edit"), edit_plant_path(@plant), class: button_class(:secondary) %>
   <% if @plant.archived? %>
-    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete,
-          class: "rounded-xl bg-surface px-3 py-2 text-sm shadow-sm" %>
+    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete, class: button_class(:secondary) %>
   <% else %>
     <%= button_to t(".archive"), plant_archive_path(@plant),
           form: { data: confirm_data(t(".archive_confirm"), button: t(".archive")) },
-          class: "rounded-xl bg-surface px-3 py-2 text-sm shadow-sm" %>
+          class: button_class(:secondary) %>
   <% end %>
   <%= button_to t(".destroy"), plant_path(@plant), method: :delete,
         form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
-        class: "rounded-xl px-3 py-2 text-sm text-alert hover:bg-alert-soft" %>
+        class: button_class(:danger) %>
 </div>

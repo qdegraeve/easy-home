@@ -4,7 +4,8 @@ module Plants
     def new
       @plant = find_plant
       authorize PlantAnalysis.new(plant: @plant)
-      @request = AnalysisRequest.new(plant: @plant, photo_ids: @plant.photos.limit(1).ids)
+      # `note`: prefilled when the analysis is restarted after a change of place.
+      @request = AnalysisRequest.new(plant: @plant, photo_ids: @plant.photos.limit(1).ids, note: params[:note])
     end
 
     def create

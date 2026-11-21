@@ -1,0 +1,33 @@
+<div class="mx-auto max-w-2xl">
+  <%= back_link_to t(".back"), root_path %>
+  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", count: @occurrences.size) %></h1>
+  <p class="mt-1 text-sm text-muted"><%= t(".hint") %></p>
+
+  <%= form_with url: task_occurrences_batch_completion_path, method: :post, class: "mt-4 space-y-4" do %>
+    <% @by_location.each do |location, occurrences| %>
+      <% id = "location-#{location&.id || 'none'}" %>
+      <%= render ListGroupComponent.new(title: location&.name || t(".no_location"), id:) do |group| %>
+        <% occurrences.each do |occurrence| %>
+          <% plant = occurrence.task.subject %>
+          <% group.with_row do %>
+            <label class="flex min-h-14 cursor-pointer items-center justify-between gap-3 px-3 py-2">
+              <span>
+                <span class="block font-medium"><%= plant.name %></span>
+                <span class="text-sm text-muted">
+                  <%= t(".every", count: occurrence.task.recurrence.interval_days) %> ·
+                  <%= render DueLabelComponent.new(due_at: occurrence.due_at) %>
+                </span>
+              </span>
+              <%= check_box_tag "occurrence_ids[]", occurrence.id, true, id: "occurrence_#{occurrence.id}",
+                    class: "size-6 shrink-0 accent-action" %>
+            </label>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= button_tag type: :submit, class: button_class(:primary, block: true) do %>
+      <%= icon(:check) %><%= t(".submit") %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,46 @@
+require "rails_helper"
+
+# Critical journey: moving between the sections of the app with the tab bar, and cancelling a completion from the
+# journal (see docs/tests.md).
+RSpec.describe "Sections", type: :system do
+  include ActiveSupport::Testing::TimeHelpers
+
+  around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
+
+  it "goes from Aujourd'hui to Maison, Plantes and a plant, then cancels a watering from the journal" do
+    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(
+      :plant,
+      :watered,
+      household: user.households.sole,
+      name: "Basilic",
+      interval_days: 3,
+      last_watered_at: Time.zone.parse("2026-11-12 08:00")
+    )
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Aujourd'hui")
+    click_on "Arrosée : Basilic"
+    expect(page).to have_content("Rien à faire aujourd'hui.")
+
+    open_plant("Basilic")
+    expect(page).to have_css("h1", text: "Basilic")
+    expect(page).to have_css("nav[aria-label=Sections] a[aria-current=true]", text: "Maison")
+
+    go_to_tab("Journal")
+    expect(page).to have_css("h1", text: "Journal")
+    expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Journal")
+    expect(page).to have_content("Arrosage · Basilic")
+    expect(page).to have_css("h2", text: "16 novembre 2026")
+    click_on "Annuler « Arrosage · Basilic » du lun 16 nov."
+    within("dialog") { click_on "Oui, annuler" }
+    expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")
+    expect(page).to have_no_css("h2", text: "16 novembre 2026")
+
+    go_to_tab("Aujourd'hui")
+    expect(page).to have_button("Arrosée : Basilic")
+  end
+end

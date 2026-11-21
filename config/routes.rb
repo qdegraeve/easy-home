@@ -10,9 +10,13 @@ Rails.application.routes.draw do
     resource :selection, only: :create, module: :households
     resources :locations, only: :create
   end
-  resources :locations, only: :destroy
+  resources :locations, only: [ :edit, :update, :destroy ]
   resources :address_suggestions, only: :index
-  resources :plants, except: :index do
+  # The three sections of the app (UX review): Aujourd'hui (root), Maison, Journal; and the settings.
+  get "house", to: "house#show", as: :house
+  resource :journal, only: :show, controller: "journal"
+  resource :settings, only: :show
+  resources :plants do
     resource :archive, only: [ :create, :destroy ], module: :plants
     resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
     resources :photos, only: [ :create, :show, :update, :destroy ], module: :plants
@@ -29,6 +33,13 @@ Rails.application.routes.draw do
   end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences
+  end
+  # Several occurrences at once: "Arroser · 4" on the home page, and the "Annuler" of a toast.
+  resource :task_occurrences_batch_completion, only: [ :create, :destroy ], path: "task_occurrences/completions",
+                                               controller: "task_occurrences/batch_completions"
+  namespace :today do
+    # Detail of the watering line of the home page: the plants to water, to uncheck those not done.
+    resource :watering, only: :show
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

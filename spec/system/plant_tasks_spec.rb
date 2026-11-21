@@ -15,7 +15,7 @@ RSpec.describe "Plant tasks", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
     expect(page).to have_content("Rien à faire aujourd'hui.")
-    click_on "Citronnier"
+    open_plant("Citronnier")
     expect(page).to have_content("Aucune autre tâche")
 
     # Repeating task due today: it shows up in "À faire aujourd'hui".
@@ -40,13 +40,13 @@ RSpec.describe "Plant tasks", type: :system do
     click_on "Ajouter la tâche"
     expect(page).to have_content("Une fois · dans 4 j")
 
-    click_on "← Mes plantes"
+    go_to_tab("Aujourd'hui")
     expect(page).to have_content("À faire aujourd'hui · 1")
     click_on "Fait : Engrais (Citronnier)"
     expect(page).to have_content("Engrais noté pour « Citronnier ».")
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
-    click_on "Citronnier"
+    open_plant("Citronnier")
     expect(page).to have_content("Tous les 14 jours · dans 14 j")
     expect(page).to have_content("Fait aujourd'hui")
     within("section[aria-labelledby=journal]") { expect(page).to have_content("Engrais") }

@@ -64,6 +64,8 @@ PlantAnalysis                    # une seule en attente par plante (index unique
   plant, requested_by (User)
   photos (1 à 5, via PlantAnalysisPhoto)   # la plus récente par défaut
   user_note                      # question ou remarque facultative, transmise à l'IA
+  place : jsonb                  # { exposure, sheltered } à la demande, transmis à l'IA ; null avant 2026-11-21
+                                 # un lieu différent aujourd'hui signale l'analyse « à revoir »
   status (pending | done | failed), error
   health (ok | watch | act)      # bien / à surveiller / à traiter
   species_name, species_common_name, species_confidence (low | medium | high)

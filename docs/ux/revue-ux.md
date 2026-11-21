@@ -191,9 +191,9 @@ dans le **contenu saisi** par l'utilisateur, jamais dans l'interface.
 - **Groupe de liste** : titre de groupe 13 px graphite au-dessus, surface blanche, filets, rayon 14 px, sans ombre.
 - **Bouton** : principal plein vert sapin, hauteur 48, rayon 12 ; secondaire fond vert 10 % ; tertiaire texte ;
   destructif texte brique, toujours derrière une confirmation.
-- **Badge d'échéance** : texte seul, pas de pastille de couleur. « Aujourd'hui » en encre, « Demain », « Jeu. 27 »
-  en graphite, « Depuis hier » en graphite pour une tâche souple, « En retard · 2 j » en brique pour une tâche à ne pas
-  rater uniquement.
+- **Badge d'échéance** : texte seul, pas de pastille de couleur. « aujourd'hui » en encre et gras, « demain »,
+  « dans 4 j » en graphite, « prévu hier », « prévu il y a 3 j » en graphite pour une tâche souple (fait en PR 4,
+  `DueLabelComponent`) ; « En retard · 2 j » en brique pour une tâche à ne pas rater uniquement (PR 10).
 - **État vide** : icône au trait 32 px graphite, une phrase, un bouton secondaire. Pas d'emoji géant centré.
 - **Toast** : en bas, au-dessus de la barre d'onglets, fond encre, texte blanc, action « Annuler », 5 s, ne décale
   jamais le contenu (remplace les flashs en haut de page).
@@ -317,9 +317,11 @@ le nom « easy » promet d'éviter.
    salon 1 ». Une ligne, un bouton « Fait » qui valide les quatre. Appui sur la ligne : feuille avec les plantes
    cochées, rangées par emplacement ; on décoche celles qu'on n'a pas faites. Une échéance seule s'affiche comme
    aujourd'hui. Les tâches manuelles ne se regroupent pas.
-2. **Validation groupée** : un service `Tasks::CompleteMany` qui appelle `Tasks::Complete` pour chaque échéance dans
-   une transaction, et renvoie la liste pour le toast « 3 arrosages notés · Annuler » (l'annulation appelle
-   `Tasks::CancelCompletion` pour chacune).
+2. **Validation groupée** (fait en PR 5) : `Tasks::CompleteMany` appelle `Tasks::Complete` pour chaque échéance, **une
+   par une** et non dans une transaction globale : une échéance déjà faite (double appui, autre membre du foyer) est
+   ignorée sans bloquer les autres, et chaque tâche reste verrouillée le temps de sa validation. Le toast « 3 arrosages
+   notés · Annuler » appelle `Tasks::CancelMany` (même principe). Le titre « À faire aujourd'hui · N » compte les
+   tâches, comme le résumé du matin, pas les lignes.
 3. **Importance** : chaque tâche est **souple** (arrosage, entretien, engrais) ou **à ne pas rater** (poubelle,
    médicament, vermifuge). Seules les « à ne pas rater » apparaissent en rouge, en tête, et déclenchent une relance.
    Valeur par défaut fixée par le modèle de tâche du catalogue ; modifiable par tâche.
@@ -379,10 +381,15 @@ faite.
   (« 3 plantes ; leurs analyses seront signalées à revoir »). Un simple changement de nom ne déclenche rien.
 - **Vue d'ensemble** : dans Maison, un badge « 3 analyses à revoir » mène à la liste des plantes concernées, pour ne
   pas avoir à ouvrir chaque fiche.
-- **Questions pour le propriétaire** : relancer plante par plante, ou proposer « relancer les 3 » d'un coup ? Une
-  plante déplacée temporairement (rentrée pour l'hiver) doit-elle aussi être signalée ?
-- **Impacts sur les données** : colonne `plant_analyses.context` (jsonb : emplacement, exposition, abri) ; la
-  comparaison avec le lieu actuel se fait à l'affichage, sans état « à revoir » stocké.
+- **Décidé (21 novembre 2026)** : relance **plante par plante** (pas de « relancer les 3 » d'un coup) ; **tout**
+  changement de lieu est signalé, y compris temporaire. Le signal disparaît dès que la plante revient dans le lieu de
+  sa dernière analyse.
+- **Fait en PR 6b** : colonne `plant_analyses.place` (jsonb : exposition et abri, sans le nom de l'emplacement : le
+  renommer ne change rien pour la plante) ; `Plant#place_change_since_analysis` compare à l'affichage, sans état « à
+  revoir » stocké. Les analyses faites avant n'ont pas de lieu enregistré : rien n'est signalé pour elles. Une plante
+  déplacée dans un autre emplacement aux mêmes conditions n'est pas signalée. Supprimer un emplacement laisse ses
+  plantes sans emplacement : leurs analyses sont signalées, comme pour tout changement de lieu. Le lieu enregistré est
+  aussi celui transmis à l'IA, même si l'emplacement change pendant l'analyse.
 
 ### Impacts sur le modèle de données (à signaler, non implémentés)
 
@@ -536,11 +543,12 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   endroit pour le jour. Effort M, priorité P1.
 - **12. Query object** : `TodayQuery` / presenter : regroupement par `template_key`, détail rangé par emplacement.
   Pourquoi : Une ligne par geste. Effort M, priorité P1.
-- **13. Service** : `Tasks::CompleteMany` (transaction, résultat pour le toast). Pourquoi : Valider un groupe d'un
+- **13. Service** : `Tasks::CompleteMany` (une par une, résultat pour le toast). Pourquoi : Valider un groupe d'un
   geste. Effort M, priorité P1.
 - **14. Vue + route** : Feuille « détail d'un groupe » avec cases à décocher. Pourquoi : Exception sans perdre la
   rapidité. Effort M, priorité P2.
-- **15. Completions** : Réponse Turbo Stream : retire la ligne, toast en bas. Pourquoi : Pas de rechargement ni de
+- **15. Completions** : Redirection vers l'accueil rafraîchi par morph (défilement et `<details>` ouverts conservés),
+  toast en bas. Pourquoi : Pas de rechargement ni de
   décalage. Effort M, priorité P1.
 - **16. Toast + Stimulus** : « Annuler » 5 s, appelle `CancelCompletion`. Pourquoi : Erreur de doigt réparable sur
   place. Effort M, priorité P1.
@@ -642,12 +650,14 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    configuration revue, formulaires qui se ferment. Le ressenti « transitions » change déjà.
 3. **PR 3 · Jetons et icônes** (#25, #26, #27, #52, fait) : palette en `@theme`, `IconComponent`, retrait des emojis de
    `fr.yml`, couleurs de la coque. Les écrans gardent leur structure.
-4. **PR 4 · Composants de base** (#28, #29, #30, #17, #18) : ligne de tâche, groupe de liste, état vide, bouton, toast ;
-   appliqués à l'accueil et à la fiche sans les restructurer.
-5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #15, #16, #55) : regroupement, validation groupée, toast Annuler. Le
-   cœur de la remarque 1.
-6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46, #47, #57) : les trois racines web, prêtes
-   pour les onglets (dans le navigateur, une barre d'onglets web en bas les remplace).
+4. **PR 4 · Composants de base** (#28, #29, #30, #17, #18, fait) : ligne de tâche, groupe de liste, état vide, bouton,
+   toast ; appliqués à l'accueil et à la fiche sans les restructurer.
+5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #14, #15, #16, #55, fait ; l'inventaire des plantes reste sur l'accueil
+   jusqu'à la PR 6) : regroupement, validation groupée, toast Annuler. Le cœur de la remarque 1.
+6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #56, fait) : les trois racines web (`/`, `/house`,
+   `/journal`), la page Plantes, les Réglages, et une barre d'onglets web en bas (colonne à gauche sur ordinateur).
+   **PR 6b** (#46, #47, #57, fait) : modifier un emplacement, analyses à revoir après un changement de lieu, rôle dans
+   « Mes foyers ».
 7. **PR 7 · Onglets natifs** (#7) : la coque passe à trois navigateurs.
 8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
