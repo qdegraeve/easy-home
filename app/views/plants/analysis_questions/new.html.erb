@@ -1,7 +1,8 @@
 <div class="mx-auto max-w-2xl">
-  <%# Kept in the Android app too: this page only shows a refused question, rendered in place of the plant page (its
-      URL stays the plant's). Native "back" would leave the plant; this link reloads it instead. %>
-  <%= link_to t("plants.tasks.back", name: @plant.name), @plant, class: "text-sm text-muted underline" %>
+  <%# Kept in the Android app too: this page only shows a refused question, rendered in place of the analysis page
+      (its URL stays the analysis'). Native "back" would leave the analysis; this link reloads it instead. %>
+  <%= link_to t("plants.tasks.back", name: @plant.name), plant_analysis_path(@plant, @analysis),
+        class: "text-sm text-muted underline" %>
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
 
   <div class="mt-6">

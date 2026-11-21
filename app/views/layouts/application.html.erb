@@ -34,7 +34,9 @@
     <% end %>
     <%= render "shared/tab_bar" if show_tabs? %>
 
-    <main class="<%= class_names("mx-auto max-w-md px-4 pb-40 pt-6 md:max-w-3xl", "md:ml-56 md:mr-0": show_tabs?) %>">
+    <main
+      class="<%= class_names("mx-auto max-w-md px-4 pb-40 pt-6 md:max-w-5xl lg:px-8", "md:ml-56 md:mr-0": show_tabs?) %>"
+    >
       <%= render "layouts/flash" %>
       <%= yield %>
     </main>

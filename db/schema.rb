@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_21_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -154,6 +154,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_21_180000) do
     t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "cover_photo_id"
+    t.index ["cover_photo_id"], name: "index_plants_on_cover_photo_id"
     t.index ["household_id"], name: "index_plants_on_household_id"
     t.index ["location_id"], name: "index_plants_on_location_id"
   end
@@ -221,6 +223,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_21_180000) do
   add_foreign_key "plant_analysis_questions", "users", column: "asked_by_id"
   add_foreign_key "plants", "households"
   add_foreign_key "plants", "locations"
+  add_foreign_key "plants", "photos", column: "cover_photo_id", on_delete: :nullify
   add_foreign_key "sessions", "users"
   add_foreign_key "task_occurrences", "tasks"
   add_foreign_key "task_occurrences", "users", column: "completed_by_id"

@@ -308,11 +308,19 @@ deux moitiés, qui s'échangent des messages JSON (ADR 0014) :
 
 Deux composants pour l'instant :
 
-- **`button`** : côté page, `data-controller="bridge--button"` avec `data-bridge-title` et `data-bridge-icon` sur un
-  lien ; côté app, le **bouton flottant** en bas à droite, au-dessus des onglets (convention Android : il sert à
-  créer ; la barre du haut garde la navigation, les Réglages et le menu ⋮), dont l'appui clique le lien. Utilisé pour
-  le « + » de la page Plantes. Il suit la page à l'écran : `MainActivity` appelle `ButtonComponent.showFor()` après
-  chaque navigation et changement d'onglet, et une page qui n'en déclare pas n'en a pas.
+- **`button`** : côté page, `data-controller="bridge--button"` avec `data-bridge-title`, `data-bridge-icon`,
+  `data-bridge-label` (le mot sur le bouton, « Tâche ») et `data-bridge-order` (1 par défaut) sur un lien ; côté app,
+  un **bouton flottant avec libellé** en bas à droite, au-dessus des onglets (convention Android : il sert à créer ; la
+  barre du haut garde la navigation, les Réglages et le menu ⋮), dont l'appui clique le lien. Une page peut en
+  déclarer deux : l'ordre 1 est le principal (`main_action`), l'ordre 2 s'empile au-dessus en couleur douce
+  (`second_action`). Chaque bouton a une clé (son titre) : quand l'élément quitte la page (autre onglet, morph qui ne
+  l'a plus), le contrôleur envoie `disconnect` et l'app retire ce bouton. Utilisé pour le « + » de la page Plantes,
+  « Tâche » et « Analyse » dans l'onglet Soins de la fiche. Il suit la page à l'écran : `MainActivity` appelle
+  `ButtonComponent.showFor()` après chaque navigation et changement d'onglet, et une page qui n'en déclare pas n'en a
+  pas.
+- **Exception, le « + Photo »** de l'onglet Photos est dessiné par la page (`data-floating-action`, même aspect) et
+  non par l'app : la WebView n'ouvre le sélecteur de fichiers que sur un vrai geste de l'utilisateur dans la page, pas
+  sur un clic déclenché depuis Kotlin.
 - **`menu`** : côté page, `data-controller="bridge--menu"` et des cibles `item` ; côté app, les entrées du menu ⋮,
   dont le choix clique l'élément (sa confirmation s'affiche comme d'habitude). Utilisé pour Modifier, Archiver et
   Supprimer d'une plante.

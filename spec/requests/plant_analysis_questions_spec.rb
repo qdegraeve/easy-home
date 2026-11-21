@@ -17,13 +17,13 @@ RSpec.describe "Plant analysis questions", type: :request do
 
     params = { plant_analysis_question: { body: "Faut-il pailler ?" } }
     expect { post plant_analysis_questions_path(plant, analysis), params: }.to have_enqueued_job(AnswerQuestionJob)
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_analysis_path(plant, analysis))
     follow_redirect!
     expect(response.body).to include("Question envoyée", "Faut-il pailler ?", "Réponse en cours")
     expect(response.body).not_to include("Envoyer la question")
 
     perform_enqueued_jobs
-    get plant_path(plant)
+    get plant_analysis_path(plant, analysis)
     expect(response.body).to include("Oui, le paillis suffit.", "Envoyer la question")
   end
 
@@ -85,7 +85,7 @@ RSpec.describe "Plant analysis questions", type: :request do
     question = create(:plant_analysis_question, analysis:, status: :failed, error: "external_error: x")
     sign_in(user)
 
-    get plant_path(plant)
+    get plant_analysis_path(plant, analysis)
     expect(response.body).to include("La réponse n&#39;a pas abouti", "Reposer la question")
 
     expect { post ask_again_plant_analysis_question_path(plant, analysis, question) }
@@ -97,7 +97,7 @@ RSpec.describe "Plant analysis questions", type: :request do
     create(:plant_analysis_question, :done, analysis:, answer: %(<img src="https://evil.example/p.gif">))
     sign_in(user)
 
-    get plant_path(plant)
+    get plant_analysis_path(plant, analysis)
 
     expect(response.body).not_to include("<img src=\"https://evil")
     expect(response.body).to include("&lt;img src=")
@@ -107,7 +107,7 @@ RSpec.describe "Plant analysis questions", type: :request do
     create_list(:plant_analysis_question, PlantAnalysisQuestion::MAX_PER_ANALYSIS, :done, analysis:)
     sign_in(user)
 
-    get plant_path(plant)
+    get plant_analysis_path(plant, analysis)
 
     expect(response.body).to include("10 questions au maximum par analyse")
     expect(response.body).not_to include("Envoyer la question")

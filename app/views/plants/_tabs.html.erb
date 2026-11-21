@@ -1,0 +1,17 @@
+<%# Soins / Photos / Historique: one part of the plant at a time, instead of six sections of the same weight (UX
+    review #33). Plain links (?tab=…), replacing the page in the history: "back" leaves the plant, not the tab. %>
+<nav aria-label="<%= t("plants.tabs.label") %>" class="grid grid-cols-3 gap-1 rounded-2xl bg-subtle p-1 text-sm">
+  <% { "care" => nil, "photos" => plant.photos.size, "history" => nil }.each do |tab, count| %>
+    <%= link_to plant_path(plant, tab: (tab unless tab == "care")),
+          aria: { current: ("page" if tab == current) },
+          data: { turbo_action: "replace" },
+          class: class_names(
+            "flex min-h-11 items-center justify-center gap-1 rounded-xl px-2 font-semibold",
+            "bg-surface text-ink shadow-sm": tab == current,
+            "text-muted hover:text-ink": tab != current
+          ) do %>
+      <%= t("plants.tabs.#{tab}") %>
+      <% if count&.positive? %><span class="text-xs font-normal text-muted"><%= count %></span><% end %>
+    <% end %>
+  <% end %>
+</nav>

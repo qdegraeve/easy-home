@@ -51,6 +51,7 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_no_button("Arrosée : Basilic")
 
     # Correction: today's watering was a mistake.
+    open_plant_tab("Historique")
     click_on "Annuler l'arrosage du lun 16 nov."
     within("dialog", text: "Le prochain arrosage sera recalculé.") { click_on "Oui, annuler" }
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")

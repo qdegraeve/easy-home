@@ -45,7 +45,14 @@
   display: none;
 }
 
-/* The toasts stay above the floating button of the app (56 dp and its 16 dp margin), on the pages that have one. */
-html[data-bridge-components~="button"]:has([data-controller~="bridge--button"]) #toasts {
+/* The toasts stay above the floating button of the app (56 dp and its 16 dp margin), on the pages that have one:
+   native (bridge "button") or drawn by the page (data-floating-action). */
+html[data-bridge-components~="button"]:has([data-controller~="bridge--button"]) #toasts,
+html:has([data-floating-action]) #toasts {
   padding-bottom: 5.5rem;
+}
+
+/* Two floating buttons (main + second, "Tâche" and "Analyse"): above both. */
+html[data-bridge-components~="button"]:has([data-controller~="bridge--button"][data-bridge-order="2"]) #toasts {
+  padding-bottom: 9.5rem;
 }

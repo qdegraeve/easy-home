@@ -16,5 +16,8 @@ application.register("address-autocomplete", AddressAutocompleteController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import PhotoPickerController from "./photo_picker_controller"
+application.register("photo-picker", PhotoPickerController)
+
 import ToastController from "./toast_controller"
 application.register("toast", ToastController)

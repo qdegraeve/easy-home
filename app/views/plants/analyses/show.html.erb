@@ -9,6 +9,8 @@
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", name: @plant.name) %></h1>
 
   <div class="mt-4">
-    <%= render "plants/analyses/analysis", analysis: @analysis, restart: false %>
+    <%# A failed analysis is restarted here, where the user waited for it. %>
+    <%= render "plants/analyses/analysis", analysis: @analysis,
+          restart: @analysis.failed? && policy(PlantAnalysis.new(plant: @plant)).create? %>
   </div>
 </div>

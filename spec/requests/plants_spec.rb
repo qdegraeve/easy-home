@@ -90,6 +90,16 @@ RSpec.describe "Plants", type: :request do
       expect(response.body).to include("Dernier arrosage : dim 15 nov.")
     end
 
+    it "falls back to the care tab on an unknown tab" do
+      plant = create(:plant, :watered, household:, name: "Basilic")
+      sign_in(user)
+
+      get plant_path(plant, tab: "unknown")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to match(/aria-current="page"[^>]*>\s*Soins/)
+    end
+
     it "does not find the plant of another household" do
       sign_in(user)
 

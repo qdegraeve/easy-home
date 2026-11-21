@@ -35,6 +35,12 @@ class PlantAnalysis < ApplicationRecord
     applied_action_indexes.include?(index)
   end
 
+  # Proposals not taken yet (species, watering interval, actions): the summary on the plant page invites to see them.
+  def open_proposals_count
+    [ species_name && !species_accepted?, watering_interval_days && !watering_accepted? ].count(true) +
+      actions.each_index.count { |index| !action_accepted?(index) }
+  end
+
   # In memory, so it also holds on an analysis that is not saved yet: the AI compares the photos in time order.
   def photos_oldest_first
     photos.sort_by { |photo| [ photo.taken_at, photo.id.to_i ] }

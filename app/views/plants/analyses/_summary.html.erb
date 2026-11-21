@@ -1,0 +1,37 @@
+<%# The last analysis on the plant page, summed up (UX review #34, #38): its state in color, a few words, what it
+    proposes; the detail, the proposals and the questions are on the analysis page. %>
+<% tones = {
+  "ok" => "bg-action-soft text-action",
+  "watch" => "bg-warn-soft text-warn",
+  "act" => "bg-alert-soft text-alert"
+} %>
+<article class="rounded-2xl bg-surface p-4">
+  <% if analysis.pending? %>
+    <p><%= heading_with_icon(:hourglass, t("plants.analyses.analysis.pending")) %></p>
+  <% elsif analysis.failed? %>
+    <p role="alert" class="text-alert"><%= t("plants.analyses.analysis.failed") %></p>
+    <% if restart && analysis.photos.any? %>
+      <%= button_to t("plants.analyses.analysis.restart"), plant_analyses_path(analysis.plant),
+            params: { plant_analysis: { note: analysis.user_note, photo_ids: analysis.photo_ids } },
+            class: "mt-3 #{button_class(:secondary)}" %>
+    <% end %>
+  <% else %>
+    <% health_icon, = ApplicationHelper::HEALTH_ICONS.fetch(analysis.health) %>
+    <div class="flex items-center justify-between gap-3">
+      <span class="<%= class_names("inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-semibold",
+                                   tones.fetch(analysis.health)) %>">
+        <%= icon(health_icon, size: 16) %>
+        <%= t("plants.analyses.analysis.health.#{analysis.health}") %>
+      </span>
+      <span class="text-sm text-muted"><%= l(analysis.created_at.to_date, format: :day) %></span>
+    </div>
+    <p class="mt-2 text-sm"><%= analysis.observations.to_s.truncate(160) %></p>
+    <%# Only when they can be taken (not on an archived plant, not for a guest). %>
+    <% open = policy(analysis).accept? ? analysis.open_proposals_count : 0 %>
+    <% if open.positive? %>
+      <p class="mt-2 text-sm font-semibold text-action"><%= t("plants.analyses.summary.proposals", count: open) %></p>
+    <% end %>
+  <% end %>
+  <%= link_to t("plants.analyses.summary.see"), plant_analysis_path(analysis.plant, analysis),
+        class: "mt-3 #{button_class(:tertiary)} -ml-4" %>
+</article>

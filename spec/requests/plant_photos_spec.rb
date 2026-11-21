@@ -21,12 +21,12 @@ RSpec.describe "Plant photos", type: :request do
     Photos::Add.new.call(plant:, file: picture).value!
   end
 
-  it "adds a photo and shows it on the plant page" do
+  it "adds a photo and shows it in the photos of the plant" do
     sign_in(user)
 
     post plant_photos_path(plant), params: { photo: { file: picture } }
 
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     follow_redirect!
     expect(response.body).to include("Photo ajoutée.", "Photo du ")
     expect(plant.photos.count).to eq(1)
@@ -37,7 +37,7 @@ RSpec.describe "Plant photos", type: :request do
 
     post plant_photos_path(plant), params: { photo: { file: picture("not_an_image.jpg") } }
 
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     expect(flash[:alert]).to eq("Photo n'est pas une image JPEG, PNG ou WebP lisible")
     expect(plant.photos).to be_empty
   end
@@ -83,7 +83,7 @@ RSpec.describe "Plant photos", type: :request do
     expect(response.body).to include("Photo du 16 novembre 2026", "Supprimer la photo")
 
     delete plant_photo_path(plant, photo)
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     expect(Photo.exists?(photo.id)).to be(false)
   end
 
@@ -148,6 +148,47 @@ RSpec.describe "Plant photos", type: :request do
         expect(response).to have_http_status(:not_found)
         expect(Photo.exists?(photo.id)).to be(true)
       end
+    end
+  end
+
+  describe "cover photo" do
+    it "makes a photo the face of the plant, until it is deleted" do
+      older, newer = add_photo, add_photo
+      sign_in(user)
+
+      post plant_photo_cover_path(plant, older)
+      expect(response).to redirect_to(plant_path(plant, tab: "photos"))
+      expect(plant.reload.face).to eq(older)
+
+      get plant_photo_path(plant, older)
+      expect(response.body).to include("Photo de couverture")
+      expect(response.body).not_to include("Utiliser comme photo de couverture")
+
+      delete plant_photo_path(plant, older)
+      expect(plant.reload.cover_photo).to be_nil
+      expect(plant.face).to eq(newer)
+    end
+
+    it "does not take the photo of another plant, nor let a guest choose" do
+      other_photo = Photos::Add.new.call(plant: create(:plant, household:), file: picture).value!
+      sign_in(user)
+      post plant_photo_cover_path(plant, other_photo)
+      expect(response).to have_http_status(:not_found)
+
+      photo = add_photo
+      sign_in(create(:household_member, household:, role: :guest).user)
+      post plant_photo_cover_path(plant, photo)
+      expect(response).to have_http_status(:not_found)
+      expect(plant.reload.cover_photo).to be_nil
+    end
+
+    it "still lets the face of an archived plant be chosen" do
+      photo = add_photo
+      plant.update!(archived_at: Time.current)
+      sign_in(user)
+
+      post plant_photo_cover_path(plant, photo)
+      expect(plant.reload.cover_photo).to eq(photo)
     end
   end
 end

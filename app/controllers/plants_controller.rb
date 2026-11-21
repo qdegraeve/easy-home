@@ -10,8 +10,11 @@ class PlantsController < ApplicationController
     @archived_plants = plants.archived
   end
 
+  TABS = %w[care photos history].freeze
+
   def show
     @plant = find_plant
+    @tab = params[:tab].presence_in(TABS) || "care"
     @watering_task = @plant.watering_task
     @photos = @plant.photos.with_attached_image
     @analyses = @plant.analyses.recent_first
