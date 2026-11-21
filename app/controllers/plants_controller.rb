@@ -33,7 +33,8 @@ class PlantsController < ApplicationController
     return redirect_to(new_household_path) unless household
 
     authorize Plant.new(household:)
-    @form = PlantForm.new(household:)
+    # A common rhythm to start with: the analysis of the photo proposes the right one (UX review #36).
+    @form = PlantForm.new(household:, watering_interval_days: PlantForm::DEFAULT_WATERING_DAYS)
   end
 
   def create

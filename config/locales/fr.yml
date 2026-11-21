@@ -236,7 +236,11 @@ fr:
       every: "Tous les"
       days: "jours"
       last_watered_help: "Point de départ du calcul du prochain arrosage."
-      photo_help: "Facultative : JPEG, PNG ou WebP, 15 Mo maximum."
+      photo_help: >-
+        Facultative : avec elle, l'analyse propose l'espèce et l'arrosage. JPEG, PNG ou WebP, 15 Mo maximum.
+      choose_photo: "Prendre ou choisir une photo"
+      watering_help: "Une valeur courante pour commencer : l'analyse de la photo proposera la bonne."
+      more: "Plus de détails (espèce, dernier arrosage)"
     new:
       title: "Ajouter une plante"
       submit: "Ajouter la plante"
@@ -351,12 +355,12 @@ fr:
         photos: "Photos analysées"
         photo_alt: "Photo analysée du %{date}"
         accept_species: "Enregistrer l'espèce"
-        species_accepted: "Sur la fiche"
+        species_accepted: "Ajouté"
         accept_watering: "Appliquer"
-        watering_accepted: "En place"
+        watering_accepted: "Ajouté"
         accept_action: "Ajouter aux tâches"
         accept_action_label: "Ajouter « %{title} » aux tâches"
-        action_accepted: "Dans les tâches"
+        action_accepted: "Ajouté"
       accept_species:
         success: "Espèce enregistrée : %{species}."
       accept_watering:
@@ -409,6 +413,9 @@ fr:
         destroy_confirm: "Supprimer cette photo ?"
         cover: "Photo de couverture"
         make_cover: "Utiliser comme photo de couverture"
+        browse: "Autres photos"
+        older: "Plus ancienne"
+        newer: "Plus récente"
         save_date: "Enregistrer la date"
       update:
         success: "Date de la photo enregistrée."

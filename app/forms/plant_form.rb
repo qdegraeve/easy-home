@@ -9,6 +9,8 @@ class PlantForm
   attribute :watering_interval_days, :integer
   attribute :last_watered_on, :date, default: -> { Time.zone.today }
 
+  DEFAULT_WATERING_DAYS = 7
+
   attr_accessor :household, :photo
 
   validates :name, presence: true, length: { maximum: 100 }
