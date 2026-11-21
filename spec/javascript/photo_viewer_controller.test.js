@@ -129,7 +129,7 @@ describe("photo viewer controller", () => {
     expect(images.map((preloaded) => new URL(preloaded.src).pathname)).toEqual(["/older.jpg", "/newer.jpg"])
   })
 
-  it("after a move from the keyboard, gives the focus back to the link used, or to the other one at the end", async () => {
+  it("after a keyboard move, gives the focus back to the link used, or to the other one at the end", async () => {
     document.documentElement.dataset.photoDirection = "older"
     document.documentElement.dataset.photoInput = "key"
     await mount()
@@ -147,5 +147,25 @@ describe("photo viewer controller", () => {
     document.documentElement.dataset.photoInput = "pointer"
     await mount()
     expect(document.activeElement).toBe(document.body)
+  })
+
+  it("waits for the fresh page, not the cached preview, to give the focus back", async () => {
+    document.documentElement.dataset.photoDirection = "older"
+    document.documentElement.dataset.photoInput = "key"
+    document.documentElement.setAttribute("data-turbo-preview", "")
+    await mount()
+    document.documentElement.removeAttribute("data-turbo-preview")
+
+    expect(document.activeElement).toBe(document.body)
+    expect(document.documentElement.dataset.photoInput).toBe("key")
+  })
+
+  it("forgets the direction on a deletion", async () => {
+    await mount()
+    document.documentElement.dataset.photoDirection = "older"
+
+    application.getControllerForElementAndIdentifier(document.querySelector("[data-controller]"), "photo-viewer")
+      .forgetDirection()
+    expect(document.documentElement.dataset.photoDirection).toBeUndefined()
   })
 })

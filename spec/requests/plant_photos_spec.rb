@@ -153,11 +153,13 @@ RSpec.describe "Plant photos", type: :request do
         expect(plant.photos).to be_empty
       end
 
-      it "answers 404 to #{intruder_label} on show, update and destroy" do
+      it "answers 404 to #{intruder_label} on show, edit, update and destroy" do
         photo = add_photo
         sign_in(instance_exec(&intruder))
 
         get plant_photo_path(plant, photo)
+        expect(response).to have_http_status(:not_found)
+        get edit_plant_photo_path(plant, photo)
         expect(response).to have_http_status(:not_found)
         patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-11-01" } }
         expect(response).to have_http_status(:not_found)
@@ -175,7 +177,7 @@ RSpec.describe "Plant photos", type: :request do
       sign_in(user)
 
       post plant_photo_cover_path(plant, older)
-      expect(response).to redirect_to(plant_path(plant, tab: "photos"))
+      expect(response).to redirect_to(plant_photo_path(plant, older)) # stays in the viewer
       expect(plant.reload.face).to eq(older)
 
       get plant_photo_path(plant, older)

@@ -54,10 +54,12 @@ RSpec.describe "Plant photos", type: :system do
     # The face of the plant: chosen among its photos.
     click_on "Utiliser comme photo de couverture"
     expect(page).to have_content("Photo de couverture choisie.")
-    # The header shows it now, instead of the latest photo (18 November).
-    open_plant_tab("Photos")
+    expect(page).to have_content("Photo du 8 novembre 2026") # still in the viewer
+    # Marked in the gallery, and the header shows it now, instead of the latest photo (18 November).
+    click_on "← Citronnier"
     within("li", text: "Couverture") { expect(page).to have_css("img[alt='Photo du dim 8 nov.']") }
-    find("img[alt='Photo du dim 8 nov.']").click
+    find("img[alt='Photo de Citronnier']").click
+    expect(page).to have_content("Photo du 8 novembre 2026")
     expect(page).to have_content("Photo de couverture")
     expect(page).to have_no_button("Utiliser comme photo de couverture")
 
@@ -77,5 +79,9 @@ RSpec.describe "Plant photos", type: :system do
     expect(page).to have_content("Photo supprimée.")
     expect(page).to have_content("Photo du 18 novembre 2026")
     expect(page).to have_content("1 / 1")
+    # The deleted photo replaced in the history: "back" leaves the viewer.
+    page.go_back
+    expect(page).to have_no_content("Photo du 8 novembre 2026")
+    expect(page).to have_no_css("img[alt='Photo du dim 8 nov.']")
   end
 end

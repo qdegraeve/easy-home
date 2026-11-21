@@ -88,8 +88,16 @@ export default class extends Controller {
     document.documentElement.dataset.photoInput = input
   }
 
-  // From the keyboard, the focus goes back to the link used, or to the other one at the end of the photos.
+  // A deletion goes on to the next photo without a direction: a cross-fade, not a slide from the last move.
+  forgetDirection() {
+    delete document.documentElement.dataset.photoDirection
+  }
+
+  // From the keyboard, the focus goes back to the link used, or to the other one at the end of the photos. Not on the
+  // cached copy Turbo shows first when coming back to a photo: the fresh page replaces it.
   restoreFocus() {
+    if (document.documentElement.hasAttribute("data-turbo-preview")) return
+
     const { photoDirection: direction, photoInput: input } = document.documentElement.dataset
     delete document.documentElement.dataset.photoInput
     if (input !== "key") return

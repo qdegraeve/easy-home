@@ -3,11 +3,11 @@
     Each photo has its own page, replaced on the way ("back" leaves the photos instead of going through each). %>
 <% content_for(:body_class, "bg-ink text-white") %>
 <% content_for(:head) { tag.meta(name: "view-transition", content: "same-origin") } %>
-<% date = l(@photo.taken_at_in_database.in_time_zone.to_date, format: :long) %>
+<% date = l(@photo.taken_at.to_date, format: :long) %>
 <% cover = @plant.cover_photo_id == @photo.id %>
+<% preload = [ @older, @newer ].compact.map { url_for(it.image.variant(:large)) } %>
 
-<div class="mx-auto max-w-3xl" data-controller="photo-viewer"
-     data-photo-viewer-preload-value="<%= [ @older, @newer ].compact.map { url_for(it.image.variant(:large)) }.to_json %>"
+<div class="mx-auto max-w-3xl" data-controller="photo-viewer" data-photo-viewer-preload-value="<%= preload.to_json %>"
      data-action="keydown@window->photo-viewer#key">
   <% if (back = back_link_to(t("plants.tasks.back", name: @plant.name), plant_path(@plant, tab: "photos"))) %>
     <p class="[&_a]:text-white/70"><%= back %></p>
@@ -36,7 +36,6 @@
       <% end %>
 
       <div class="min-w-0 flex-1 text-center">
-        <%# The saved date: a refused date only lives in the form. %>
         <h1 class="truncate text-base font-semibold"><%= page_title t(".title", date:) %></h1>
         <p class="text-sm tabular-nums text-white/70">
           <%= t(".position", position: @position, count: @count) %>
@@ -60,7 +59,8 @@
   </div>
 
   <%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu); the id changes with
-      the cover, so that a refresh sends the menu again. %>
+      the cover, so that a refresh sends the menu again. The cover and the deletion stay in the viewer, replacing the
+      page: "back" never comes back to a deleted photo. %>
   <div id="photo-actions-<%= cover ? "cover" : "photo" %>" class="mt-6 flex flex-wrap justify-center gap-2"
        data-controller="bridge--menu">
     <% if policy(@photo).update? %>
@@ -68,11 +68,12 @@
             data: { bridge__menu_target: "item" } %>
       <% unless cover %>
         <%= button_to t(".make_cover"), plant_photo_cover_path(@plant, @photo), class: button_class(:on_dark),
-              data: { bridge__menu_target: "item" } %>
+              form: { data: { turbo_action: "replace" } }, data: { bridge__menu_target: "item" } %>
       <% end %>
     <% end %>
     <%= button_to t(".destroy"), plant_photo_path(@plant, @photo), method: :delete,
-          form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
+          form: { data: { turbo_action: "replace", action: "photo-viewer#forgetDirection",
+                          **confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) } },
           class: button_class(:on_dark), data: { bridge__menu_target: "item" } %>
   </div>
 </div>
