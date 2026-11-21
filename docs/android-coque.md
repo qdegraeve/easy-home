@@ -224,10 +224,13 @@ Comportements propres aux onglets (`MainActivity`) :
   Journal, un changement de foyer dans Maison).
 - **Retour du téléphone** : dans un onglet, il remonte sa pile ; à la page de départ de Maison ou de Journal, il ramène
   à Aujourd'hui ; à la page de départ d'Aujourd'hui, il quitte l'app.
-- **Déconnexion** : sur les pages de connexion, la barre d'onglets est masquée et l'app revient sur Aujourd'hui, où
-  l'on se reconnecte ; une fois reconnecté, la barre revient et Maison et Journal repartent de zéro pour la nouvelle
-  session. Aujourd'hui n'est jamais réinitialisé : il affiche la page d'après la connexion (le réinitialiser à ce
-  moment laissait un écran blanc).
+- **Déconnexion** : sur les pages de connexion, la barre d'onglets est masquée ; on se reconnecte dans l'onglet où l'on
+  était. Une fois reconnecté, la barre revient et **tous** les onglets repartent de leur page de départ pour la
+  nouvelle session (sinon, se reconnecter depuis Maison y mettait l'accueil à la place de Maison). Seule la page
+  affichée compte : les autres onglets chargent des pages en arrière-plan (leur page de départ, une redirection vers
+  la connexion) qui ne disent rien de la connexion de l'utilisateur ; les prendre en compte faisait réapparaître les
+  onglets sur la connexion et laissait des onglets vides. Vérifié sur le téléphone : déconnexion depuis Maison,
+  Journal et Aujourd'hui, puis reconnexion, et relance de l'app déconnectée.
 - **Insets** : la barre d'onglets se place au-dessus de la barre système ; masquée (modal, clavier), ce sont les pages
   qui prennent cette marge, pour que leur bas (toasts, boutons) reste visible.
 - **Supprimer une plante** (`data-turbo-action="replace"`) : la fiche quitte la pile. Depuis Maison > Plantes, on

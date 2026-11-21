@@ -65,28 +65,25 @@ class MainActivity : HotwireActivity() {
         navigator.host.navController.addOnDestinationChangedListener { _, _, _ -> onPageChanged(navigator) }
     }
 
-    // Signed out (from the settings, or a session that expired in any tab): no tabs on the sign-in pages, and the app
-    // goes back to "Aujourd'hui", where the sign-in happens. Signed in again: the tabs come back, and the other tabs
-    // start over for the new session. "Aujourd'hui" itself is never reset: it is showing the page after signing in.
-    // The resets wait for the current navigation to end (posted).
+    // Signed out (from the settings, or a session that expired): no tabs on the sign-in pages. Signed in again: the
+    // tabs come back. Only the page shown counts: the other tabs load pages in the background (their
+    // start page, a redirection to the sign-in page) that say nothing about the user signing in or out.
     private fun onPageChanged(navigator: Navigator) {
+        if (navigator != delegate.currentNavigator) return
         val path = navigator.location?.let { Uri.parse(it).path } ?: return
         val signInPage = SIGN_IN_PATHS.any { path.startsWith(it) }
 
         if (signInPage && !signedOut) {
             signedOut = true
             bottomNavigation.visibility = Visibility.HIDDEN
-            if (bottomNavigation.view.selectedItemId != 0) bottomNavigation.selectTab(0)
-            navigatorHosts.post { resetOtherTabs() }
         } else if (!signInPage && signedOut) {
             signedOut = false
             bottomNavigation.visibility = Visibility.DEFAULT
-            navigatorHosts.post { resetOtherTabs() }
+            // Every tab starts over from its own start page for the new session, the one shown included: signing in
+            // from "Maison" lands on the home page, which must not become the root of "Maison". After the current
+            // navigation ends (posted).
+            navigatorHosts.post { delegate.resetNavigators() }
         }
-    }
-
-    private fun resetOtherTabs() {
-        navigators.filterKeys { it != TODAY }.values.forEach { it.reset() }
     }
 
     // "Back" at the start page of "Maison" or "Journal" returns to "Aujourd'hui" instead of leaving the app; inside a
@@ -125,7 +122,6 @@ class MainActivity : HotwireActivity() {
 
     private companion object {
         const val SELECTED_TAB = "selected_tab"
-        const val TODAY = "today"
         val SIGN_IN_PATHS = listOf("/session/new", "/passwords")
     }
 }
