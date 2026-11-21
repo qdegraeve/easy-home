@@ -356,7 +356,7 @@ fr:
       delete: "Supprimer"
       delete_label: "Supprimer l'emplacement « %{name} »"
       delete_confirm:
-        zero: "Supprimer l'emplacement « %{name} » ?"
+        "0": "Supprimer l'emplacement « %{name} » ?"
         one: "Supprimer l'emplacement « %{name} » ? Sa plante restera, sans emplacement."
         other: "Supprimer l'emplacement « %{name} » ? Ses %{count} plantes resteront, sans emplacement."
       new_location: "Ajouter un emplacement"

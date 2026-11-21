@@ -66,6 +66,7 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_no_css("dialog[open]")
     expect(page).to have_no_content("Plante « Basilic » archivée.")
     click_on "Archiver"
+    expect(page).to have_css("dialog[open] button[data-tone='']", text: "Archiver")
     within("dialog", text: "Les rappels s'arrêtent") { click_on "Archiver" }
     expect(page).to have_content("Plante « Basilic » archivée.")
     expect(page).to have_content("plus de rappel")

@@ -16,6 +16,9 @@ RSpec.describe "Page titles", type: :request do
   it "titles every page of a signed in user like its heading" do
     user = create(:user, :with_household)
     plant = create(:plant, :watered, household: user.households.sole, name: "Citronnier")
+    photo = create(:photo, plant:, taken_at: Time.zone.parse("2026-11-08 10:00"))
+    pruning = create(:task, household: plant.household, subject: plant, title: "Tailler", template_key: nil,
+                            recurrence_type: :once, recurrence_config: { "due_on" => "2026-12-01" })
     post session_path, params: { email: user.email, password: "password" }
 
     {
@@ -23,7 +26,9 @@ RSpec.describe "Page titles", type: :request do
       plant_path(plant) => "Citronnier",
       new_plant_path => "Ajouter une plante",
       edit_household_path(user.households.sole) => "Ma maison",
-      edit_notification_settings_path => "Notifications"
+      edit_notification_settings_path => "Notifications",
+      plant_photo_path(plant, photo) => "Photo du 8 novembre 2026",
+      edit_plant_task_path(plant, pruning) => "Modifier « Tailler »"
     }.each do |path, title|
       get path
 

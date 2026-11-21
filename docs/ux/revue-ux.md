@@ -587,8 +587,9 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   Pourquoi : Écran propre. Effort S, priorité P3.
 - **50. `shared/_confirm_dialog`** : Libellé et couleur du bouton selon l'action (« Supprimer » en brique). Pourquoi :
   Confirmation explicite. Effort S, priorité P2.
-- **51. `button_to`** : État « en cours » et désactivation au clic (`data-turbo-submits-with`). Pourquoi : Double appui.
-  Effort S, priorité P2.
+- **51. `button_to`** : État « en cours » visible. Turbo désactive déjà le bouton pendant l'envoi ; un style sur
+  `form[aria-busy]` le grise (fait en PR 1). Libellé « en cours » (`data-turbo-submits-with`) seulement si le besoin
+  se confirme. Pourquoi : Double appui. Effort S, priorité P2.
 - **52. Android** : Couleurs de la coque alignées sur les jetons (barre, onglets). Pourquoi : Cohérence natif / web.
   Effort S, priorité P2.
 - **53. CSS + coque** : Thème sombre à partir des jetons. **Plus tard** ; en attendant, la coque passe en thème clair

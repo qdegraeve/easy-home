@@ -71,7 +71,13 @@
                       class: "rounded-lg px-2 py-1 text-xs text-stone-500 hover:bg-stone-100" %>
                 <%= button_to t(".destroy_task"), plant_task_path(@plant, task), method: :delete,
                       aria: { label: t(".destroy_task_label", title: task.title) },
-                      form: { data: confirm_data(t(".destroy_task_confirm", title: task.title), button: t(".destroy"), danger: true) },
+                      form: {
+                        data: confirm_data(
+                          t(".destroy_task_confirm", title: task.title),
+                          button: t(".destroy"),
+                          danger: true
+                        )
+                      },
                       class: "rounded-lg px-2 py-1 text-xs text-red-700 hover:bg-red-50" %>
               </div>
             </li>

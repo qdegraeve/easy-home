@@ -61,16 +61,20 @@
                 <%= location.sheltered? ? t(".sheltered") : t(".exposed") %>
               </p>
             </div>
-            <%= button_to t(".delete"), location_path(location), method: :delete,
-                  aria: { label: t(".delete_label", name: location.name) },
-                  form: {
-                    data: confirm_data(
-                      t(".delete_confirm", name: location.name, count: location.plants.size),
-                      button: t(".delete"),
-                      danger: true
-                    )
-                  },
-                  class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50" %>
+            <%= button_to(
+              t(".delete"),
+              location_path(location),
+              method: :delete,
+              aria: { label: t(".delete_label", name: location.name) },
+              form: {
+                data: confirm_data(
+                  t(".delete_confirm", name: location.name, count: location.plants.size),
+                  button: t(".delete"),
+                  danger: true
+                )
+              },
+              class: "rounded-xl px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+            ) %>
           </li>
         <% end %>
       </ul>

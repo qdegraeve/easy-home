@@ -1,5 +1,6 @@
 <%# Used by app/javascript/lib/confirm_dialog.js for data-turbo-confirm forms (see ApplicationHelper#confirm_data). %>
-<dialog id="confirm-dialog" aria-labelledby="confirm-dialog-message"
+<%# Permanent: a morph refresh (plant page, ADR 0008) must not close or reset an open confirmation. %>
+<dialog id="confirm-dialog" aria-labelledby="confirm-dialog-message" data-turbo-permanent
         class="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl p-5 shadow-xl backdrop:bg-stone-900/40">
   <form method="dialog" class="space-y-4">
     <p id="confirm-dialog-message" data-confirm-message class="text-stone-800"></p>

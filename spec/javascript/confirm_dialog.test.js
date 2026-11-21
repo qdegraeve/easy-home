@@ -70,6 +70,28 @@ describe("confirmWithDialog", () => {
     await expect(second).resolves.toBe(false)
   })
 
+  it("answers no to a confirmation left pending when another one starts", async () => {
+    const first = confirmWithDialog("A ?")
+    dialog().removeAttribute("open") // closed without a "close" event, as a page morph would
+    const second = confirmWithDialog("B ?")
+
+    await expect(first).resolves.toBe(false)
+    dialog().close("confirm")
+    await expect(second).resolves.toBe(true)
+  })
+
+  it("ignores a late close event of a previous opening", async () => {
+    let answered = false
+    const pending = confirmWithDialog("B ?").then((value) => { answered = true; return value })
+
+    dialog().dispatchEvent(new Event("close")) // queued from an earlier close, delivered while reopened
+    await Promise.resolve()
+    expect(answered).toBe(false)
+
+    dialog().close("confirm")
+    await expect(pending).resolves.toBe(true)
+  })
+
   it("falls back to window.confirm without an in-page dialog", async () => {
     document.body.innerHTML = ""
     const confirm = vi.fn(() => true)
