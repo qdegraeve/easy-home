@@ -3,7 +3,9 @@ require "rails_helper"
 # Critical journey: changing a location signals the analyses of its plants to review, and the analysis is restarted
 # plant by plant (see docs/tests.md and docs/ux/revue-ux.md, "Changement d'emplacement et analyses").
 RSpec.describe "Change of a location", type: :system do
-  it "changes the exposure of a location, sees the analysis to review, and restarts it with a prefilled note" do
+  include ActiveJob::TestHelper
+
+  it "changes the exposure of a location, sees the analysis to review, restarts it, and the signal goes" do
     user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
     household = user.households.sole
     terrace = create(:location, household:, name: "Terrasse", exposure: :partial_shade, sheltered: true)
@@ -40,5 +42,13 @@ RSpec.describe "Change of a location", type: :system do
       with: "Lieu changé depuis la dernière analyse : avant mi-ombre, abrité du vent, maintenant plein soleil, " \
             "exposé au vent."
     )
+
+    # While the new analysis runs, the restart is not offered again; once done in the new place, the signal goes.
+    click_on "Lancer l'analyse"
+    expect(page).to have_content("Analyse en cours")
+    expect(page).to have_no_content("Analyse à revoir")
+    perform_enqueued_jobs
+    expect(page).to have_content("À surveiller")
+    expect(page).to have_no_content("Analyse à revoir")
   end
 end

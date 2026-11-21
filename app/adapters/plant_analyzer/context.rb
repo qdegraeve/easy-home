@@ -37,12 +37,15 @@ module PlantAnalyzer
       "Place: Reunion Island, around #{household.latitude.round(2)}, #{household.longitude.round(2)}#{altitude}."
     end
 
+    # The conditions recorded when the analysis was requested (PlantAnalysis#place): the ones the advice is compared
+    # with later, even if the location changes while the analysis runs. Older analyses read the plant's location.
     def location_line
-      location = plant.location
-      return unless location
+      place = analysis.place || plant.place
+      return unless place["exposure"]
 
-      wind = location.sheltered? ? "sheltered from the wind" : "exposed to the wind"
-      "Spot: #{location.name}, #{EXPOSURES.fetch(location.exposure)}, #{wind}."
+      wind = place["sheltered"] ? "sheltered from the wind" : "exposed to the wind"
+      spot = [ plant.location&.name, EXPOSURES.fetch(place["exposure"]) ].compact.join(", ")
+      "Spot: #{spot}, #{wind}."
     end
 
     def watering_line

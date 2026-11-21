@@ -87,7 +87,9 @@
   <div class="space-y-6 self-start">
     <section aria-labelledby="analysis">
       <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis")) %></h2>
-      <% if (change = @plant.place_change_since_analysis) %>
+      <%# Not while an analysis runs (the restart itself), nor for an archived plant (nothing to offer). %>
+      <% change = @plant.place_change_since_analysis unless @plant.archived? || @analyses.first&.pending? %>
+      <% if change %>
         <%# The place changed since the last analysis: its advice may be wrong. Offered, never run by itself. %>
         <div role="note" class="mt-2 rounded-2xl bg-warn-soft p-4 text-sm">
           <p class="font-semibold"><%= heading_with_icon(:map_pin, t(".place_changed"), icon_class: "text-warn") %></p>

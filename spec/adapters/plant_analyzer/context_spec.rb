@@ -27,6 +27,17 @@ RSpec.describe PlantAnalyzer::Context do
     expect(text).not_to include("Rue", "97400", "20.912345")
   end
 
+  it "describes the place recorded when the analysis was requested, even if the location changed since" do
+    location = create(:location, name: "Terrasse", exposure: :partial_shade, sheltered: true)
+    plant = create(:plant, household: location.household, location:)
+    analysis = create(:plant_analysis, plant:, place: plant.place)
+    location.update!(exposure: :full_sun, sheltered: false)
+
+    text = described_class.new(analysis.reload).to_text
+
+    expect(text).to include("Spot: Terrasse, partial shade, sheltered from the wind.")
+  end
+
   it "stays vague when the house has no position and the plant no spot" do
     analysis = create(:plant_analysis)
 

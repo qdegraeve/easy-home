@@ -69,6 +69,14 @@ RSpec.describe Plant, type: :model do
       expect(plant.reload.place_change_since_analysis.last).to eq({ "exposure" => nil, "sheltered" => false })
     end
 
+    it "is cleared by a newer finished analysis made in the new place" do
+      create(:plant_analysis, :done, plant:, place: plant.place, created_at: 2.days.ago)
+      plant.update!(location: sun)
+      create(:plant_analysis, :done, plant:, place: plant.place)
+
+      expect(plant.reload.place_change_since_analysis).to be_nil
+    end
+
     it "is nil for an analysis made before places were recorded, and looks at the last finished analysis only" do
       create(:plant_analysis, :done, plant:, place: nil)
       expect(plant.place_change_since_analysis).to be_nil

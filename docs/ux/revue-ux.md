@@ -387,7 +387,9 @@ faite.
 - **Fait en PR 6b** : colonne `plant_analyses.place` (jsonb : exposition et abri, sans le nom de l'emplacement : le
   renommer ne change rien pour la plante) ; `Plant#place_change_since_analysis` compare à l'affichage, sans état « à
   revoir » stocké. Les analyses faites avant n'ont pas de lieu enregistré : rien n'est signalé pour elles. Une plante
-  déplacée dans un autre emplacement aux mêmes conditions n'est pas signalée.
+  déplacée dans un autre emplacement aux mêmes conditions n'est pas signalée. Supprimer un emplacement laisse ses
+  plantes sans emplacement : leurs analyses sont signalées, comme pour tout changement de lieu. Le lieu enregistré est
+  aussi celui transmis à l'IA, même si l'emplacement change pendant l'analyse.
 
 ### Impacts sur le modèle de données (à signaler, non implémentés)
 

@@ -10,14 +10,18 @@ RSpec.describe "Locations", type: :request do
   end
 
   def change(location, **attributes)
-    patch location_path(location), params: { location: { name: location.name, exposure: location.exposure,
-                                                         sheltered: location.sheltered? }.merge(attributes) }
+    current = { name: location.name, exposure: location.exposure, sheltered: location.sheltered? }
+    patch location_path(location), params: { location: current.merge(attributes) }
   end
 
   it "changes the exposure of a location, and warns before about the analyses of its plants" do
-    create(:plant, household:, location:)
+    plant = create(:plant, household:, location:)
+    create(:plant, household:, location:) # never analysed: nothing to signal
     sign_in(owner)
+    get edit_location_path(location)
+    expect(response.body).not_to include("à revoir")
 
+    create(:plant_analysis, :done, plant:, place: plant.place)
     get edit_location_path(location)
     expect(response.body).to include("signalera l&#39;analyse de sa plante à revoir")
 
@@ -33,6 +37,7 @@ RSpec.describe "Locations", type: :request do
     change(location, name: "")
 
     expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Nom doit être rempli(e)")
     expect(location.reload.name).to eq("Terrasse")
   end
 

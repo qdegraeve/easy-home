@@ -2,9 +2,8 @@
   <%= back_link_to t(".back"), edit_household_path(@location.household) %>
   <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", name: @location.name_in_database) %></h1>
 
-  <% plants_count = @location.plants.active.count %>
-  <% if plants_count.positive? %>
-    <p class="mt-2 rounded-xl bg-warn-soft px-3 py-2 text-sm"><%= t(".plants_hint", count: plants_count) %></p>
+  <% if @analysed_plants_count.positive? %>
+    <p class="mt-2 rounded-xl bg-warn-soft px-3 py-2 text-sm"><%= t(".plants_hint", count: @analysed_plants_count) %></p>
   <% end %>
 
   <%= form_with model: @location, class: "mt-4 space-y-3 rounded-2xl bg-surface p-4" do |form| %>

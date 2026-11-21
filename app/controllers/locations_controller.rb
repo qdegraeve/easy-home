@@ -13,6 +13,7 @@ class LocationsController < ApplicationController
 
   def edit
     @location = find_location
+    @analysed_plants_count = analysed_plants_count(@location)
   end
 
   # A change of exposure or shelter makes the analyses of its plants to review (Plant#place_change_since_analysis).
@@ -22,6 +23,7 @@ class LocationsController < ApplicationController
     if @location.update(location_params)
       redirect_to edit_household_path(@location.household), notice: t(".success", name: @location.name)
     else
+      @analysed_plants_count = analysed_plants_count(@location)
       render :edit, status: :unprocessable_content
     end
   end
@@ -37,6 +39,12 @@ class LocationsController < ApplicationController
 
   def find_location
     Location.where(household: policy_scope(Household)).find(params[:id]).tap { |location| authorize location }
+  end
+
+  # Plants whose analyses would be signalled to review on a change: active, with a finished analysis that recorded
+  # its place.
+  def analysed_plants_count(location)
+    location.plants.active.joins(:analyses).merge(PlantAnalysis.done.where.not(place: nil)).distinct.count
   end
 
   def location_params
