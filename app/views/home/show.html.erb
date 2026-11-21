@@ -19,12 +19,35 @@
 
 <div class="mt-6 space-y-6 lg:max-w-2xl">
   <% if @has_plants %>
-    <%= render TaskListComponent.new(
-      occurrences: @due_today,
-      title: t(".due_today", count: @due_today.size),
-      id: "due-today",
-      empty: (t(".nothing_due") if @due_today.empty?)
-    ) %>
+    <% if @due_today.any? %>
+      <%= render TaskListComponent.new(
+        occurrences: @due_today,
+        title: t(".due_today", count: @due_today.size),
+        id: "due-today"
+      ) %>
+    <% else %>
+      <%# Nothing left today: said clearly, with what was done and what comes next, so that the screen never looks
+          empty by mistake. %>
+      <section class="rounded-2xl bg-surface px-4 py-8 text-center" aria-labelledby="due-today">
+        <span class="mx-auto grid size-14 place-items-center rounded-full bg-action-soft text-action">
+          <%= icon(:check, size: 28) %>
+        </span>
+        <h2 id="due-today" class="mt-3 text-lg font-semibold"><%= t(".nothing_due") %></h2>
+        <p class="mt-1 text-sm text-muted">
+          <%= @done_today_count.positive? ? t(".done_today", count: @done_today_count) : t(".all_good") %>
+        </p>
+        <% if @upcoming.empty? && @next_occurrence %>
+          <% task = @next_occurrence.task %>
+          <p class="mt-1 text-sm text-muted">
+            <%= t(".next_task", what: task.watering? ? t(".water_plant", name: task.subject.name) : task.title) %>
+            <%= render DueLabelComponent.new(due_at: @next_occurrence.due_at) %>
+          </p>
+        <% end %>
+        <%= link_to t(@done_today_count.positive? ? ".see_journal" : ".see_plants"),
+              @done_today_count.positive? ? journal_path : plants_path,
+              class: "mt-4 #{button_class(:secondary)}" %>
+      </section>
+    <% end %>
 
     <% if @upcoming.any? %>
       <details>

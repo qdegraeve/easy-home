@@ -108,6 +108,13 @@ fr:
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
       due_today: "À faire aujourd'hui · %{count}"
       nothing_due: "Rien à faire aujourd'hui."
+      done_today:
+        one: "Une tâche faite aujourd'hui. Bravo !"
+        other: "%{count} tâches faites aujourd'hui. Bravo !"
+      all_good: "Tout est à jour dans la maison."
+      next_task: "Prochaine tâche : %{what},"
+      see_journal: "Voir le journal"
+      see_plants: "Voir les plantes"
       upcoming: "Bientôt · %{count}"
       water_plant: "Arroser %{name}"
       task_of: "%{title} (%{name})"
