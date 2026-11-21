@@ -45,7 +45,7 @@ RSpec.describe "Plant analyses", type: :system do
     @fake_plant_analyzer.answer = FakePlantAnalyzer::ANSWER.merge("health" => "ok", "actions" => [])
     open_plant_tab("Soins")
     click_on "Nouvelle analyse"
-    check "Analyser la photo du mar 10 nov."
+    check "Analyser la photo du mar 10 nov.", allow_label_click: true # the photo is the target
     fill_in "Une question, une remarque ? (facultatif)", with: "Est-ce que ça va mieux ?"
     click_on "Lancer l'analyse"
     expect(page).to have_content("Analyse lancée")
@@ -83,8 +83,8 @@ RSpec.describe "Plant analyses", type: :system do
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Nouvelle analyse"
-    uncheck "Analyser la photo du jeu 12 nov."
-    check "Analyser la photo du lun 2 nov."
+    uncheck "Analyser la photo du jeu 12 nov.", allow_label_click: true # the photo is the target
+    check "Analyser la photo du lun 2 nov.", allow_label_click: true # the photo is the target
     fill_in "Une question, une remarque ? (facultatif)", with: "Taches brunes ?"
     click_on "Lancer l'analyse"
     perform_enqueued_jobs
