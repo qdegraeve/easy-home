@@ -8,35 +8,32 @@ RSpec.describe "Pages in the Android app", type: :request do
 
   before { post session_path, params: { email: user.email, password: "password" } }
 
-  it "hides the web header in the app and keeps its links at the bottom of the home page" do
+  it "hides the web header in the app, the settings being reached from the home page" do
     get root_path, headers: in_app
 
     page = response.parsed_body
     expect(page.at_css("header")).to be_nil
-    account = page.at_css("nav[aria-label=Compte]")
-    expect(account.css("a").map { |link| [ link.text, link["href"] ] }).to eq([
-      [ "Notifications", edit_notification_settings_path ],
-      [ "Mes foyers", households_path ]
-    ])
-    expect(account.at_css("form[action='#{session_path}']")["data-turbo-confirm"]).to eq("Se déconnecter ?")
+    expect(page.at_css("main a[aria-label='Réglages']")["href"]).to eq(settings_path)
+    expect(page.at_css("nav[aria-label=Sections]")).to be_present
   end
 
-  it "keeps the web header, and no account links at the bottom, in the browser" do
+  it "keeps the web header, with the settings, in the browser" do
     get root_path
 
     page = response.parsed_body
-    expect(page.at_css("header").text).to include("Se déconnecter")
-    expect(page.at_css("nav[aria-label=Compte]")).to be_nil
+    expect(page.at_css("header a[aria-label='Réglages']")["href"]).to eq(settings_path)
+    expect(page.at_css("main a[aria-label='Réglages']")).to be_nil
   end
 
   it "hides the back links in the app only" do
     pages = {
-      plant_path(plant) => "← Mes plantes",
-      new_plant_path => "← Mes plantes",
-      edit_plant_path(plant) => "← Mes plantes",
+      plant_path(plant) => "← Plantes",
+      new_plant_path => "← Plantes",
+      edit_plant_path(plant) => "← Citronnier",
+      plants_path => "← Maison",
       new_plant_task_path(plant) => "← Citronnier",
-      edit_notification_settings_path => "← Accueil",
-      edit_household_path(user.households.sole) => "← Retour"
+      edit_notification_settings_path => "← Réglages",
+      edit_household_path(user.households.sole) => "← Maison"
     }
 
     pages.each do |path, back_link|
@@ -55,5 +52,25 @@ RSpec.describe "Pages in the Android app", type: :request do
     get new_household_path, headers: in_app
 
     expect(response.parsed_body.at_css("nav[aria-label=Compte]").text).to include("Notifications", "Se déconnecter")
+  end
+
+  it "hides the web tab bar on the pages the app opens as modals, where a tab would close the modal" do
+    get edit_plant_path(plant), headers: in_app
+    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_nil
+
+    get plant_path(plant), headers: in_app
+    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_present
+
+    get edit_plant_path(plant)
+    expect(response.parsed_body.at_css("nav[aria-label=Sections]")).to be_present
+  end
+
+  it "goes back to the home page after deleting a plant in the app, to the plants in the browser" do
+    delete plant_path(plant), headers: in_app
+    expect(response).to redirect_to(root_path)
+
+    other = create(:plant, :watered, household: user.households.sole)
+    delete plant_path(other)
+    expect(response).to redirect_to(plants_path)
   end
 end

@@ -1,4 +1,15 @@
 class PlantsController < ApplicationController
+  # The plants of the household by location, with their next watering; archived ones apart (Maison > Plantes).
+  def index
+    @household = current_household
+    return redirect_to(new_household_path) unless @household
+
+    authorize @household, :show?
+    plants = policy_scope(Plant).where(household: @household).order(:name)
+    @plants = plants.active.includes(:location, watering_task: :pending_occurrence)
+    @archived_plants = plants.archived
+  end
+
   def show
     @plant = find_plant
     @watering_task = @plant.watering_task
@@ -58,7 +69,9 @@ class PlantsController < ApplicationController
   def destroy
     plant = find_plant
     plant.destroy!
-    redirect_to root_path, notice: t(".success", name: plant.name), status: :see_other
+    # In the Android app, the home page replaces the whole stack: "back" never shows the deleted plant again.
+    destination = hotwire_native_app? ? root_path : plants_path
+    redirect_to destination, notice: t(".success", name: plant.name), status: :see_other
   end
 
   private

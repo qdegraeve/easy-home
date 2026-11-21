@@ -22,7 +22,11 @@ RSpec.describe "Page titles", type: :request do
     post session_path, params: { email: user.email, password: "password" }
 
     {
-      root_path => "Mes plantes",
+      root_path => "Aujourd'hui",
+      house_path => "Maison",
+      plants_path => "Plantes",
+      journal_path => "Journal",
+      settings_path => "Réglages",
       plant_path(plant) => "Citronnier",
       new_plant_path => "Ajouter une plante",
       edit_household_path(user.households.sole) => "Ma maison",

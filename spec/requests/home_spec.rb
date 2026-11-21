@@ -15,7 +15,7 @@ RSpec.describe "Home", type: :request do
       get root_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Maison de test", "Mes plantes", "Se déconnecter")
+      expect(response.body).to include("Maison de test", "Aujourd&#39;hui", "Réglages")
     end
 
     it "sends a user without household to the household form" do

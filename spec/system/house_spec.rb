@@ -9,7 +9,8 @@ RSpec.describe "My house", type: :system do
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
-    click_on "Ma maison"
+    go_to_tab("Maison")
+    click_on "Adresse et emplacements"
 
     fill_in "Adresse", with: "12 exemples ville"
     click_on "12 Rue des Exemples 97400 Ville-Exemple"

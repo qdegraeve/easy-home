@@ -15,9 +15,9 @@ RSpec.describe "Households", type: :system do
     click_on "Créer le foyer"
 
     expect(page).to have_content("Foyer « Maison » créé.")
-    expect(page).to have_css("h1", text: "Mes plantes")
+    expect(page).to have_css("h1", text: "Aujourd'hui")
 
-    click_on "Maison"
+    within("main") { click_on "Maison" }
     click_on "+ Nouveau foyer"
     fill_in "Nom du foyer", with: "Case des Hauts"
     click_on "Créer le foyer"
@@ -26,7 +26,7 @@ RSpec.describe "Households", type: :system do
     click_on "Case des Hauts"
     click_on "Choisir"
 
-    expect(page).to have_link("Maison")
-    expect(page).to have_css("h1", text: "Mes plantes")
+    within("main") { expect(page).to have_link("Maison") }
+    expect(page).to have_css("h1", text: "Aujourd'hui")
   end
 end

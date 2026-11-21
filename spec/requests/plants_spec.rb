@@ -13,8 +13,8 @@ RSpec.describe "Plants", type: :request do
     post session_path, params: { email: user.email, password: "password" }
   end
 
-  describe "GET /" do
-    it "lists what to do today, all plants by location, and archived ones apart" do
+  describe "GET / and GET /plants" do
+    it "lists what to do today on the home page, and the plants by location, archived ones apart, in Plantes" do
       terrasse = create(:location, household:, name: "Terrasse", exposure: :partial_shade)
       create(:plant, :watered, household:, name: "Basilic", location: terrasse, interval_days: 1,
                                last_watered_at: Time.zone.parse("2026-11-15 08:00"))
@@ -24,10 +24,14 @@ RSpec.describe "Plants", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Arrosée : Basilic", "Toutes les plantes · 2")
-      expect(response.parsed_body.text.squish).to include("Terrasse · Mi-ombre", "Sans emplacement", "dans 9 j")
-      expect(response.body).to include("Plantes archivées · 1", "Fougère morte")
+      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Arrosée : Basilic")
       expect(response.body).not_to include("Arrosée : Aloe")
+
+      get plants_path
+
+      text = response.parsed_body.text.squish
+      expect(text).to include("2 plantes", "Terrasse · Mi-ombre", "Sans emplacement", "dans 9 j")
+      expect(response.body).to include("Plantes archivées · 1", "Fougère morte")
     end
 
     it "shows neither plants nor the add button to a guest" do
@@ -35,8 +39,10 @@ RSpec.describe "Plants", type: :request do
       sign_in(guest)
 
       get root_path
-
       expect(response.body).not_to include("Basilic", "Ajouter une plante")
+
+      get plants_path
+      expect(response.body).not_to include("Ajouter une plante")
     end
   end
 
@@ -142,7 +148,7 @@ RSpec.describe "Plants", type: :request do
 
       delete plant_path(plant)
 
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to(plants_path)
       expect(Plant.exists?(plant.id)).to be(false)
       expect(TaskOccurrence.count).to eq(0)
     end

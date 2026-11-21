@@ -12,7 +12,11 @@ Rails.application.routes.draw do
   end
   resources :locations, only: :destroy
   resources :address_suggestions, only: :index
-  resources :plants, except: :index do
+  # The three sections of the app (UX review): Aujourd'hui (root), Maison, Journal; and the settings.
+  get "house", to: "house#show", as: :house
+  resource :journal, only: :show, controller: "journal"
+  resource :settings, only: :show
+  resources :plants do
     resource :archive, only: [ :create, :destroy ], module: :plants
     resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
     resources :photos, only: [ :create, :show, :update, :destroy ], module: :plants

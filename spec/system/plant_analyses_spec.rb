@@ -20,7 +20,7 @@ RSpec.describe "Plant analyses", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
 
-    click_on "+ Ajouter une plante"
+    click_on "Ajouter une plante"
     fill_in "Nom", with: "Citronnier"
     fill_in "Arrosage", with: "3"
     attach_file "Photo", picture("plant_with_gps.jpg")
@@ -71,7 +71,7 @@ RSpec.describe "Plant analyses", type: :system do
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
-    click_on "Citronnier"
+    open_plant("Citronnier")
     click_on "Nouvelle analyse"
     uncheck "Analyser la photo du jeu 12 nov."
     check "Analyser la photo du lun 2 nov."
@@ -100,7 +100,7 @@ RSpec.describe "Plant analyses", type: :system do
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
-    click_on "Citronnier"
+    open_plant("Citronnier")
     click_on "Nouvelle analyse"
     click_on "Lancer l'analyse"
     perform_enqueued_jobs
@@ -134,7 +134,7 @@ RSpec.describe "Plant analyses", type: :system do
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
-    click_on "Citronnier"
+    open_plant("Citronnier")
 
     fill_in "Une question sur cette analyse ?", with: "Quel paillis utiliser ?"
     attach_file "Joindre une photo (facultatif, elle rejoint le suivi photo)", picture("plant.png")

@@ -20,24 +20,21 @@
   </head>
 
   <body class="bg-paper text-ink antialiased">
-    <%# In the Android app, the native top bar replaces this header (account links: bottom of the home page). %>
+    <%# In the Android app, the native top bar replaces this header (settings: button of the "Aujourd'hui" page). %>
     <% if authenticated? && !hotwire_native_app? %>
-      <header class="sticky top-0 z-10 border-b border-line bg-paper/95 backdrop-blur">
-        <div class="mx-auto flex max-w-md items-center justify-between px-4 py-3 lg:max-w-5xl">
-          <%= link_to t(".app_name"), root_path, class: "font-semibold text-action" %>
-          <div class="flex items-center gap-1">
-            <%= link_to icon(:bell), edit_notification_settings_path,
-                  aria: { label: t(".notifications_label") },
-                  class: "rounded-xl px-3 py-3 text-sm text-muted hover:bg-subtle" %>
-            <%= button_to t(".sign_out"), session_path, method: :delete,
-                  form: { data: confirm_data(t(".sign_out_confirm"), button: t(".sign_out")) },
-                  class: "rounded-xl px-3 py-2 text-sm text-muted hover:bg-subtle" %>
-          </div>
+      <header class="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur">
+        <div class="mx-auto flex max-w-md items-center justify-between px-4 py-2 md:max-w-none">
+          <%= link_to root_path, class: "flex min-h-11 items-center gap-2 font-semibold text-ink" do %>
+            <%= image_tag "/icon.svg", alt: "", class: "size-7" %><%= t(".app_name") %>
+          <% end %>
+          <%= link_to icon(:sliders_horizontal, size: 22), settings_path, aria: { label: t(".settings") },
+                class: "-mr-2 grid size-11 place-items-center rounded-full text-muted hover:bg-subtle" %>
         </div>
       </header>
     <% end %>
+    <%= render "shared/tab_bar" if show_tabs? %>
 
-    <main class="mx-auto max-w-md px-4 pb-40 pt-6 lg:max-w-5xl">
+    <main class="<%= class_names("mx-auto max-w-md px-4 pb-40 pt-6 md:max-w-3xl", "md:ml-56 md:mr-0": show_tabs?) %>">
       <%= render "layouts/flash" %>
       <%= yield %>
     </main>
