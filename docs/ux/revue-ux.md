@@ -384,8 +384,10 @@ faite.
 - **Décidé (21 novembre 2026)** : relance **plante par plante** (pas de « relancer les 3 » d'un coup) ; **tout**
   changement de lieu est signalé, y compris temporaire. Le signal disparaît dès que la plante revient dans le lieu de
   sa dernière analyse.
-- **Impacts sur les données** : colonne `plant_analyses.context` (jsonb : emplacement, exposition, abri) ; la
-  comparaison avec le lieu actuel se fait à l'affichage, sans état « à revoir » stocké.
+- **Fait en PR 6b** : colonne `plant_analyses.place` (jsonb : exposition et abri, sans le nom de l'emplacement : le
+  renommer ne change rien pour la plante) ; `Plant#place_change_since_analysis` compare à l'affichage, sans état « à
+  revoir » stocké. Les analyses faites avant n'ont pas de lieu enregistré : rien n'est signalé pour elles. Une plante
+  déplacée dans un autre emplacement aux mêmes conditions n'est pas signalée.
 
 ### Impacts sur le modèle de données (à signaler, non implémentés)
 
@@ -652,7 +654,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    jusqu'à la PR 6) : regroupement, validation groupée, toast Annuler. Le cœur de la remarque 1.
 6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #56, fait) : les trois racines web (`/`, `/house`,
    `/journal`), la page Plantes, les Réglages, et une barre d'onglets web en bas (colonne à gauche sur ordinateur).
-   **PR 6b** (#46, #47, #57) : modifier un emplacement, analyses à revoir après un changement de lieu.
+   **PR 6b** (#46, #47, #57, fait) : modifier un emplacement, analyses à revoir après un changement de lieu, rôle dans
+   « Mes foyers ».
 7. **PR 7 · Onglets natifs** (#7) : la coque passe à trois navigateurs.
 8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).

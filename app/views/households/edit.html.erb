@@ -54,7 +54,8 @@
       <ul class="divide-y divide-line rounded-2xl bg-surface shadow-sm">
         <% locations.each do |location| %>
           <li class="flex items-center justify-between gap-3 p-3">
-            <div>
+            <%= link_to edit_location_path(location), aria: { label: t(".edit_label", name: location.name) },
+                  class: "min-w-0 flex-1" do %>
               <p class="font-medium"><%= location.name %></p>
               <p class="text-sm text-muted">
                 <%= exposure_label(location.exposure) %> ·
@@ -64,7 +65,7 @@
                   <%= t(".exposed") %>
                 <% end %>
               </p>
-            </div>
+            <% end %>
             <%= button_to(
               t(".delete"),
               location_path(location),
@@ -88,37 +89,9 @@
 
     <%= form_with model: [ @household, @location ], class: "space-y-3 rounded-2xl bg-surface p-4 shadow-sm" do |form| %>
       <h3 class="font-semibold"><%= t(".new_location") %></h3>
-      <%= render "shared/errors", record: @location %>
+      <%= render "locations/fields", form: %>
 
-      <%= form.label :name, class: "block text-sm font-semibold" %>
-      <%= form.text_field(
-        :name,
-        required: true,
-        placeholder: t(".location_placeholder"),
-        class: "w-full rounded-xl border border-field px-3 py-3"
-      ) %>
-
-      <fieldset>
-        <legend class="text-sm font-semibold"><%= Location.human_attribute_name(:exposure) %></legend>
-        <div class="mt-1 grid grid-cols-3 gap-2 text-sm">
-          <% Location.exposures.each_key do |exposure| %>
-            <label
-              class="rounded-xl border border-field bg-surface p-2 text-center has-[:checked]:border-action
-                     has-[:checked]:bg-action-soft"
-            >
-              <%= form.radio_button :exposure, exposure, class: "sr-only", required: true %>
-              <%= exposure_label(exposure) %>
-            </label>
-          <% end %>
-        </div>
-      </fieldset>
-
-      <label class="flex items-center gap-2 text-sm">
-        <%= form.check_box :sheltered, class: "h-5 w-5" %>
-        <%= Location.human_attribute_name(:sheltered) %>
-      </label>
-
-      <%= form.submit t(".add_location"), class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
+      <%= form.submit t(".add_location"), class: button_class(:primary, block: true) %>
     <% end %>
   </section>
 </div>

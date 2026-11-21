@@ -22,6 +22,15 @@ module ApplicationHelper
     safe_join([ icon(EXPOSURE_ICONS.fetch(exposure.to_s), size: 16), t("locations.exposures.#{exposure}") ], " ")
   end
 
+  # A place recorded on an analysis (Plant#place): "mi-ombre, abrité du vent", "sans emplacement".
+  def place_label(place)
+    return t("places.none") unless place["exposure"]
+
+    exposure = t("locations.exposures.#{place['exposure']}").downcase
+    shelter = t(place["sheltered"] ? "places.sheltered" : "places.exposed")
+    "#{exposure}, #{shelter}"
+  end
+
   # Section heading content: an icon then the text.
   def heading_with_icon(name, text, icon_class: "text-muted")
     safe_join([ icon(name, class: icon_class), text ], " ")

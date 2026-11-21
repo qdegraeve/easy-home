@@ -31,4 +31,51 @@ RSpec.describe Plant, type: :model do
 
     expect(plant.reload.location).to be_nil
   end
+
+  describe "#place_change_since_analysis" do
+    let(:household) { create(:household) }
+    let(:shade) { create(:location, household:, exposure: :partial_shade, sheltered: true) }
+    let(:sun) { create(:location, household:, exposure: :full_sun) }
+    let(:plant) { create(:plant, household:, location: shade) }
+
+    it "is nil while the plant stays in the conditions of its last analysis, even in a renamed location" do
+      create(:plant_analysis, :done, plant:, place: plant.place)
+      shade.update!(name: "Sous l'auvent")
+
+      expect(plant.reload.place_change_since_analysis).to be_nil
+    end
+
+    it "gives the former and the current place when the plant moved, and clears once it is back" do
+      create(:plant_analysis, :done, plant:, place: plant.place)
+
+      plant.update!(location: sun)
+      expect(plant.reload.place_change_since_analysis).to eq([
+        { "exposure" => "partial_shade", "sheltered" => true },
+        { "exposure" => "full_sun", "sheltered" => false }
+      ])
+
+      plant.update!(location: shade)
+      expect(plant.reload.place_change_since_analysis).to be_nil
+    end
+
+    it "follows a change of the location itself, and a plant taken out of any location" do
+      create(:plant_analysis, :done, plant:, place: plant.place)
+
+      shade.update!(sheltered: false)
+      expect(plant.reload.place_change_since_analysis.last)
+        .to eq({ "exposure" => "partial_shade", "sheltered" => false })
+
+      plant.update!(location: nil)
+      expect(plant.reload.place_change_since_analysis.last).to eq({ "exposure" => nil, "sheltered" => false })
+    end
+
+    it "is nil for an analysis made before places were recorded, and looks at the last finished analysis only" do
+      create(:plant_analysis, :done, plant:, place: nil)
+      expect(plant.place_change_since_analysis).to be_nil
+
+      create(:plant_analysis, :done, plant:, place: { "exposure" => "shade", "sheltered" => false })
+      create(:plant_analysis, plant:, place: plant.place) # pending
+      expect(plant.reload.place_change_since_analysis.first).to eq({ "exposure" => "shade", "sheltered" => false })
+    end
+  end
 end

@@ -86,6 +86,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Dans l'app Android : sans en-tête web, réglages et déconnexion depuis le bouton Réglages de l'accueil | `spec/system/native_app_spec.rb` | Fait |
 | Aujourd'hui : tout l'arrosage du jour en un geste, annulé depuis le toast, puis détail par emplacement avec une plante décochée ; « Bientôt » replié | `spec/system/today_spec.rb` | Fait |
 | Sections : Aujourd'hui, Maison, Plantes, une plante, puis Journal avec une validation annulée | `spec/system/sections_spec.rb` | Fait |
+| Emplacement modifié : analyse signalée à revoir (Maison, Plantes, fiche), relance avec la remarque pré-remplie | `spec/system/location_change_spec.rb` | Fait |
 | Réglages des notifications : résumé coupé, heure, foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |

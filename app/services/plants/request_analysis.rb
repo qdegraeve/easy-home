@@ -28,7 +28,12 @@ module Plants
 
     def create_analysis(plant, user, request)
       Success(
-        plant.analyses.create!(requested_by: user, user_note: request.note.to_s.strip.presence, photos: request.photos)
+        plant.analyses.create!(
+          requested_by: user,
+          user_note: request.note.to_s.strip.presence,
+          photos: request.photos,
+          place: plant.place
+        )
       )
     rescue ActiveRecord::RecordNotUnique # two requests at the same time: the unique index lets only one through
       Failure[:already_pending, plant]

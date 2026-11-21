@@ -6,7 +6,7 @@ class PlantsController < ApplicationController
 
     authorize @household, :show?
     plants = policy_scope(Plant).where(household: @household).order(:name)
-    @plants = plants.active.includes(:location, watering_task: :pending_occurrence)
+    @plants = plants.active.includes(:location, :analyses, watering_task: :pending_occurrence)
     @archived_plants = plants.archived
   end
 

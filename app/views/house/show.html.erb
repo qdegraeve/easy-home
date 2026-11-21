@@ -10,7 +10,12 @@
         </span>
         <span class="flex-1">
           <span class="block font-medium"><%= t(".plants") %></span>
-          <span class="text-sm text-muted"><%= t(".plants_count", count: @plants_count) %></span>
+          <span class="text-sm text-muted">
+            <%= t(".plants_count", count: @plants_count) %>
+            <% if @analyses_to_review.positive? %>
+              · <span class="font-semibold text-warn"><%= t(".to_review", count: @analyses_to_review) %></span>
+            <% end %>
+          </span>
         </span>
         <%= icon(:chevron_right, class: "text-muted") %>
       <% end %>
