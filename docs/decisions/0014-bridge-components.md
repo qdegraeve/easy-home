@@ -26,6 +26,8 @@ source : elle sait quelles actions existent, avec quels droits et quelles confir
 - **Écrire le pont à la main** (`window.HotwireNative`, messages) : recopie de la bibliothèque officielle, sans gain.
 - **Menu natif codé en dur dans l'app** (comme l'icône Réglages) : il faudrait dupliquer en Kotlin les règles de
   chaque page (actions possibles, plante archivée, droits), et republier l'app à chaque changement.
+- **« + » dans la barre du haut** (prévu par la revue UX) : essayé, puis remplacé par le bouton flottant à la demande
+  du propriétaire ; la barre du haut gardait trop d'icônes (+, Réglages, ⋮).
 
 ## Conséquences
 

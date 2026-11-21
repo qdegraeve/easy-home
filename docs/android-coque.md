@@ -299,8 +299,8 @@ fonctionne donc sans rien changer, et reste valable d'un lancement à l'autre. U
 
 ### 4.7 Les bridge components
 
-Le pont permet à une page web de demander quelque chose au natif, par exemple « affiche un bouton + dans la barre du
-haut ». Il a deux moitiés, qui s'échangent des messages JSON (ADR 0014) :
+Le pont permet à une page web de demander quelque chose au natif, par exemple « affiche un bouton + flottant ». Il a
+deux moitiés, qui s'échangent des messages JSON (ADR 0014) :
 
 - un **contrôleur Stimulus** côté Rails (`app/javascript/controllers/bridge/`, bibliothèque
   `@hotwired/hotwire-native-bridge`) ;
@@ -322,6 +322,11 @@ L'app annonce ses composants dans son user agent ; la bibliothèque le lit et ma
 en charge par la barre native. Dans le navigateur, rien ne change : les éléments restent dans la page. Pour ajouter un
 bouton ailleurs, il suffit des attributs dans la vue (et d'une icône dans `ICONS` de `ButtonComponent` si elle est
 nouvelle).
+
+Le menu ⋮ est renvoyé dès que les actions de la page changent ; sur la fiche plante, le bloc d'actions change d'id
+avec l'état (archivée ou non) pour qu'un rafraîchissement le remplace en entier. Une page rechargée de zéro
+(`WebFragment.onColdBootPageStarted`) oublie son bouton et son menu, qu'elle redéclare si elle en a encore. Testé dans
+un vrai navigateur qui joue le rôle de l'app (`spec/system/native_app_spec.rb`).
 
 ## 5. Côté Rails
 
