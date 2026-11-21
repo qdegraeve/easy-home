@@ -22,11 +22,15 @@ RSpec.describe IconComponent, type: :component do
     expect { described_class.new(:unicorn) }.to raise_error(ArgumentError, /Unknown icon :unicorn/)
   end
 
-  it "uses only icons that exist" do
-    used = Rails.root.glob("app/{views,components}/**/*.{erb,rb}").flat_map do |file|
-      File.read(file).scan(/IconComponent\.new\(:([a-z_-]+)|icon\(:([a-z_-]+)/).flatten.compact
+  it "uses only icons that exist, in the views and in the icon tables of the helpers" do
+    used = Rails.root.glob("app/{views,components,helpers}/**/*.{erb,rb}").flat_map do |file|
+      # icon(:name), heading_with_icon(:name, …) and icon(condition ? :one : :other)
+      call = /(?:IconComponent\.new|\bicon|heading_with_icon)\((?:[^,()]*\? )?:([a-z_]+)(?: : :([a-z_]+))?/
+      File.read(file).scan(call).flatten.compact
     end
+    used += ApplicationHelper::EXPOSURE_ICONS.values + ApplicationHelper::HEALTH_ICONS.values.map(&:first)
 
-    expect(used.map { |name| name.tr("_", "-") }.uniq - described_class::SHAPES.keys).to be_empty
+    expect(used.map { |name| name.to_s.tr("_", "-") }.uniq - described_class::SHAPES.keys).to be_empty
+    expect(used.map(&:to_s)).to include("droplet", "check", "triangle_alert")
   end
 end

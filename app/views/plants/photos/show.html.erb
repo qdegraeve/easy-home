@@ -13,7 +13,7 @@
     <%= f.label :taken_at, class: "block text-sm font-semibold" %>
     <div class="flex gap-2">
       <%= f.date_field :taken_at, required: true, max: Time.zone.today,
-            class: "rounded-xl border border-line bg-surface px-3 py-2" %>
+            class: "rounded-xl border border-field bg-surface px-3 py-2" %>
       <%= f.submit t(".save_date"), class: "rounded-xl bg-surface px-3 py-2 text-sm font-semibold shadow-sm" %>
     </div>
   <% end %>

@@ -12,7 +12,7 @@ a validé la palette « carnet de maison » et le logo (`docs/maquettes/v2/logo.
 ## Décision
 
 - **Palette en jetons** dans `app/assets/stylesheets/application.tailwind.css` (`@theme` de Tailwind 4) : `paper`,
-  `surface`, `subtle`, `line`, `ink`, `muted`, `action`, `alert`, `warn` et une couleur par domaine. Les vues utilisent
+  `surface`, `subtle`, `line` (séparateurs), `field` (contour des champs et des choix, contraste 3:1), `ink`, `muted`, `action`, `alert`, `warn` et une couleur par domaine. Les vues utilisent
   ces classes (`bg-paper`, `text-ink`, `bg-action`…), plus les couleurs génériques (`stone`, `emerald`, `sky`, `red`).
   Une seule couleur d'action, le vert sapin ; la brique seulement pour ce qui ne doit pas être raté.
 - **Icônes Lucide** (licence ISC) au trait, **copiées** dans `app/assets/images/icons/` depuis `lucide-static` (version

@@ -43,8 +43,11 @@
     <% if analysis.watering_interval_days %>
       <div class="flex items-center justify-between gap-3">
         <p class="text-sm">
-          <%= heading_with_icon(:droplet, t("plants.analyses.analysis.watering", count: analysis.watering_interval_days),
-                icon_class: "text-plants") %>
+          <%= heading_with_icon(
+            :droplet,
+            t("plants.analyses.analysis.watering", count: analysis.watering_interval_days),
+            icon_class: "text-plants"
+          ) %>
         </p>
         <%= render "plants/analyses/accept_button",
               accepted: analysis.watering_accepted?, acceptable:,

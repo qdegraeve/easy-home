@@ -19,7 +19,7 @@
           :address,
           autocomplete: "off",
           placeholder: t(".address_placeholder"),
-          class: "mt-1 w-full rounded-xl border border-line px-3 py-3",
+          class: "mt-1 w-full rounded-xl border border-field px-3 py-3",
           data: { address_autocomplete_target: "input", action: "input->address-autocomplete#search" }
         ) %>
         <div data-address-autocomplete-target="results"></div>
@@ -32,7 +32,7 @@
         <div class="mt-1 flex items-center gap-2">
           <%= form.number_field(
             :altitude_m,
-            class: "w-28 rounded-xl border border-line px-3 py-3",
+            class: "w-28 rounded-xl border border-field px-3 py-3",
             data: { address_autocomplete_target: "altitude" }
           ) %>
           <span class="text-sm"><%= t(".meters") %></span>
@@ -58,7 +58,11 @@
               <p class="font-medium"><%= location.name %></p>
               <p class="text-sm text-muted">
                 <%= exposure_label(location.exposure) %> ·
-                <%= location.sheltered? ? t(".sheltered") : t(".exposed") %>
+                <% if location.sheltered? %>
+                  <%= icon(:shield, size: 16) %> <%= t(".sheltered") %>
+                <% else %>
+                  <%= t(".exposed") %>
+                <% end %>
               </p>
             </div>
             <%= button_to(
@@ -91,7 +95,7 @@
         :name,
         required: true,
         placeholder: t(".location_placeholder"),
-        class: "w-full rounded-xl border border-line px-3 py-3"
+        class: "w-full rounded-xl border border-field px-3 py-3"
       ) %>
 
       <fieldset>
@@ -99,7 +103,7 @@
         <div class="mt-1 grid grid-cols-3 gap-2 text-sm">
           <% Location.exposures.each_key do |exposure| %>
             <label
-              class="rounded-xl border border-line bg-surface p-2 text-center has-[:checked]:border-action
+              class="rounded-xl border border-field bg-surface p-2 text-center has-[:checked]:border-action
                      has-[:checked]:bg-action-soft"
             >
               <%= form.radio_button :exposure, exposure, class: "sr-only", required: true %>

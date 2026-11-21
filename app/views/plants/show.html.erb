@@ -26,13 +26,17 @@
 <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
   <div class="space-y-6 self-start">
     <section class="space-y-2 rounded-2xl bg-surface p-4 shadow-sm" aria-labelledby="watering">
-      <h2 id="watering" class="font-semibold"><%= heading_with_icon(:droplet, t(".watering"), icon_class: "text-plants") %></h2>
+      <h2 id="watering" class="font-semibold">
+        <%= heading_with_icon(:droplet, t(".watering"), icon_class: "text-plants") %>
+      </h2>
       <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
       <% if (occurrence = @watering_task.pending_occurrence) %>
         <div class="flex items-center justify-between gap-3">
           <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
           <% if @done_today_task_ids.include?(@watering_task.id) %>
-            <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action"><%= t(".watered_today") %></span>
+            <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action">
+              <%= t(".watered_today") %>
+            </span>
           <% else %>
             <%= render "tasks/complete_button", occurrence: %>
           <% end %>
@@ -44,7 +48,7 @@
     </section>
 
     <section aria-labelledby="tasks">
-      <h2 id="tasks" class="font-semibold"><%= heading_with_icon(:list_todo, t(".tasks"), icon_class: "text-muted") %></h2>
+      <h2 id="tasks" class="font-semibold"><%= heading_with_icon(:list_todo, t(".tasks")) %></h2>
       <% if @other_tasks.any? %>
         <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface shadow-sm">
           <% @other_tasks.each do |task| %>
@@ -96,7 +100,7 @@
 
   <div class="space-y-6 self-start">
     <section aria-labelledby="analysis">
-      <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis"), icon_class: "text-muted") %></h2>
+      <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis")) %></h2>
       <% latest, *older = @analyses %>
       <div class="mt-2">
         <% if latest %>
@@ -132,7 +136,7 @@
     </section>
 
     <section aria-labelledby="photos">
-      <h2 id="photos" class="font-semibold"><%= heading_with_icon(:camera, t(".photos"), icon_class: "text-muted") %></h2>
+      <h2 id="photos" class="font-semibold"><%= heading_with_icon(:camera, t(".photos")) %></h2>
       <% if @photos.any? %>
         <ul class="mt-2 grid grid-cols-3 gap-2">
           <% @photos.each do |photo| %>
@@ -153,7 +157,7 @@
         <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3 space-y-2" do |f| %>
           <%= f.label :file, t(".new_photo"), class: "block text-sm font-semibold" %>
           <%= f.file_field :file, accept: "image/*", required: true,
-                class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-white file:px-3 " \
+                class: "block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-surface file:px-3 " \
                        "file:py-2 file:shadow-sm" %>
           <%= f.submit t(".add_photo"),
                 class: "w-full rounded-xl bg-surface py-3 text-sm font-semibold text-action shadow-sm" %>
@@ -162,7 +166,7 @@
     </section>
 
     <section aria-labelledby="journal">
-      <h2 id="journal" class="font-semibold"><%= heading_with_icon(:history, t(".journal"), icon_class: "text-muted") %></h2>
+      <h2 id="journal" class="font-semibold"><%= heading_with_icon(:history, t(".journal")) %></h2>
       <ul class="mt-2 divide-y divide-line rounded-2xl bg-surface shadow-sm">
         <% @journal.each do |entry| %>
           <% date = l(entry.completed_at.to_date, format: :day) %>

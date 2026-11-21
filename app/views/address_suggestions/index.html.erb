@@ -1,5 +1,8 @@
 <% if @suggestions.any? %>
-  <ul class="absolute left-0 right-0 z-10 mt-1 divide-y divide-line rounded-xl border border-line bg-surface text-sm shadow-lg">
+  <ul
+    class="absolute left-0 right-0 z-10 mt-1 divide-y divide-line rounded-xl border border-line bg-surface text-sm
+           shadow-lg"
+  >
     <% @suggestions.each do |suggestion| %>
       <li>
         <button

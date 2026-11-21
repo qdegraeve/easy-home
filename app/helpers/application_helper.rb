@@ -30,7 +30,7 @@ module ApplicationHelper
   # "← …" link at the top of a page, for the browser only: in the Android app, the native top bar and the system
   # back already go back, and a web link would push a new screen instead of going back.
   def back_link_to(text, url)
-    link_to(text, url, class: "text-sm text-stone-500 underline") unless hotwire_native_app?
+    link_to(text, url, class: "text-sm text-muted underline") unless hotwire_native_app?
   end
 
   # Form data for a confirmed action: the message, the label of the confirm button (the action itself, not
