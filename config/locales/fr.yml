@@ -110,10 +110,16 @@ fr:
       no_location: "Sans emplacement"
       add: "+ Ajouter une plante"
       archived: "Plantes archivées · %{count}"
+  task_row_component:
+    done_watering: "Arrosée : %{name}"
+    done_with_subject: "Fait : %{title} (%{subject})"
+    done: "Fait : %{title}"
+    watered_today: "Arrosée aujourd'hui"
+    done_today: "Fait aujourd'hui"
   due_label:
     overdue:
-      one: "en retard de %{count} j"
-      other: "en retard de %{count} j"
+      one: "prévu hier"
+      other: "prévu il y a %{count} j"
     today: "aujourd'hui"
     tomorrow: "demain"
     later:
@@ -392,6 +398,8 @@ fr:
       cancel: "Revenir"
       confirm: "Confirmer"
   layouts:
+    flash:
+      close: "Fermer le message"
     application:
       app_name: "Easy Home"
       sign_out: "Se déconnecter"

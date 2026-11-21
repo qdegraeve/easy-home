@@ -1,6 +1,34 @@
-<% if notice.present? %>
-  <p role="status" class="mb-4 rounded-xl bg-action-soft px-4 py-3 text-sm text-action"><%= notice %></p>
-<% end %>
-<% if alert.present? %>
-  <p role="alert" class="mb-4 rounded-xl bg-alert-soft px-4 py-3 text-sm text-alert"><%= alert %></p>
-<% end %>
+<%# Flash messages as toasts at the bottom of the screen: they never push the page down (app/javascript/controllers/
+    toast_controller.js). A confirmation fades after 5 s; an error stays until closed.
+    - data-turbo-temporary: removed before Turbo caches the page, so "back" never shows an old message again;
+    - a unique id: a morph refresh (plant page) replaces the toast instead of reusing the previous one and its timer;
+    - screen readers hear the message through the permanent live region of the layout (#announcer). %>
+<div class="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto max-w-md space-y-2 px-4 pb-4">
+  <% if notice.present? %>
+    <div
+      id="toast-<%= SecureRandom.hex(4) %>"
+      data-turbo-temporary
+      data-controller="toast"
+      data-toast-duration-value="5000"
+      class="pointer-events-auto break-words rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-lg"
+    ><%= notice %></div>
+  <% end %>
+  <% if alert.present? %>
+    <div
+      id="toast-<%= SecureRandom.hex(4) %>"
+      data-turbo-temporary
+      data-controller="toast"
+      data-toast-assertive-value="true"
+      class="pointer-events-auto flex items-start justify-between gap-3 rounded-xl bg-alert px-4 py-3 text-sm
+             text-white shadow-lg"
+    >
+      <span data-toast-target="message" class="min-w-0 break-words"><%= alert %></span>
+      <button
+        type="button"
+        data-action="toast#close"
+        aria-label="<%= t(".close") %>"
+        class="-my-2 -mr-2 grid size-11 shrink-0 place-items-center rounded-lg hover:bg-white/10"
+      ><%= icon(:x, size: 18) %></button>
+    </div>
+  <% end %>
+</div>
