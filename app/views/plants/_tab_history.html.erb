@@ -1,0 +1,42 @@
+<%# "Historique" tab: what was done for the plant, then its analyses. %>
+<%= render ListGroupComponent.new(title: t("plants.show.journal"), id: "journal", icon: :history) do |group| %>
+  <% @journal.each do |entry| %>
+    <% date = l(entry.completed_at.to_date, format: :day) %>
+    <% if entry.task.watering? %>
+      <% label = t("plants.show.watered") %>
+      <% cancel_label, cancel_confirm = t("plants.show.cancel_label", date:), t("plants.show.cancel_confirm", date:) %>
+    <% else %>
+      <% title = entry.task.title %>
+      <% label = t("plants.show.done_entry", title:) %>
+      <% cancel_label = t("plants.show.cancel_task_label", title:, date:) %>
+      <% cancel_confirm = t("plants.show.cancel_task_confirm", title:, date:) %>
+    <% end %>
+    <% group.with_row do %>
+      <div class="flex min-h-12 items-center justify-between gap-3 pl-3 text-sm">
+        <span><%= heading_with_icon(entry.task.watering? ? :droplet : :check, label) %></span>
+        <span class="flex items-center gap-1">
+          <span class="shrink-0 text-muted"><%= date %></span>
+          <%= button_to t("plants.show.cancel"), task_occurrence_completion_path(entry), method: :delete,
+                aria: { label: cancel_label },
+                form: { data: confirm_data(cancel_confirm, button: t("plants.show.cancel_confirm_button")) },
+                class: small_action_class %>
+        </span>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if @analyses.any? %>
+  <%= render ListGroupComponent.new(title: t("plants.show.analyses"), id: "analyses", icon: :activity) do |group| %>
+    <% @analyses.each do |analysis| %>
+      <% group.with_row do %>
+        <% state = analysis.done? ? "health.#{analysis.health}" : "status.#{analysis.status}" %>
+        <%= link_to plant_analysis_path(@plant, analysis),
+              class: "flex min-h-12 items-center justify-between gap-3 px-3 text-sm" do %>
+          <span><%= l(analysis.created_at.to_date, format: :day) %></span>
+          <span class="text-muted"><%= t("plants.analyses.analysis.#{state}") %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

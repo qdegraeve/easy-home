@@ -1,0 +1,29 @@
+<%# "Photos" tab: the photo follow-up. %>
+<section aria-labelledby="photos">
+  <h2 id="photos" class="font-semibold"><%= heading_with_icon(:camera, t("plants.show.photos")) %></h2>
+  <% if @photos.any? %>
+    <ul class="mt-2 grid grid-cols-3 gap-2">
+      <% @photos.each do |photo| %>
+        <li>
+          <% date = l(photo.taken_at.to_date, format: :day) %>
+          <%= link_to plant_photo_path(@plant, photo), class: "block" do %>
+            <%= image_tag photo.image.variant(:thumb), alt: t("plants.show.photo_alt", date:),
+                  class: "aspect-square w-full rounded-xl object-cover" %>
+            <span class="mt-1 block text-center text-xs text-muted"><%= date %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <div class="mt-2"><%= render EmptyStateComponent.new(text: t("plants.show.no_photos")) %></div>
+  <% end %>
+  <% if policy(Photo.new(plant: @plant)).create? %>
+    <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3 space-y-2" do |f| %>
+      <%= f.label :file, t("plants.show.new_photo"), class: "block text-sm font-semibold" %>
+      <%= f.file_field :file, accept: "image/*", required: true,
+            class: "block w-full text-sm file:mr-3 file:min-h-11 file:rounded-xl file:border-0 " \
+                   "file:bg-action-soft file:px-3 file:font-semibold file:text-action" %>
+      <%= f.submit t("plants.show.add_photo"), class: button_class(:secondary, block: true) %>
+    <% end %>
+  <% end %>
+</section>

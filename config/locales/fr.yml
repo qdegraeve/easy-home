@@ -208,6 +208,11 @@ fr:
       other: "dans %{count} j"
   plants:
     back: "← Plantes"
+    tabs:
+      label: "Parties de la fiche"
+      care: "Soins"
+      photos: "Photos"
+      history: "Historique"
     index:
       back: "← Maison"
       title: "Plantes"
@@ -257,6 +262,8 @@ fr:
       tasks: "Autres tâches"
       photos: "Suivi photo"
       analysis: "Analyse"
+      face_alt: "Dernière photo de %{name}"
+      analyses: "Analyses"
       place_changed: "Analyse à revoir : le lieu a changé"
       place_changed_detail: >-
         Lors de la dernière analyse : %{before}. Maintenant : %{after}. Ses conseils peuvent ne plus être à jour.
@@ -292,6 +299,11 @@ fr:
       destroy: "Supprimer"
       destroy_confirm: "Supprimer définitivement cette plante et tout son historique ?"
     analyses:
+      summary:
+        see: "Voir l'analyse"
+        proposals:
+          one: "Une proposition à valider"
+          other: "%{count} propositions à valider"
       new:
         title: "Nouvelle analyse"
         intro: >-
@@ -370,6 +382,7 @@ fr:
         photo: "Joindre une photo (facultatif, elle rejoint le suivi photo)"
         submit: "Envoyer la question"
       thread:
+        ask: "Poser une question"
         title: "Questions sur cette analyse"
         pending: "Réponse en cours… La page se mettra à jour."
         failed: "La réponse n'a pas abouti."
