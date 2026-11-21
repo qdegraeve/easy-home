@@ -14,7 +14,8 @@ source : elle sait quelles actions existent, avec quels droits et quelles confir
 - **Bibliothèque `@hotwired/hotwire-native-bridge`** (1.2.2, MIT, maintenue par l'équipe Hotwire) côté web : elle
   fournit `BridgeComponent` (un contrôleur Stimulus qui échange des messages avec l'app) et marque `<html>` avec les
   composants que l'app supporte. C'est le pendant officiel de Hotwire Native Android, déjà utilisé par la coque.
-- **Deux composants** : `button` (un bouton de la barre du haut) et `menu` (les entrées du menu ⋮). La page déclare
+- **Deux composants** : `button` (le bouton flottant de l'action principale, en bas à droite) et `menu` (les entrées
+  du menu ⋮ de la barre du haut). La page déclare
   ses éléments par des attributs ; un appui côté app renvoie un message, et la page clique son propre élément : les
   confirmations, autorisations et redirections restent celles de Rails.
 - **Côté Kotlin**, les messages sont lus avec `org.json` (inclus dans Android) : pas de plugin de sérialisation.

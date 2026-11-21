@@ -309,8 +309,10 @@ haut ». Il a deux moitiés, qui s'échangent des messages JSON (ADR 0014) :
 Deux composants pour l'instant :
 
 - **`button`** : côté page, `data-controller="bridge--button"` avec `data-bridge-title` et `data-bridge-icon` sur un
-  lien ; côté app, un bouton de la barre du haut, dont l'appui clique le lien. Utilisé pour le « + » de la page
-  Plantes.
+  lien ; côté app, le **bouton flottant** en bas à droite, au-dessus des onglets (convention Android : il sert à
+  créer ; la barre du haut garde la navigation, les Réglages et le menu ⋮), dont l'appui clique le lien. Utilisé pour
+  le « + » de la page Plantes. Il suit la page à l'écran : `MainActivity` appelle `ButtonComponent.showFor()` après
+  chaque navigation et changement d'onglet, et une page qui n'en déclare pas n'en a pas.
 - **`menu`** : côté page, `data-controller="bridge--menu"` et des cibles `item` ; côté app, les entrées du menu ⋮,
   dont le choix clique l'élément (sa confirmation s'affiche comme d'habitude). Utilisé pour Modifier, Archiver et
   Supprimer d'une plante.
