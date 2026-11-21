@@ -62,7 +62,9 @@ android/
         │   ├── AndroidManifest.xml
         │   ├── kotlin/app/easyhome/android/
         │   │   ├── EasyHomeApplication.kt
-        │   │   └── MainActivity.kt
+        │   │   ├── MainActivity.kt
+        │   │   ├── MainTabs.kt
+        │   │   └── WebFragment.kt
         │   ├── assets/json/path-configuration.json
         │   └── res/             ← ressources : écrans XML, textes, couleurs, thème, icône
         └── debug/               ← ajouts valables seulement en debug
@@ -138,10 +140,16 @@ Gradle fusionne ces fichiers avec ceux de `main`, **seulement en debug**, comme 
 **`MainActivity.kt`**, le conteneur de tous les écrans :
 
 - `HotwireActivity` : la classe de Hotwire dont on hérite. Elle sait gérer la pile d'écrans, le bouton retour, etc.
-- `setContentView(R.layout.activity_main)` : affiche le layout XML (un simple conteneur, voir ci-dessous).
+- `setContentView(R.layout.activity_main)` : affiche le layout XML : trois conteneurs de navigateur superposés et la
+  barre d'onglets du bas (`BottomNavigationView`).
 - `enableEdgeToEdge()` et `applyDefaultImeWindowInsets()` : l'app dessine jusqu'aux bords de l'écran, sans passer sous
   la barre d'état ni sous le clavier.
-- `navigatorConfigurations()` : déclare **un navigateur** nommé `main`, qui démarre sur `BuildConfig.BASE_URL`.
+- `HotwireBottomNavigationController` (Hotwire Native) relie la barre d'onglets aux navigateurs : un appui change
+  d'onglet, un second appui sur l'onglet actif revient à sa page de départ ; la barre se masque dans une modal et quand
+  le clavier est ouvert. `lazyLoadTabs` : un onglet ne charge sa page qu'au premier appui.
+- `navigatorConfigurations()` : déclare **trois navigateurs**, un par onglet (`MainTabs.kt`) : `today` sur `/`,
+  `house` sur `/house`, `journal` sur `/journal`. Chacun a **sa propre pile** : on peut ouvrir une plante dans Maison,
+  passer dans Journal, puis revenir dans Maison sur la même plante.
 
 Note sur `R.layout.activity_main` : `R` est une classe générée par le build qui donne un identifiant à chaque
 ressource. C'est un peu l'équivalent des helpers de routes générés par Rails (`plants_path`).
@@ -205,10 +213,29 @@ rejoue « revenir » sur l'écran d'en dessous.
 
 Dans l'app, l'en-tête web et les liens « ← … » sont masqués (`hotwire_native_app?`, helper `back_link_to`) : la barre
 native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les réglages
-(notifications, foyers, déconnexion) s'ouvrent depuis un bouton de la page « Aujourd'hui » ; le premier formulaire de
-foyer garde ses liens de compte (`shared/_account_nav`). En attendant les onglets natifs (PR 7), la barre d'onglets
-web est affichée, sauf sur les pages ouvertes en modal (un onglet fermerait la modal) ; Maison et Journal s'empilent
-au-dessus d'Aujourd'hui, pour que le retour du téléphone y ramène au lieu de quitter l'app.
+(notifications, foyers, déconnexion) s'ouvrent depuis l'icône de la barre native du haut, sur chaque écran
+(`WebFragment`, sauf sur les réglages, la connexion et dans une modal) ; le premier formulaire de
+foyer garde ses liens de compte (`shared/_account_nav`). La barre d'onglets web n'est pas affichée dans l'app (helper
+`show_tabs?`) : les onglets y sont natifs.
+
+Comportements propres aux onglets (`MainActivity`) :
+
+- **Retour à jour** : revenir sur un onglet rafraîchit sa page (un arrosage fait dans Aujourd'hui apparaît dans
+  Journal, un changement de foyer dans Maison).
+- **Retour du téléphone** : dans un onglet, il remonte sa pile ; à la page de départ de Maison ou de Journal, il ramène
+  à Aujourd'hui ; à la page de départ d'Aujourd'hui, il quitte l'app.
+- **Déconnexion** : sur les pages de connexion, la barre d'onglets est masquée ; on se reconnecte dans l'onglet où l'on
+  était. Une fois reconnecté, la barre revient et **tous** les onglets repartent de leur page de départ pour la
+  nouvelle session (sinon, se reconnecter depuis Maison y mettait l'accueil à la place de Maison). Seule la page
+  affichée compte : les autres onglets chargent des pages en arrière-plan (leur page de départ, une redirection vers
+  la connexion) qui ne disent rien de la connexion de l'utilisateur ; les prendre en compte faisait réapparaître les
+  onglets sur la connexion et laissait des onglets vides. Vérifié sur le téléphone : déconnexion depuis Maison,
+  Journal et Aujourd'hui, puis reconnexion, et relance de l'app déconnectée.
+- **Insets** : la barre d'onglets se place au-dessus de la barre système ; masquée (modal, clavier), ce sont les pages
+  qui prennent cette marge, pour que leur bas (toasts, boutons) reste visible.
+- **Supprimer une plante** (`data-turbo-action="replace"`) : la fiche quitte la pile. Depuis Maison > Plantes, on
+  revient à la liste à jour (sans le message de confirmation, que la coque ne rejoue pas) ; depuis Aujourd'hui, la
+  liste des plantes remplace la fiche.
 
 Limite connue : si la session a expiré sur une page qui s'ouvre en modal (un formulaire, « Mes foyers »), la
 reconnexion ramène à cette page en modal par-dessus l'écran de connexion ; fermer la modal ramène à cet écran.
@@ -312,7 +339,8 @@ Chrome : chrome://inspect  ◄────────────────�
 Ce qui se passe au lancement, d'après les journaux :
 
 1. Android crée `EasyHomeApplication` : configuration et chargement des règles.
-2. Android ouvre `MainActivity` : le navigateur `main` visite `BASE_URL` (`/`).
+2. Android ouvre `MainActivity` : le navigateur de l'onglet Aujourd'hui visite `BASE_URL` (`/`) ; Maison et Journal
+   attendent leur premier appui.
 3. Rails redirige vers `/session/new` si tu n'es pas connecté ; la règle `replace_root` s'applique.
 4. La page est chargée à froid (*cold boot*) : HTML, CSS et JavaScript complets, une seule fois.
 5. Turbo signale qu'il est prêt (`turboIsReady`) ; les visites suivantes passent par Turbo, sans rechargement complet.

@@ -16,8 +16,8 @@
 - Identifiant de l'app : `app.easyhome.android` (neutre, aucun vrai domaine ; à revoir avant une publication).
 - Build : Android Gradle Plugin 9.4 (Kotlin intégré), Gradle 9.9 (wrapper versionné), compileSdk et targetSdk 37,
   minSdk 28, Java 17. La CI construit l'APK de debug (job « Android ») ; Dependabot suit les dépendances Gradle.
-- Code : `EasyHomeApplication` (configuration Hotwire, chargement de la path configuration) et `MainActivity`
-  (un seul navigateur, sans onglets).
+- Code : `EasyHomeApplication` (configuration Hotwire, chargement de la path configuration), `MainActivity` et
+  `MainTabs` (trois onglets natifs, un navigateur chacun ; voir `docs/android-coque.md`).
 - **Le Kotlin reste de la plomberie** : navigation, notifications, stockage sécurisé, bridge. Toute logique métier vit dans Rails.
 
 ## Ce qui est web et ce qui est natif

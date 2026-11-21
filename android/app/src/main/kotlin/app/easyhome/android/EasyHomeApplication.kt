@@ -4,11 +4,17 @@ import android.app.Application
 import dev.hotwire.core.config.Hotwire
 import dev.hotwire.core.logging.HotwireLogLevel
 import dev.hotwire.core.turbo.config.PathConfiguration
+import dev.hotwire.navigation.config.defaultFragmentDestination
+import dev.hotwire.navigation.config.registerFragmentDestinations
 
 // Plumbing only: every screen is the Rails app in a web view; the business logic stays in Rails.
 class EasyHomeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+
+        // Our web screen (settings button in the top bar) instead of Hotwire's default one.
+        Hotwire.defaultFragmentDestination = WebFragment::class
+        Hotwire.registerFragmentDestinations(WebFragment::class)
 
         Hotwire.config.webViewDebuggingEnabled = BuildConfig.DEBUG
         Hotwire.config.applicationUserAgentPrefix = "EasyHome Android;"
