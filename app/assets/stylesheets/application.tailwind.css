@@ -36,3 +36,11 @@
     cursor: progress;
   }
 }
+
+/* In the Android app, the elements handled by a native bridge component (top bar button, "⋮" menu) are hidden from
+   the page: the native top bar shows them. The bridge marks <html> with the components the app supports. Outside any
+   layer, so that it wins over the display utilities of the element (inline-flex…). */
+[data-bridge-components~="button"] [data-controller~="bridge--button"],
+[data-bridge-components~="menu"] [data-controller~="bridge--menu"] {
+  display: none;
+}

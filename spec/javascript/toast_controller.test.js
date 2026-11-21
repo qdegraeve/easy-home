@@ -75,4 +75,15 @@ describe("toast controller", () => {
     expect(() => vi.advanceTimersByTime(10_000)).not.toThrow()
     expect(announcer().textContent).toBe("")
   })
+
+  it("takes its message out of the live region when it leaves the page", async () => {
+    await mount(`<div data-controller="toast" data-toast-duration-value="5000">Noté</div>`)
+    vi.advanceTimersByTime(200)
+    expect(announcer().textContent).toBe("Noté")
+
+    document.querySelector("[data-controller=toast]").remove()
+    await Promise.resolve()
+
+    expect(announcer().textContent).toBe("")
+  })
 })

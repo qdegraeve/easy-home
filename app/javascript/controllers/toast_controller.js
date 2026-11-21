@@ -21,9 +21,12 @@ export default class extends Controller {
     this.announce()
   }
 
+  // Leaving the page (or the toast closing) takes the message out of the permanent live region too: it would
+  // otherwise stay there, read again, on the next pages.
   disconnect() {
     clearTimeout(this.timer)
     clearTimeout(this.announceTimer)
+    this.forget()
   }
 
   start() {
@@ -33,9 +36,13 @@ export default class extends Controller {
 
   // Closed by hand or by time: the live region forgets the message too.
   close() {
+    this.forget()
+    this.element.remove()
+  }
+
+  forget() {
     const announcer = document.getElementById("announcer")
     if (announcer?.textContent === this.text) announcer.textContent = ""
-    this.element.remove()
   }
 
   get text() {

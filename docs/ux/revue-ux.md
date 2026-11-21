@@ -659,7 +659,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    **PR 6b** (#46, #47, #57, fait) : modifier un emplacement, analyses à revoir après un changement de lieu, rôle dans
    « Mes foyers ».
 7. **PR 7 · Onglets natifs** (#7, fait) : la coque passe à trois navigateurs (`HotwireBottomNavigationController`).
-8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
+8. **PR 8 · Bridge bouton et menu** (#9, #10, fait ; ADR 0014) : + et ⋮ natifs ; Réglages dans la barre du haut
+   de chaque écran (fait en PR 7).
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
 10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24) : marge proportionnelle, report tracé, catalogue,
     résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
