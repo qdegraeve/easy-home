@@ -216,8 +216,19 @@ native et le retour du téléphone font ce travail, et un lien web empilerait un
 foyer garde ses liens de compte (`shared/_account_nav`). La barre d'onglets web n'est pas affichée dans l'app (helper
 `show_tabs?`) : les onglets y sont natifs.
 
-Limite connue : en changeant de foyer (onglet Aujourd'hui), Maison et Journal gardent l'ancien foyer affiché jusqu'à
-ce qu'on les rafraîchisse (tirer vers le bas) ou qu'on touche à nouveau leur onglet.
+Comportements propres aux onglets (`MainActivity`) :
+
+- **Retour à jour** : revenir sur un onglet rafraîchit sa page (un arrosage fait dans Aujourd'hui apparaît dans
+  Journal, un changement de foyer dans Maison).
+- **Retour du téléphone** : dans un onglet, il remonte sa pile ; à la page de départ de Maison ou de Journal, il ramène
+  à Aujourd'hui ; à la page de départ d'Aujourd'hui, il quitte l'app.
+- **Déconnexion** : sur les pages de connexion, la barre d'onglets est masquée et tous les onglets repartent
+  d'Aujourd'hui ; une fois reconnecté, la barre revient et chaque onglet se recharge pour la nouvelle session.
+- **Insets** : la barre d'onglets se place au-dessus de la barre système ; masquée (modal, clavier), ce sont les pages
+  qui prennent cette marge, pour que leur bas (toasts, boutons) reste visible.
+- **Supprimer une plante** (`data-turbo-action="replace"`) : la fiche quitte la pile. Depuis Maison > Plantes, on
+  revient à la liste à jour (sans le message de confirmation, que la coque ne rejoue pas) ; depuis Aujourd'hui, la
+  liste des plantes remplace la fiche.
 
 Limite connue : si la session a expiré sur une page qui s'ouvre en modal (un formulaire, « Mes foyers »), la
 reconnexion ramène à cette page en modal par-dessus l'écran de connexion ; fermer la modal ramène à cet écran.

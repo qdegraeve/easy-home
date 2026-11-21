@@ -43,4 +43,24 @@ RSpec.describe "Sections", type: :system do
     go_to_tab("Aujourd'hui")
     expect(page).to have_button("Arrosée : Basilic")
   end
+
+  it "deletes a plant in place of its page: going back never shows it again" do
+    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:plant, :watered, household: user.households.sole, name: "Basilic")
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    open_plant("Basilic")
+    click_on "Supprimer"
+    within("dialog") { click_on "Supprimer" }
+    expect(page).to have_css("h1", text: "Plantes")
+    expect(page).to have_no_link("Basilic")
+    expect(page).to have_current_path(plants_path)
+
+    page.go_back
+    expect(page).to have_current_path(plants_path)
+    expect(page).to have_css("h1", text: "Plantes")
+  end
 end
