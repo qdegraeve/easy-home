@@ -81,6 +81,7 @@ RSpec.describe "Plant photos", type: :system do
     expect(page).to have_content("1 / 1")
     # The deleted photo replaced in the history: "back" leaves the viewer.
     page.go_back
+    expect(page).to have_css("section[aria-labelledby=photos]") # the gallery, where the viewer was opened from
     expect(page).to have_no_content("Photo du 8 novembre 2026")
     expect(page).to have_no_css("img[alt='Photo du dim 8 nov.']")
   end
