@@ -674,6 +674,9 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.
 
+Après la PR 9, demandé par le propriétaire : **galerie photo** d'une plante (fait) : grille par mois, visionneuse
+sombre, glisser et flèches entre les photos, date modifiée dans sa page. Plus tard : comparer deux dates, timelapse.
+
 Ensuite, au fil de l'eau : #14, #45, #47, #48, #49, #53, #54.
 
 ## Décisions du propriétaire (21 novembre 2026)
