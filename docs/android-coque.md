@@ -62,7 +62,8 @@ android/
         │   ├── AndroidManifest.xml
         │   ├── kotlin/app/easyhome/android/
         │   │   ├── EasyHomeApplication.kt
-        │   │   └── MainActivity.kt
+        │   │   ├── MainActivity.kt
+        │   │   └── MainTabs.kt
         │   ├── assets/json/path-configuration.json
         │   └── res/             ← ressources : écrans XML, textes, couleurs, thème, icône
         └── debug/               ← ajouts valables seulement en debug
@@ -138,10 +139,16 @@ Gradle fusionne ces fichiers avec ceux de `main`, **seulement en debug**, comme 
 **`MainActivity.kt`**, le conteneur de tous les écrans :
 
 - `HotwireActivity` : la classe de Hotwire dont on hérite. Elle sait gérer la pile d'écrans, le bouton retour, etc.
-- `setContentView(R.layout.activity_main)` : affiche le layout XML (un simple conteneur, voir ci-dessous).
+- `setContentView(R.layout.activity_main)` : affiche le layout XML : trois conteneurs de navigateur superposés et la
+  barre d'onglets du bas (`BottomNavigationView`).
 - `enableEdgeToEdge()` et `applyDefaultImeWindowInsets()` : l'app dessine jusqu'aux bords de l'écran, sans passer sous
   la barre d'état ni sous le clavier.
-- `navigatorConfigurations()` : déclare **un navigateur** nommé `main`, qui démarre sur `BuildConfig.BASE_URL`.
+- `HotwireBottomNavigationController` (Hotwire Native) relie la barre d'onglets aux navigateurs : un appui change
+  d'onglet, un second appui sur l'onglet actif revient à sa page de départ ; la barre se masque dans une modal et quand
+  le clavier est ouvert. `lazyLoadTabs` : un onglet ne charge sa page qu'au premier appui.
+- `navigatorConfigurations()` : déclare **trois navigateurs**, un par onglet (`MainTabs.kt`) : `today` sur `/`,
+  `house` sur `/house`, `journal` sur `/journal`. Chacun a **sa propre pile** : on peut ouvrir une plante dans Maison,
+  passer dans Journal, puis revenir dans Maison sur la même plante.
 
 Note sur `R.layout.activity_main` : `R` est une classe générée par le build qui donne un identifiant à chaque
 ressource. C'est un peu l'équivalent des helpers de routes générés par Rails (`plants_path`).
@@ -206,9 +213,11 @@ rejoue « revenir » sur l'écran d'en dessous.
 Dans l'app, l'en-tête web et les liens « ← … » sont masqués (`hotwire_native_app?`, helper `back_link_to`) : la barre
 native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les réglages
 (notifications, foyers, déconnexion) s'ouvrent depuis un bouton de la page « Aujourd'hui » ; le premier formulaire de
-foyer garde ses liens de compte (`shared/_account_nav`). En attendant les onglets natifs (PR 7), la barre d'onglets
-web est affichée, sauf sur les pages ouvertes en modal (un onglet fermerait la modal) ; Maison et Journal s'empilent
-au-dessus d'Aujourd'hui, pour que le retour du téléphone y ramène au lieu de quitter l'app.
+foyer garde ses liens de compte (`shared/_account_nav`). La barre d'onglets web n'est pas affichée dans l'app (helper
+`show_tabs?`) : les onglets y sont natifs.
+
+Limite connue : en changeant de foyer (onglet Aujourd'hui), Maison et Journal gardent l'ancien foyer affiché jusqu'à
+ce qu'on les rafraîchisse (tirer vers le bas) ou qu'on touche à nouveau leur onglet.
 
 Limite connue : si la session a expiré sur une page qui s'ouvre en modal (un formulaire, « Mes foyers »), la
 reconnexion ramène à cette page en modal par-dessus l'écran de connexion ; fermer la modal ramène à cet écran.
@@ -312,7 +321,8 @@ Chrome : chrome://inspect  ◄────────────────�
 Ce qui se passe au lancement, d'après les journaux :
 
 1. Android crée `EasyHomeApplication` : configuration et chargement des règles.
-2. Android ouvre `MainActivity` : le navigateur `main` visite `BASE_URL` (`/`).
+2. Android ouvre `MainActivity` : le navigateur de l'onglet Aujourd'hui visite `BASE_URL` (`/`) ; Maison et Journal
+   attendent leur premier appui.
 3. Rails redirige vers `/session/new` si tu n'es pas connecté ; la règle `replace_root` s'applique.
 4. La page est chargée à froid (*cold boot*) : HTML, CSS et JavaScript complets, une seule fois.
 5. Turbo signale qu'il est prêt (`turboIsReady`) ; les visites suivantes passent par Turbo, sans rechargement complet.
