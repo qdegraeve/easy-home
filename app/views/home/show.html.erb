@@ -1,3 +1,8 @@
+<% content_for :head do %>
+  <%# A completion redirects here: morph the page and keep the scroll, so that the list does not jump. %>
+  <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+<% end %>
+
 <div class="flex items-end justify-between gap-3">
   <div>
     <%= link_to @household.name, households_path,
@@ -18,20 +23,36 @@
   </div>
 <% else %>
   <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-    <div class="self-start">
-      <%= render ListGroupComponent.new(title: t(".due_today", count: @due_today.size), id: "due-today") do |group| %>
-        <% @due_today.each do |occurrence| %>
-          <% task = occurrence.task %>
-          <% group.with_row do %>
-            <%= render TaskRowComponent.new(
-              occurrence:,
-              title: task.subject.name,
-              href: polymorphic_path(task.subject),
-              detail: task.watering? ? t(".watering") : task.title
-            ) %>
-          <% end %>
-        <% end %>
-        <%= render EmptyStateComponent.new(text: t(".nothing_due")) %>
+    <div class="space-y-6 self-start">
+      <%= render TaskListComponent.new(
+        occurrences: @due_today,
+        title: t(".due_today", count: @due_today.size),
+        id: "due-today",
+        empty: (t(".nothing_due") if @due_today.empty?)
+      ) %>
+
+      <% if @upcoming.any? %>
+        <details>
+          <summary class="cursor-pointer py-3 font-semibold"><%= t(".upcoming", count: @upcoming.size) %></summary>
+          <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
+            <% @upcoming.each do |occurrence| %>
+              <% task = occurrence.task %>
+              <li class="flex min-h-12 items-center justify-between gap-3 px-3 py-2 text-sm">
+                <%
+                  label = if task.watering?
+                    t(".water_plant", name: task.subject.name)
+                  elsif task.subject
+                    t(".task_of", title: task.title, name: task.subject.name)
+                  else
+                    task.title
+                  end
+                %>
+                <span><%= label %></span>
+                <span class="shrink-0 text-muted"><%= render DueLabelComponent.new(due_at: occurrence.due_at) %></span>
+              </li>
+            <% end %>
+          </ul>
+        </details>
       <% end %>
     </div>
 

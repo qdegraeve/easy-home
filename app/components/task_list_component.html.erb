@@ -1,0 +1,38 @@
+<%= render ListGroupComponent.new(title:, id:) do |group| %>
+  <% if waterings.any? %>
+    <% group.with_row do %>
+      <div class="flex items-center gap-3 px-3 py-2">
+        <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
+          <%= helpers.icon(:droplet) %>
+        </span>
+        <%= link_to today_watering_path, class: "flex min-h-11 min-w-0 flex-1 flex-col justify-center py-1" do %>
+          <span class="font-medium">
+            <%= t(".water") %>
+            <span class="ml-1 rounded-full bg-subtle px-2 text-sm text-muted"><%= waterings.size %></span>
+          </span>
+          <span class="text-sm text-muted"><%= watering_places %></span>
+        <% end %>
+        <%= button_to(
+          task_occurrences_batch_completion_path,
+          params: { occurrence_ids: waterings.map(&:id) },
+          aria: { label: t(".water_all", count: waterings.size) },
+          class: "grid size-11 shrink-0 place-items-center rounded-full bg-action text-white hover:bg-action-strong"
+        ) do %>
+          <%= helpers.icon(:check, size: 22) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+  <% others.each do |occurrence| %>
+    <% task = occurrence.task %>
+    <% group.with_row do %>
+      <%= render TaskRowComponent.new(
+        occurrence:,
+        title: task.subject&.name || task.title,
+        href: task.subject && polymorphic_path(task.subject),
+        detail: task.watering? ? t(".watering") : (task.subject ? task.title : t(".once"))
+      ) %>
+    <% end %>
+  <% end %>
+  <% if empty %><%= render EmptyStateComponent.new(text: empty) %><% end %>
+<% end %>

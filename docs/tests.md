@@ -84,6 +84,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Discussion sur une analyse : question avec photo jointe, réponse affichée, question suivante avec le fil | `spec/system/plant_analyses_spec.rb` | Fait |
 | Propositions d'une analyse acceptées : espèce sur la fiche, intervalle d'arrosage, action devenue tâche | `spec/system/plant_analyses_spec.rb` | Fait |
 | Dans l'app Android : sans en-tête web, réglages et déconnexion depuis le bas de l'accueil | `spec/system/native_app_spec.rb` | Fait |
+| Aujourd'hui : tout l'arrosage du jour en un geste, annulé depuis le toast, puis détail par emplacement avec une plante décochée ; « Bientôt » replié | `spec/system/today_spec.rb` | Fait |
 | Réglages des notifications : résumé coupé, heure, foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |

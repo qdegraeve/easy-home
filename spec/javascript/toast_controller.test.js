@@ -34,6 +34,22 @@ describe("toast controller", () => {
     expect(document.querySelector("[data-controller=toast]")).toBeNull()
   })
 
+  it("waits while it has the focus, then counts again from the beginning", async () => {
+    await mount(`<div data-controller="toast" data-toast-duration-value="5000">Noté<button>Annuler</button></div>`)
+    const toast = document.querySelector("[data-controller=toast]")
+
+    vi.advanceTimersByTime(4000)
+    toast.dispatchEvent(new FocusEvent("focusin", { bubbles: true }))
+    vi.advanceTimersByTime(60_000)
+    expect(document.querySelector("[data-controller=toast]")).not.toBeNull()
+
+    toast.dispatchEvent(new FocusEvent("focusout", { bubbles: true }))
+    vi.advanceTimersByTime(4999)
+    expect(document.querySelector("[data-controller=toast]")).not.toBeNull()
+    vi.advanceTimersByTime(1)
+    expect(document.querySelector("[data-controller=toast]")).toBeNull()
+  })
+
   it("keeps an error until it is closed, and announces only its message, assertively", async () => {
     await mount(`
       <div data-controller="toast" data-toast-assertive-value="true">
