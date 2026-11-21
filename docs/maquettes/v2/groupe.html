@@ -204,7 +204,9 @@ body.show-native .statusbar.native::before { top: 6px; }
         </div>
       </div>
 
-      <h2 class="group-title">Aujourd'hui <span class="num">4</span></h2>
+      <h2 class="group-title">Aujourd'hui <span class="num">3</span></h2>
+      <p class="date" style="margin:0 4px 8px">Pluie cette nuit, 14 mm : jardin devant arrosé
+        (<a href="journal.html" style="color:var(--action)">journal</a>).</p>
       <div class="list">
         <div class="row">
         <span class="dot d-plants" style="width:36px;height:36px">
@@ -215,30 +217,11 @@ body.show-native .statusbar.native::before { top: 6px; }
         </svg>
         </span>
         <a class="main" href="groupe.html">
-        <div class="t">Arroser la terrasse<span class="count num">3</span>
+        <div class="t">Arroser<span class="count num">4</span>
         </div>
-        <div class="m ">Basilic, menthe, ciboulette</div>
+        <div class="m ">Terrasse 3 · salon 1</div>
         </a>
-        <button class="done-btn" aria-label="Fait : Arroser la terrasse" data-done>
-        <svg class="ic " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M20 6 9 17l-5-5"/>
-        </svg>
-        </button>
-        </div>
-        <div class="row">
-        <span class="dot d-plants" style="width:36px;height:36px">
-        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7
-          7z"/>
-        </svg>
-        </span>
-        <div class="main">
-        <div class="t">Arroser le salon</div>
-        <div class="m ">Monstera</div>
-        </div>
-        <button class="done-btn" aria-label="Fait : Arroser le salon" data-done>
+        <button class="done-btn" aria-label="Fait : Arroser 4 plantes" data-done>
         <svg class="ic " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M20 6 9 17l-5-5"/>
@@ -305,9 +288,9 @@ body.show-native .statusbar.native::before { top: 6px; }
           </svg>
           </span>
           <div class="main">
-          <div class="t">Arroser le jardin devant<span class="count num">2</span>
+          <div class="t">Arroser<span class="count num">2</span>
           </div>
-          <div class="m ">Citronnier, bougainvillier</div>
+          <div class="m ">Jardin devant 2</div>
           </div>
           <span class='end'>Demain</span>
           </div>
@@ -361,7 +344,7 @@ body.show-native .statusbar.native::before { top: 6px; }
       <div class="toast hidden" role="status"><span>Noté</span><button>Annuler</button></div>
 
       <div class="sheet-backdrop native"></div>
-      <div class="sheet native" role="dialog" aria-label="Arroser la terrasse">
+      <div class="sheet native" role="dialog" aria-label="Arroser 4 plantes">
         <div class="grab"></div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
           <span class="dot d-plants" style="width:36px;height:36px">
@@ -371,10 +354,11 @@ body.show-native .statusbar.native::before { top: 6px; }
             7z"/>
           </svg>
           </span>
-          <div style="flex:1"><b style="font-size:19px">Arroser la terrasse</b>
+          <div style="flex:1"><b style="font-size:19px">Arroser 4 plantes</b>
             <div class="m" style="font-size:14px;color:var(--muted)">Décochez ce qui n'a pas été arrosé</div></div>
         </div>
-        <div class="list flat" style="margin:12px 0 16px">
+        <div class="group-title" style="margin:12px 4px 6px">Terrasse</div>
+        <div class="list flat" style="margin:0 0 8px">
           <label class="row" style="min-height:56px;cursor:pointer">
             <div class="main"><div class="t">Basilic</div><div class="m">tous les 2 jours · dû depuis hier</div></div>
             <input type="checkbox" checked style="width:24px;height:24px;accent-color:var(--action)">
@@ -388,11 +372,18 @@ body.show-native .statusbar.native::before { top: 6px; }
             <input type="checkbox" checked style="width:24px;height:24px;accent-color:var(--action)">
           </label>
         </div>
+        <div class="group-title" style="margin:12px 4px 6px">Salon</div>
+        <div class="list flat" style="margin:0 0 16px">
+          <label class="row" style="min-height:56px;cursor:pointer">
+            <div class="main"><div class="t">Monstera</div><div class="m">tous les 7 jours</div></div>
+            <input type="checkbox" checked style="width:24px;height:24px;accent-color:var(--action)">
+          </label>
+        </div>
         <button class="btn primary">
         <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M20 6 9 17l-5-5"/>
-        </svg> Valider 3 arrosages</button>
+        </svg> Valider 4 arrosages</button>
         <button class="btn tertiary" style="margin-top:4px">
         <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -441,7 +432,7 @@ body.show-native .statusbar.native::before { top: 6px; }
       <h1>Détail d'un groupe</h1>
       <label class="toggle"><input type="checkbox" id="native-toggle" checked> Montrer ce qui est natif</label>
       <ol>
-      <li>Ouverte par appui sur « Arroser la terrasse ». Règle de path configuration : <code>/today/groups/</code> en
+      <li>Ouverte par appui sur « Arroser · 4 ». Règle de path configuration : <code>/today/groups/</code> en
         <code>modal</code>.</li>
       <li>Tout est coché par défaut : le cas courant reste un seul geste.</li>
       <li>On décoche ce qui n'a pas été fait ; « Décaler à demain » pour tout le groupe.</li>

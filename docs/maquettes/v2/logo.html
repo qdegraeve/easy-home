@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logo et icône</title>
+  <meta name="description" content="Logo et icône d'app d'Easy Home : un toit et une coche, la maison faite.">
+  <style>
+:root { --paper: #F6F4EF; --surface: #FFFFFF; --line: #E4E0D6; --ink: #1D2521; --muted: #5F665F;
+  --action: #1F5C46; --action-soft: #E3EDE7; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: system-ui, -apple-system, "Roboto", "Segoe UI", sans-serif; color: var(--ink);
+  background: var(--paper); font-size: 16px; line-height: 1.45; }
+a { color: var(--action); text-decoration: none; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 26px; margin: 12px 0 4px; }
+h2 { font-size: 18px; margin: 32px 0 12px; }
+.hero { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+.hero p { max-width: 520px; margin: 0 0 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.card { margin: 0; border-radius: 14px; border: 1px solid var(--line); overflow: hidden; }
+.card .art { height: 200px; display: grid; place-items: center; }
+.card figcaption { padding: 12px 14px; background: var(--surface); border-top: 1px solid var(--line);
+  font-size: 14px; color: var(--muted); }
+.card figcaption b { display: block; color: var(--ink); font-size: 15px; }
+.word { display: inline-flex; gap: 10px; align-items: center; font-size: 22px; font-weight: 600; }
+.row { display: inline-flex; gap: 16px; align-items: center; }
+.anatomy { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+.anatomy ol { max-width: 520px; padding-left: 20px; margin: 0; }
+.anatomy li { margin-bottom: 8px; }
+code { font-size: 13px; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="index.html">← Toutes les maquettes</a>
+    <h1>Logo et icône</h1>
+    <div class="hero">
+      <svg width="200" height="200" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+      <rect width="64" height="64" rx="14" fill="#1F5C46"/>
+      <g fill="none" stroke="#F6F4EF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 31 32 14l17 17"/>
+      <path d="m22 41 6.5 6.5L43 33"/>
+      </g>
+      </svg>
+      <div>
+        <p><b>Un toit et une coche : la maison, c'est fait.</b> Le chevron du haut est le toit, la forme la plus simple
+          d'une maison. En dessous, la coche est le geste que l'app demande chaque jour : marquer une tâche comme
+          faite.</p>
+        <p>Le grand trait de la coche est <b>parallèle à la pente gauche du toit</b> : la tâche s'inscrit dans la
+          maison, elle n'est pas posée dessus. Le vide entre les deux traits laisse respirer le signe. C'est le
+          « easy » : peu de traits, rien à déchiffrer.</p>
+        <p>Vus ensemble, les deux traits dessinent presque un carré posé sur la pointe : la maison entière,
+          que chaque tâche faite vient refermer.</p>
+        <p>Pas de feuille ni de goutte : l'icône vaut pour tous les domaines (plantes, poubelles, piscine, animaux,
+          équipements), pas seulement pour les plantes.</p>
+      </div>
+    </div>
+
+    <h2>Construction</h2>
+    <div class="anatomy">
+      <svg width="240" height="240" viewBox="0 0 64 64" role="img" aria-label="Grille de construction">
+        <rect width="64" height="64" rx="14" fill="#FFFFFF" stroke="#E4E0D6" stroke-width=".4"/>
+        <g stroke="#C9C3B5" stroke-width=".25" stroke-dasharray="1 1">
+          <path d="M8 0v64M56 0v64M0 8h64M0 56h64"/>
+          <path d="M0 46 46 0M8 64 64 8"/>
+          <circle cx="32" cy="32" r="21" fill="none"/>
+        </g>
+        <g fill="none" stroke="#1F5C46" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+      </svg>
+      <ol>
+        <li>Grille de 64 ; trait de 5,5 (8,6 %), bouts et angles arrondis, comme les icônes au trait de l'app.</li>
+        <li>Toit et grand trait de la coche à 45° ; la coche est centrée sous le faîte.</li>
+        <li>Le signe tient dans le cercle de 21 (zone sûre de l'icône adaptative Android : 66 dp sur 108).</li>
+        <li>Couleurs : fond <code>#1F5C46</code> (couleur d'action), trait <code>#F6F4EF</code> (papier). Aucun
+          dégradé, aucune ombre.</li>
+        <li>Fichier source : <code>docs/maquettes/v2/logo.svg</code>. Dans l'app : <code>public/icon.svg</code>,
+          <code>public/icon.png</code> et les ressources <code>mipmap</code> / <code>drawable</code> de la coque
+          Android (PR 3 du découpage).</li>
+      </ol>
+    </div>
+
+    <h2>Déclinaisons</h2>
+    <div class="grid">
+      <figure class="card" style="background:var(--surface)">
+        <div class="art">
+        <svg width="160" height="160" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <rect width="64" height="64" rx="14" fill="#1F5C46"/>
+        <g fill="none" stroke="#F6F4EF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        </div>
+        <figcaption>
+        <b>Icône de l'app</b>
+        <span>Carré arrondi vert sapin, trait papier. Lisible de 512 à 48 px.</span>
+        </figcaption>
+      </figure>
+      <figure class="card" style="background:var(--surface)">
+        <div class="art">
+        <svg width="160" height="160" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <circle cx="32" cy="32" r="32" fill="#1F5C46"/>
+        <g fill="none" stroke="#F6F4EF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        </div>
+        <figcaption>
+        <b>Masque rond Android</b>
+        <span>Icône adaptative : le signe tient dans la zone sûre (66 % du centre), quel que soit le masque.</span>
+        </figcaption>
+      </figure>
+      <figure class="card" style="background:var(--surface)">
+        <div class="art">
+        <svg width="160" height="160" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <circle cx="32" cy="32" r="32" fill="#E3EDE7"/>
+        <g fill="none" stroke="#1F5C46" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        </div>
+        <figcaption>
+        <b>Icône à thème (Android 13+)</b>
+        <span>Version monochrome : Android la recolore aux couleurs du fond d'écran.</span>
+        </figcaption>
+      </figure>
+      <figure class="card" style="background:#1D2521">
+        <div class="art">
+        <svg width="96" height="96" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <g fill="none" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        </div>
+        <figcaption>
+        <b>Petite icône de notification</b>
+        <span>Silhouette blanche seule, trait épaissi : la barre d'état n'affiche que la forme.</span>
+        </figcaption>
+      </figure>
+      <figure class="card" style="background:var(--surface)">
+        <div class="art">
+        <span class="word">
+        <svg width="40" height="40" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <rect width="64" height="64" rx="14" fill="#1F5C46"/>
+        <g fill="none" stroke="#F6F4EF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        <span>Easy Home</span>
+        </span>
+        </div>
+        <figcaption>
+        <b>Avec le nom</b>
+        <span>Écran de connexion et en-tête sur ordinateur. Nom en graisse 600, couleur encre.</span>
+        </figcaption>
+      </figure>
+      <figure class="card" style="background:var(--surface)">
+        <div class="art">
+        <span class="row">
+        <svg width="48" height="48" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <rect width="64" height="64" rx="14" fill="#1F5C46"/>
+        <g fill="none" stroke="#F6F4EF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        <svg width="32" height="32" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <rect width="64" height="64" rx="14" fill="#1F5C46"/>
+        <g fill="none" stroke="#F6F4EF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        <svg width="16" height="16" viewBox="0 0 64 64" role="img" aria-label="Easy Home">
+        <rect width="64" height="64" rx="14" fill="#1F5C46"/>
+        <g fill="none" stroke="#F6F4EF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 31 32 14l17 17"/>
+        <path d="m22 41 6.5 6.5L43 33"/>
+        </g>
+        </svg>
+        </span>
+        </div>
+        <figcaption>
+        <b>Petites tailles</b>
+        <span>Favicon et onglet du navigateur : à 16 px, trait épaissi pour rester net.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </main>
+</body>
+</html>

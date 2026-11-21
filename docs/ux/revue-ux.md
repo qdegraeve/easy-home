@@ -3,13 +3,15 @@
 > Revue menée le 20 novembre 2026 sur la branche `main` (commit `ac81bca`), dans un viewport mobile 390 × 844, avec un
 > compte et un foyer de démonstration fictifs (8 plantes, 3 emplacements, 2 tâches manuelles, une analyse terminée, une
 > analyse en échec). Données supprimées après la revue. Maquettes de la refonte : `docs/maquettes/v2/index.html`.
+> Décisions du propriétaire du 21 novembre 2026 intégrées (dernière section).
 
 ## Résumé exécutif
 
 1. L'app fonctionne et le code est propre ; le problème est la **forme** : un accueil qui est en fait la liste des
    plantes, une fiche plante de 2,7 écrans avec 26 boutons, et une navigation qui n'existe que par des liens « ← ».
 2. Le modèle « une tâche d'arrosage par plante » est juste pour les données, mais pas pour l'écran : il faut
-   **regrouper à l'affichage** (« Arroser la terrasse · 3 plantes », validé d'un geste) sans changer le schéma.
+   **regrouper à l'affichage** (« Arroser · 4 », validé d'un geste) sans changer le schéma, et laisser **la pluie**
+   noter les arrosages des plantes dehors.
 3. L'impression « IA » vient d'un faisceau précis : emojis dans chaque titre, cartes blanches arrondies et ombrées
    partout, deux couleurs primaires concurrentes, textes d'aide longs, maquettes en dégradés. On propose une identité
    « carnet de maison » : fond papier, encre, une seule couleur d'action, icônes au trait, couleurs par domaine.
@@ -23,7 +25,7 @@
 
 - **Un seul endroit pour ce qui est à faire aujourd'hui.** L'onglet « Aujourd'hui » est la raison d'ouvrir l'app ; tout
   le reste est de l'inventaire ou de l'historique.
-- **Une ligne par geste, pas par objet.** On affiche ce que l'utilisateur va faire (« arroser la terrasse »), pas la
+- **Une ligne par geste, pas par objet.** On affiche ce que l'utilisateur va faire (« arroser »), pas la
   liste des objets concernés.
 - **Dix secondes.** Ouvrir, valider, fermer. Tout ce qui n'aide pas à ça descend d'un niveau.
 - **Le natif pour se déplacer, le web pour le contenu.** Onglets, titre, retour et menus dans la coque ; écrans métier
@@ -38,7 +40,7 @@
 
 - **Le responsable du foyer, le matin** · 7 h 30, café, notification du résumé · Voir ce qui est dû, cocher ce qui est
   fait · 10 s.
-- **Le même, au jardin** · Arrosoir à la main, une main libre · Valider toute la terrasse d'un geste · 5 s.
+- **Le même, au jardin** · Arrosoir à la main, une main libre · Valider tout l'arrosage d'un geste · 5 s.
 - **Le même, le soir** · Veille de collecte · « Sortir la poubelle jaune », valider en sortant · 5 s, souvent depuis la
   notification.
 - **Un membre du foyer** · De temps en temps · Voir si c'est déjà fait, éviter de le faire deux fois · 5 s.
@@ -66,14 +68,15 @@ découpé.
 
 ### Proposition
 
-1. **Regrouper à l'affichage** les échéances de même nature et de même lieu : « Arroser · Terrasse · 3 plantes ». Une
-   ligne, un bouton « Fait ». Un appui sur la ligne déplie la liste (cases cochées par défaut, on décoche la plante
+1. **Regrouper à l'affichage** les échéances de même nature : tout l'arrosage du jour sur une ligne, « Arroser · 4 ».
+   Une ligne, un bouton « Fait ». Un appui sur la ligne déplie la liste (cases cochées par défaut, on décoche la plante
    qu'on a sautée). Détail dans « Modèle de tâches easy ».
 2. **Deux niveaux d'importance** : « à ne pas rater » (poubelle, vermifuge) et « souple » (arrosage, entretien). Les
-   souples ont une **tolérance** (par défaut 1 jour pour l'arrosage) : elles ne passent en retard qu'au-delà.
+   souples ont une **tolérance** proportionnelle à leur fréquence : elles ne passent en retard qu'au-delà. La pluie
+   note elle-même les arrosages dehors.
 3. **Valider sans recharger** : réponse Turbo Stream qui retire la ligne, toast discret en bas avec « Annuler »
    pendant 5 s (le service `Tasks::CancelCompletion` existe déjà).
-4. **Résumé du matin groupé** : « 3 choses aujourd'hui : arroser la terrasse (3), sortir la poubelle jaune, engrais du
+4. **Résumé du matin groupé** : « 3 choses aujourd'hui : arroser 4 plantes, sortir la poubelle jaune, engrais du
    citronnier ».
 
 ## Remarque 2 : « L'affichage est un peu fouillis »
@@ -235,7 +238,7 @@ Voir la section suivante pour l'architecture complète. En bref :
 ```
 Aujourd'hui (onglet 1)            ← ouverture de l'app, notification du matin
   ├─ En retard · Aujourd'hui · Bientôt (3 jours)
-  ├─ Détail d'un groupe (« Arroser la terrasse ») — feuille modale
+  ├─ Détail d'un groupe (« Arroser · 4 ») — feuille modale
   └─ [barre] sélecteur de foyer (titre) · Réglages (icône)
 
 Maison (onglet 2)                 ← inventaire, par domaine
@@ -261,7 +264,8 @@ Réglages (depuis Aujourd'hui)     ← compte, notifications, foyers et membres,
 - Réglages et foyer sont rares : hors des onglets. Le **foyer actif** est le titre de l'onglet Aujourd'hui (appui :
   feuille de choix du foyer), comme un sélecteur de compte.
 - Un **invité** n'a qu'un onglet utile : Aujourd'hui filtré sur ses tâches. Rails renvoie une configuration d'onglets
-  réduite (voir questions ouvertes) ou masque Maison et Journal.
+  réduite ou masque Maison et Journal (lot
+  « invités », hors de cette refonte).
 
 ### Natif ou web
 
@@ -309,28 +313,52 @@ le nom « easy » promet d'éviter.
 
 ### Mécanismes proposés (du moins coûteux au plus structurant)
 
-1. **Regroupement à l'affichage** (sans changement de schéma). Les échéances ouvertes du jour sont regroupées par
-   `(template_key, emplacement du sujet)` : « Arroser · Terrasse · 3 plantes ». Une ligne, un bouton « Fait » qui
-   valide les trois. Appui sur la ligne : feuille avec les trois plantes cochées, on décoche celles qu'on n'a pas
-   faites. Une échéance seule s'affiche comme aujourd'hui. Les tâches manuelles ne se regroupent pas.
+1. **Regroupement à l'affichage** (sans changement de schéma, **décidé** : tout l'arrosage du jour sur une ligne).
+   Les échéances ouvertes du jour sont regroupées par `template_key` : « Arroser · 4 », sous-titre « Terrasse 3 ·
+   salon 1 ». Une ligne, un bouton « Fait » qui valide les quatre. Appui sur la ligne : feuille avec les plantes
+   cochées, rangées par emplacement ; on décoche celles qu'on n'a pas faites. Une échéance seule s'affiche comme
+   aujourd'hui. Les tâches manuelles ne se regroupent pas.
 2. **Validation groupée** : un service `Tasks::CompleteMany` qui appelle `Tasks::Complete` pour chaque échéance dans
    une transaction, et renvoie la liste pour le toast « 3 arrosages notés · Annuler » (l'annulation appelle
    `Tasks::CancelCompletion` pour chacune).
 3. **Importance** : chaque tâche est **souple** (arrosage, entretien, engrais) ou **à ne pas rater** (poubelle,
    médicament, vermifuge). Seules les « à ne pas rater » apparaissent en rouge, en tête, et déclenchent une relance.
    Valeur par défaut fixée par le modèle de tâche du catalogue ; modifiable par tâche.
-4. **Tolérance** : une tâche souple a une marge (1 jour par défaut pour l'arrosage, plus pour l'entretien). Pendant la
-   marge, elle reste dans « Aujourd'hui » avec la mention « depuis hier », sans rouge ; elle n'est marquée `missed`
-   qu'au bout de la marge.
+4. **Tolérance proportionnelle** (**décidé**) : la marge d'une tâche souple dépend de sa fréquence, une plante
+   arrosée chaque jour est plus vite en retard qu'une plante arrosée chaque semaine. Règle proposée :
+   `marge = arrondi(intervalle × 0,25)`, bornée entre 0 et 3 jours (1 jour → 0, 3 jours → 1, 7 jours → 2,
+   14 jours → 3). Pendant la marge, la tâche reste dans « Aujourd'hui » avec la mention « depuis hier », sans rouge ;
+   elle n'est marquée `missed` qu'au bout de la marge. La météo s'y ajoute (section suivante).
 5. **« Bientôt » replié** : les 3 jours suivants sont un simple compteur repliable (« Bientôt · 6 »), pour anticiper
    sans encombrer.
-6. **Rythme par emplacement** (optionnel, à décider) : proposer, sur un emplacement, « arroser tout ensemble tous les
-   N jours ». Les plantes de l'emplacement partagent alors la même échéance ; une plante peut garder son propre
-   rythme. C'est ce qui réduit vraiment le nombre de jours où il y a quelque chose à faire.
-7. **Décaler** : sur une ligne, « Demain » (glisser ou menu) plutôt que de laisser une tâche rouge. Alimente le journal
-   comme `skipped` avec une note, ou décale l'échéance sans trace (à décider).
+6. ~~**Rythme par emplacement**~~ : **écarté**. Chaque plante garde son propre rythme ; le regroupement à
+   l'affichage et la pluie suffisent à alléger la liste.
+7. **Décaler** : sur une ligne, « Demain » (glisser ou menu) plutôt que de laisser une tâche rouge. **Décidé** : le
+   report laisse une trace discrète dans le journal (« Décalé à demain · Sam »), sans compter comme fait ni comme
+   manqué. Raison : une tâche reportée trois fois de suite doit se voir, c'est le signe que sa fréquence est mauvaise ;
+   et la trace explique pourquoi l'échéance a bougé quand un autre membre du foyer la cherche.
 8. **Résumé du matin groupé** avec la même règle que l'écran, et rien pour les tâches souples encore dans leur marge
    si l'utilisateur le choisit (« Notifier seulement ce qui ne doit pas être raté »).
+
+### Arrosage et météo (décidé, à concevoir en ADR)
+
+La pluie arrose les plantes dehors : une tâche « arroser » le lendemain d'une grosse pluie est du bruit, et c'est
+exactement ce qui fait décrocher d'une app de rappels.
+
+- **Quand** : un job chaque soir (vers 22 h, heure du foyer), avant le résumé du matin.
+- **Données** : le cumul de pluie du jour à la position de la maison (`households.latitude` / `longitude`), par l'API
+  Open-Meteo déjà retenue en ADR 0009 (gratuite, sans clé), derrière un adaptateur `Weather` avec un faux en test.
+- **Qui est concerné** : les échéances d'arrosage ouvertes ou dues le lendemain, pour les plantes d'un emplacement
+  **non abrité** (`locations.sheltered = false`). Les plantes d'intérieur ou abritées ne sont jamais touchées.
+- **Règle** : au-delà d'un seuil (proposé : 10 mm sur la journée), l'arrosage est noté fait par la pluie : l'échéance
+  est complétée avec la source « pluie », la suivante repart de ce jour (récurrence glissante). Entre 3 et 10 mm,
+  l'échéance est repoussée d'un jour sans être notée faite. Sous 3 mm, rien. Seuils à affiner à l'usage.
+- **Affichage** : dans « Aujourd'hui », une ligne discrète « Pluie cette nuit, 14 mm : jardin devant arrosé » ; dans
+  le journal, « Arrosées par la pluie · 2 · automatique », annulable comme une validation manuelle.
+- **Impacts sur les données** : source de la réalisation (`manual` / `rain`) sur l'échéance complétée, cumul de pluie
+  journalier stocké (une ligne par foyer et par jour) pour l'historique et pour éviter de rappeler l'API.
+- **Plus tard** : tenir compte de la taille du pot ou du besoin en eau de l'espèce (une plante en pot sous un auvent
+  partiel ne reçoit pas toute la pluie), et des prévisions (ne pas arroser s'il pleut demain).
 
 ### Impacts sur le modèle de données (à signaler, non implémentés)
 
@@ -338,12 +366,12 @@ le nom « easy » promet d'éviter.
   presenter).
 - **3** : Colonne `tasks.importance` (`flexible` / `critical`, défaut `flexible`) ; clé `importance` dans le catalogue
   YAML.
-- **4** : Colonne `tasks.grace_days` (entier, défaut par modèle) ; le job des échéances `missed` (roadmap étape 5) la
-  lit.
-- **6** : `locations.watering_interval_days` (nullable) et une règle : la tâche d'arrosage d'une plante suit
-  l'emplacement si sa propre valeur est nulle. Alternative plus lourde : une tâche dont le sujet est l'emplacement. À
-  trancher en ADR.
-- **7** : Rien si « décaler » = `skipped` + note ; sinon `task_occurrences.postponed_from` pour garder la trace.
+- **4** : la marge se calcule depuis l'intervalle de la tâche ; pas de colonne tant que la règle suffit
+  (`tasks.grace_days` nullable seulement si un réglage par tâche devient nécessaire).
+- **6** : écarté, rien.
+- **7** : `task_occurrences.postponed_from` (date d'origine) et l'auteur du report, pour afficher la trace sans
+  confondre avec `skipped`.
+- **Météo** : voir la section suivante.
 - **8** : Réglage utilisateur `digest_scope` (`all` / `critical_only`).
 - **Regroupement par domaine** : Méthode `domain` sur chaque type de sujet (`Plant` → `:plants`) pour l'icône et la
   couleur ; le contrat implicite d'un sujet (ADR 0010) passe de `household_id` + `name` à `+ domain`.
@@ -481,8 +509,8 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   hors du flux. Effort M, priorité P2.
 - **11. `home/show`** : Accueil « Aujourd'hui » : En retard / Aujourd'hui / Bientôt, sans inventaire. Pourquoi : Un seul
   endroit pour le jour. Effort M, priorité P1.
-- **12. Query object** : `TodayQuery` / presenter : regroupement par `(template_key, emplacement)`. Pourquoi : Une ligne
-  par geste. Effort M, priorité P1.
+- **12. Query object** : `TodayQuery` / presenter : regroupement par `template_key`, détail rangé par emplacement.
+  Pourquoi : Une ligne par geste. Effort M, priorité P1.
 - **13. Service** : `Tasks::CompleteMany` (transaction, résultat pour le toast). Pourquoi : Valider un groupe d'un
   geste. Effort M, priorité P1.
 - **14. Vue + route** : Feuille « détail d'un groupe » avec cases à décocher. Pourquoi : Exception sans perdre la
@@ -497,15 +525,16 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   culpabilité. Effort S, priorité P2.
 - **19. Migration + catalogue** : `tasks.importance` (flexible / critical). Pourquoi : Hiérarchiser sans tout mettre en
   rouge. Effort M, priorité P2.
-- **20. Migration** : `tasks.grace_days` + lecture par le futur job `missed`. Pourquoi : Tolérance des tâches souples.
-  Effort M, priorité P3.
-- **21. `Notifications::SendDigest`** : Résumé groupé (« arroser la terrasse (3) »). Pourquoi : Notification lisible.
+- **20. Domaine** : marge proportionnelle à l'intervalle (25 %, de 0 à 3 jours), lue par le futur job `missed`.
+  Pourquoi : Tolérance des tâches souples. Effort M, priorité P2.
+- **21. `Notifications::SendDigest`** : Résumé groupé (« arroser 4 plantes »). Pourquoi : Notification lisible.
   Effort S, priorité P2.
 - **22. Réglages notifications** : Option « Seulement ce qui ne doit pas être raté ». Pourquoi : Calme choisi. Effort S,
   priorité P3.
-- **23. `Location` (ADR)** : Rythme d'arrosage par emplacement, optionnel. Pourquoi : Moins de jours à tâches. Effort L,
-  priorité P3.
-- **24. Ligne de tâche** : Action « Demain » (décaler). Pourquoi : Alternative au rouge. Effort M, priorité P3.
+- **23. Météo (ADR)** : job du soir, adaptateur Open-Meteo, arrosage noté fait par la pluie pour les emplacements non
+  abrités (remplace le rythme par emplacement, écarté). Pourquoi : Moins de tâches inutiles. Effort L, priorité P2.
+- **24. Ligne de tâche** : Action « Demain » (décaler), tracée dans le journal (`postponed_from`). Pourquoi :
+  Alternative au rouge. Effort M, priorité P3.
 - **25. `app/assets/stylesheets`** : Jetons de couleur (`@theme` Tailwind 4) : papier, encre, sapin, brique, domaines.
   Pourquoi : Identité propre, cohérence. Effort S, priorité P1.
 - **26. `fr.yml`** : Retirer tous les emojis de l'interface. Pourquoi : Effet « IA », rendu inégal. Effort S, priorité
@@ -554,20 +583,24 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   édition possible. Effort M, priorité P3.
 - **48. `households/new`** : Après création : proposer adresse puis premier emplacement (2 étapes passables). Pourquoi :
   Démarrage guidé. Effort M, priorité P3.
-- **49. `sessions/new`** : Rediriger si déjà connecté ; logo ; sans sur-titre. Pourquoi : Écran propre. Effort S,
-  priorité P3.
+- **49. `sessions/new`** : Rediriger si déjà connecté ; logo (`docs/maquettes/v2/logo.html`) ; sans sur-titre.
+  Pourquoi : Écran propre. Effort S, priorité P3.
 - **50. `shared/_confirm_dialog`** : Libellé et couleur du bouton selon l'action (« Supprimer » en brique). Pourquoi :
   Confirmation explicite. Effort S, priorité P2.
 - **51. `button_to`** : État « en cours » et désactivation au clic (`data-turbo-submits-with`). Pourquoi : Double appui.
   Effort S, priorité P2.
 - **52. Android** : Couleurs de la coque alignées sur les jetons (barre, onglets). Pourquoi : Cohérence natif / web.
   Effort S, priorité P2.
-- **53. CSS + coque** : Thème sombre à partir des jetons. Pourquoi : `DayNight` déjà actif côté natif. Effort M,
-  priorité P3.
-- **54. `docs/maquettes`** : Retirer ou marquer obsolètes les maquettes v1. Pourquoi : Éviter de réintroduire dégradés
-  et emojis. Effort S, priorité P3.
+- **53. CSS + coque** : Thème sombre à partir des jetons. **Plus tard** ; en attendant, la coque passe en thème clair
+  fixe pour ne pas afficher une barre sombre sur un contenu clair. Les jetons en variables CSS le rendront simple.
+  Effort M, priorité P3.
+- **54. `docs/maquettes`** : Maquettes v1 supprimées dans cette PR. Pourquoi : Éviter de réintroduire dégradés et
+  emojis. Fait.
 - **55. `docs/tests.md`** : Parcours critiques : valider un groupe, annuler, naviguer par onglets. Pourquoi : Les tests
   sont la preuve. Effort S, priorité P1.
+- **56. Mise en page large** : sur ordinateur (≥ 768 px), la barre d'onglets web devient une colonne latérale et
+  les listes passent à une largeur de lecture (≈ 640 px). Pourquoi : l'usage navigateur reste important pour faire
+  tester l'app facilement. Effort M, priorité P2.
 
 ## Découpage en PR
 
@@ -588,25 +621,27 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
 7. **PR 7 · Onglets natifs** (#7) : la coque passe à trois navigateurs.
 8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
-10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22) : migrations, catalogue, résumé groupé. À faire avec le
-    deuxième domaine (poubelles), où la différence souple / à ne pas rater devient concrète.
+10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24) : marge proportionnelle, report tracé, catalogue,
+    résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
+    concrète.
+11. **PR 11 · Arrosage et météo** (#23) : ADR, adaptateur Open-Meteo, job du soir, arrosage noté par la pluie.
 
-Ensuite, au fil de l'eau : #14, #23, #24, #39, #40, #42, #45, #47, #48, #49, #53, #54.
+La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
+Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.
 
-## Questions ouvertes pour le propriétaire
+Ensuite, au fil de l'eau : #14, #39, #40, #42, #45, #47, #48, #49, #53, #54.
 
-1. **Onglets** : trois onglets (Aujourd'hui, Maison, Journal) vous conviennent-ils, ou préférez-vous deux onglets
-   (Aujourd'hui, Maison) avec le journal dans Maison ?
-2. **Regroupement** : regrouper l'arrosage par **emplacement** (« Arroser la terrasse ») ou tout l'arrosage du jour en
-   une ligne (« Arroser 5 plantes ») ? Le premier colle au geste réel, le second est plus court.
-3. **Rythme par emplacement** (#23) : voulez-vous pouvoir dire « la terrasse, c'est tous les 3 jours » et que les
-   plantes suivent ? C'est le changement qui réduit le plus le nombre de tâches, mais il touche le modèle (ADR).
-4. **Tolérance** : un arrosage en retard d'un jour doit-il apparaître « en retard » ? Quelle marge par défaut ?
-5. **Décaler** : « Demain » doit-il laisser une trace dans le journal (`skipped`) ou simplement déplacer l'échéance ?
-6. **Identité** : la palette « carnet de maison » (papier, encre, vert sapin) vous parle-t-elle ? Faut-il un logo ou
-   un pictogramme pour l'icône de l'app ?
-7. **Invités** : quand ils arriveront, doivent-ils voir l'onglet Maison (en lecture) ou seulement Aujourd'hui ?
-8. **Thème sombre** : utile dès maintenant (la coque est déjà en `DayNight`) ou plus tard ?
-9. **Grand écran** : l'usage navigateur sur ordinateur reste-t-il important ? Si oui, la barre d'onglets devient une
-   colonne latérale ; sinon on optimise uniquement le mobile.
-10. **Maquettes v1** : les supprimer de `docs/maquettes/` une fois la v2 validée ?
+## Décisions du propriétaire (21 novembre 2026)
+
+1. **Onglets** : trois onglets natifs, Aujourd'hui, Maison, Journal.
+2. **Regroupement** : tout l'arrosage du jour sur une ligne (« Arroser · 4 »), le détail rangé par emplacement.
+3. **Rythme par emplacement** : non. Chaque plante garde son rythme (#23 devient la météo).
+4. **Tolérance** : marge proportionnelle à la fréquence (25 %, de 0 à 3 jours), et la pluie compte comme un arrosage
+   pour les emplacements non abrités (section « Arrosage et météo »).
+5. **Décaler** : laisse une trace discrète dans le journal, sans compter comme fait ni manqué (choix délégué, motivé
+   dans le mécanisme 7).
+6. **Identité** : palette « carnet de maison » validée. Logo et icône proposés : `docs/maquettes/v2/logo.html`.
+7. **Invités** : hors de ce lot.
+8. **Thème sombre** : plus tard ; la coque passe en thème clair fixe d'ici là.
+9. **Ordinateur** : oui, l'usage reste important pour faire tester l'app ; mise en page large (#56).
+10. **Maquettes v1** : supprimées dans cette PR.

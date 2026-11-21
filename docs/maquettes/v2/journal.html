@@ -173,6 +173,19 @@ body.show-native .statusbar.native::before { top: 6px; }
       <h2 class="group-title">Aujourd'hui</h2>
       <div class="list">
         <div class="row">
+        <span class="dot d-plants" style="width:36px;height:36px">
+        <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7
+          7z"/>
+        </svg>
+        </span>
+        <div class="main">
+        <div class="t">Arrosées par la pluie<span class="count num">2</span></div>
+        <div class="m">Citronnier, bougainvillier · 14 mm cette nuit · automatique</div>
+        </div>
+        </div>
+        <div class="row">
         <span class="dot d-pets" style="width:36px;height:36px">
         <svg class="ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -199,7 +212,7 @@ body.show-native .statusbar.native::before { top: 6px; }
         </svg>
         </span>
         <div class="main">
-        <div class="t">Arroser la terrasse</div>
+        <div class="t">Arroser<span class="count num">3</span></div>
         <div class="m">Basilic, menthe, ciboulette · Sam · 18 h 10</div>
         </div>
         </div>
@@ -228,7 +241,7 @@ body.show-native .statusbar.native::before { top: 6px; }
         </span>
         <div class="main">
         <div class="t">Nettoyer le skimmer</div>
-        <div class="m">Sauté · « pluie »</div>
+        <div class="m">Décalé à demain · Sam</div>
         </div>
         </div>
       </div>
@@ -243,7 +256,7 @@ body.show-native .statusbar.native::before { top: 6px; }
         </svg>
         </span>
         <div class="main">
-        <div class="t">Arroser le jardin devant</div>
+        <div class="t">Arroser<span class="count num">2</span></div>
         <div class="m">Citronnier, bougainvillier · Alex</div>
         </div>
         </div>
@@ -303,7 +316,9 @@ body.show-native .statusbar.native::before { top: 6px; }
       <ol>
       <li>Le journal sort des fiches : un seul endroit pour « est-ce que c'est fait ? ».</li>
       <li>Filtre par domaine en puces ; regroupement par jour.</li>
-      <li>Les validations groupées restent groupées (« Arroser la terrasse » + liste).</li>
+      <li>Les validations groupées restent groupées (« Arroser · 3 » + liste).</li>
+      <li>La pluie note elle-même les arrosages (« Arrosées par la pluie », automatique) ; un report
+        « Décalé à demain » laisse une trace discrète.</li>
       <li>Appui sur une ligne : détail avec « Annuler » (service existant <code>Tasks::CancelCompletion</code>).</li>
       </ol>
     </aside>
