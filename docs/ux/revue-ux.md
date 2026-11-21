@@ -646,8 +646,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    appliqués à l'accueil et à la fiche sans les restructurer.
 5. **PR 5 · Aujourd'hui groupé** (#11, #12, #13, #15, #16, #55) : regroupement, validation groupée, toast Annuler. Le
    cœur de la remarque 1.
-6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46, #47, #57) : les trois racines web, prêtes pour les onglets
-   (dans le navigateur, une barre d'onglets web en bas les remplace).
+6. **PR 6 · Maison, Journal, Réglages** (#8, #31, #32, #43, #44, #46, #47, #57) : les trois racines web, prêtes
+   pour les onglets (dans le navigateur, une barre d'onglets web en bas les remplace).
 7. **PR 7 · Onglets natifs** (#7) : la coque passe à trois navigateurs.
 8. **PR 8 · Bridge bouton et menu** (#9, #10) : + et ⋮ natifs.
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41) et **ajout rapide** (#36).
