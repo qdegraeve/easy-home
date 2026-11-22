@@ -4,6 +4,7 @@ class Household < ApplicationRecord
   has_many :locations, dependent: :destroy
   has_many :plants, dependent: :destroy
   has_many :tasks, dependent: :destroy
+  has_many :rainfalls, dependent: :delete_all
 
   validates :name, presence: true
   validates :time_zone, inclusion: { in: TZInfo::Timezone.all_identifiers }

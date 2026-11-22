@@ -64,6 +64,9 @@
                 <% else %>
                   <%= t(".exposed") %>
                 <% end %>
+                <% if location.rain_exposed? %>
+                  · <%= icon(:cloud_rain, size: 16) %> <%= t(".rain_exposed") %>
+                <% end %>
               </p>
             <% end %>
             <%= icon(:chevron_right, class: "text-muted") %>

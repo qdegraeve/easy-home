@@ -33,12 +33,16 @@ Household
   address (optionnel)            # libellé choisi dans l'autocomplétion
   latitude, longitude            # issus du géocodage
   altitude_m                     # calculée depuis la position (ADR 0009)
-  has_many :members (HouseholdMember), :locations, :plants, :tasks
+  has_many :members (HouseholdMember), :locations, :plants, :tasks, :rainfalls
+
+Rainfall                         # pluie du jour au foyer, relevée le soir (ADR 0015)
+  household, on (date, unique par foyer), millimeters
 
 Location
   household, name
   exposure (full_sun | partial_shade | shade)
   sheltered : boolean            # abrité du vent
+  rain_exposed : boolean         # reçoit la pluie (décoché par défaut) : la pluie y arrose les plantes (ADR 0015)
   has_many :plants               # nullify à la suppression de l'emplacement
 
 HouseholdMember
@@ -100,6 +104,7 @@ TaskOccurrence                   # = une ligne du journal
   notify_at                      # due_at - reminder_offset, indexé pour le planificateur
   status (pending | done | skipped | missed | postponed)
   completed_by (User, optionnel), completed_at
+  source (manual | rain)         # fermée par une personne ou par la pluie (sans auteur, ADR 0015)
   note
   feedback : jsonb               # données de recalibrage (ex. { indicator_on: true })
   notified_at, reminder_count
@@ -158,6 +163,10 @@ pending ──(Fait)──────────▶ done
   recalcul ne revient jamais avant le lendemain d'un décalage postérieur à la dernière réalisation. Décaler une tâche
   rouverte après un oubli en fait une nouvelle échéance, qui peut de nouveau être manquée, une fois. Pas de « Demain »
   sur la ligne groupée « Arroser · N » pour l'instant (question ouverte).
+- **Pluie** (`Plants::RecordRain`, job chaque soir à 22 h, ADR 0015) : pour les plantes d'un emplacement qui reçoit
+  la pluie, les arrosages dus au plus tard le lendemain sont notés faits par la pluie à partir de 10 mm sur la journée
+  (le suivant repart de ce jour), décalés d'un jour de 3 à 10 mm, inchangés en dessous. Mêmes services et même verrou
+  que les gestes de l'utilisateur (`source: :rain`) ; une validation par la pluie s'annule comme une autre.
 
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.

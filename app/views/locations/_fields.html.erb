@@ -1,4 +1,4 @@
-<%# Name, exposure and shelter of a location: the form to add one (house page) and to change one. %>
+<%# Name, exposure, shelter and rain of a location: the form to add one (house page) and to change one. %>
 <%= render "shared/errors", record: form.object %>
 
 <%= form.label :name, class: "block text-sm font-semibold" %>
@@ -28,3 +28,11 @@
   <%= form.check_box :sheltered, class: "h-5 w-5" %>
   <%= Location.human_attribute_name(:sheltered) %>
 </label>
+
+<div>
+  <label class="flex min-h-11 items-center gap-2 text-sm">
+    <%= form.check_box :rain_exposed, class: "h-5 w-5", aria: { describedby: "rain-hint" } %>
+    <%= Location.human_attribute_name(:rain_exposed) %>
+  </label>
+  <p id="rain-hint" class="pl-7 text-sm text-muted"><%= t("locations.fields.rain_hint") %></p>
+</div>

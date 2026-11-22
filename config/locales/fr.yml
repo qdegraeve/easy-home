@@ -67,6 +67,7 @@ fr:
         name: "Nom"
         exposure: "Exposition"
         sheltered: "Abrité du vent"
+        rain_exposed: "Reçoit la pluie"
   notifications:
     digest:
       title:
@@ -110,6 +111,16 @@ fr:
       empty_title: "Aucune plante pour l'instant"
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
       due_today: "À faire aujourd'hui · %{count}"
+      rain:
+        watered:
+          one: "Pluie %{when} (%{millimeters} mm) : %{count} plante arrosée."
+          other: "Pluie %{when} (%{millimeters} mm) : %{count} plantes arrosées."
+        postponed:
+          one: "Averse %{when} (%{millimeters} mm) : arrosage d'une plante décalé d'un jour."
+          other: "Averse %{when} (%{millimeters} mm) : arrosage de %{count} plantes décalé d'un jour."
+        today: "aujourd'hui"
+        yesterday: "hier"
+        see_journal: "Voir le journal"
       nothing_due: "Rien à faire aujourd'hui."
       done_today:
         one: "Une tâche faite aujourd'hui. Bravo !"
@@ -153,6 +164,7 @@ fr:
       watered: "Arrosage · %{name}"
       task_of: "%{title} · %{name}"
       by_you: "par vous"
+      by_rain: "par la pluie"
       missed: "Non fait, prévu le %{date}"
       postponed: "Décalé d'un jour"
       cancel: "Annuler"
@@ -272,6 +284,7 @@ fr:
       last_watered: "Dernier arrosage : %{date}"
       journal: "Journal"
       watered: "Arrosée"
+      watered_by_rain: "Arrosée par la pluie"
       watered_today: "Arrosée aujourd'hui"
       done_today: "Fait aujourd'hui"
       tasks: "Autres tâches"
@@ -310,6 +323,7 @@ fr:
       task_missed: "%{title} : manquée"
       due_on: "prévu le %{date}"
       postponed: "%{title} : décalé d'un jour"
+      postponed_by_rain: "%{title} : décalé d'un jour par la pluie"
       cancel_task_label: "Annuler « %{title} » du %{date}"
       cancel_task_confirm: "Annuler « %{title} » du %{date} ? La prochaine échéance sera recalculée."
       cancel: "Annuler"
@@ -539,6 +553,7 @@ fr:
       no_locations: "Aucun emplacement pour l'instant : ajoutez la terrasse, le jardin devant…"
       sheltered: "abrité du vent"
       exposed: "exposé au vent"
+      rain_exposed: "reçoit la pluie"
       delete: "Supprimer"
       delete_label: "Supprimer l'emplacement « %{name} »"
       edit_label: "Modifier l'emplacement « %{name} »"
@@ -580,6 +595,9 @@ fr:
       submit: "Enregistrer"
     fields:
       placeholder: "Ex. bord de piscine"
+      rain_hint: >-
+        Une forte pluie (10 mm ou plus) compte alors comme un arrosage de ses plantes, une averse (3 mm) le décale
+        d'un jour. Décochez pour l'intérieur ou sous un toit.
     exposures:
       full_sun: "Plein soleil"
       partial_shade: "Mi-ombre"

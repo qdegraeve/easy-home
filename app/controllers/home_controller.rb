@@ -13,9 +13,22 @@ class HomeController < ApplicationController
       .includes(task: { subject: :location }).order(:due_at, :id).to_a
     @due_today, @upcoming = occurrences.partition { |occurrence| occurrence.due_at <= Time.zone.today.end_of_day }
     load_nothing_due_details if @due_today.empty?
+    load_rain
   end
 
   private
+
+  # The last evening's rain, when it watered or postponed plants (Plants::RecordRain): said once at the top, so that a
+  # watering gone from the list is not a surprise.
+  def load_rain
+    rainfall = @household.rainfalls.where(on: Time.zone.yesterday..).order(on: :desc).first
+    return unless rainfall&.effect
+
+    status = rainfall.effect == :watered ? :done : :postponed
+    count = policy_scope(TaskOccurrence).by_rain.where(status:, completed_at: rainfall.on.all_day)
+      .joins(:task).where(tasks: { household_id: @household.id }).count
+    @rain = { rainfall:, count: } if count.positive?
+  end
 
   # For the "nothing to do" state: what was done today, and the next task when none comes in the next days.
   def load_nothing_due_details
