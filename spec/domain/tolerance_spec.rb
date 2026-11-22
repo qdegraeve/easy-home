@@ -23,4 +23,21 @@ RSpec.describe Tolerance do
   it "never misses a flexible one-off task" do
     expect(grace(:flexible, Recurrence::Once.new(due_on: Date.new(2026, 11, 20)))).to be_nil
   end
+
+  describe ".earliest" do
+    let(:today) { Date.new(2026, 11, 22) }
+
+    it "moves a due date past the tolerance to the first day still within it" do
+      expect(described_class.earliest(Time.zone.parse("2026-11-10 00:00"), grace_days: 2, today:))
+        .to eq(Time.zone.parse("2026-11-20 00:00"))
+      expect(described_class.earliest(Time.zone.parse("2026-11-21 00:00"), grace_days: 2, today:))
+        .to eq(Time.zone.parse("2026-11-21 00:00"))
+    end
+
+    it "keeps any date of a task never missed, and no date" do
+      expect(described_class.earliest(Time.zone.parse("2026-10-01 00:00"), grace_days: nil, today:))
+        .to eq(Time.zone.parse("2026-10-01 00:00"))
+      expect(described_class.earliest(nil, grace_days: 0, today:)).to be_nil
+    end
+  end
 end

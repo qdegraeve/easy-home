@@ -28,6 +28,14 @@ RSpec.describe Plants::Add do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-17 00:00"))
   end
 
+  it "makes a plant watered long ago due within its tolerance, not missed at once" do
+    plant = described_class.new.call(household:, user:, params: params.merge(last_watered_on: "2026-11-01")).value!
+
+    # Due on 4 November, every 3 days with 1 day of tolerance: due on the 15th, late but still to do.
+    expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-15 00:00"))
+    expect(Tasks::MarkMissed.new.call.value!).to eq(0)
+  end
+
   it "starts from today without a last watering, species or location" do
     plant = described_class.new.call(
       household:, user:, params: { name: "Basilic", watering_interval_days: "2" }

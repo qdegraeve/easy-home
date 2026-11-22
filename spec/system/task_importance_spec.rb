@@ -32,16 +32,16 @@ RSpec.describe "Task importance", type: :system do
     end
 
     # Three days later, nothing done: the treatment is missed, the watering (every 7 days, 2 days of tolerance)
-    # was due on 16 November and is missed on the 19th, then due again that day.
+    # was due on 16 November and is missed on the 19th, then still to do, showing how late it is.
     travel_to(Time.zone.parse("2026-11-19 01:05"))
     Tasks::MarkMissed.new.call
     visit root_path
     expect(page).to have_no_content("Traitement")
-    expect(page).to have_content("Citronnier")
+    expect(page).to have_content("Arrosage · prévu il y a 3 j")
 
     go_to_tab("Journal")
     expect(page).to have_content("Traitement · Citronnier")
-    expect(page).to have_content("Manquée, prévue le lun 16 nov.", count: 2) # the treatment and the watering
+    expect(page).to have_content("Non fait, prévu le lun 16 nov.", count: 2) # the treatment and the watering
 
     open_plant("Citronnier")
     open_plant_tab("Historique")

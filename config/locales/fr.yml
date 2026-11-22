@@ -150,7 +150,7 @@ fr:
       watered: "Arrosage · %{name}"
       task_of: "%{title} · %{name}"
       by_you: "par vous"
-      missed: "Manquée, prévue le %{date}"
+      missed: "Non fait, prévu le %{date}"
       cancel: "Annuler"
       cancel_label: "Annuler « %{what} » du %{date}"
       cancel_confirm: "Annuler « %{what} » du %{date} ? La prochaine échéance sera recalculée."
@@ -478,6 +478,7 @@ fr:
       create:
         success: "%{title} noté pour « %{subject} »."
         not_pending: "C'était déjà fait."
+        missed: "Trop tard : cette tâche a été notée manquée."
         inactive: "Cette tâche est arrêtée."
         already_done_today: "Déjà fait aujourd'hui."
       destroy:

@@ -28,9 +28,9 @@ RSpec.describe Recurrence::Once do
     end
   end
 
-  describe "#due_after_missed" do
-    it "has none left: its day has passed" do
-      expect(described_class.new(due_on: Date.new(2026, 11, 20)).due_after_missed(on: Date.new(2026, 11, 22))).to be_nil
+  describe "#closed_by_miss?" do
+    it "is: its day has passed" do
+      expect(described_class.new(due_on: Date.new(2026, 11, 20))).to be_closed_by_miss
     end
   end
 end

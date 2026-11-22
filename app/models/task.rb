@@ -35,6 +35,11 @@ class Task < ApplicationRecord
     Tolerance.grace_days(importance:, recurrence:)
   end
 
+  # due_at moved forward when it would start past the tolerance (see Tolerance.earliest).
+  def due_within_tolerance(due_at)
+    Tolerance.earliest(due_at, grace_days:, today: Time.zone.today)
+  end
+
   private
 
   def subject_must_belong_to_household

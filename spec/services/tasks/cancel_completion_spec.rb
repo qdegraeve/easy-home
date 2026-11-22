@@ -17,7 +17,8 @@ RSpec.describe Tasks::CancelCompletion do
     expect(result).to be_success
     task = plant.reload.watering_task
     expect(task.occurrences.done.count).to eq(1)
-    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-13 00:00"))
+    # Due on the 13th after the previous watering, moved within its tolerance (1 day): not missed at once.
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-15 00:00"))
     expect(task.occurrences.pending.count).to eq(1)
   end
 

@@ -14,4 +14,12 @@ module Tolerance
     when Recurrence::Sliding then (recurrence.interval_days * SHARE).round.clamp(0, MAX_DAYS)
     end
   end
+
+  # A due date given by the app (a recomputation, a restored plant, a first watering long ago) never starts past its
+  # tolerance: it would be missed at once, for something nobody could do. Never before today minus the grace days.
+  def self.earliest(due_at, grace_days:, today:)
+    return due_at if due_at.nil? || grace_days.nil?
+
+    [ due_at, (today - grace_days).in_time_zone ].max
+  end
 end

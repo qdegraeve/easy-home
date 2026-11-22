@@ -16,7 +16,7 @@ RSpec.describe Tasks::MarkMissed do
     described_class.new.call.value!
   end
 
-  it "misses a flexible task only past its tolerance (7 days: 2 days), then makes it due again today" do
+  it "misses a flexible task only past its tolerance (7 days: 2 days), then reopens it with the same due date" do
     still_in_margin = task_due(Date.new(2026, 11, 20)) # due + 2 = today
     past_margin = task_due(Date.new(2026, 11, 19))
 
@@ -25,7 +25,21 @@ RSpec.describe Tasks::MarkMissed do
     expect(still_in_margin.occurrences.sole).to be_pending
     missed = past_margin.occurrences.missed.sole
     expect(missed).to have_attributes(completed_at: Time.current, completed_by: nil)
-    expect(past_margin.occurrences.pending.sole.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))
+    expect(past_margin.occurrences.pending.sole)
+      .to have_attributes(due_at: Time.zone.parse("2026-11-19 00:00"), reopened_after_miss: true)
+  end
+
+  it "misses a due date once: the reopened occurrence stays to do, however late, until done" do
+    task = task_due(Date.new(2026, 11, 1), interval_days: 1) # no tolerance
+
+    run
+    travel 20.days
+    expect(run).to eq(0)
+    expect(task.occurrences.group(:status).count).to eq("missed" => 1, "pending" => 1)
+
+    Tasks::Complete.new.call(occurrence: task.occurrences.pending.sole, user: create(:user))
+    travel 2.days
+    expect(run).to eq(1) # the next due date, a new one
   end
 
   it "misses a task that must not be missed the day after, and a one-off one is then over" do
@@ -35,7 +49,7 @@ RSpec.describe Tasks::MarkMissed do
 
     expect(run).to eq(2)
 
-    expect(repeating.occurrences.pending.sole.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))
+    expect(repeating.occurrences.pending.sole.due_at).to eq(Time.zone.parse("2026-11-21 00:00"))
     expect(one_off.occurrences.map(&:status)).to eq([ "missed" ])
     expect(today.occurrences.sole).to be_pending
   end

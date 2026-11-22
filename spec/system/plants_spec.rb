@@ -82,13 +82,14 @@ RSpec.describe "Plants", type: :system do
     click_on "← Plantes"
     expect(page).to have_content("Plantes archivées · 1")
 
-    # Restore a few days later: watering resumes, late.
+    # Restore a few days later: watering resumes, late but within its tolerance (every 5 days: 1 day), so that it is
+    # not missed at once.
     travel 7.days
     find("summary", text: "Plantes archivées · 1").click
     click_on "Basilic"
     click_on "Restaurer"
     expect(page).to have_content("Plante « Basilic » restaurée.")
-    expect(page).to have_content("Prochain arrosage : prévu il y a 4 j")
+    expect(page).to have_content("Prochain arrosage : prévu hier")
     expect(page).to have_button("Arrosée : Basilic")
   end
 end

@@ -13,9 +13,9 @@ module Recurrence
       due_on.in_time_zone if last_completed_at.nil?
     end
 
-    # Missed (a one-off task that must not be missed): its day has passed, there is none left.
-    def due_after_missed(on:)
-      nil
+    # Missed (a one-off task that must not be missed): its day has passed, it is over, like once done.
+    def closed_by_miss?
+      true
     end
   end
 end

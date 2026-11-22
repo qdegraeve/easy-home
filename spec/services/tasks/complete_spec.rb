@@ -59,4 +59,25 @@ RSpec.describe Tasks::Complete do
     expect(result.failure.first).to eq(:inactive)
     expect(occurrence.reload).to be_pending
   end
+
+  it "does the reopened task when tapped on a page shown before the miss" do
+    stale_copy = TaskOccurrence.find(occurrence.id)
+    Tasks::MarkMissed.new.call # due on the 13th, 1 day of tolerance: missed on the 16th
+    reopened = plant.watering_task.occurrences.pending.sole
+
+    result = described_class.new.call(occurrence: stale_copy, user:)
+
+    expect(result.value!).to eq(reopened)
+    expect(reopened.reload).to be_done
+    expect(stale_copy.reload).to be_missed
+  end
+
+  it "says it is too late for a one-off task missed" do
+    task = create(:task, household: plant.household, subject: plant, title: "Traitement", template_key: nil,
+                         importance: :critical, recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-14" })
+    missed = task.occurrences.create!(due_at: Time.zone.parse("2026-11-14 00:00"))
+    Tasks::MarkMissed.new.call
+
+    expect(described_class.new.call(occurrence: missed, user:).failure.first).to eq(:missed)
+  end
 end

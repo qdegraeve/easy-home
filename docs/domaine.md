@@ -142,8 +142,13 @@ pending ──(Fait)──────────▶ done
   3 jours : 1, 7 jours : 2, 14 jours : 3). Une tâche unique souple n'est jamais manquée : elle reste à faire jusqu'à
   ce qu'elle soit faite ou supprimée.
 - `Tasks::MarkMissed` (job toutes les heures) ferme en `missed` les échéances au-delà de leur marge : une ligne du
-  journal, `completed_at` étant le moment de la fermeture. Une tâche glissante redevient due le jour même (la plante a
-  toujours soif) ; une tâche unique n'en a plus. Un recalcul (`Tasks::Reschedule`) ne revient jamais avant ce jour.
+  journal, **une seule par échéance**, `completed_at` étant le moment de la fermeture. Une tâche glissante reste à faire
+  : elle est rouverte avec la même échéance (« prévu il y a 5 j »), marquée `reopened_after_miss`, et n'est plus jamais
+  manquée jusqu'à ce qu'elle soit faite. Une tâche unique manquée est terminée, comme une fois faite.
+- Une date calculée par l'app (recalcul, plante restaurée, ajout avec un vieil arrosage, date saisie dans le passé)
+  ne part jamais au-delà de la marge (`Tolerance.earliest`) : rien n'est manqué d'emblée. Une échéance déplacée perd
+  `reopened_after_miss` et peut de nouveau être manquée, une fois.
+- « Fait » appuyé sur une page affichée avant le passage du job valide la tâche rouverte.
 
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
