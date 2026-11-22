@@ -1,0 +1,15 @@
+<%# Actions on one photo of the viewer. The cover and the deletion replace the page: "back" never comes back to a
+    deleted photo. %>
+<% if policy(photo).update? %>
+  <%= link_to t("plants.photos.show.edit_date"), edit_plant_photo_path(plant, photo), class: button_class(:on_dark),
+        data: { bridge__menu_target: "item" } %>
+  <% unless photo.id == plant.cover_photo_id %>
+    <%= button_to t("plants.photos.show.make_cover"), plant_photo_cover_path(plant, photo),
+          class: button_class(:on_dark), form: { data: { turbo_action: "replace" } },
+          data: { bridge__menu_target: "item" } %>
+  <% end %>
+<% end %>
+<%= button_to t("plants.photos.show.destroy"), plant_photo_path(plant, photo), method: :delete,
+      form: { data: { turbo_action: "replace", **confirm_data(t("plants.photos.show.destroy_confirm"),
+                                                             button: t("plants.photos.show.destroy"), danger: true) } },
+      class: button_class(:on_dark), data: { bridge__menu_target: "item" } %>

@@ -31,12 +31,17 @@ RSpec.describe "Page titles", type: :request do
       new_plant_path => "Ajouter une plante",
       edit_household_path(user.households.sole) => "Ma maison",
       edit_notification_settings_path => "Notifications",
-      plant_photo_path(plant, photo) => "Photo du 8 novembre 2026",
+      edit_plant_photo_path(plant, photo) => "Date de la photo",
       edit_plant_task_path(plant, pruning) => "Modifier « Tailler »"
     }.each do |path, title|
       get path
 
       expect(title_and_heading).to eq([ title, title ]), path
     end
+
+    # The photo viewer scrolls through the photos in the same page: the native top bar keeps the plant, the heading
+    # follows the photo shown.
+    get plant_photo_path(plant, photo)
+    expect(title_and_heading).to eq([ "Photos de Citronnier", "Photo du 8 novembre 2026" ])
   end
 end

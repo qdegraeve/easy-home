@@ -1,57 +1,32 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Photo viewer of a plant: swipe and arrow keys between its photos. The photo follows the finger; past a threshold
-// the older or newer link is clicked, so the visit is the same as a tap on it (a page per photo, replaced in the
-// history: "back" leaves the photos). The links stay the way to do it without a gesture.
-// - Swipe right: the older photo comes from the left (left is the past, as on a timeline). Swipe left: the newer one.
-// - The direction is put on <html> for the slide of the view transition (application.tailwind.css).
-const LOCK_DISTANCE = 10 // px before the gesture is known as horizontal or vertical
-const MAX_THRESHOLD = 80 // px, or a fifth of the width on a small screen
-const RESISTANCE = 0.3 // at the end of the photos, the photo only follows the finger a little
+// Photo viewer of a plant: its photos side by side in a strip snapped on each photo, the oldest on the left. The
+// finger scrolls the strip natively (momentum, snap), the arrows and the arrow keys scroll it to the next photo. No
+// page is loaded: in the Android app, the screen and its top bar stay. Once the strip stops, the page follows the
+// photo shown: date, position, cover mark, arrows, actions ("⋮" menu in the app) and address (refresh, "back").
+const SETTLE_DELAY = 120 // ms without scroll: stopped, where the scrollend event is missing
 
 export default class extends Controller {
-  static targets = ["image", "older", "newer"]
-  static values = { preload: Array }
+  static targets = ["strip", "slide", "actions", "title", "position", "cover", "older", "newer", "menu"]
+  static values = { index: Number }
 
   connect() {
-    // The neighbours in the browser cache: the next photo shows at once.
-    this.preloaded = this.preloadValue.map((url) => Object.assign(new Image(), { decoding: "async", src: url }))
-    this.restoreFocus()
+    this.current = this.indexValue
+    this.stripTarget.scrollLeft = this.current * this.stripTarget.clientWidth // at once, before the first paint
   }
 
-  start(event) {
-    if (event.pointerType === "mouse" || !event.isPrimary) return this.cancel()
-
-    Object.assign(this, { tracking: true, axis: null, dx: 0, x0: event.clientX, y0: event.clientY })
+  disconnect() {
+    clearTimeout(this.settleTimer)
   }
 
-  move(event) {
-    if (!this.tracking || !event.isPrimary) return
-
-    const dx = event.clientX - this.x0
-    const dy = event.clientY - this.y0
-    if (!this.axis && Math.hypot(dx, dy) > LOCK_DISTANCE) this.axis = Math.abs(dx) > Math.abs(dy) * 1.5 ? "x" : "y"
-    if (this.axis !== "x") return
-
-    this.dx = dx
-    const blocked = (dx > 0 && !this.hasOlderTarget) || (dx < 0 && !this.hasNewerTarget)
-    this.imageTarget.style.transform = `translateX(${blocked ? dx * RESISTANCE : dx}px)`
+  older(event) {
+    event.preventDefault()
+    this.scrollTo(this.current - 1)
   }
 
-  end() {
-    if (!this.tracking) return
-
-    this.tracking = false
-    const threshold = Math.min(MAX_THRESHOLD, (this.element.clientWidth || window.innerWidth) * 0.2)
-    if (this.dx > threshold && this.hasOlderTarget) return this.go("older", "pointer")
-    if (this.dx < -threshold && this.hasNewerTarget) return this.go("newer", "pointer")
-    this.cancel()
-  }
-
-  // Pinch (a second finger) or a gesture taken by the browser: the photo goes back in place.
-  cancel() {
-    this.tracking = false
-    if (this.hasImageTarget) this.imageTarget.style.transform = ""
+  newer(event) {
+    event.preventDefault()
+    this.scrollTo(this.current + 1)
   }
 
   key(event) {
@@ -59,51 +34,57 @@ export default class extends Controller {
     if (event.target.closest?.("input, textarea, select, [contenteditable]")) return
     if (document.querySelector("dialog[open]")) return
 
-    if (event.key === "ArrowLeft" && this.hasOlderTarget) {
-      event.preventDefault()
-      this.go("older", "key")
-    } else if (event.key === "ArrowRight" && this.hasNewerTarget) {
-      event.preventDefault()
-      this.go("newer", "key")
+    const step = { ArrowLeft: -1, ArrowRight: 1 }[event.key]
+    if (!step) return
+
+    event.preventDefault()
+    this.scrollTo(this.current + step)
+  }
+
+  scrolled() {
+    clearTimeout(this.settleTimer)
+    this.settleTimer = setTimeout(() => this.settle(), SETTLE_DELAY)
+  }
+
+  // The strip stopped on a photo: the page shows what goes with it.
+  settle() {
+    clearTimeout(this.settleTimer)
+    const width = this.stripTarget.clientWidth
+    if (!width) return
+
+    const index = Math.round(this.stripTarget.scrollLeft / width)
+    if (index === this.current || !this.slideTargets[index]) return
+
+    this.current = index
+    this.show(this.slideTargets[index], index)
+  }
+
+  scrollTo(index) {
+    if (index < 0 || index >= this.slideTargets.length) return
+
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    this.stripTarget.scrollTo({ left: index * this.stripTarget.clientWidth, behavior: reduce ? "auto" : "smooth" })
+  }
+
+  show(slide, index) {
+    const { title, position, cover, url } = slide.dataset
+    this.titleTarget.textContent = title
+    this.positionTarget.textContent = position
+    this.coverTarget.hidden = cover !== "true"
+    this.point(this.olderTarget, this.slideTargets[index - 1])
+    this.point(this.newerTarget, this.slideTargets[index + 1])
+    this.menuTarget.replaceChildren(this.actionsTargets[index].content.cloneNode(true))
+    // Turbo keeps its state in the history entry: kept, only the address changes.
+    window.history.replaceState(window.history.state, "", url)
+  }
+
+  // An arrow leads to the photo next to it, or is disabled (hidden) at the end of the strip.
+  point(link, slide) {
+    if (slide) {
+      link.href = slide.dataset.url
+      link.removeAttribute("aria-disabled")
+    } else {
+      link.setAttribute("aria-disabled", "true")
     }
-  }
-
-  // A tap or Enter on a link: remember the direction too. A click from the keyboard has no detail (no click count).
-  mark(event) {
-    if (this.navigating) return // the click of go() below: already remembered
-
-    const direction = event.currentTarget === this.olderTargets[0] ? "older" : "newer"
-    this.remember(direction, event.detail === 0 ? "key" : "pointer")
-  }
-
-  go(direction, input) {
-    this.remember(direction, input)
-    this.navigating = true
-    this[`${direction}Target`].click()
-    this.navigating = false
-  }
-
-  remember(direction, input) {
-    document.documentElement.dataset.photoDirection = direction
-    document.documentElement.dataset.photoInput = input
-  }
-
-  // A deletion goes on to the next photo without a direction: a cross-fade, not a slide from the last move.
-  forgetDirection() {
-    delete document.documentElement.dataset.photoDirection
-  }
-
-  // From the keyboard, the focus goes back to the link used, or to the other one at the end of the photos. Not on the
-  // cached copy Turbo shows first when coming back to a photo: the fresh page replaces it.
-  restoreFocus() {
-    if (document.documentElement.hasAttribute("data-turbo-preview")) return
-
-    const { photoDirection: direction, photoInput: input } = document.documentElement.dataset
-    delete document.documentElement.dataset.photoInput
-    if (input !== "key") return
-
-    const same = direction === "older" ? this.olderTargets[0] : this.newerTargets[0]
-    const other = direction === "older" ? this.newerTargets[0] : this.olderTargets[0]
-    ;(same || other)?.focus({ preventScroll: true })
   }
 }

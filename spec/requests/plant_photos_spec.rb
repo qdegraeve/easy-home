@@ -182,7 +182,9 @@ RSpec.describe "Plant photos", type: :request do
 
       get plant_photo_path(plant, older)
       expect(response.body).to include("Photo de couverture")
-      expect(response.body).not_to include("Utiliser comme photo de couverture")
+      # The actions of the photo shown (those of the others wait in their template).
+      actions = response.parsed_body.at_css("[data-controller='bridge--menu']")
+      expect(actions.text).not_to include("Utiliser comme photo de couverture")
 
       delete plant_photo_path(plant, older)
       expect(plant.reload.cover_photo).to be_nil

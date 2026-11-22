@@ -413,6 +413,8 @@ fr:
         subject_archived: "Cette plante est archivée : restaurez-la pour ajouter des photos."
       show:
         title: "Photo du %{date}"
+        page_title: "Photos de %{name}"
+        photos: "Photos de %{name}"
         alt: "%{name}, photo du %{date}"
         position: "%{position} / %{count}"
         edit_date: "Modifier la date"
