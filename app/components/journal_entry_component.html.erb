@@ -1,0 +1,17 @@
+<div class="<%= class_names("flex min-h-14 items-center gap-3 pl-3", "pr-3 text-muted": !entry.done?) %>">
+  <span class="<%= class_names("grid size-9 shrink-0 place-items-center rounded-full bg-subtle",
+                               "text-plants": entry.done?) %>">
+    <%= helpers.icon(icon_name) %>
+  </span>
+  <span class="min-w-0 flex-1 py-2">
+    <span class="block font-medium"><%= title %></span>
+    <span class="text-sm <%= "text-muted" if entry.done? %>"><%= meta %></span>
+  </span>
+  <% if entry.done? %>
+    <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
+          aria: { label: t(".cancel_label", what:, date: date_label) },
+          form: { data: helpers.confirm_data(t(".cancel_confirm", what:, date: date_label),
+                                             button: t(".cancel_confirm_button"), cancel: t(".keep")) },
+          class: "mr-1 #{helpers.small_action_class}" %>
+  <% end %>
+</div>

@@ -685,6 +685,12 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
     par la pluie » sous la prochaine échéance et « Dernier arrosage : …, par la pluie » ; le journal écrit
     l'effet d'un report (« Échéance reportée ») plutôt que « Décalé d'un jour », qui semblait contredire un
     arrosage fait le même jour.
+14. **PR 14 · Journal lisible** (revue des designers, lot 3) : une ligne de journal commence par ce qui change (la
+    plante, la tâche), puis l'effet, l'auteur et l'heure (« Basilic · Arrosé · par Sam · 18 h 00 », « par vous »,
+    « Arrosé par la pluie ») ; sous-titre « Les 60 derniers jours. » ; icône de report ↷ au lieu du sablier ; le
+    dialogue d'annulation dit « Garder » / « Retirer » au lieu de « Revenir » / « Oui, annuler » (journal et
+    historique) ; sur Aujourd'hui, « Fait aujourd'hui · N », replié, avec l'auteur et « Annuler »
+    (`JournalEntryComponent`, partagé avec le journal).
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.

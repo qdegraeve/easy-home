@@ -7,7 +7,7 @@ describe("confirmWithDialog", () => {
       <dialog id="confirm-dialog">
         <form method="dialog">
           <p data-confirm-message></p>
-          <button value="cancel">Non</button>
+          <button value="cancel" data-default-label="Revenir">Revenir</button>
           <button value="confirm" data-default-label="Confirmer">Confirmer</button>
         </form>
       </dialog>`
@@ -43,11 +43,26 @@ describe("confirmWithDialog", () => {
 
   it("reads the options from the submitted form", () => {
     const form = document.createElement("form")
-    expect(confirmOptions(form)).toEqual({ button: undefined, danger: false })
+    expect(confirmOptions(form)).toEqual({ button: undefined, cancel: undefined, danger: false })
 
     form.dataset.confirmButton = "Supprimer"
+    form.dataset.confirmCancel = "Garder"
     form.dataset.confirmTone = "danger"
-    expect(confirmOptions(form)).toEqual({ button: "Supprimer", danger: true })
+    expect(confirmOptions(form)).toEqual({ button: "Supprimer", cancel: "Garder", danger: true })
+  })
+
+  it("names the cancel button after what is kept, then resets it", async () => {
+    const cancel = () => dialog().querySelector("button[value=cancel]")
+
+    const removal = confirmWithDialog("Retirer ?", { button: "Retirer", cancel: "Garder" })
+    expect(cancel().textContent).toBe("Garder")
+    dialog().close("cancel")
+    await removal
+
+    const other = confirmWithDialog("Archiver ?")
+    expect(cancel().textContent).toBe("Revenir")
+    dialog().close()
+    await other
   })
 
   it("answers no on going back or closing (Escape)", async () => {

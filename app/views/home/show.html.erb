@@ -45,7 +45,7 @@
         </span>
         <h2 id="due-today" class="mt-3 text-lg font-semibold"><%= t(".nothing_due") %></h2>
         <p class="mt-1 text-sm text-muted">
-          <%= @done_today_count.positive? ? t(".done_today", count: @done_today_count) : t(".all_good") %>
+          <%= @done_today.any? ? t(".done_today", count: @done_today.size) : t(".all_good") %>
         </p>
         <% if @upcoming.empty? && @next_occurrence %>
           <% task = @next_occurrence.task %>
@@ -54,14 +54,26 @@
             <%= render DueLabelComponent.new(due_at: @next_occurrence.due_at) %>
           </p>
         <% end %>
-        <%= link_to t(@done_today_count.positive? ? ".see_journal" : ".see_plants"),
-              @done_today_count.positive? ? journal_path : plants_path,
+        <%= link_to t(@done_today.any? ? ".see_journal" : ".see_plants"),
+              @done_today.any? ? journal_path : plants_path,
               class: "mt-4 #{button_class(:secondary)}" %>
       </section>
     <% end %>
 
+    <% if @done_today.any? %>
+      <details id="done-today">
+        <summary class="cursor-pointer py-3 font-semibold"><%= t(".done_today_list", count: @done_today.size) %></summary>
+        <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
+          <% @done_today.each do |entry| %>
+            <li><%= render JournalEntryComponent.new(entry:, user: Current.user) %></li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
+
+    <%# Ids: a morph refresh keeps each list open or folded as the user left it, even when the other one appears. %>
     <% if @upcoming.any? %>
-      <details>
+      <details id="upcoming">
         <summary class="cursor-pointer py-3 font-semibold"><%= t(".upcoming", count: @upcoming.size) %></summary>
         <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
           <% @upcoming.each do |occurrence| %>

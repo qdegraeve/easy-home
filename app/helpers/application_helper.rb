@@ -115,7 +115,7 @@ module ApplicationHelper
 
   # Form data for a confirmed action: the message, the label of the confirm button (the action itself, not
   # "confirm"), and the danger tone for destructive actions. Read by app/javascript/lib/confirm_dialog.js.
-  def confirm_data(message, button:, danger: false)
-    { turbo_confirm: message, confirm_button: button, confirm_tone: ("danger" if danger) }.compact
+  def confirm_data(message, button:, cancel: nil, danger: false)
+    { turbo_confirm: message, confirm_button: button, confirm_cancel: cancel, confirm_tone: ("danger" if danger) }.compact
   end
 end

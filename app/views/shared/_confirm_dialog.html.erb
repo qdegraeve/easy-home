@@ -5,7 +5,8 @@
   <form method="dialog" class="space-y-4">
     <p id="confirm-dialog-message" data-confirm-message class="text-ink"></p>
     <div class="flex justify-end gap-2">
-      <button value="cancel" class="rounded-xl px-4 py-3 text-sm text-muted hover:bg-subtle">
+      <button value="cancel" data-default-label="<%= t("shared.confirm_dialog.cancel") %>"
+              class="rounded-xl px-4 py-3 text-sm text-muted hover:bg-subtle">
         <%= t("shared.confirm_dialog.cancel") %>
       </button>
       <button

@@ -59,6 +59,9 @@ RSpec.describe "Today", type: :system do
 
     expect(page).to have_content("2 arrosages notés.")
     expect(page).to have_content("À faire aujourd'hui · 1")
+    # What was done stays visible, folded, with who did it.
+    find("summary", text: "Fait aujourd'hui · 2").click
+    within("#done-today") { expect(page).to have_content("Arrosé · par vous", count: 2) }
 
     # A single completion can be undone from its toast too.
     click_on "J'ai arrosé : Menthe"

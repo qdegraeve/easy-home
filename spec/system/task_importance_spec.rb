@@ -40,8 +40,8 @@ RSpec.describe "Task importance", type: :system do
     expect(page).to have_content("Arrosage · prévu il y a 3 j")
 
     go_to_tab("Journal")
-    expect(page).to have_content("Traitement · Citronnier")
-    expect(page).to have_content("Non fait, prévu le lun 16 nov.", count: 2) # the treatment and the watering
+    expect(page).to have_content("Citronnier · Non fait, prévu le lun 16 nov.") # the treatment
+    expect(page).to have_content("Arrosage non fait, prévu le lun 16 nov.")
 
     open_plant("Citronnier")
     open_plant_tab("Historique")
@@ -72,8 +72,8 @@ RSpec.describe "Task importance", type: :system do
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
     go_to_tab("Journal")
-    expect(page).to have_content("Arrosage · Citronnier")
-    expect(page).to have_content("Échéance reportée · par vous", count: 1)
+    expect(page).to have_content("Citronnier")
+    expect(page).to have_content("Arrosage reporté · par vous", count: 1)
     open_plant("Citronnier")
     open_plant_tab("Historique")
     expect(page).to have_content("Arrosage : échéance reportée")
