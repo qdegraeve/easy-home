@@ -11,4 +11,6 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :digest_minute, inclusion: { in: DIGEST_MINUTES }
+  # What the morning digest lists: every task due, or only the ones that must not be missed (UX review #22).
+  enum :digest_scope, { all: "all", critical: "critical" }, prefix: :digest, validate: true
 end

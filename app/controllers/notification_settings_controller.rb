@@ -20,6 +20,6 @@ class NotificationSettingsController < ApplicationController
   private
 
   def settings_params
-    params.expect(notification_settings: [ :digest_enabled, :digest_time, household_ids: [] ])
+    params.expect(notification_settings: [ :digest_enabled, :digest_time, :critical_only, household_ids: [] ])
   end
 end

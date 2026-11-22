@@ -11,6 +11,14 @@
       <span class="font-semibold"><%= t(".digest_enabled") %></span>
     </label>
 
+    <label class="flex items-start gap-3">
+      <%= f.check_box :critical_only, class: "mt-0.5 h-5 w-5 rounded" %>
+      <span>
+        <span class="block font-semibold"><%= t(".critical_only") %></span>
+        <span class="block text-sm text-muted"><%= t(".critical_only_help") %></span>
+      </span>
+    </label>
+
     <div>
       <%= f.label :digest_time, class: "block text-sm font-semibold" %>
       <%= f.select :digest_time, NotificationSettingsForm.times, {},

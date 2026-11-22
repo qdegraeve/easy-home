@@ -20,7 +20,11 @@ module Notifications
 
     def save(user, form)
       ActiveRecord::Base.transaction do
-        user.update!(digest_enabled: form.digest_enabled, digest_minute: form.digest_minute)
+        user.update!(
+          digest_enabled: form.digest_enabled,
+          digest_minute: form.digest_minute,
+          digest_scope: form.critical_only ? :critical : :all
+        )
         form.memberships.each do |membership|
           membership.update!(digest: form.household_ids.include?(membership.household_id))
         end
