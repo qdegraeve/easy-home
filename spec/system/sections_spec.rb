@@ -32,6 +32,8 @@ RSpec.describe "Sections", type: :system do
 
     go_to_tab("Journal")
     expect(page).to have_css("h1", text: "Journal")
+    # In a browser the page shows its title (the Android app shows it in its top bar instead).
+    expect(page.evaluate_script("document.querySelector('h1').getBoundingClientRect().width")).to be > 1
     expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Journal")
     expect(page).to have_content("Arrosé · par vous")
     expect(page).to have_css("h2", text: "16 novembre 2026")

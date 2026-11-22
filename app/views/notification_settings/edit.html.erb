@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-2xl">
   <%= back_link_to t(".back"), settings_path %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
   <p class="mt-1 text-sm text-muted"><%= t(".intro") %></p>
 
   <%= form_with model: @form, url: notification_settings_path, method: :patch, class: "mt-6 space-y-6" do |f| %>

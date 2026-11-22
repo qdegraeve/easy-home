@@ -7,7 +7,7 @@
   <div>
     <%= link_to @household.name, households_path,
           class: "text-sm font-semibold text-action underline-offset-2 hover:underline" %>
-    <h1 class="text-2xl font-bold"><%= page_title t(".title") %></h1>
+    <h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
     <p class="text-sm text-muted"><%= l(Time.zone.today, format: :long).upcase_first %></p>
   </div>
 </div>

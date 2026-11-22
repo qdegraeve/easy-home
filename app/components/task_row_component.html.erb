@@ -4,14 +4,17 @@
     <%= helpers.icon(mark_icon) %>
   </span>
   <div class="min-w-0 flex-1 py-1">
-    <% if href %>
-      <%= link_to title, href, class: "flex min-h-11 items-center font-medium" %>
-    <% else %>
-      <p class="font-medium"><%= title %></p>
+    <%# Title and detail are one touch target (44 px together), not a 44 px title above its detail: a shorter row. %>
+    <%= content_tag(
+      href ? :a : :div,
+      href:,
+      class: class_names("block min-h-11", "-mx-1 rounded-lg px-1 active:bg-subtle": href)
+    ) do %>
+      <span class="block font-medium"><%= title %></span>
+      <span class="block text-sm text-muted">
+        <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
+      </span>
     <% end %>
-    <p class="text-sm text-muted">
-      <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
-    </p>
     <%# Under the text, not beside the round button: on a narrow phone the title keeps its width. %>
     <% if actions? || postpone? %>
       <div class="flex gap-1">

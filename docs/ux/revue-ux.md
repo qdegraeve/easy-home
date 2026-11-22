@@ -691,6 +691,12 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
     dialogue d'annulation dit « Garder » / « Retirer » au lieu de « Revenir » / « Oui, annuler » (journal et
     historique) ; sur Aujourd'hui, « Fait aujourd'hui · N », replié, avec l'auteur et « Annuler »
     (`JournalEntryComponent`, partagé avec le journal).
+15. **PR 15 · Lignes et finition de l'app** (revue des designers, lot 4) : une ligne de tâche commence par le geste
+    (« Traiter au savon noir », méta « Citronnier · aujourd'hui » ; l'arrosage garde le nom de la plante) et le titre
+    et la méta forment une seule zone de 44 px, d'où des lignes plus courtes ; dans l'app, le titre d'écran n'est
+    plus répété sous la barre native (gardé pour les lecteurs d'écran, `data-screen-title`) ; cases, boutons radio,
+    anneau de focus, barre de chargement Turbo et textes d'exemple aux couleurs de l'app ; retour au toucher
+    (`active:`) sur les boutons et les lignes, sans le flash gris d'Android.
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.

@@ -1,6 +1,6 @@
 <div class="max-w-2xl">
   <%= back_link_to t(".back"), house_path %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
   <p class="text-sm text-muted"><%= t(".count", count: @plants.size) %></p>
 
   <% if @plants.empty? %>
