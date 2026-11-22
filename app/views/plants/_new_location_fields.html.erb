@@ -1,10 +1,11 @@
 <%# The household has no location yet (first plant): its place is typed here and created with the plant, instead of
     a list whose only choice is "no location". Exposure and rain matter for the analysis and the rain. %>
-<div class="space-y-3">
+<div class="space-y-3" data-controller="required-with">
   <div>
     <%= f.label :new_location_name, class: "block text-sm font-semibold" %>
     <%= f.text_field :new_location_name, maxlength: 100, placeholder: t("plants.form.new_location_placeholder"),
           aria: { describedby: "new-location-hint" },
+          data: { required_with_target: "source", action: "required-with#update" },
           class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
     <p id="new-location-hint" class="mt-1 text-sm text-muted"><%= t("plants.form.new_location_hint") %></p>
   </div>
@@ -15,17 +16,22 @@
       <% Location.exposures.each_key do |exposure| %>
         <label
           class="flex min-h-11 items-center justify-center rounded-xl border border-field bg-surface p-2 text-center
-                 has-[:checked]:border-action has-[:checked]:bg-action-soft"
+                 has-[:checked]:border-action has-[:checked]:bg-action-soft
+                 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-action"
         >
-          <%= f.radio_button :new_location_exposure, exposure, class: "sr-only" %>
+          <%= f.radio_button :new_location_exposure, exposure, class: "sr-only",
+                data: { required_with_target: "field" } %>
           <%= exposure_label(exposure) %>
         </label>
       <% end %>
     </div>
   </fieldset>
 
-  <label class="flex min-h-11 items-center gap-2 text-sm">
-    <%= f.check_box :new_location_rain_exposed, class: "h-5 w-5" %>
-    <%= Plant.human_attribute_name(:new_location_rain_exposed) %>
-  </label>
+  <div>
+    <label class="flex min-h-11 items-center gap-2 text-sm">
+      <%= f.check_box :new_location_rain_exposed, class: "h-5 w-5", aria: { describedby: "new-location-rain-hint" } %>
+      <%= Plant.human_attribute_name(:new_location_rain_exposed) %>
+    </label>
+    <p id="new-location-rain-hint" class="pl-7 text-sm text-muted"><%= t("locations.fields.rain_hint") %></p>
+  </div>
 </div>

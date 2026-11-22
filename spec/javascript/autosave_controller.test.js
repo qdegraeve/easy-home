@@ -1,5 +1,5 @@
 import { Application } from "@hotwired/stimulus"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import AutosaveController from "../../app/javascript/controllers/autosave_controller"
 
 describe("autosave controller", () => {
@@ -18,9 +18,14 @@ describe("autosave controller", () => {
 
   const form = () => document.querySelector("form")
   const change = () => document.querySelector("input").dispatchEvent(new Event("change", { bubbles: true }))
-  const ended = () => form().dispatchEvent(new Event("turbo:submit-end"))
+  const ended = (success = true) => form().dispatchEvent(new CustomEvent("turbo:submit-end", { detail: { success } }))
 
-  afterEach(() => application.stop())
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => {
+    application.stop()
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
 
   it("hides the button and sends the form on each change", async () => {
     await mount()
@@ -41,10 +46,37 @@ describe("autosave controller", () => {
     expect(submit).toHaveBeenCalledTimes(1)
 
     ended()
+    vi.runAllTimers()
     expect(submit).toHaveBeenCalledTimes(2)
     expect(form().hasAttribute("data-autosave-pending")).toBe(true)
     ended()
     expect(submit).toHaveBeenCalledTimes(2)
     expect(form().hasAttribute("data-autosave-pending")).toBe(false)
+  })
+
+  it("keeps the form marked unsaved and shows the button again when the request fails", async () => {
+    await mount()
+    vi.spyOn(form(), "requestSubmit").mockImplementation(() => {})
+
+    change()
+    ended(false)
+
+    expect(form().hasAttribute("data-autosave-pending")).toBe(true)
+    expect(document.querySelector("button").hidden).toBe(false)
+  })
+
+  it("sends a change still waiting when the page is left", async () => {
+    await mount()
+    vi.spyOn(form(), "requestSubmit").mockImplementation(() => {})
+    const fetch = vi.fn(() => Promise.resolve())
+    vi.stubGlobal("fetch", fetch)
+
+    change()
+    change()
+    document.body.innerHTML = ""
+    await Promise.resolve()
+
+    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(fetch.mock.calls[0][1]).toMatchObject({ method: "POST", keepalive: true })
   })
 })

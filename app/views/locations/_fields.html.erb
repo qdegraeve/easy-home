@@ -15,7 +15,8 @@
     <% Location.exposures.each_key do |exposure| %>
       <label
         class="flex min-h-11 items-center justify-center rounded-xl border border-field bg-surface p-2 text-center
-               has-[:checked]:border-action has-[:checked]:bg-action-soft"
+               has-[:checked]:border-action has-[:checked]:bg-action-soft
+               has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-action"
       >
         <%= form.radio_button :exposure, exposure, class: "sr-only", required: true %>
         <%= exposure_label(exposure) %>

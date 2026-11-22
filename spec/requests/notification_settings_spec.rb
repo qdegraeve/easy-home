@@ -19,6 +19,27 @@ RSpec.describe "Notification settings", type: :request do
     expect(response.body).to match(/<option selected="selected" value="08:00">/)
   end
 
+  it "tells in the app that this phone does not get the notifications yet" do
+    sign_in(user)
+
+    app = "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android"
+    get edit_notification_settings_path, headers: { "User-Agent" => app }
+
+    expect(response.parsed_body.text.squish).to include("Ce téléphone ne reçoit pas encore les notifications")
+  end
+
+  it "answers a refused change with the page and its error, even to a change saved from the page" do
+    sign_in(user)
+
+    patch notification_settings_path,
+      params: { notification_settings: { digest_enabled: "1", digest_time: "25:00", critical_only: "0" } },
+      headers: { "Accept" => "text/vnd.turbo-stream.html, text/html" }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.media_type).to eq("text/html")
+    expect(response.body).to include("Recevoir le résumé du matin")
+  end
+
   it "saves the switch, the time and the followed households" do
     other = create(:household_member, user:, role: :member, household: create(:household, name: "Chez Mamie"))
     sign_in(user)

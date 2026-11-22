@@ -137,6 +137,35 @@ RSpec.describe "Plants", type: :request do
       expect(Location.count + Plant.count).to eq(0)
     end
 
+    it "keeps the place someone created meanwhile, whatever its case, rather than failing" do
+      terrace = create(:location, household:, name: "Terrasse")
+      sign_in(user)
+
+      post plants_path, params: {
+        plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "terrasse",
+                 new_location_exposure: "shade" }
+      }
+
+      expect(household.locations.sole).to eq(terrace)
+      expect(household.plants.sole.location).to eq(terrace)
+    end
+
+    it "creates no place when the photo of the plant is refused" do
+      upload = PhotoUpload.new(file: nil)
+      upload.errors.add(:file, :not_a_picture)
+      refused = instance_double(Photos::Add, call: Dry::Monads::Failure[:invalid, upload])
+      allow(Photos::Add).to receive(:new).and_return(refused)
+      sign_in(user)
+
+      post plants_path, params: {
+        plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "Terrasse",
+                 new_location_exposure: "shade", photo: fixture_file_upload("plant.png", "image/png") }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(Location.count + Plant.count).to eq(0)
+    end
+
     it "leaves the plant without place when none is typed" do
       sign_in(user)
 
