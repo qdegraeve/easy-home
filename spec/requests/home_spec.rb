@@ -117,21 +117,33 @@ RSpec.describe "Home", type: :request do
       expect(response.body).not_to include("Averse")
     end
 
-    it "says nothing for a drizzle, nor for the rain of another household" do
+    it "says nothing for a drizzle" do
       rain(1, at: "2026-11-16 22:00")
+
+      travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
+
+      expect(response.body).not_to include("Pluie", "Averse")
+    end
+
+    it "counts only the plants of this household watered by the rain" do
+      first = household.plants.first
+      travel_to(Time.zone.parse("2026-11-16 09:00")) do
+        Tasks::Complete.new.call(occurrence: first.watering_task.pending_occurrence, user:)
+      end
       other = create(:household, :located)
-      create(:household_member, household: other)
+      create(:household_member, household: other, user:)
       create(:plant, :watered, household: other, location: create(:location, :rainy, household: other),
                                last_watered_at: Time.zone.parse("2026-11-13 08:00"))
       travel_to(Time.zone.parse("2026-11-16 22:00")) do
         Weather.rain.result = 30
         expect(Plants::RecordRain.new.call(household: other)).to be_success
       end
-      expect(TaskOccurrence.by_rain.done.count).to eq(1)
 
+      rain(14, at: "2026-11-16 22:00")
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
 
-      expect(response.body).not_to include("Pluie", "Averse")
+      expect(TaskOccurrence.by_rain.done.count).to eq(2)
+      expect(response.parsed_body.text.squish).to include("Pluie hier (14 mm) : 1 plante arrosée.")
     end
   end
 end
