@@ -37,7 +37,7 @@ RSpec.describe "Rain", type: :system do
 
     travel_to(Time.zone.parse("2026-11-17 07:30"))
     go_to_tab("Aujourd'hui")
-    expect(page).to have_content("Pluie hier (14,2 mm) : 1 plante arrosée.")
+    expect(page).to have_content("Pluie hier : elle compte comme un arrosage pour Citronnier.")
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
     click_on "Voir le journal"

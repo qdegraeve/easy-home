@@ -73,10 +73,10 @@ RSpec.describe "Task importance", type: :system do
 
     go_to_tab("Journal")
     expect(page).to have_content("Arrosage · Citronnier")
-    expect(page).to have_content("Décalé d'un jour · par vous", count: 1)
+    expect(page).to have_content("Échéance reportée · par vous", count: 1)
     open_plant("Citronnier")
     open_plant_tab("Historique")
-    expect(page).to have_content("Arrosage : décalé d'un jour")
+    expect(page).to have_content("Arrosage : échéance reportée")
 
     travel_to(Time.zone.parse("2026-11-17 09:00"))
     go_to_tab("Aujourd'hui")

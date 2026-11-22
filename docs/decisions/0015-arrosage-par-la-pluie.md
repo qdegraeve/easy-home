@@ -28,15 +28,19 @@ position (ADR 0009), et Open-Meteo y était annoncé pour la météo.
   actives d'un emplacement qui reçoit la pluie.
   - **10 mm ou plus** : l'arrosage est noté fait par la pluie (`task_occurrences.source = "rain"`, sans auteur) ; le
     suivant repart de ce jour (récurrence glissante).
-  - **De 3 à 10 mm** : l'arrosage est décalé d'un jour, sans être noté fait (trace « décalé » comme le bouton
+  - **De 3 à 10 mm** : l'arrosage est décalé d'un jour, sans être noté fait (trace « Échéance reportée » comme le bouton
     « Reporter » ; un arrosage dû le lendemain passe au surlendemain).
   - **Moins de 3 mm** : rien.
   - Un arrosage déjà fait dans la journée reste tel quel, quelle que soit la pluie. Seuils à affiner à l'usage.
 - **Mêmes services** : la pluie passe par `Tasks::Complete` et `Tasks::Postpone` (paramètre `source:`), sous le même
   verrou que les gestes de l'utilisateur. Une validation par la pluie s'annule depuis le journal ou l'historique comme
   une validation manuelle.
-- **Affichage** : sur « Aujourd'hui », une ligne le lendemain (« Pluie hier (14 mm) : 2 plantes arrosées. ») ; dans le
-  journal, « par la pluie » à la place de l'auteur ; dans l'historique de la plante, « Arrosée par la pluie ».
+- **Affichage** (revu après la revue des designers, PR 13) : sur « Aujourd'hui », une ligne le lendemain qui nomme les
+  plantes, sans millimètres (« Pluie hier : elle compte comme un arrosage pour Basilic et Citronnier. », « Petite
+  pluie hier : arrosage reporté pour Basilic. », au-delà de trois plantes « Basilic, Citronnier et 2 autres ») ; sur
+  la fiche, « Reporté par la pluie » sous la prochaine échéance et « Dernier arrosage : …, par la pluie » ;
+  dans le journal, « par la pluie » à la place de l'auteur et « Échéance reportée » pour un report ; dans
+  l'historique de la plante, « Arrosée par la pluie ».
 
 ## Alternatives écartées
 

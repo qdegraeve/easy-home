@@ -18,16 +18,18 @@ class HomeController < ApplicationController
 
   private
 
-  # The last evening's rain, when it watered or postponed plants (Plants::RecordRain): said once at the top, so that a
-  # watering gone from the list is not a surprise.
+  # The last evening's rain, when it watered or postponed plants (Plants::RecordRain): said once at the top, with the
+  # plants it concerned, so that a watering gone from the list is not a surprise.
   def load_rain
     rainfall = @household.rainfalls.where(fell_on: Time.zone.yesterday..).order(fell_on: :desc).first
     return unless rainfall&.effect
 
     status = rainfall.effect == :watered ? :done : :postponed
-    count = policy_scope(TaskOccurrence).by_rain.where(status:, completed_at: rainfall.fell_on.all_day)
-      .joins(:task).where(tasks: { household_id: @household.id }).count
-    @rain = { rainfall:, count: } if count.positive?
+    names = policy_scope(TaskOccurrence).by_rain.where(status:, completed_at: rainfall.fell_on.all_day)
+      .joins(:task).where(tasks: { household_id: @household.id, template_key: Plant::WATERING_TEMPLATE_KEY })
+      .includes(task: :subject).filter_map { |occurrence| occurrence.task.subject&.name }
+      .sort_by { |name| I18n.transliterate(name).downcase }
+    @rain = { rainfall:, names: } if names.any?
   end
 
   # For the "nothing to do" state: what was done today, and the next task when none comes in the next days.
