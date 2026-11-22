@@ -87,6 +87,10 @@ RSpec.describe "Plants", type: :system do
     travel 7.days
     find("summary", text: "Plantes archivées · 1").click
     click_on "Basilic"
+    # Turbo first shows the cached copy of this page (a preview), then replaces it: wait for the real page, or the
+    # click could hit a button of the preview just removed.
+    expect(page).to have_current_path(%r{/plants/\d+\z})
+    expect(page).to have_no_css("html[data-turbo-preview]")
     click_on "Restaurer"
     expect(page).to have_content("Plante « Basilic » restaurée.")
     expect(page).to have_content("Prochain arrosage : prévu hier")
