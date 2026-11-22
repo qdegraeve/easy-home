@@ -69,7 +69,7 @@ RSpec.describe "Home", type: :request do
       )
     end
 
-    it "counts what was done today and leads to the journal" do
+    it "says nothing is left, and shows once below what was done today" do
       plant = create(
         :plant,
         :watered,
@@ -81,7 +81,38 @@ RSpec.describe "Home", type: :request do
 
       get root_path
 
-      expect(response.parsed_body.text.squish).to include("Une tâche faite aujourd'hui. Bravo !", "Voir le journal")
+      text = response.parsed_body.text.squish
+      expect(text).to include("Rien à faire aujourd'hui.", "Tout est à jour dans la maison.", "Fait aujourd'hui · 1")
+      expect(text).not_to include("Bravo")
+    end
+  end
+
+  describe "GET / done today" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
+
+    it "lists what the household did today, with who did it, and nothing from another day or household" do
+      user = create(:user, :with_household)
+      household = user.households.sole
+      sam = create(:household_member, household:, user: create(:user, email: "sam@example.com")).user
+      done = lambda do |name, by:, at:, home: household|
+        task = create(:task, household: home, subject: create(:plant, household: home, name:))
+        at = Time.zone.parse(at)
+        task.occurrences.create!(due_at: at.beginning_of_day, status: :done, completed_at: at, completed_by: by)
+      end
+      done.call("Basilic", by: sam, at: "2026-11-16 08:00")
+      done.call("Citronnier", by: user, at: "2026-11-16 09:15")
+      done.call("Menthe", by: user, at: "2026-11-15 09:00")
+      done.call("Voisin", by: user, at: "2026-11-16 09:00", home: create(:household))
+      post session_path, params: { email: user.email, password: "password" }
+
+      get root_path
+
+      section = response.parsed_body.at_css("#done-today").text.squish
+      expect(section).to include("Fait aujourd'hui · 2", "Citronnier Arrosé · par vous · 9 h 15",
+                                 "Basilic Arrosé · par Sam · 8 h 00")
+      expect(section).not_to include("Menthe", "Voisin")
     end
   end
 

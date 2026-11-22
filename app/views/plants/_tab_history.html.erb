@@ -19,7 +19,7 @@
         <div class="flex min-h-12 items-center justify-between gap-3 px-3 text-sm text-muted">
           <span>
             <% key = entry.by_rain? ? "plants.show.postponed_by_rain" : "plants.show.postponed" %>
-            <%= heading_with_icon(:hourglass, t(key, title: entry.task.title)) %>
+            <%= heading_with_icon(:redo_2, t(key, title: entry.task.title)) %>
           </span>
           <span class="shrink-0"><%= date %></span>
         </div>
@@ -44,7 +44,8 @@
           <span class="shrink-0 text-muted"><%= date %></span>
           <%= button_to t("plants.show.cancel"), task_occurrence_completion_path(entry), method: :delete,
                 aria: { label: cancel_label },
-                form: { data: confirm_data(cancel_confirm, button: t("plants.show.cancel_confirm_button")) },
+                form: { data: confirm_data(cancel_confirm, button: t("plants.show.cancel_confirm_button"),
+                                                           cancel: t("plants.show.keep")) },
                 class: small_action_class %>
         </span>
       </div>

@@ -33,10 +33,13 @@ RSpec.describe "Sections", type: :system do
     go_to_tab("Journal")
     expect(page).to have_css("h1", text: "Journal")
     expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Journal")
-    expect(page).to have_content("Arrosage · Basilic")
+    expect(page).to have_content("Arrosé · par vous")
     expect(page).to have_css("h2", text: "16 novembre 2026")
     click_on "Annuler « Arrosage · Basilic » du lun 16 nov."
-    within("dialog") { click_on "Oui, annuler" }
+    within("dialog", text: "du journal ? La prochaine échéance sera recalculée.") do
+      expect(page).to have_button("Garder")
+      click_on "Retirer"
+    end
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")
     expect(page).to have_no_css("h2", text: "16 novembre 2026")
 

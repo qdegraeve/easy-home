@@ -60,7 +60,7 @@ RSpec.describe "Plant tasks", type: :system do
     open_plant_tab("Historique")
     within("section[aria-labelledby=journal]") { expect(page).to have_content("Tailler") }
     click_on "Annuler « Tailler » du lun 16 nov."
-    within("dialog", text: "Annuler « Tailler »") { click_on "Oui, annuler" }
+    within("dialog", text: "Annuler « Tailler »") { click_on "Retirer" }
     expect(page).to have_content("Tailler annulé, prochaine échéance recalculée.")
     open_plant_tab("Soins")
     expect(page).to have_content("Une fois · dans 4 j")

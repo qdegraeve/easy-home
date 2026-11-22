@@ -28,7 +28,7 @@ RSpec.describe "Journal", type: :request do
     get journal_path
 
     text = response.parsed_body.text.squish
-    expect(text).to include("Arrosage · Basilic par vous · 8 h 10", "Arrosage · Citronnier alex · 19 h 02")
+    expect(text).to include("Basilic Arrosé · par vous · 8 h 10", "Citronnier Arrosé · par Alex · 19 h 02")
     expect(text.index("Basilic")).to be < text.index("Citronnier")
     expect(text).not_to include("Voisin")
   end
@@ -44,8 +44,8 @@ RSpec.describe "Journal", type: :request do
 
     text = response.parsed_body.text.squish
     expect(text).to include(
-      "Arrosage · Basilic par la pluie · 18 h 30",
-      "Arrosage · Basilic Échéance reportée · par la pluie"
+      "Basilic Arrosé par la pluie · 18 h 30",
+      "Basilic Arrosage reporté · par la pluie"
     )
   end
 
