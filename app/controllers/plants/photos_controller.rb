@@ -21,7 +21,8 @@ module Plants
       @photo = find_photo(@plant)
       @photos = @plant.photos.with_attached_image.to_a.reverse
       @index = @photos.index(@photo)
-      find_neighbours
+      @older = @photos[@index - 1] if @index.positive?
+      @newer = @photos[@index + 1]
     end
 
     # The date of the photo, on its own page (a native modal in the Android app, like every /edit page).

@@ -46,9 +46,11 @@ RSpec.describe "Plant photos", type: :system do
     find("img[alt='Photo du mar 10 nov.']").click
     expect(page).to have_content("Photo du 10 novembre 2026")
     expect(page).to have_content("1 / 2")
-    click_on "Modifier la date"
-    fill_in "Date de la photo", with: Date.new(2026, 11, 8)
-    click_on "Enregistrer la date"
+    click_on "Modifier la date" # a dialog of the page, on the photo shown
+    within("dialog[open]") do
+      fill_in "Date de la photo", with: Date.new(2026, 11, 8)
+      click_on "Enregistrer la date"
+    end
     expect(page).to have_content("Date de la photo enregistrée.")
     expect(page).to have_content("Photo du 8 novembre 2026")
     # The face of the plant: chosen among its photos.

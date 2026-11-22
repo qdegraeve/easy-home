@@ -1,8 +1,10 @@
-<%# Actions on one photo of the viewer. The cover and the deletion replace the page: "back" never comes back to a
-    deleted photo. %>
-<% if policy(photo).update? %>
+<%# Actions on one photo of the viewer (can_update: the same answer for all the photos of the plant). The date is
+    changed in a dialog of the page, not on the /edit page: in the Android app, that page would open as a native modal,
+    which comes back to the photo the screen was opened on, not to the one shown. Every action replaces the page:
+    "back" never comes back to a deleted photo, and the app screen takes the address of the photo. %>
+<% if can_update %>
   <%= link_to t("plants.photos.show.edit_date"), edit_plant_photo_path(plant, photo), class: button_class(:on_dark),
-        data: { bridge__menu_target: "item" } %>
+        data: { bridge__menu_target: "item", action: "photo-viewer#editDate" } %>
   <% unless photo.id == plant.cover_photo_id %>
     <%= button_to t("plants.photos.show.make_cover"), plant_photo_cover_path(plant, photo),
           class: button_class(:on_dark), form: { data: { turbo_action: "replace" } },
