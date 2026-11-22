@@ -19,7 +19,11 @@
           else
             task.title
           end
-          who = entry.completed_by == Current.user ? t(".by_you") : entry.completed_by&.email.to_s.split("@").first
+          who = if entry.by_rain?
+            t(".by_rain")
+          else
+            entry.completed_by == Current.user ? t(".by_you") : entry.completed_by&.email.to_s.split("@").first
+          end
           date_label = l(date, format: :day)
           cancel_confirm = t(".cancel_confirm", what:, date: date_label)
         %>
@@ -47,7 +51,7 @@
         <% group.with_row do %>
           <div class="flex min-h-14 items-center gap-3 pl-3">
             <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
-              <%= icon(task.watering? ? :droplet : :check) %>
+              <%= icon(entry.by_rain? ? :cloud_rain : (task.watering? ? :droplet : :check)) %>
             </span>
             <span class="min-w-0 flex-1 py-2">
               <span class="block font-medium"><%= what %></span>

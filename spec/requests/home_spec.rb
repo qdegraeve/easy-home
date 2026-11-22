@@ -84,4 +84,66 @@ RSpec.describe "Home", type: :request do
       expect(response.parsed_body.text.squish).to include("Une tâche faite aujourd'hui. Bravo !", "Voir le journal")
     end
   end
+
+  describe "GET / after rain" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    let(:user) { create(:user, :with_household) }
+    let(:household) { user.households.sole.tap { |home| home.update!(latitude: -20.9, longitude: 55.45) } }
+
+    def rain(millimeters, at:)
+      travel_to(Time.zone.parse(at)) do
+        Weather.rain.result = millimeters
+        Plants::RecordRain.new.call(household:)
+      end
+    end
+
+    before do
+      garden = create(:location, :rainy, household:)
+      2.times do
+        create(:plant, :watered, household:, location: garden, last_watered_at: Time.zone.parse("2026-11-13 08:00"))
+      end
+      post session_path, params: { email: user.email, password: "password" }
+    end
+
+    it "says the next day that a shower postponed the waterings, then no more" do
+      rain(6.4, at: "2026-11-16 22:00")
+
+      travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
+      expect(response.parsed_body.text.squish)
+        .to include("Averse hier (6,4 mm) : arrosage de 2 plantes décalé d'un jour.")
+
+      travel_to(Time.zone.parse("2026-11-18 07:00")) { get root_path }
+      expect(response.body).not_to include("Averse")
+    end
+
+    it "says nothing for a drizzle" do
+      rain(1, at: "2026-11-16 22:00")
+
+      travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
+
+      expect(response.body).not_to include("Pluie", "Averse")
+    end
+
+    it "counts only the plants of this household watered by the rain" do
+      first = household.plants.first
+      travel_to(Time.zone.parse("2026-11-16 09:00")) do
+        Tasks::Complete.new.call(occurrence: first.watering_task.pending_occurrence, user:)
+      end
+      other = create(:household, :located)
+      create(:household_member, household: other, user:)
+      create(:plant, :watered, household: other, location: create(:location, :rainy, household: other),
+                               last_watered_at: Time.zone.parse("2026-11-13 08:00"))
+      travel_to(Time.zone.parse("2026-11-16 22:00")) do
+        Weather.rain.result = 30
+        expect(Plants::RecordRain.new.call(household: other)).to be_success
+      end
+
+      rain(14, at: "2026-11-16 22:00")
+      travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
+
+      expect(TaskOccurrence.by_rain.done.count).to eq(2)
+      expect(response.parsed_body.text.squish).to include("Pluie hier (14 mm) : 1 plante arrosée.")
+    end
+  end
 end

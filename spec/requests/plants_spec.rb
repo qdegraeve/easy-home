@@ -127,6 +127,24 @@ RSpec.describe "Plants", type: :request do
       expect(response.body).to include("Dernier arrosage : dim 15 nov.")
     end
 
+    it "tells in the history what the rain did: a watering, then a watering moved by a day" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-14 08:00"))
+      Tasks::Complete.new.call(occurrence: plant.watering_task.pending_occurrence, user: nil, source: :rain)
+      travel 2.days
+      Tasks::Postpone.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user: nil, source: :rain)
+      sign_in(user)
+
+      get plant_path(plant, tab: "history")
+
+      text = response.parsed_body.text.squish
+      expect(text).to include(
+        "Arrosée par la pluie lun 16 nov.",
+        "Arrosage : décalé d'un jour par la pluie mer 18 nov."
+      )
+      expect(response.body.scan("M4 14.899").size).to eq(1) # the rain cloud icon, on the watering by the rain
+    end
+
     it "falls back to the care tab on an unknown tab" do
       plant = create(:plant, :watered, household:, name: "Basilic")
       sign_in(user)

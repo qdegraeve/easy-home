@@ -21,7 +21,7 @@ Le code est écrit et relu par des agents, et le chef de projet ne le lit pas : 
 
 ### Rapides
 
-- Budget par exemple, appliqué en CI (`spec/support/time_budget.rb`) : **1 s** pour une spec non système, **8 s** pour une spec système (plus une marge pour le premier exemple de chaque sorte). Une spec qui dépasse échoue : on la rend plus rapide, on ne relève pas le budget sans ADR.
+- Budget par exemple, appliqué en CI (`spec/support/time_budget.rb`) : **1 s** pour une spec non système, **8 s** pour une spec système (plus une marge pour le premier exemple de chaque sorte ; le démarrage de Chrome, très variable sur GitHub, est mesuré à part et ne compte pas). Une spec qui dépasse échoue : on la rend plus rapide, on ne relève pas le budget sans ADR.
 - En test, les erreurs « rattrapables » (404, 400…) rendent la page d'erreur simple, pas le rapport détaillé de Rails
   (`consider_all_requests_local = false`) : ce rapport coûtait environ 100 ms par réponse.
 - Une system spec suit **un parcours complet** avec plusieurs assertions, plutôt que plusieurs specs qui rejouent chacune la connexion et la navigation.
@@ -89,6 +89,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Emplacement modifié : analyse signalée à revoir (Maison, Plantes, fiche), relance avec la remarque pré-remplie | `spec/system/location_change_spec.rb` | Fait |
 | Importance et tolérance : tâche « à ne pas rater » en tête et en rouge, puis manquée le lendemain ; arrosage en retard manqué au-delà de sa marge et de nouveau dû ; lignes « manquée » dans le journal et l'historique ; « Demain » décale une tâche, tracé dans le journal | `spec/system/task_importance_spec.rb` | Fait |
 | Dans l'app : actions de la plante dans le menu natif, à jour après un archivage, suppression confirmée ; boutons natifs « Tâche » et « Analyse » de l'onglet Soins ; couverture et suppression d'une photo dans le menu natif | `spec/system/native_app_spec.rb` | Fait |
+| Pluie : emplacement marqué « Reçoit la pluie », forte pluie le soir, arrosage noté fait (ligne sur Aujourd'hui, « par la pluie » dans le journal), annulé | `spec/system/rain_spec.rb` | Fait |
 | Réglages des notifications : résumé coupé, heure, « seulement ce qui ne doit pas être raté », foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |

@@ -17,14 +17,17 @@
     <% if entry.postponed? %>
       <% group.with_row do %>
         <div class="flex min-h-12 items-center justify-between gap-3 px-3 text-sm text-muted">
-          <span><%= heading_with_icon(:hourglass, t("plants.show.postponed", title: entry.task.title)) %></span>
+          <span>
+            <%= heading_with_icon(:hourglass, t(entry.by_rain? ? "plants.show.postponed_by_rain" : "plants.show.postponed",
+                                                title: entry.task.title)) %>
+          </span>
           <span class="shrink-0"><%= date %></span>
         </div>
       <% end %>
       <% next %>
     <% end %>
     <% if entry.task.watering? %>
-      <% label = t("plants.show.watered") %>
+      <% label = t(entry.by_rain? ? "plants.show.watered_by_rain" : "plants.show.watered") %>
       <% cancel_label, cancel_confirm = t("plants.show.cancel_label", date:), t("plants.show.cancel_confirm", date:) %>
     <% else %>
       <% title = entry.task.title %>
@@ -34,7 +37,9 @@
     <% end %>
     <% group.with_row do %>
       <div class="flex min-h-12 items-center justify-between gap-3 pl-3 text-sm">
-        <span><%= heading_with_icon(entry.task.watering? ? :droplet : :check, label) %></span>
+        <span>
+          <%= heading_with_icon(entry.by_rain? ? :cloud_rain : (entry.task.watering? ? :droplet : :check), label) %>
+        </span>
         <span class="flex items-center gap-1">
           <span class="shrink-0 text-muted"><%= date %></span>
           <%= button_to t("plants.show.cancel"), task_occurrence_completion_path(entry), method: :delete,

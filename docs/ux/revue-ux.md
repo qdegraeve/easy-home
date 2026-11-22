@@ -342,7 +342,7 @@ le nom « easy » promet d'éviter.
 8. **Résumé du matin groupé** avec la même règle que l'écran, et rien pour les tâches souples encore dans leur marge
    si l'utilisateur le choisit (« Notifier seulement ce qui ne doit pas être raté »).
 
-### Arrosage et météo (décidé, à concevoir en ADR)
+### Arrosage et météo (décidé, fait en PR 11 : ADR 0015)
 
 La pluie arrose les plantes dehors : une tâche « arroser » le lendemain d'une grosse pluie est du bruit, et c'est
 exactement ce qui fait décrocher d'une app de rappels.
@@ -672,6 +672,9 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
     résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
     concrète.
 11. **PR 11 · Arrosage et météo** (#23) : ADR, adaptateur Open-Meteo, job du soir, arrosage noté par la pluie.
+    Fait : ADR 0015. Écart décidé par le propriétaire : une case « Reçoit la pluie » par emplacement, décochée par
+    défaut, au lieu de « non abrité » (qui veut dire « exposé au vent »). Le journal garde une ligne par plante
+    (« par la pluie »), annulable une par une, plutôt qu'une ligne groupée.
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.
