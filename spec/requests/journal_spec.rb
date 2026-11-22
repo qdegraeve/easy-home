@@ -45,7 +45,7 @@ RSpec.describe "Journal", type: :request do
     text = response.parsed_body.text.squish
     expect(text).to include(
       "Arrosage · Basilic par la pluie · 18 h 30",
-      "Arrosage · Basilic Échéance reportée d'un jour · par la pluie"
+      "Arrosage · Basilic Échéance reportée · par la pluie"
     )
   end
 

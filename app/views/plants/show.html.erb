@@ -57,7 +57,8 @@
         <% end %>
       </div>
     <% end %>
-    <% if @postponed_by_rain && @watering_task.pending_occurrence %>
+    <%# Said under the date, which would otherwise look wrong. %>
+    <% if @watering_task.moved_by_rain? %>
       <p class="text-sm text-muted"><%= heading_with_icon(:cloud_rain, t(".postponed_by_rain_note")) %></p>
     <% end %>
     <% if @last_watering %>

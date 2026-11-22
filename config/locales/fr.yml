@@ -112,11 +112,8 @@ fr:
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
       due_today: "À faire aujourd'hui · %{count}"
       rain:
-        watered: "Pluie %{when} : elle compte comme l'arrosage de %{names}."
-        postponed: "Petite pluie %{when} : arrosage de %{names} reporté d'un jour."
-        others:
-          one: "%{count} autre"
-          other: "%{count} autres"
+        watered: "Pluie %{when} : elle compte comme un arrosage pour %{names}."
+        postponed: "Petite pluie %{when} : arrosage reporté pour %{names}."
         today: "aujourd'hui"
         yesterday: "hier"
         see_journal: "Voir le journal"
@@ -165,7 +162,7 @@ fr:
       by_you: "par vous"
       by_rain: "par la pluie"
       missed: "Non fait, prévu le %{date}"
-      postponed: "Échéance reportée d'un jour"
+      postponed: "Échéance reportée"
       cancel: "Annuler"
       cancel_label: "Annuler « %{what} » du %{date}"
       cancel_confirm: "Annuler « %{what} » du %{date} ? La prochaine échéance sera recalculée."
@@ -208,6 +205,10 @@ fr:
     watering: "Arrosage"
     once: "Tâche"
     no_location: "sans emplacement"
+  names_sentence:
+    others:
+      one: "%{count} autre"
+      other: "%{count} autres"
   task_row_component:
     done_watering: "J'ai arrosé : %{name}"
     done_with_subject: "Marquer comme fait : %{title} (%{subject})"
@@ -281,7 +282,7 @@ fr:
       next: "Prochain arrosage :"
       last_watered: "Dernier arrosage : %{date}"
       last_watered_by_rain: "Dernier arrosage : %{date}, par la pluie"
-      postponed_by_rain_note: "Reporté d'un jour par la pluie"
+      postponed_by_rain_note: "Reporté par la pluie"
       journal: "Journal"
       watered: "Arrosée"
       watered_by_rain: "Arrosée par la pluie"
@@ -322,8 +323,8 @@ fr:
       watering_missed: "Arrosage manqué"
       task_missed: "%{title} : manquée"
       due_on: "prévu le %{date}"
-      postponed: "%{title} : échéance reportée d'un jour"
-      postponed_by_rain: "%{title} : échéance reportée d'un jour par la pluie"
+      postponed: "%{title} : échéance reportée"
+      postponed_by_rain: "%{title} : échéance reportée par la pluie"
       cancel_task_label: "Annuler « %{title} » du %{date}"
       cancel_task_confirm: "Annuler « %{title} » du %{date} ? La prochaine échéance sera recalculée."
       cancel: "Annuler"

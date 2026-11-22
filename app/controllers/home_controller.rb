@@ -26,8 +26,9 @@ class HomeController < ApplicationController
 
     status = rainfall.effect == :watered ? :done : :postponed
     names = policy_scope(TaskOccurrence).by_rain.where(status:, completed_at: rainfall.fell_on.all_day)
-      .joins(:task).where(tasks: { household_id: @household.id }).includes(task: :subject)
-      .map { |occurrence| occurrence.task.subject.name }.sort
+      .joins(:task).where(tasks: { household_id: @household.id, template_key: Plant::WATERING_TEMPLATE_KEY })
+      .includes(task: :subject).filter_map { |occurrence| occurrence.task.subject&.name }
+      .sort_by { |name| I18n.transliterate(name).downcase }
     @rain = { rainfall:, names: } if names.any?
   end
 

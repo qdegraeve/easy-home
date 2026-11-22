@@ -22,6 +22,16 @@ class Task < ApplicationRecord
   end
 
   # Task added by hand (fertilizer, pruning…), as opposed to a task created with its subject (watering).
+  # The open occurrence is where the rain put it (Plants::RecordRain postponing it): the last closed occurrence is a
+  # rain postponement and the open one still has the date Tasks::Postpone gave it, not one a missed watering or an edit
+  # of the task set since.
+  def moved_by_rain?
+    last_closed = occurrences.where(status: %i[done missed postponed]).order(completed_at: :desc, id: :desc).first
+    return false unless last_closed&.postponed? && last_closed.by_rain? && pending_occurrence
+
+    pending_occurrence.due_at.to_date == [ last_closed.due_at.to_date, last_closed.completed_at.to_date ].max + 1
+  end
+
   def manual?
     template_key.nil?
   end

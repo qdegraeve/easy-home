@@ -112,10 +112,19 @@ RSpec.describe "Home", type: :request do
 
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
       expect(response.parsed_body.text.squish)
-        .to include("Petite pluie hier : arrosage de Basilic et Citronnier reporté d'un jour.")
+        .to include("Petite pluie hier : arrosage reporté pour Basilic et Citronnier.")
 
       travel_to(Time.zone.parse("2026-11-18 07:00")) { get root_path }
       expect(response.body).not_to include("Petite pluie")
+    end
+
+    it "says it the same evening, after the job" do
+      rain(14, at: "2026-11-16 22:00")
+
+      travel_to(Time.zone.parse("2026-11-16 22:30")) { get root_path }
+
+      expect(response.parsed_body.text.squish)
+        .to include("Pluie aujourd'hui : elle compte comme un arrosage pour Basilic et Citronnier.")
     end
 
     it "says nothing for a drizzle" do
@@ -126,7 +135,7 @@ RSpec.describe "Home", type: :request do
       expect(response.body).not_to include("Pluie", "Petite pluie")
     end
 
-    it "counts only the plants of this household watered by the rain" do
+    it "names only the plants of this household watered by the rain" do
       first = household.plants.find_by!(name: "Basilic")
       travel_to(Time.zone.parse("2026-11-16 09:00")) do
         Tasks::Complete.new.call(occurrence: first.watering_task.pending_occurrence, user:)
@@ -144,7 +153,7 @@ RSpec.describe "Home", type: :request do
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
 
       expect(TaskOccurrence.by_rain.done.count).to eq(2)
-      expect(response.parsed_body.text.squish).to include("Pluie hier : elle compte comme l'arrosage de Citronnier.")
+      expect(response.parsed_body.text.squish).to include("Pluie hier : elle compte comme un arrosage pour Citronnier.")
     end
   end
 end

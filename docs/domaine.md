@@ -157,7 +157,7 @@ pending ──(Fait)──────────▶ done
   `reopened_after_miss` et peut de nouveau être manquée, une fois.
 - « Fait » appuyé sur une page affichée avant le passage du job valide la tâche rouverte.
 - **Décaler** (`Tasks::Postpone`, bouton « Reporter » d'une ligne d'« Aujourd'hui ») : une échéance due ou en retard
-  est fermée en `postponed` (une ligne discrète du journal, « Échéance reportée d'un jour », ni faite ni manquée) et la même
+  est fermée en `postponed` (une ligne discrète du journal, « Échéance reportée », ni faite ni manquée) et la même
   tâche est ouverte le lendemain. La récurrence n'est pas touchée : elle part toujours de la dernière réalisation.
   « Annuler » dans le toast défait le décalage (`Tasks::CancelPostponement`) tant que la tâche n'a pas été faite. Un
   recalcul ne revient jamais avant le lendemain d'un décalage postérieur à la dernière réalisation. Décaler une tâche

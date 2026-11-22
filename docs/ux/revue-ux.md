@@ -681,9 +681,9 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
     ou en retard, secondaire avant ; « Arrosée aujourd'hui » est un état neutre (gris, sans fond) ; noms des boutons
     pour les lecteurs d'écran à l'impératif (« J'ai arrosé : … », « Marquer comme fait : … ») ; toast « Reporté à demain : … ».
 13. **PR 13 · La pluie visible** (revue des designers, lot 2) : le bandeau nomme les plantes et ne parle plus de
-    millimètres (« Pluie hier : elle compte comme l'arrosage de Basilic et Citronnier. ») ; la fiche dit « Reporté
-    d'un jour par la pluie » sous la prochaine échéance et « Dernier arrosage : …, par la pluie » ; le journal écrit
-    l'effet d'un report (« Échéance reportée d'un jour ») plutôt que « Décalé d'un jour », qui semblait contredire un
+    millimètres (« Pluie hier : elle compte comme un arrosage pour Basilic et Citronnier. ») ; la fiche dit « Reporté
+    par la pluie » sous la prochaine échéance et « Dernier arrosage : …, par la pluie » ; le journal écrit
+    l'effet d'un report (« Échéance reportée ») plutôt que « Décalé d'un jour », qui semblait contredire un
     arrosage fait le même jour.
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
