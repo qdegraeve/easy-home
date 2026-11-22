@@ -24,8 +24,9 @@
   <% else %>
     <% acceptable = policy(analysis).accept? %>
     <% if analysis.species_name %>
+      <%# The text column shrinks and breaks long words: the pill beside it never wraps (narrow phones). %>
       <div class="flex items-start justify-between gap-3">
-        <p>
+        <p class="min-w-0 break-words">
           <span class="italic"><%= analysis.species_name %></span>
           <% if analysis.species_common_name %>(<%= analysis.species_common_name %>)<% end %>
           <span class="text-sm text-muted">
@@ -43,7 +44,7 @@
     <%= simple_format(h(analysis.observations), class: "text-sm") %>
     <% if analysis.watering_interval_days %>
       <div class="flex items-center justify-between gap-3">
-        <p class="text-sm">
+        <p class="min-w-0 break-words text-sm">
           <%= heading_with_icon(
             :droplet,
             t("plants.analyses.analysis.watering", count: analysis.watering_interval_days),
@@ -62,7 +63,7 @@
       <ul class="space-y-2 text-sm">
         <% analysis.actions.each_with_index do |action, index| %>
           <li class="flex items-start justify-between gap-3">
-            <div>
+            <div class="min-w-0 break-words">
               <p class="font-medium">
                 <%= action["title"] %>
                 <span class="font-normal text-muted">

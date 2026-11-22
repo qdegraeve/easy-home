@@ -85,7 +85,7 @@ RSpec.describe "Plant analyses", type: :system do
     click_on "Nouvelle analyse"
     uncheck "Analyser la photo du jeu 12 nov.", allow_label_click: true # the photo is the target
     check "Analyser la photo du lun 2 nov.", allow_label_click: true # the photo is the target
-    # A check shows on the chosen photo only.
+    # A check shows on the chosen photo only (no transition on the icon: the computed style is immediate).
     shown = ->(date) { evaluate_script(<<~JS) }
       getComputedStyle(document.getElementById("photo_#{plant.photos.find_by(taken_at: date).id}")
         .closest("label").querySelector("svg")).opacity

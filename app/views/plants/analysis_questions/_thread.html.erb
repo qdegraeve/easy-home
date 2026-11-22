@@ -41,7 +41,7 @@
     </p>
   <% elsif policy(PlantAnalysisQuestion.new(plant_analysis_id: analysis.id)).create? %>
     <details class="group">
-      <summary class="<%= button_class(:secondary) %> cursor-pointer list-none">
+      <summary class="<%= button_class(:secondary) %> cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <%= t("plants.analysis_questions.thread.ask") %>
       </summary>
       <div class="mt-3"><%= render "plants/analysis_questions/form", analysis:, form: QuestionForm.new %></div>

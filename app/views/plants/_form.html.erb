@@ -70,8 +70,8 @@
   <% if adding %>
     <%# Open again when one of these fields was refused. %>
     <% refused = form.errors.include?(:species) || form.errors.include?(:last_watered_on) %>
-    <details class="group" <%= "open" if refused %>>
-      <summary class="cursor-pointer py-2 text-sm font-semibold text-action"><%= t("plants.form.more") %></summary>
+    <details class="group/fold" <%= "open" if refused %>>
+      <summary class="<%= summary_class %> text-sm"><%= t("plants.form.more") %><%= summary_chevron %></summary>
       <div class="mt-2 space-y-4">
         <%= species %>
         <div>

@@ -79,25 +79,32 @@ module ApplicationHelper
       "hover:bg-action-soft active:bg-action active:text-white disabled:bg-action disabled:text-white"
   end
 
-  # Small action of a row that changes the task, like "Reporter": a bordered pill, so it reads as a button and not as
-  # a date, inside a 44 px touch target (the inner span carries the pill).
   # A <summary> that folds a list (design review): no browser triangle, a chevron that turns when open (the parent
   # <details> carries `group/fold`, a named group, so that other groups do not mix). Used with `summary_chevron`.
   def summary_class
-    "flex min-h-11 cursor-pointer list-none items-center gap-1.5 py-2 font-semibold [&::-webkit-details-marker]:hidden"
+    "-mx-1 flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-xl px-1 py-2 font-semibold " \
+      "[&::-webkit-details-marker]:hidden"
   end
 
   def summary_chevron
-    icon(:chevron_down, size: 16, class: "text-muted transition-transform group-open/fold:rotate-180")
+    icon(:chevron_down, size: 16, class: "text-muted transition-transform group-open/fold:rotate-180 motion-reduce:transition-none")
   end
 
+  # Small action of a row, like "Reporter" or a proposal of an analysis: a bordered pill, so it reads as a button and
+  # not as a date, inside a 44 px touch target (the inner span carries the pill; a named group, so that an outer
+  # group never lights it up). Accepted, the same pill filled, with a check.
   def chip_class
-    "group inline-flex min-h-11 shrink-0 items-center"
+    "group/chip inline-flex min-h-11 shrink-0 items-center"
   end
 
   def chip_inner_class
     "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full border border-field px-3 text-sm font-medium " \
-      "text-ink group-hover:bg-subtle group-active:bg-subtle"
+      "text-ink group-hover/chip:bg-subtle group-active/chip:bg-subtle"
+  end
+
+  def accepted_chip_class
+    "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full bg-action-soft px-3 text-sm font-medium " \
+      "text-action"
   end
 
   SECTIONS = {

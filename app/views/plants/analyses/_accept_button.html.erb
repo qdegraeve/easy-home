@@ -2,7 +2,7 @@
     Every proposal uses the same pill (design review): accepted, the same shape filled, with a check. %>
 <% if accepted %>
   <span class="inline-flex min-h-11 shrink-0 items-center">
-    <span class="inline-flex h-8 items-center gap-1 rounded-full bg-action-soft px-3 text-sm font-medium text-action">
+    <span class="<%= accepted_chip_class %>">
       <%= icon(:check, size: 16) %><%= accepted_label %>
     </span>
   </span>
