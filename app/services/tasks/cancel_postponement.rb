@@ -12,7 +12,7 @@ module Tasks
         next_occurrence = yield ensure_cancellable(task, occurrence)
 
         next_occurrence.destroy!
-        occurrence.update!(status: :pending, completed_at: nil, completed_by: nil)
+        occurrence.update!(status: :pending, completed_at: nil, completed_by: nil, source: :manual)
       end
 
       Success(occurrence)

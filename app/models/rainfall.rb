@@ -3,7 +3,7 @@
 class Rainfall < ApplicationRecord
   belongs_to :household
 
-  validates :on, presence: true, uniqueness: { scope: :household_id }
+  validates :fell_on, presence: true, uniqueness: { scope: :household_id }
   validates :millimeters, numericality: { greater_than_or_equal_to: 0 }
 
   def effect

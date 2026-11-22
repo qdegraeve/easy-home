@@ -33,7 +33,7 @@ RSpec.describe Plants::RecordRain do
   it "records the rain of the day once, asked in the household's time zone" do
     result = rain(14.2)
 
-    expect(result.value!).to have_attributes(on: Date.new(2026, 11, 16), millimeters: 14.2)
+    expect(result.value!).to have_attributes(fell_on: Date.new(2026, 11, 16), millimeters: 14.2)
     expect(Weather.rain.calls).to eq([ { latitude: household.latitude, longitude: household.longitude,
                                          date: Date.new(2026, 11, 16), time_zone: "Indian/Reunion" } ])
     expect(rain(20).failure.first).to eq(:already_recorded)
@@ -74,6 +74,29 @@ RSpec.describe Plants::RecordRain do
     expect(rain(2).value!.millimeters).to eq(2)
     expect(due_on(watered)).to eq(16)
     expect(TaskOccurrence.by_rain).to be_empty
+  end
+
+  it "leaves alone, on a shower too, a watering already done today" do
+    daily = plant(location: garden, last_watered_on: 15, interval_days: 1)
+    Tasks::Complete.new.call(occurrence: daily.watering_task.pending_occurrence, user: create(:user))
+
+    rain(5)
+
+    expect(due_on(daily)).to eq(17)
+    expect(daily.watering_task.occurrences.postponed).to be_empty
+  end
+
+  it "applies the rain again after a restart in the middle, without touching twice what it already did" do
+    done, left = plant(location: garden), plant(location: garden)
+    household.rainfalls.create!(fell_on: Date.new(2026, 11, 16), millimeters: 5) # recorded, then the job stopped
+    Tasks::Postpone.new.call(occurrence: done.watering_task.pending_occurrence, user: nil, source: :rain)
+
+    result = described_class.new.call(household:)
+
+    expect(result.value!.applied_at).to eq(Time.current)
+    expect([ due_on(done), due_on(left) ]).to eq([ 17, 17 ])
+    expect(Weather.rain.calls).to be_empty
+    expect(described_class.new.call(household:).failure.first).to eq(:already_recorded)
   end
 
   it "leaves alone a watering already done today and the plants put away" do

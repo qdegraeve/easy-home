@@ -21,11 +21,11 @@ class HomeController < ApplicationController
   # The last evening's rain, when it watered or postponed plants (Plants::RecordRain): said once at the top, so that a
   # watering gone from the list is not a surprise.
   def load_rain
-    rainfall = @household.rainfalls.where(on: Time.zone.yesterday..).order(on: :desc).first
+    rainfall = @household.rainfalls.where(fell_on: Time.zone.yesterday..).order(fell_on: :desc).first
     return unless rainfall&.effect
 
     status = rainfall.effect == :watered ? :done : :postponed
-    count = policy_scope(TaskOccurrence).by_rain.where(status:, completed_at: rainfall.on.all_day)
+    count = policy_scope(TaskOccurrence).by_rain.where(status:, completed_at: rainfall.fell_on.all_day)
       .joins(:task).where(tasks: { household_id: @household.id }).count
     @rain = { rainfall:, count: } if count.positive?
   end

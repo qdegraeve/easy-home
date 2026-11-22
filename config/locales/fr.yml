@@ -596,8 +596,8 @@ fr:
     fields:
       placeholder: "Ex. bord de piscine"
       rain_hint: >-
-        Une forte pluie (10 mm ou plus) compte alors comme un arrosage de ses plantes, une averse (3 mm) le décale
-        d'un jour. Décochez pour l'intérieur ou sous un toit.
+        À cocher seulement pour un emplacement à ciel ouvert : une forte pluie (10 mm ou plus) compte alors comme un
+        arrosage de ses plantes, une averse (de 3 à 10 mm) le décale d'un jour.
     exposures:
       full_sun: "Plein soleil"
       partial_shade: "Mi-ombre"

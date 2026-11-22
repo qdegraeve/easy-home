@@ -111,7 +111,7 @@ RSpec.describe "Home", type: :request do
 
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
       expect(response.parsed_body.text.squish)
-        .to include("Averse hier (6 mm) : arrosage de 2 plantes décalé d'un jour.")
+        .to include("Averse hier (6,4 mm) : arrosage de 2 plantes décalé d'un jour.")
 
       travel_to(Time.zone.parse("2026-11-18 07:00")) { get root_path }
       expect(response.body).not_to include("Averse")

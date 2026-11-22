@@ -33,6 +33,22 @@ RSpec.describe "Journal", type: :request do
     expect(text).not_to include("Voisin")
   end
 
+  it "says what the rain did, with no one as its author" do
+    plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 1,
+                                     last_watered_at: Time.zone.parse("2026-11-15 08:00"))
+    Tasks::Complete.new.call(occurrence: plant.watering_task.pending_occurrence, user: nil, source: :rain)
+    Tasks::Postpone.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user: nil, source: :rain)
+    sign_in(user)
+
+    get journal_path
+
+    text = response.parsed_body.text.squish
+    expect(text).to include(
+      "Arrosage · Basilic par la pluie · 18 h 30",
+      "Arrosage · Basilic Décalé d'un jour · par la pluie"
+    )
+  end
+
   it "shows nothing to a guest" do
     watered("Basilic", by: user)
     sign_in(create(:household_member, household:, role: :guest).user)

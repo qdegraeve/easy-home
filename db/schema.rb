@@ -163,12 +163,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
 
   create_table "rainfalls", force: :cascade do |t|
     t.bigint "household_id", null: false
-    t.date "on", null: false
+    t.date "fell_on", null: false
     t.decimal "millimeters", precision: 5, scale: 1, null: false
+    t.datetime "applied_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["household_id", "on"], name: "index_rainfalls_on_household_id_and_on", unique: true
-    t.index ["household_id"], name: "index_rainfalls_on_household_id"
+    t.index ["household_id", "fell_on"], name: "index_rainfalls_on_household_id_and_fell_on", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|
