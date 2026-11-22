@@ -36,4 +36,20 @@ RSpec.describe TaskRowComponent, type: :component do
     expect(page).to have_text("Modifier")
     expect(page).to have_no_link("Citronnier")
   end
+
+  it "offers \"Demain\" when asked, on a task due today or late, not yet done, never on a later one" do
+    render_inline(described_class.new(occurrence:, title: "Citronnier", detail: "Arrosage", postpone: true))
+    expect(page).to have_button("Décaler à demain : Arrosage (Citronnier)")
+
+    render_inline(described_class.new(occurrence:, title: "Citronnier", detail: "Arrosage"))
+    expect(page).to have_no_button("Décaler à demain : Arrosage (Citronnier)")
+
+    render_inline(described_class.new(occurrence:, title: "Citronnier", detail: "Arrosage", postpone: true,
+                                      done_today: true))
+    expect(page).to have_no_button("Décaler à demain : Arrosage (Citronnier)")
+
+    occurrence.update!(due_at: Date.new(2026, 11, 17).in_time_zone)
+    render_inline(described_class.new(occurrence:, title: "Citronnier", detail: "Arrosage", postpone: true))
+    expect(page).to have_no_button("Décaler à demain : Arrosage (Citronnier)")
+  end
 end

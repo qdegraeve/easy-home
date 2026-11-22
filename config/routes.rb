@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences
+    resource :postponement, only: [ :create, :destroy ], module: :task_occurrences
   end
   # Several occurrences at once: "Arroser · 4" on the home page, and the "Annuler" of a toast.
   resource :task_occurrences_batch_completion, only: [ :create, :destroy ], path: "task_occurrences/completions",

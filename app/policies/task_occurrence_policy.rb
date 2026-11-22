@@ -3,6 +3,10 @@ class TaskOccurrencePolicy < ApplicationPolicy
     HouseholdPolicy.new(user, record.task.household).update?
   end
 
+  def postpone?
+    complete?
+  end
+
   class Scope < ApplicationPolicy::Scope
     def resolve
       return scope.none unless user

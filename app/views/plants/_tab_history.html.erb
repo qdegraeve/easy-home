@@ -14,6 +14,15 @@
       <% end %>
       <% next %>
     <% end %>
+    <% if entry.postponed? %>
+      <% group.with_row do %>
+        <div class="flex min-h-12 items-center justify-between gap-3 px-3 text-sm text-muted">
+          <span><%= heading_with_icon(:hourglass, t("plants.show.postponed", title: entry.task.title)) %></span>
+          <span class="shrink-0"><%= date %></span>
+        </div>
+      <% end %>
+      <% next %>
+    <% end %>
     <% if entry.task.watering? %>
       <% label = t("plants.show.watered") %>
       <% cancel_label, cancel_confirm = t("plants.show.cancel_label", date:), t("plants.show.cancel_confirm", date:) %>
