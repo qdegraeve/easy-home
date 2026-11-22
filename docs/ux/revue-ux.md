@@ -678,8 +678,8 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
 12. **PR 12 · Action ou état** (revue des designers du 22 novembre 2026, lot 1) : un bouton ne doit pas ressembler à
     un état. Le rond « fait » est vide (contour vert) et se remplit à l'appui ; « Demain » devient une pastille
     « ↷ Reporter » sur la ligne ; sur la fiche, « Arrosée » devient « J'ai arrosé », bouton principal le jour dû
-    seulement, secondaire avant ; « Arrosée aujourd'hui » est un état neutre (gris, sans fond) ; noms des boutons
-    pour les lecteurs d'écran à l'impératif (« Marquer comme arrosée : … ») ; toast « Reporté à demain : … ».
+    ou en retard, secondaire avant ; « Arrosée aujourd'hui » est un état neutre (gris, sans fond) ; noms des boutons
+    pour les lecteurs d'écran à l'impératif (« J'ai arrosé : … », « Marquer comme fait : … ») ; toast « Reporté à demain : … ».
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.

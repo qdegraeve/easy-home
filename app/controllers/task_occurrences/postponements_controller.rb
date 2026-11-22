@@ -1,5 +1,5 @@
 module TaskOccurrences
-  # "Demain" on a task of the day: postponed to tomorrow (Tasks::Postpone), undone from the toast.
+  # "Reporter" on a task of the day: postponed to tomorrow (Tasks::Postpone), undone from the toast.
   class PostponementsController < ApplicationController
     def create
       occurrence = find_occurrence
@@ -8,7 +8,7 @@ module TaskOccurrences
       notice = if result.success?
         postponed, = result.value!
         flash[:undo_postponement_id] = postponed.id
-        t(".success", title: occurrence.task.title, subject: occurrence.task.subject&.name)
+        postponed_notice(occurrence.task)
       else
         t(".#{result.failure.first}")
       end
@@ -23,6 +23,13 @@ module TaskOccurrences
     end
 
     private
+
+    # "Reporté à demain : Tailler (Citronnier)." or, for a task without subject, "Reporté à demain : Poubelle jaune.".
+    def postponed_notice(task)
+      return t(".success_without_subject", title: task.title) unless task.subject
+
+      t(".success", title: task.title, subject: task.subject.name)
+    end
 
     def find_occurrence
       occurrence = policy_scope(TaskOccurrence).find(params[:task_occurrence_id])

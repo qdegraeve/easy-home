@@ -12,18 +12,21 @@
     <p class="text-sm text-muted">
       <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
     </p>
-    <% if actions? %>
-      <div class="mt-1 flex gap-1"><%= actions %></div>
+    <%# Under the text, not beside the round button: on a narrow phone the title keeps its width. %>
+    <% if actions? || postpone? %>
+      <div class="flex gap-1">
+        <%= actions %>
+        <% if postpone? %>
+          <%= button_to task_occurrence_postponement_path(occurrence), aria: { label: postpone_label },
+                class: helpers.chip_class do %>
+            <span class="<%= helpers.chip_inner_class %>">
+              <%= helpers.icon(:redo_2, size: 16) %><%= t(".postpone_button") %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
     <% end %>
   </div>
-  <% if postpone? %>
-    <%= button_to task_occurrence_postponement_path(occurrence), aria: { label: postpone_label },
-          class: helpers.chip_class do %>
-      <span class="<%= helpers.chip_inner_class %>">
-        <%= helpers.icon(:redo_2, size: 16) %><%= t(".postpone_button") %>
-      </span>
-    <% end %>
-  <% end %>
   <% if done_today %>
     <span class="inline-flex shrink-0 items-center gap-1 text-sm text-muted">
       <%= helpers.icon(:check, size: 16) %><%= done_today_label %>

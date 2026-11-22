@@ -173,7 +173,7 @@ RSpec.describe "Plant tasks", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 2", "Marquer comme arrosée : Citronnier")
+      expect(response.body).to include("À faire aujourd&#39;hui · 2", "J&#39;ai arrosé : Citronnier")
       expect(response.body).to include("Marquer comme fait : Engrais (Citronnier)")
       expect(response.body).to include("prévu hier")
       expect(response.body).not_to include("Rempoter")

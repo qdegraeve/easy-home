@@ -39,7 +39,7 @@ class TaskRowComponent < ViewComponent::Base
     task.critical? ? :triangle_alert : :list_todo
   end
 
-  # Button name for screen readers, an action: "Marquer comme arrosée : Citronnier", "Marquer comme fait : Tailler
+  # Button name for screen readers, an action: "J'ai arrosé : Citronnier", "Marquer comme fait : Tailler
   # (Citronnier)".
   def done_label
     return t(".done_watering", name: task.subject.name) if task.watering?

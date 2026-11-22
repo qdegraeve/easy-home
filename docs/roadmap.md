@@ -37,7 +37,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [x] `PlantAnalyzer` via `claude -p` (ADR 0008), job d'analyse, faux adaptateur en test ; analyse de 1 à 5 photos
   avec remarque de l'utilisateur, automatique sur la première photo
 - [x] Identification de l'espèce proposée, acceptée d'un bouton ou corrigée à la main
-- [x] Arrosage : tâche `plant.watering`, bouton « Arrosée », journal
+- [x] Arrosage : tâche `plant.watering`, bouton « J'ai arrosé », journal
 - [x] Tâches d'une plante : liste sur la fiche, tâche manuelle (engrais, taille…) une seule fois à une date
   (`Recurrence::Once`) ou tous les N jours après la dernière fois
 - [x] Analyse d'une photo : état, observations, actions ; intervalle d'arrosage accepté, action acceptée → tâche

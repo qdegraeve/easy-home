@@ -49,7 +49,7 @@ RSpec.describe TaskListComponent, type: :component do
   it "keeps a single watering on its own line, with the plant's name" do
     render_inline(described_class.new(occurrences: [ due_watering("Aloe") ], title: "Aujourd'hui", id: "today"))
 
-    expect(page).to have_button("Marquer comme arrosée : Aloe")
+    expect(page).to have_button("J'ai arrosé : Aloe")
     expect(page).to have_no_text("Tout arroser")
   end
 

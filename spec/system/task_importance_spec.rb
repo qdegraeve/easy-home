@@ -81,6 +81,6 @@ RSpec.describe "Task importance", type: :system do
     travel_to(Time.zone.parse("2026-11-17 09:00"))
     go_to_tab("Aujourd'hui")
     expect(page).to have_content("À faire aujourd'hui · 1")
-    expect(page).to have_button("Marquer comme arrosée : Citronnier")
+    expect(page).to have_button("J'ai arrosé : Citronnier")
   end
 end

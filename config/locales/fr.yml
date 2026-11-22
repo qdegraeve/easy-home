@@ -210,7 +210,7 @@ fr:
     once: "Tâche"
     no_location: "sans emplacement"
   task_row_component:
-    done_watering: "Marquer comme arrosée : %{name}"
+    done_watering: "J'ai arrosé : %{name}"
     done_with_subject: "Marquer comme fait : %{title} (%{subject})"
     done: "Marquer comme fait : %{title}"
     watered_today: "Arrosée aujourd'hui"
@@ -248,7 +248,6 @@ fr:
       archived: "Plantes archivées · %{count}"
       to_review: "Analyse à revoir : le lieu a changé"
     water: "J'ai arrosé"
-    water_label: "Marquer comme arrosée : %{name}"
     watering_task_title: "Arrosage"
     form:
       name_placeholder: "Ex. Hibiscus de l'entrée"
@@ -493,8 +492,6 @@ fr:
         success: "Plante « %{name} » restaurée."
         already: "« %{name} » n'était pas archivée."
   tasks:
-    done: "Fait"
-    done_label: "Marquer comme fait : %{title} (%{subject})"
   task_occurrences:
     completions:
       create:
@@ -510,6 +507,7 @@ fr:
     postponements:
       create:
         success: "Reporté à demain : %{title} (%{subject})."
+        success_without_subject: "Reporté à demain : %{title}."
         not_pending: "C'était déjà fait ou décalé."
         inactive: "Cette tâche est arrêtée."
         not_due: "Cette tâche n'est pas encore due."

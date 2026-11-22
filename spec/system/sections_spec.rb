@@ -23,7 +23,7 @@ RSpec.describe "Sections", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
     expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Aujourd'hui")
-    click_on "Marquer comme arrosée : Basilic"
+    click_on "J'ai arrosé : Basilic"
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
     open_plant("Basilic")
@@ -41,7 +41,7 @@ RSpec.describe "Sections", type: :system do
     expect(page).to have_no_css("h2", text: "16 novembre 2026")
 
     go_to_tab("Aujourd'hui")
-    expect(page).to have_button("Marquer comme arrosée : Basilic")
+    expect(page).to have_button("J'ai arrosé : Basilic")
   end
 
   it "deletes a plant in place of its page: going back never shows it again" do

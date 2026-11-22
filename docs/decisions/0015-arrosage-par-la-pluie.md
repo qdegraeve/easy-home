@@ -29,7 +29,7 @@ position (ADR 0009), et Open-Meteo y était annoncé pour la météo.
   - **10 mm ou plus** : l'arrosage est noté fait par la pluie (`task_occurrences.source = "rain"`, sans auteur) ; le
     suivant repart de ce jour (récurrence glissante).
   - **De 3 à 10 mm** : l'arrosage est décalé d'un jour, sans être noté fait (trace « décalé » comme le bouton
-    « Demain » ; un arrosage dû le lendemain passe au surlendemain).
+    « Reporter » ; un arrosage dû le lendemain passe au surlendemain).
   - **Moins de 3 mm** : rien.
   - Un arrosage déjà fait dans la journée reste tel quel, quelle que soit la pluie. Seuils à affiner à l'usage.
 - **Mêmes services** : la pluie passe par `Tasks::Complete` et `Tasks::Postpone` (paramètre `source:`), sous le même
@@ -52,6 +52,6 @@ position (ADR 0009), et Open-Meteo y était annoncé pour la météo.
 - Nouvelle table `rainfalls` ; colonnes `locations.rain_exposed` et `task_occurrences.source` (`manual` / `rain`).
 - Rien ne change pour un foyer tant qu'aucun emplacement n'est marqué « Reçoit la pluie ».
 - Le fuseau utilisé pour « aujourd'hui » reste celui de l'application (`Indian/Reunion`), comme le reste des tâches.
-- Limites connues : un décalage par la pluie ne s'annule pas depuis le journal (comme le bouton « Demain » une fois
+- Limites connues : un décalage par la pluie ne s'annule pas depuis le journal (comme le bouton « Reporter » une fois
   le toast passé) ; modifier la tâche le lendemain peut ramener l'échéance au lendemain du décalage (recalcul) ; un
   job retardé au-delà de minuit prendrait la pluie du jour suivant.

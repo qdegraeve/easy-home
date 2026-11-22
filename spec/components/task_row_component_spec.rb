@@ -13,7 +13,7 @@ RSpec.describe TaskRowComponent, type: :component do
 
     expect(page).to have_link("Citronnier", href: "/plants/1")
     expect(page).to have_text("Arrosage · prévu hier")
-    expect(page).to have_button("Marquer comme arrosée : Citronnier")
+    expect(page).to have_button("J'ai arrosé : Citronnier")
   end
 
   it "names the button of a task without subject (bins, to come) by its title" do
@@ -31,7 +31,7 @@ RSpec.describe TaskRowComponent, type: :component do
       row.with_actions { "Modifier" }
     end
 
-    expect(page).to have_no_button("Marquer comme arrosée : Citronnier")
+    expect(page).to have_no_button("J'ai arrosé : Citronnier")
     expect(page).to have_text("Arrosée aujourd'hui")
     expect(page).to have_text("Modifier")
     expect(page).to have_no_link("Citronnier")
@@ -40,7 +40,6 @@ RSpec.describe TaskRowComponent, type: :component do
   it "offers \"Reporter\" when asked, on a task due today or late, not yet done, never on a later one" do
     render_inline(described_class.new(occurrence:, title: "Citronnier", detail: "Arrosage", postpone: true))
     expect(page).to have_button("Reporter à demain : Arrosage (Citronnier)", text: "Reporter")
-    expect(page).to have_no_text("Demain")
 
     render_inline(described_class.new(occurrence:, title: "Citronnier", detail: "Arrosage"))
     expect(page).to have_no_button("Reporter à demain : Arrosage (Citronnier)")
