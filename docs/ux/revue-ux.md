@@ -404,7 +404,7 @@ faite.
 - **7** : `task_occurrences.postponed_from` (date d'origine) et l'auteur du report, pour afficher la trace sans
   confondre avec `skipped`.
 - **Météo** : voir la section suivante.
-- **8** : Réglage utilisateur `digest_scope` (`all` / `critical_only`).
+- **8** : Réglage utilisateur `digest_scope` (`all` / `critical`).
 - **Regroupement par domaine** : Méthode `domain` sur chaque type de sujet (`Plant` → `:plants`) pour l'icône et la
   couleur ; le contrat implicite d'un sujet (ADR 0010) passe de `household_id` + `name` à `+ domain`.
 

@@ -44,9 +44,10 @@ module Notifications
         )
     end
 
+    # In the order of the screen (TaskListComponent): the waterings are grouped first, then the critical tasks lead.
     def items(occurrences)
-      critical, others = occurrences.partition { |occurrence| occurrence.task.critical? }
-      waterings, others = others.partition { |occurrence| occurrence.task.watering? }
+      waterings, others = occurrences.partition { |occurrence| occurrence.task.watering? }
+      critical, others = others.partition { |occurrence| occurrence.task.critical? }
       critical.map { |occurrence| label(occurrence.task) } + watering_items(waterings) +
         others.map { |occurrence| label(occurrence.task) }
     end

@@ -12,10 +12,13 @@ notification « à l'échéance » partirait à minuit. Chaque membre doit pouvo
 ## Décision
 
 - **Un résumé le matin**, une seule notification par utilisateur et par jour, qui liste les tâches dues aujourd'hui
-  et en retard (« 3 tâches aujourd'hui » : « Arroser Basilic, arroser Citronnier, Pailler le pied (Citronnier) »).
-  Rien n'est envoyé les jours sans tâche. Toucher la notification ouvre l'accueil.
+  et en retard, groupées comme l'écran (revue UX #21) : les tâches « à ne pas rater » en tête, tous les arrosages en un
+  élément, puis le reste (« 3 tâches aujourd'hui » : « Arroser 2 plantes, Pailler le pied (Citronnier) »). Rien n'est
+  envoyé les jours sans tâche. Toucher la notification ouvre l'accueil.
 - **Réglages par utilisateur** (page « Notifications ») : résumé activé ou non, heure (au quart d'heure, de 5 h à
-  22 h, 8 h par défaut, fuseau de l'app), foyers inclus parmi ceux qu'il gère (pas ceux où il est invité).
+  22 h, 8 h par défaut, fuseau de l'app), « seulement ce qui ne doit pas être raté » (`digest_scope` `all` /
+  `critical`, revue UX #22 : un jour sans tâche « à ne pas rater », rien n'est envoyé et la journée est consommée),
+  foyers inclus parmi ceux qu'il gère (pas ceux où il est invité).
 - **Gem `action_push_native`** (37signals, `~> 0.3`) : elle envoie à Firebase Cloud Messaging (et à Apple si un jour
   une app iOS existe), passe par Active Job (donc Solid Queue), gère les relances et supprime les appareils dont le jeton
   est invalide. La classe `ApplicationPushNotification` est la frontière avec le fournisseur ; la gem désactive l'envoi

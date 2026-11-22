@@ -23,7 +23,12 @@ RSpec.describe "Notification settings", type: :request do
     sign_in(user)
 
     patch notification_settings_path, params: {
-      notification_settings: { digest_enabled: "0", digest_time: "07:15", household_ids: [ home.id ] }
+      notification_settings: {
+        digest_enabled: "0",
+        digest_time: "07:15",
+        critical_only: "0",
+        household_ids: [ home.id ]
+      }
     }
 
     expect(response).to redirect_to(edit_notification_settings_path)
@@ -32,12 +37,31 @@ RSpec.describe "Notification settings", type: :request do
     expect(user.household_members.find_by(household: home).digest).to be(true)
   end
 
+  it "saves the digest scope: only what must not be missed, then everything again" do
+    sign_in(user)
+    settings = { digest_enabled: "1", digest_time: "08:00", household_ids: [ home.id ] }
+
+    patch notification_settings_path, params: { notification_settings: settings.merge(critical_only: "1") }
+    expect(user.reload).to be_digest_critical
+    get edit_notification_settings_path
+    expect(response.parsed_body.at_css("input[type=checkbox][name='notification_settings[critical_only]']")["checked"])
+      .to eq("checked")
+
+    patch notification_settings_path, params: { notification_settings: settings.merge(critical_only: "0") }
+    expect(user.reload).to be_digest_all
+  end
+
   it "refuses a time off the quarter hours and a household the user does not manage" do
     guest_of = create(:household_member, user:, role: :guest).household
     sign_in(user)
 
     patch notification_settings_path, params: {
-      notification_settings: { digest_enabled: "1", digest_time: "07:10", household_ids: [ guest_of.id ] }
+      notification_settings: {
+        digest_enabled: "1",
+        digest_time: "07:10",
+        critical_only: "0",
+        household_ids: [ guest_of.id ]
+      }
     }
 
     expect(response).to have_http_status(:unprocessable_content)
@@ -51,7 +75,12 @@ RSpec.describe "Notification settings", type: :request do
     expect(response.body).not_to include("Foyers à inclure")
 
     patch notification_settings_path, params: {
-      notification_settings: { digest_enabled: "1", digest_time: "08:00", household_ids: [ home.id ] }
+      notification_settings: {
+        digest_enabled: "1",
+        digest_time: "08:00",
+        critical_only: "0",
+        household_ids: [ home.id ]
+      }
     }
 
     expect(user.household_members.sole.digest).to be(true)

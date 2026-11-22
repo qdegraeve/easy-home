@@ -6,11 +6,11 @@ class NotificationSettingsForm
 
   attribute :digest_enabled, :boolean
   attribute :digest_time, :string
-  attribute :critical_only, :boolean, default: false
+  attribute :critical_only, :boolean
   attr_accessor :user
   attr_writer :household_ids
 
-  validates :digest_enabled, inclusion: { in: [ true, false ] }
+  validates :digest_enabled, :critical_only, inclusion: { in: [ true, false ] }
   validates :digest_time, inclusion: { in: ->(_form) { times } }
   validate :households_must_be_managed
 
