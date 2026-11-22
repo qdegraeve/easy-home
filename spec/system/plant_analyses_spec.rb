@@ -30,17 +30,22 @@ RSpec.describe "Plant analyses", type: :system do
 
     perform_enqueued_jobs
     refresh
+    # Summed up on the plant page, in full on its own page.
     expect(page).to have_content("À surveiller")
+    expect(page).to have_content("3 propositions à valider")
+    click_on "Voir l'analyse"
     expect(page).to have_content("Citrus limon (Citronnier) · identification sûre")
     expect(page).to have_content("Pailler le pied · dans 3 j")
+    click_on "← Citronnier"
 
-    attach_file "Nouvelle photo", picture("plant.png")
-    click_on "Ajouter la photo"
+    open_plant_tab("Photos")
+    attach_file "Nouvelle photo", picture("plant.png") # sent once chosen
     expect(page).to have_content("Photo ajoutée.")
 
     @fake_plant_analyzer.answer = FakePlantAnalyzer::ANSWER.merge("health" => "ok", "actions" => [])
+    open_plant_tab("Soins")
     click_on "Nouvelle analyse"
-    check "Analyser la photo du mar 10 nov."
+    check "Analyser la photo du mar 10 nov.", allow_label_click: true # the photo is the target
     fill_in "Une question, une remarque ? (facultatif)", with: "Est-ce que ça va mieux ?"
     click_on "Lancer l'analyse"
     expect(page).to have_content("Analyse lancée")
@@ -54,8 +59,13 @@ RSpec.describe "Plant analyses", type: :system do
     expect(@fake_plant_analyzer.calls.last[:images].size).to eq(2)
     expect(@fake_plant_analyzer.calls.last[:text]).to include("Note from the owner: Est-ce que ça va mieux ?")
 
-    find("summary", text: "Analyses précédentes · 1").click
-    within("details") { click_on "lun 16 nov." }
+    # Every analysis stays in the history of the plant.
+    click_on "← Citronnier"
+    open_plant_tab("Historique")
+    within("section[aria-labelledby=analyses]") do
+      expect(page).to have_link(count: 2)
+      all("a").last.click
+    end
     expect(page).to have_content("Analyse de « Citronnier »")
     expect(page).to have_content("À surveiller")
   end
@@ -73,15 +83,18 @@ RSpec.describe "Plant analyses", type: :system do
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Nouvelle analyse"
-    uncheck "Analyser la photo du jeu 12 nov."
-    check "Analyser la photo du lun 2 nov."
+    uncheck "Analyser la photo du jeu 12 nov.", allow_label_click: true # the photo is the target
+    check "Analyser la photo du lun 2 nov.", allow_label_click: true # the photo is the target
     fill_in "Une question, une remarque ? (facultatif)", with: "Taches brunes ?"
     click_on "Lancer l'analyse"
     perform_enqueued_jobs
     refresh
     expect(page).to have_content("L'analyse n'a pas abouti")
 
+    # Restarted from the plant page, where the failed analysis is summed up.
     @fake_plant_analyzer.error = nil
+    click_on "← Citronnier"
+    expect(page).to have_content("L'analyse n'a pas abouti")
     click_on "Relancer l'analyse"
     expect(page).to have_content("Analyse lancée")
     expect(plant.analyses.pending.sole).to have_attributes(user_note: "Taches brunes ?", photos: [ older ])
@@ -107,22 +120,24 @@ RSpec.describe "Plant analyses", type: :system do
     refresh
     expect(page).to have_content("Citrus limon (Citronnier) · identification sûre")
 
+    # The proposals are taken on the analysis page...
     click_on "Enregistrer l'espèce"
     expect(page).to have_content("Espèce enregistrée : Citrus limon.")
-    expect(page).to have_css("p.italic", text: "Citrus limon")
-    expect(page).to have_content("Sur la fiche")
-
-    within("section[aria-labelledby='watering']") { expect(page).to have_content("Tous les 7 jours") }
+    expect(page).to have_content("Ajouté", count: 1)
     click_on "Appliquer"
     expect(page).to have_content("Arrosage réglé : tous les 4 jours.")
-    within("section[aria-labelledby='watering']") { expect(page).to have_content("Tous les 4 jours") }
-    expect(page).to have_content("En place")
-
+    expect(page).to have_content("Ajouté", count: 2)
     click_on "Ajouter « Pailler le pied » aux tâches"
     expect(page).to have_content("Tâche ajoutée : Pailler le pied.")
-    within("section[aria-labelledby='tasks']") { expect(page).to have_content("Pailler le pied") }
-    expect(page).to have_content("Dans les tâches")
+    expect(page).to have_content("Ajouté", count: 3)
     expect(page).to have_no_button("Ajouter « Pailler le pied » aux tâches")
+
+    # ... and show on the plant page.
+    click_on "← Citronnier"
+    expect(page).to have_css("p.italic", text: "Citrus limon")
+    within("section[aria-labelledby='watering']") { expect(page).to have_content("Tous les 4 jours") }
+    within("section[aria-labelledby='tasks']") { expect(page).to have_content("Pailler le pied") }
+    expect(page).to have_no_content("propositions à valider")
   end
 
   it "asks follow-up questions on an analysis, one of them with a new photo" do
@@ -135,7 +150,9 @@ RSpec.describe "Plant analyses", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
     open_plant("Citronnier")
+    click_on "Voir l'analyse"
 
+    find("summary", text: "Poser une question").click
     fill_in "Une question sur cette analyse ?", with: "Quel paillis utiliser ?"
     attach_file "Joindre une photo (facultatif, elle rejoint le suivi photo)", picture("plant.png")
     click_on "Envoyer la question"
@@ -150,12 +167,15 @@ RSpec.describe "Plant analyses", type: :system do
     expect(@fake_plant_analyzer.calls.last[:images].size).to eq(2)
 
     @fake_plant_analyzer.follow_up = "Une fois par semaine suffit."
+    find("summary", text: "Poser une question").click
     fill_in "Une question sur cette analyse ?", with: "Et l'engrais ?"
     click_on "Envoyer la question"
     perform_enqueued_jobs
     refresh
     expect(page).to have_content("Une fois par semaine suffit.")
     expect(@fake_plant_analyzer.calls.last[:text]).to include("You: #{FakePlantAnalyzer::FOLLOW_UP}")
+    click_on "← Citronnier"
+    open_plant_tab("Photos")
     within("section[aria-labelledby='photos']") { expect(page).to have_css("img", count: 2) }
   end
 end

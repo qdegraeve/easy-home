@@ -10,8 +10,11 @@ class PlantsController < ApplicationController
     @archived_plants = plants.archived
   end
 
+  TABS = %w[care photos history].freeze
+
   def show
     @plant = find_plant
+    @tab = params[:tab].presence_in(TABS) || "care"
     @watering_task = @plant.watering_task
     @photos = @plant.photos.with_attached_image
     @analyses = @plant.analyses.recent_first
@@ -30,7 +33,8 @@ class PlantsController < ApplicationController
     return redirect_to(new_household_path) unless household
 
     authorize Plant.new(household:)
-    @form = PlantForm.new(household:)
+    # A common rhythm to start with: the analysis of the photo proposes the right one (UX review #36).
+    @form = PlantForm.new(household:, watering_interval_days: PlantForm::DEFAULT_WATERING_DAYS)
   end
 
   def create
@@ -69,9 +73,7 @@ class PlantsController < ApplicationController
   def destroy
     plant = find_plant
     plant.destroy!
-    # In the Android app, the home page replaces the whole stack: "back" never shows the deleted plant again.
-    destination = hotwire_native_app? ? root_path : plants_path
-    redirect_to destination, notice: t(".success", name: plant.name), status: :see_other
+    redirect_to plants_path, notice: t(".success", name: plant.name), status: :see_other
   end
 
   private

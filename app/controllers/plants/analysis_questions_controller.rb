@@ -7,11 +7,12 @@ module Plants
       authorize PlantAnalysisQuestion.new(plant_analysis_id: @analysis.id)
       result = Plants::AskQuestion.new.call(analysis: @analysis, user: Current.user, params: question_params)
 
+      analysis_page = plant_analysis_path(@plant, @analysis)
       if result.success?
-        redirect_back_or_to @plant, notice: t(".success")
+        redirect_back_or_to analysis_page, notice: t(".success")
       else
         code, @form = result.failure
-        return redirect_back_or_to(@plant, alert: t(".#{code}")) unless code == :invalid
+        return redirect_back_or_to(analysis_page, alert: t(".#{code}")) unless code == :invalid
 
         render :new, status: :unprocessable_content
       end
@@ -22,10 +23,11 @@ module Plants
       question = @analysis.questions.find(params[:id]).tap { |record| authorize record }
       result = Plants::AskAgain.new.call(question:)
 
+      analysis_page = plant_analysis_path(@plant, @analysis)
       if result.success?
-        redirect_back_or_to @plant, notice: t("plants.analysis_questions.create.success")
+        redirect_back_or_to analysis_page, notice: t("plants.analysis_questions.create.success")
       else
-        redirect_back_or_to @plant, alert: t("plants.analysis_questions.create.#{result.failure.first}")
+        redirect_back_or_to analysis_page, alert: t("plants.analysis_questions.create.#{result.failure.first}")
       end
     end
 

@@ -40,7 +40,10 @@ module ApplicationHelper
     primary: "bg-action font-semibold text-white hover:bg-action-strong",
     secondary: "bg-action-soft font-semibold text-action hover:bg-subtle",
     tertiary: "font-semibold text-action hover:bg-subtle",
-    danger: "font-semibold text-alert hover:bg-alert-soft"
+    danger: "font-semibold text-alert hover:bg-alert-soft",
+    # On the dark photo viewer: white text, the danger tone is carried by the confirmation.
+    on_dark: "font-semibold text-white/90 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 " \
+             "focus-visible:outline-white"
   }.freeze
 
   # Classes of a button or a link styled as one (UX review, "Bouton"): 48 px high, one action color.
@@ -65,18 +68,12 @@ module ApplicationHelper
     journal: %w[journal]
   }.freeze
 
-  # The tab bar is shown once signed in with a household (not on the sign-in pages, nor on the first household form).
-  # In the Android app, not on the pages opened as modals (path configuration): a tab would close the modal.
+  # The web tab bar is shown once signed in with a household (not on the sign-in pages, nor on the first household
+  # form), in the browser only: the Android app has native tabs (MainTabs.kt).
   def show_tabs?
     return @show_tabs if defined?(@show_tabs)
 
-    @show_tabs = authenticated? && Current.user.present? && !(hotwire_native_app? && modal_page?) &&
-      policy_scope(Household).exists?
-  end
-
-  # Pages the Android app opens as modals (config/hotwire/android_v1.json).
-  def modal_page?
-    request.path.match?(%r{/(new|edit)\z|\A/households\z|\A/today/watering\z})
+    @show_tabs = !hotwire_native_app? && authenticated? && Current.user.present? && policy_scope(Household).exists?
   end
 
   # Section of the tab bar the current page belongs to (nil for the settings).

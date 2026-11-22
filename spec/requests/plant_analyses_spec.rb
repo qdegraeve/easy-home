@@ -26,20 +26,25 @@ RSpec.describe "Plant analyses", type: :request do
     expect(response.body).to match(/value="#{photo.id}"[^>]*checked/)
   end
 
-  it "queues an analysis, then shows its result on the plant page once done" do
+  it "queues an analysis on its own page, then shows its result there and its summary on the plant page" do
     sign_in(user)
 
     params = { plant_analysis: { photo_ids: [ photo.id ], note: "Taches ?" } }
     expect { post plant_analyses_path(plant), params: }.to have_enqueued_job(AnalyzePlantJob)
-    expect(response).to redirect_to(plant_path(plant))
+    analysis = plant.analyses.sole
+    expect(response).to redirect_to(plant_analysis_path(plant, analysis))
     follow_redirect!
     expect(response.body).to include("Analyse lancée", "Analyse en cours", "Votre remarque : Taches ?")
+    get plant_path(plant)
+    expect(response.body).to include("Analyse en cours")
     expect(response.body).not_to include("Nouvelle analyse")
 
     perform_enqueued_jobs
-    get plant_path(plant)
+    get plant_analysis_path(plant, analysis)
     expect(response.body).to include("À surveiller", "Citrus limon", "(Citronnier)", "identification sûre")
     expect(response.body).to include("Arrosage conseillé : tous les 4 jours", "Pailler le pied", "dans 3 j")
+    get plant_path(plant)
+    expect(response.parsed_body.text.squish).to include("À surveiller", "3 propositions à valider", "Voir l'analyse")
   end
 
   it "shows a failed analysis with a restart button that reuses its photos and note" do
@@ -131,10 +136,10 @@ RSpec.describe "Plant analyses", type: :request do
       expect(flash[:notice]).to eq("Arrosage réglé : tous les 4 jours.")
       post accept_action_plant_analysis_path(plant, analysis, index: 0)
       expect(flash[:notice]).to eq("Tâche ajoutée : Pailler le pied.")
-      expect(response).to redirect_to(plant_path(plant))
+      expect(response).to redirect_to(plant_analysis_path(plant, analysis))
 
-      get plant_path(plant)
-      expect(response.body).to include("Sur la fiche", "En place", "Dans les tâches")
+      get plant_analysis_path(plant, analysis)
+      expect(response.parsed_body.text.scan("Ajouté").size).to eq(3)
       expect(response.body).not_to include("Enregistrer l&#39;espèce", "Ajouter aux tâches")
     end
 

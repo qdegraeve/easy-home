@@ -21,12 +21,12 @@ RSpec.describe "Plant photos", type: :request do
     Photos::Add.new.call(plant:, file: picture).value!
   end
 
-  it "adds a photo and shows it on the plant page" do
+  it "adds a photo and shows it in the photos of the plant" do
     sign_in(user)
 
     post plant_photos_path(plant), params: { photo: { file: picture } }
 
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     follow_redirect!
     expect(response.body).to include("Photo ajoutée.", "Photo du ")
     expect(plant.photos.count).to eq(1)
@@ -37,7 +37,7 @@ RSpec.describe "Plant photos", type: :request do
 
     post plant_photos_path(plant), params: { photo: { file: picture("not_an_image.jpg") } }
 
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     expect(flash[:alert]).to eq("Photo n'est pas une image JPEG, PNG ou WebP lisible")
     expect(plant.photos).to be_empty
   end
@@ -83,7 +83,7 @@ RSpec.describe "Plant photos", type: :request do
     expect(response.body).to include("Photo du 16 novembre 2026", "Supprimer la photo")
 
     delete plant_photo_path(plant, photo)
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(plant_path(plant, tab: "photos"))
     expect(Photo.exists?(photo.id)).to be(false)
   end
 
@@ -95,10 +95,33 @@ RSpec.describe "Plant photos", type: :request do
     expect(response).to redirect_to(plant_photo_path(plant, photo))
     expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
 
+    get edit_plant_photo_path(plant, photo)
+    expect(response.body).to include("Date de la photo", "2026-11-02")
+
     patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-12-01" } }
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).to include("Date de la photo ne peut pas être dans le futur", "Photo du 2 novembre 2026")
+    expect(response.body).to include("Date de la photo ne peut pas être dans le futur")
     expect(photo.reload.taken_at.to_date).to eq(Date.new(2026, 11, 2))
+  end
+
+  it "goes on to the next photo after a deletion: the newer one, else the older one" do
+    oldest, middle, newest = add_photo, add_photo, add_photo
+    oldest.update!(taken_at: 3.days.ago)
+    middle.update!(taken_at: 2.days.ago)
+    sign_in(user)
+
+    get plant_photo_path(plant, middle)
+    expect(response.body).to include("2 / 3")
+    # Every photo in the strip, the oldest first, opened on the one asked for.
+    page = response.parsed_body
+    urls = page.css("[data-photo-viewer-target=slide]").map { |slide| slide["data-url"] }
+    expect(urls).to eq([ oldest, middle, newest ].map { |photo| plant_photo_path(plant, photo) })
+    expect(page.at_css("[data-controller=photo-viewer]")["data-photo-viewer-index-value"]).to eq("1")
+
+    delete plant_photo_path(plant, middle)
+    expect(response).to redirect_to(plant_photo_path(plant, newest))
+    delete plant_photo_path(plant, newest)
+    expect(response).to redirect_to(plant_photo_path(plant, oldest))
   end
 
   it "forbids adding a photo to an archived plant" do
@@ -135,11 +158,13 @@ RSpec.describe "Plant photos", type: :request do
         expect(plant.photos).to be_empty
       end
 
-      it "answers 404 to #{intruder_label} on show, update and destroy" do
+      it "answers 404 to #{intruder_label} on show, edit, update and destroy" do
         photo = add_photo
         sign_in(instance_exec(&intruder))
 
         get plant_photo_path(plant, photo)
+        expect(response).to have_http_status(:not_found)
+        get edit_plant_photo_path(plant, photo)
         expect(response).to have_http_status(:not_found)
         patch plant_photo_path(plant, photo), params: { photo: { taken_at: "2026-11-01" } }
         expect(response).to have_http_status(:not_found)
@@ -148,6 +173,49 @@ RSpec.describe "Plant photos", type: :request do
         expect(response).to have_http_status(:not_found)
         expect(Photo.exists?(photo.id)).to be(true)
       end
+    end
+  end
+
+  describe "cover photo" do
+    it "makes a photo the face of the plant, until it is deleted" do
+      older, newer = add_photo, add_photo
+      sign_in(user)
+
+      post plant_photo_cover_path(plant, older)
+      expect(response).to redirect_to(plant_photo_path(plant, older)) # stays in the viewer
+      expect(plant.reload.face).to eq(older)
+
+      get plant_photo_path(plant, older)
+      expect(response.body).to include("Photo de couverture")
+      # The actions of the photo shown (those of the others wait in their template).
+      actions = response.parsed_body.at_css("[data-controller='bridge--menu']")
+      expect(actions.text).not_to include("Utiliser comme photo de couverture")
+
+      delete plant_photo_path(plant, older)
+      expect(plant.reload.cover_photo).to be_nil
+      expect(plant.face).to eq(newer)
+    end
+
+    it "does not take the photo of another plant, nor let a guest choose" do
+      other_photo = Photos::Add.new.call(plant: create(:plant, household:), file: picture).value!
+      sign_in(user)
+      post plant_photo_cover_path(plant, other_photo)
+      expect(response).to have_http_status(:not_found)
+
+      photo = add_photo
+      sign_in(create(:household_member, household:, role: :guest).user)
+      post plant_photo_cover_path(plant, photo)
+      expect(response).to have_http_status(:not_found)
+      expect(plant.reload.cover_photo).to be_nil
+    end
+
+    it "still lets the face of an archived plant be chosen" do
+      photo = add_photo
+      plant.update!(archived_at: Time.current)
+      sign_in(user)
+
+      post plant_photo_cover_path(plant, photo)
+      expect(plant.reload.cover_photo).to eq(photo)
     end
   end
 end

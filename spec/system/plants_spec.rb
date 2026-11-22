@@ -20,6 +20,7 @@ RSpec.describe "Plants", type: :system do
     fill_in "Nom", with: "   "
     select "Terrasse", from: "Emplacement"
     fill_in "Arrosage", with: "2"
+    find("summary", text: "Plus de détails").click
     fill_in "Dernier arrosage", with: Date.new(2026, 11, 14)
     click_on "Ajouter la plante"
     expect(page).to have_content("Nom doit être rempli(e)")
@@ -51,6 +52,7 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_no_button("Arrosée : Basilic")
 
     # Correction: today's watering was a mistake.
+    open_plant_tab("Historique")
     click_on "Annuler l'arrosage du lun 16 nov."
     within("dialog", text: "Le prochain arrosage sera recalculé.") { click_on "Oui, annuler" }
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")

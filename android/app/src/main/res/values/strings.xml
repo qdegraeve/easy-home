@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Easy Home</string>
+    <string name="tab_today">Aujourd\'hui</string>
+    <string name="tab_house">Maison</string>
+    <string name="tab_journal">Journal</string>
+    <string name="settings">Réglages</string>
 </resources>

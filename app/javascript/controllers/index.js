@@ -7,8 +7,20 @@ import { application } from "./application"
 import AddressAutocompleteController from "./address_autocomplete_controller"
 application.register("address-autocomplete", AddressAutocompleteController)
 
+import Bridge__ButtonController from "./bridge/button_controller"
+application.register("bridge--button", Bridge__ButtonController)
+
+import Bridge__MenuController from "./bridge/menu_controller"
+application.register("bridge--menu", Bridge__MenuController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import PhotoPickerController from "./photo_picker_controller"
+application.register("photo-picker", PhotoPickerController)
+
+import PhotoViewerController from "./photo_viewer_controller"
+application.register("photo-viewer", PhotoViewerController)
 
 import ToastController from "./toast_controller"
 application.register("toast", ToastController)

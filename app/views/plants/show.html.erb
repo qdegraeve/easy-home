@@ -6,206 +6,96 @@
 
 <%= back_link_to t("plants.back"), plants_path %>
 
-<div class="mt-2">
-  <h1 class="text-2xl font-bold"><%= page_title @plant.name %></h1>
-  <% if @plant.species %>
-    <p class="italic text-muted"><%= @plant.species %></p>
+<%# Who the plant is: its face (the cover photo, or the latest), name, species and place. %>
+<div class="mt-2 flex items-center gap-4">
+  <% if (face = @plant.face) %>
+    <%= link_to plant_photo_path(@plant, face), class: "shrink-0" do %>
+      <%= image_tag face.image.variant(:thumb), alt: t(".face_alt", name: @plant.name),
+            class: "size-16 rounded-2xl object-cover" %>
+    <% end %>
+  <% else %>
+    <span class="grid size-16 shrink-0 place-items-center rounded-2xl bg-subtle text-plants">
+      <%= icon(:sprout, size: 28) %>
+    </span>
   <% end %>
-  <% if @plant.location %>
-    <p class="mt-1 text-sm text-muted">
-      <%= icon(:map_pin, size: 16) %> <%= @plant.location.name %> · <%= exposure_label(@plant.location.exposure) %>
-    </p>
-  <% end %>
-  <% if @plant.archived? %>
-    <p class="mt-2 rounded-xl bg-subtle px-3 py-2 text-sm">
-      <%= t(".archived_on", date: l(@plant.archived_at.to_date, format: :long)) %>
-    </p>
-  <% end %>
-</div>
-
-<div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-  <div class="space-y-6 self-start">
-    <section class="space-y-2 rounded-2xl bg-surface p-4" aria-labelledby="watering">
-      <h2 id="watering" class="font-semibold">
-        <%= heading_with_icon(:droplet, t(".watering"), icon_class: "text-plants") %>
-      </h2>
-      <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
-      <% if (occurrence = @watering_task.pending_occurrence) %>
-        <div class="flex items-center justify-between gap-3">
-          <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
-          <% if @done_today_task_ids.include?(@watering_task.id) %>
-            <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action">
-              <%= t(".watered_today") %>
-            </span>
-          <% else %>
-            <%= render "tasks/complete_button", occurrence: %>
-          <% end %>
-        </div>
-      <% end %>
-      <% if @last_watered_at %>
-        <p class="text-sm text-muted"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
-      <% end %>
-    </section>
-
-    <div>
-      <%= render ListGroupComponent.new(title: t(".tasks"), id: "tasks", icon: :list_todo) do |group| %>
-        <% @other_tasks.each do |task| %>
-          <% group.with_row do %>
-            <%= render TaskRowComponent.new(
-              occurrence: task.pending_occurrence,
-              title: task.title,
-              detail: task.once? ? t(".once") : t(".every", count: task.recurrence.interval_days),
-              done_today: @done_today_task_ids.include?(task.id)
-            ) do |row| %>
-              <% row.with_actions do %>
-                <%= link_to t(".edit_task"), edit_plant_task_path(@plant, task),
-                      aria: { label: t(".edit_task_label", title: task.title) },
-                      class: "-ml-2 #{small_action_class}" %>
-                <%= button_to t(".destroy_task"), plant_task_path(@plant, task), method: :delete,
-                      aria: { label: t(".destroy_task_label", title: task.title) },
-                      form: {
-                        data: confirm_data(
-                          t(".destroy_task_confirm", title: task.title),
-                          button: t(".destroy"),
-                          danger: true
-                        )
-                      },
-                      class: small_action_class(:danger) %>
-              <% end %>
-            <% end %>
-          <% end %>
-        <% end %>
-        <%= render EmptyStateComponent.new(text: t(".no_tasks")) %>
-      <% end %>
-      <% unless @plant.archived? %>
-        <%= link_to t(".add_task"), new_plant_task_path(@plant),
-              class: "mt-3 #{button_class(:secondary, block: true)}" %>
-      <% end %>
-    </div>
-  </div>
-
-  <div class="space-y-6 self-start">
-    <section aria-labelledby="analysis">
-      <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t(".analysis")) %></h2>
-      <%# Not while an analysis runs (the restart itself), nor for an archived plant (nothing to offer). %>
-      <% change = @plant.place_change_since_analysis unless @plant.archived? || @analyses.first&.pending? %>
-      <% if change %>
-        <%# The place changed since the last analysis: its advice may be wrong. Offered, never run by itself. %>
-        <div role="note" class="mt-2 rounded-2xl bg-warn-soft p-4 text-sm">
-          <p class="font-semibold"><%= heading_with_icon(:map_pin, t(".place_changed"), icon_class: "text-warn") %></p>
-          <p class="mt-1">
-            <%= t(".place_changed_detail", before: place_label(change.first), after: place_label(change.last)) %>
-          </p>
-          <% if @photos.any? && policy(PlantAnalysis.new(plant: @plant)).create? %>
-            <%= link_to t(".reanalyse"),
-                  new_plant_analysis_path(@plant, note: t(".reanalyse_note", before: place_label(change.first),
-                                                                              after: place_label(change.last))),
-                  class: "mt-3 #{button_class(:secondary)}" %>
-          <% end %>
-        </div>
-      <% end %>
-      <% latest, *older = @analyses %>
-      <div class="mt-2">
-        <% if latest %>
-          <%= render "plants/analyses/analysis", analysis: latest,
-                restart: latest.failed? && policy(PlantAnalysis.new(plant: @plant)).create? %>
-        <% else %>
-          <%= render EmptyStateComponent.new(text: t(".no_analysis")) %>
-        <% end %>
-      </div>
-      <% if @photos.any? && !latest&.pending? && policy(PlantAnalysis.new(plant: @plant)).create? %>
-        <%= link_to t(".new_analysis"), new_plant_analysis_path(@plant),
-              class: "mt-3 #{button_class(:secondary, block: true)}" %>
-      <% end %>
-      <% if older.any? %>
-        <details class="mt-3">
-          <summary class="cursor-pointer py-3 text-sm text-muted">
-            <%= t(".older_analyses", count: older.size) %>
-          </summary>
-          <ul class="mt-2 divide-y divide-line overflow-hidden rounded-2xl bg-surface text-sm">
-            <% older.each do |analysis| %>
-              <li>
-                <% state = analysis.done? ? "health.#{analysis.health}" : "status.#{analysis.status}" %>
-                <%= link_to plant_analysis_path(@plant, analysis),
-                      class: "flex min-h-12 items-center justify-between gap-3 px-3" do %>
-                  <span><%= l(analysis.created_at.to_date, format: :day) %></span>
-                  <span class="text-muted"><%= t("plants.analyses.analysis.#{state}") %></span>
-                <% end %>
-              </li>
-            <% end %>
-          </ul>
-        </details>
-      <% end %>
-    </section>
-
-    <section aria-labelledby="photos">
-      <h2 id="photos" class="font-semibold"><%= heading_with_icon(:camera, t(".photos")) %></h2>
-      <% if @photos.any? %>
-        <ul class="mt-2 grid grid-cols-3 gap-2">
-          <% @photos.each do |photo| %>
-            <li>
-              <% date = l(photo.taken_at.to_date, format: :day) %>
-              <%= link_to plant_photo_path(@plant, photo), class: "block" do %>
-                <%= image_tag photo.image.variant(:thumb), alt: t(".photo_alt", date:),
-                      class: "aspect-square w-full rounded-xl object-cover" %>
-                <span class="mt-1 block text-center text-xs text-muted"><%= date %></span>
-              <% end %>
-            </li>
-          <% end %>
-        </ul>
-      <% else %>
-        <div class="mt-2"><%= render EmptyStateComponent.new(text: t(".no_photos")) %></div>
-      <% end %>
-      <% if policy(Photo.new(plant: @plant)).create? %>
-        <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3 space-y-2" do |f| %>
-          <%= f.label :file, t(".new_photo"), class: "block text-sm font-semibold" %>
-          <%= f.file_field :file, accept: "image/*", required: true,
-                class: "block w-full text-sm file:mr-3 file:min-h-11 file:rounded-xl file:border-0 " \
-                       "file:bg-action-soft file:px-3 file:font-semibold file:text-action" %>
-          <%= f.submit t(".add_photo"), class: button_class(:secondary, block: true) %>
-        <% end %>
-      <% end %>
-    </section>
-
-    <%= render ListGroupComponent.new(title: t(".journal"), id: "journal", icon: :history) do |group| %>
-      <% @journal.each do |entry| %>
-        <% date = l(entry.completed_at.to_date, format: :day) %>
-        <% if entry.task.watering? %>
-          <% label = t(".watered") %>
-          <% cancel_label, cancel_confirm = t(".cancel_label", date:), t(".cancel_confirm", date:) %>
-        <% else %>
-          <% title = entry.task.title %>
-          <% label = t(".done_entry", title:) %>
-          <% cancel_label = t(".cancel_task_label", title:, date:) %>
-          <% cancel_confirm = t(".cancel_task_confirm", title:, date:) %>
-        <% end %>
-        <% group.with_row do %>
-          <div class="flex min-h-12 items-center justify-between gap-3 pl-3 text-sm">
-            <span><%= heading_with_icon(entry.task.watering? ? :droplet : :check, label) %></span>
-            <span class="flex items-center gap-1">
-              <span class="shrink-0 text-muted"><%= date %></span>
-              <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
-                    aria: { label: cancel_label },
-                    form: { data: confirm_data(cancel_confirm, button: t(".cancel_confirm_button")) },
-                    class: small_action_class %>
-            </span>
-          </div>
-        <% end %>
-      <% end %>
+  <div class="min-w-0">
+    <h1 class="text-2xl font-bold"><%= page_title @plant.name %></h1>
+    <% if @plant.species %>
+      <p class="italic text-muted"><%= @plant.species %></p>
+    <% end %>
+    <% if @plant.location %>
+      <p class="text-sm text-muted">
+        <%= icon(:map_pin, size: 16) %> <%= @plant.location.name %> · <%= exposure_label(@plant.location.exposure) %>
+      </p>
     <% end %>
   </div>
 </div>
+<% if @plant.archived? %>
+  <p class="mt-3 rounded-xl bg-subtle px-3 py-2 text-sm">
+    <%= t(".archived_on", date: l(@plant.archived_at.to_date, format: :long)) %>
+  </p>
+<% end %>
 
-<div class="mt-8 flex flex-wrap gap-3">
-  <%= link_to t(".edit"), edit_plant_path(@plant), class: button_class(:secondary) %>
+<%# On a computer, the plant page uses the width: the parts of a tab side by side (lists elsewhere keep a reading
+    width). %>
+<div class="mt-6 space-y-6">
+  <%# The next action first: watering. %>
+  <section class="space-y-2 rounded-2xl bg-surface p-4" aria-labelledby="watering">
+    <h2 id="watering" class="font-semibold">
+      <%= heading_with_icon(:droplet, t(".watering"), icon_class: "text-plants") %>
+    </h2>
+    <p><%= t(".every", count: @watering_task.recurrence.interval_days) %></p>
+    <% if (occurrence = @watering_task.pending_occurrence) %>
+      <div class="flex items-center justify-between gap-3">
+        <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
+        <% if @done_today_task_ids.include?(@watering_task.id) %>
+          <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action">
+            <%= t(".watered_today") %>
+          </span>
+        <% else %>
+          <%= render "tasks/complete_button", occurrence: %>
+        <% end %>
+      </div>
+    <% end %>
+    <% if @last_watered_at %>
+      <p class="text-sm text-muted"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
+    <% end %>
+  </section>
+
+  <%= render "plants/tabs", plant: @plant, current: @tab %>
+
+  <div class="space-y-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
+    <%= render "plants/tab_#{@tab}" %>
+  </div>
+</div>
+
+<%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu). The id changes with
+    the state of the plant: a morph refresh then replaces the whole block, and the menu is sent again with the right
+    actions (a morph would otherwise only rename "Archiver" into "Restaurer" in place). %>
+<div
+  id="plant-actions-<%= @plant.archived? ? "archived" : "active" %>"
+  class="mt-8 flex flex-wrap gap-3"
+  data-controller="bridge--menu"
+>
+  <%= link_to t(".edit"), edit_plant_path(@plant),
+        class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% if @plant.archived? %>
-    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete, class: button_class(:secondary) %>
+    <%= button_to t(".restore"), plant_archive_path(@plant), method: :delete,
+          class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% else %>
     <%= button_to t(".archive"), plant_archive_path(@plant),
           form: { data: confirm_data(t(".archive_confirm"), button: t(".archive")) },
-          class: button_class(:secondary) %>
+          class: button_class(:secondary), data: { bridge__menu_target: "item" } %>
   <% end %>
-  <%= button_to t(".destroy"), plant_path(@plant), method: :delete,
-        form: { data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
-        class: button_class(:danger) %>
+  <%# Replace: in the Android app, the deleted plant leaves the stack ("back" never shows it again). %>
+  <%= button_to(
+    t(".destroy"),
+    plant_path(@plant),
+    method: :delete,
+    form: {
+      data: { turbo_action: "replace", **confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) }
+    },
+    class: button_class(:danger),
+    data: { bridge__menu_target: "item" }
+  ) %>
 </div>

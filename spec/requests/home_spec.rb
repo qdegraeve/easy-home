@@ -38,4 +38,50 @@ RSpec.describe "Home", type: :request do
       expect(response.body).to include("Appartement")
     end
   end
+
+  describe "GET / with nothing to do today" do
+    include ActiveSupport::Testing::TimeHelpers
+
+    around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
+
+    let(:user) { create(:user, :with_household) }
+
+    before { post session_path, params: { email: user.email, password: "password" } }
+
+    it "says so, with the next task when none comes in the next days" do
+      create(
+        :plant,
+        :watered,
+        household: user.households.sole,
+        name: "Cactus",
+        interval_days: 10,
+        last_watered_at: Time.zone.parse("2026-11-10 08:00")
+      )
+
+      get root_path
+
+      text = response.parsed_body.text.squish
+      expect(text).to include(
+        "Rien à faire aujourd'hui.",
+        "Tout est à jour dans la maison.",
+        "Prochaine tâche : Arroser Cactus, dans 4 j",
+        "Voir les plantes"
+      )
+    end
+
+    it "counts what was done today and leads to the journal" do
+      plant = create(
+        :plant,
+        :watered,
+        household: user.households.sole,
+        interval_days: 3,
+        last_watered_at: Time.zone.parse("2026-11-13 08:00")
+      )
+      Tasks::Complete.new.call(occurrence: plant.watering_task.pending_occurrence, user:)
+
+      get root_path
+
+      expect(response.parsed_body.text.squish).to include("Une tâche faite aujourd'hui. Bravo !", "Voir le journal")
+    end
+  end
 end

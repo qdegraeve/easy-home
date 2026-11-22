@@ -16,8 +16,8 @@
 - Identifiant de l'app : `app.easyhome.android` (neutre, aucun vrai domaine ; à revoir avant une publication).
 - Build : Android Gradle Plugin 9.4 (Kotlin intégré), Gradle 9.9 (wrapper versionné), compileSdk et targetSdk 37,
   minSdk 28, Java 17. La CI construit l'APK de debug (job « Android ») ; Dependabot suit les dépendances Gradle.
-- Code : `EasyHomeApplication` (configuration Hotwire, chargement de la path configuration) et `MainActivity`
-  (un seul navigateur, sans onglets).
+- Code : `EasyHomeApplication` (configuration Hotwire, chargement de la path configuration), `MainActivity` et
+  `MainTabs` (trois onglets natifs, un navigateur chacun ; voir `docs/android-coque.md`).
 - **Le Kotlin reste de la plomberie** : navigation, notifications, stockage sécurisé, bridge. Toute logique métier vit dans Rails.
 
 ## Ce qui est web et ce qui est natif
@@ -60,6 +60,20 @@
 `android/local.properties` (jamais versionné) contient `sdk.dir` et, au besoin, `easyhome.baseUrl` pour viser un autre
 serveur, sans `/` final. En debug, le http en clair n'est permis que vers `localhost` : un autre serveur doit être en
 https.
+
+### Tester hors de la maison (tunnel)
+
+Sans câble, le téléphone joint le Mac par un tunnel rapide Cloudflare (`cloudflared`, sans compte) :
+
+1. `bin/dev` tourne (assets, jobs) ; dans un autre terminal, `bin/tunnel`. Il lance un second serveur sur le port 3001
+   avec `DEV_TUNNEL=1` et affiche une adresse `https://….trycloudflare.com`, aléatoire, qui change à chaque lancement.
+   Le Mac reste éveillé (`caffeinate`) jusqu'à Ctrl-C, qui arrête tout.
+2. Mettre cette adresse dans `android/local.properties` (`easyhome.baseUrl=…`), puis `./gradlew installDebug`.
+3. Au retour : retirer la ligne, réinstaller, `adb reverse tcp:3000 tcp:3000`.
+
+L'adresse est publique : le mot de passe reste exigé, et avec `DEV_TUNNEL` le serveur n'accepte que les hôtes
+`trycloudflare.com` et ne montre jamais la page d'erreur détaillée (sa console web serait une console Ruby sur le Mac,
+ouverte à Internet). L'adresse ne va jamais dans le dépôt.
 
 ## Côté Rails
 

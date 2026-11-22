@@ -2,6 +2,7 @@ fr:
   date:
     formats:
       day: "%a %-d %b"
+      month_year: "%B %Y"
   time:
     formats:
       hour: "%-H h %M"
@@ -103,11 +104,17 @@ fr:
   home:
     show:
       title: "Aujourd'hui"
-      settings: "Réglages"
       empty_title: "Aucune plante pour l'instant"
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
       due_today: "À faire aujourd'hui · %{count}"
       nothing_due: "Rien à faire aujourd'hui."
+      done_today:
+        one: "Une tâche faite aujourd'hui. Bravo !"
+        other: "%{count} tâches faites aujourd'hui. Bravo !"
+      all_good: "Tout est à jour dans la maison."
+      next_task: "Prochaine tâche : %{what},"
+      see_journal: "Voir le journal"
+      see_plants: "Voir les plantes"
       upcoming: "Bientôt · %{count}"
       water_plant: "Arroser %{name}"
       task_of: "%{title} (%{name})"
@@ -202,6 +209,11 @@ fr:
       other: "dans %{count} j"
   plants:
     back: "← Plantes"
+    tabs:
+      label: "Parties de la fiche"
+      care: "Soins"
+      photos: "Photos"
+      history: "Historique"
     index:
       back: "← Maison"
       title: "Plantes"
@@ -212,6 +224,7 @@ fr:
       empty: "Aucune plante pour l'instant."
       no_location: "Sans emplacement"
       add: "Ajouter une plante"
+      add_label: "Plante"
       archived: "Plantes archivées · %{count}"
       to_review: "Analyse à revoir : le lieu a changé"
     water: "Arrosée"
@@ -224,7 +237,12 @@ fr:
       every: "Tous les"
       days: "jours"
       last_watered_help: "Point de départ du calcul du prochain arrosage."
-      photo_help: "Facultative : JPEG, PNG ou WebP, 15 Mo maximum."
+      photo_help: >-
+        Facultative : avec elle, l'analyse propose l'espèce et l'arrosage. JPEG, PNG ou WebP, 15 Mo maximum.
+      choose_photo: "Prendre ou choisir une photo"
+      photo_again: "Choisissez la photo à nouveau : elle n'a pas pu être gardée."
+      watering_help: "Une valeur courante pour commencer : l'analyse de la photo proposera la bonne."
+      more: "Plus de détails (espèce, dernier arrosage)"
     new:
       title: "Ajouter une plante"
       submit: "Ajouter la plante"
@@ -251,6 +269,8 @@ fr:
       tasks: "Autres tâches"
       photos: "Suivi photo"
       analysis: "Analyse"
+      face_alt: "Photo de %{name}"
+      analyses: "Analyses"
       place_changed: "Analyse à revoir : le lieu a changé"
       place_changed_detail: >-
         Lors de la dernière analyse : %{before}. Maintenant : %{after}. Ses conseils peuvent ne plus être à jour.
@@ -258,13 +278,19 @@ fr:
       reanalyse_note: "Lieu changé depuis la dernière analyse : avant %{before}, maintenant %{after}."
       no_analysis: "Pas encore d'analyse : ajoutez une photo, puis lancez une analyse."
       new_analysis: "Nouvelle analyse"
-      older_analyses: "Analyses précédentes · %{count}"
+      new_analysis_label: "Analyse"
       no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
       photo_alt: "Photo du %{date}"
       new_photo: "Nouvelle photo"
-      add_photo: "Ajouter la photo"
+      add_photo: "Ajouter une photo"
+      add_photo_label: "Photo"
+      cover_badge: "Couverture"
+      photos_count:
+        one: "1 photo"
+        other: "%{count} photos"
       no_tasks: "Aucune autre tâche : engrais, taille, rempotage…"
-      add_task: "+ Ajouter une tâche"
+      add_task: "Ajouter une tâche"
+      add_task_label: "Tâche"
       once: "Une fois"
       edit_task: "Modifier"
       edit_task_label: "Modifier « %{title} »"
@@ -286,6 +312,11 @@ fr:
       destroy: "Supprimer"
       destroy_confirm: "Supprimer définitivement cette plante et tout son historique ?"
     analyses:
+      summary:
+        see: "Voir l'analyse"
+        proposals:
+          one: "Une proposition à valider"
+          other: "%{count} propositions à valider"
       new:
         title: "Nouvelle analyse"
         intro: >-
@@ -329,12 +360,12 @@ fr:
         photos: "Photos analysées"
         photo_alt: "Photo analysée du %{date}"
         accept_species: "Enregistrer l'espèce"
-        species_accepted: "Sur la fiche"
+        species_accepted: "Ajouté"
         accept_watering: "Appliquer"
-        watering_accepted: "En place"
+        watering_accepted: "Ajouté"
         accept_action: "Ajouter aux tâches"
         accept_action_label: "Ajouter « %{title} » aux tâches"
-        action_accepted: "Dans les tâches"
+        action_accepted: "Ajouté"
       accept_species:
         success: "Espèce enregistrée : %{species}."
       accept_watering:
@@ -364,6 +395,7 @@ fr:
         photo: "Joindre une photo (facultatif, elle rejoint le suivi photo)"
         submit: "Envoyer la question"
       thread:
+        ask: "Poser une question"
         title: "Questions sur cette analyse"
         pending: "Réponse en cours… La page se mettra à jour."
         failed: "La réponse n'a pas abouti."
@@ -372,15 +404,30 @@ fr:
         limit:
           one: "%{count} question au maximum par analyse : lancez une nouvelle analyse pour continuer."
           other: "%{count} questions au maximum par analyse : lancez une nouvelle analyse pour continuer."
+    covers:
+      create:
+        success: "Photo de couverture choisie."
     photos:
       create:
         success: "Photo ajoutée."
         subject_archived: "Cette plante est archivée : restaurez-la pour ajouter des photos."
       show:
         title: "Photo du %{date}"
-        alt: "%{name}"
+        page_title: "Photos de %{name}"
+        photos: "Photos de %{name}"
+        alt: "%{name}, photo du %{date}"
+        position: "%{position} / %{count}"
+        edit_date: "Modifier la date"
         destroy: "Supprimer la photo"
         destroy_confirm: "Supprimer cette photo ?"
+        cover: "Photo de couverture"
+        make_cover: "Utiliser comme photo de couverture"
+        browse: "Autres photos"
+        older: "Plus ancienne"
+        newer: "Plus récente"
+      edit:
+        title: "Date de la photo"
+        back: "← La photo"
         save_date: "Enregistrer la date"
       update:
         success: "Date de la photo enregistrée."

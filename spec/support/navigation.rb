@@ -9,6 +9,12 @@ module NavigationHelpers
     click_on "Plantes"
     click_on name
   end
+
+  # Soins / Photos / Historique on the plant page.
+  def open_plant_tab(name)
+    within("nav[aria-label='Parties de la fiche']") { click_on name }
+    expect(page).to have_css("nav[aria-label='Parties de la fiche'] a[aria-current=page]", text: name)
+  end
 end
 
 RSpec.configure do |config|

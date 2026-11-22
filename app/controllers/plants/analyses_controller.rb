@@ -14,7 +14,8 @@ module Plants
       result = Plants::RequestAnalysis.new.call(plant: @plant, user: Current.user, params: analysis_params)
 
       if result.success?
-        redirect_to @plant, notice: t(".success")
+        # The analysis page: it shows the note and the photos sent, then the result once ready (morph refresh).
+        redirect_to plant_analysis_path(@plant, result.value!), notice: t(".success")
       else
         code, @request = result.failure
         return redirect_to(@plant, alert: t(".#{code}")) unless code == :invalid
@@ -48,15 +49,16 @@ module Plants
 
     def find_analysis_to_accept
       @plant = find_plant
-      @plant.analyses.find(params[:id]).tap { |analysis| authorize analysis, :accept? }
+      @analysis = @plant.analyses.find(params[:id]).tap { |analysis| authorize analysis, :accept? }
     end
 
-    # Back to the page of the button: the plant, or the analysis page.
+    # Back to the page of the button: the analysis page (where the proposals are).
     def respond_to_acceptance(result, **values)
+      analysis_page = plant_analysis_path(@plant, @analysis)
       if result.success?
-        redirect_back_or_to @plant, notice: t(".success", **values)
+        redirect_back_or_to analysis_page, notice: t(".success", **values)
       else
-        redirect_back_or_to @plant, alert: t("plants.analyses.accept.#{result.failure.first}")
+        redirect_back_or_to analysis_page, alert: t("plants.analyses.accept.#{result.failure.first}")
       end
     end
 

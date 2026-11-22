@@ -5,4 +5,6 @@
     <color name="background">#F6F4EF</color>
     <!-- Text and icons of the native top bar. -->
     <color name="ink">#1D2521</color>
+    <color name="muted">#5F665F</color>
+    <color name="action_soft">#E3EDE7</color>
 </resources>

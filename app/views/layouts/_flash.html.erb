@@ -4,6 +4,7 @@
     - a unique id: a morph refresh (plant page) replaces the toast instead of reusing the previous one and its timer;
     - screen readers hear the message through the permanent live region of the layout (#announcer). %>
 <div
+  id="toasts"
   class="<%= class_names(
     "pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto max-w-md space-y-2 px-4 pb-4",
     "bottom-16 md:bottom-0 md:left-56": show_tabs?
