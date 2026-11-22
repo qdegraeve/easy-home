@@ -81,9 +81,10 @@ Rails.application.configure do
 
   # Away from home, the Android app reaches a second server through a Cloudflare quick tunnel (bin/tunnel): its
   # hosts are allowed, and the requests from the internet get the plain error page, never the detailed one with its
-  # web console (a Ruby console on this computer).
+  # web console (a Ruby console on this computer), nor the development pages (routes, mail previews).
   if ENV["DEV_TUNNEL"]
     config.hosts << /[a-z0-9-]+\.trycloudflare\.com/
     config.consider_all_requests_local = false
+    config.action_mailer.show_previews = false
   end
 end
