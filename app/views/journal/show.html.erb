@@ -7,7 +7,8 @@
   <% end %>
 
   <% @entries.each do |date, entries| %>
-    <%= render ListGroupComponent.new(title: l(date, format: :long).upcase_first, id: "day-#{date.iso8601}") do |group| %>
+    <% title = l(date, format: :long).upcase_first %>
+    <%= render ListGroupComponent.new(title:, id: "day-#{date.iso8601}") do |group| %>
       <% entries.each do |entry| %>
         <% group.with_row { render(JournalEntryComponent.new(entry:, user: Current.user)) } %>
       <% end %>

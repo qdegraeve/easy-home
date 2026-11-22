@@ -62,7 +62,9 @@
 
     <% if @done_today.any? %>
       <details id="done-today">
-        <summary class="cursor-pointer py-3 font-semibold"><%= t(".done_today_list", count: @done_today.size) %></summary>
+        <summary class="cursor-pointer py-3 font-semibold">
+          <%= t(".done_today_list", count: @done_today.size) %>
+        </summary>
         <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
           <% @done_today.each do |entry| %>
             <li><%= render JournalEntryComponent.new(entry:, user: Current.user) %></li>
