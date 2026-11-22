@@ -675,7 +675,8 @@ La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace 
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.
 
 Après la PR 9, demandé par le propriétaire : **galerie photo** d'une plante (fait) : grille par mois, visionneuse
-sombre, glisser et flèches entre les photos, date modifiée dans sa page. Plus tard : comparer deux dates, timelapse.
+sombre où les photos défilent au doigt dans la même page (l'écran et la barre native restent), date modifiée
+dans sa page. Plus tard : comparer deux dates, timelapse.
 
 Ensuite, au fil de l'eau : #14, #45, #47, #48, #49, #53, #54.
 

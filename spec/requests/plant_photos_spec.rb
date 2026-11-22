@@ -112,6 +112,11 @@ RSpec.describe "Plant photos", type: :request do
 
     get plant_photo_path(plant, middle)
     expect(response.body).to include("2 / 3")
+    # Every photo in the strip, the oldest first, opened on the one asked for.
+    page = response.parsed_body
+    urls = page.css("[data-photo-viewer-target=slide]").map { |slide| slide["data-url"] }
+    expect(urls).to eq([ oldest, middle, newest ].map { |photo| plant_photo_path(plant, photo) })
+    expect(page.at_css("[data-controller=photo-viewer]")["data-photo-viewer-index-value"]).to eq("1")
 
     delete plant_photo_path(plant, middle)
     expect(response).to redirect_to(plant_photo_path(plant, newest))
@@ -182,7 +187,9 @@ RSpec.describe "Plant photos", type: :request do
 
       get plant_photo_path(plant, older)
       expect(response.body).to include("Photo de couverture")
-      expect(response.body).not_to include("Utiliser comme photo de couverture")
+      # The actions of the photo shown (those of the others wait in their template).
+      actions = response.parsed_body.at_css("[data-controller='bridge--menu']")
+      expect(actions.text).not_to include("Utiliser comme photo de couverture")
 
       delete plant_photo_path(plant, older)
       expect(plant.reload.cover_photo).to be_nil

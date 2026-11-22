@@ -15,10 +15,14 @@ module Plants
       end
     end
 
+    # All the photos of the plant, the oldest first (left is the past): the viewer scrolls through them.
     def show
       @plant = find_plant
       @photo = find_photo(@plant)
-      find_neighbours
+      @photos = @plant.photos.with_attached_image.to_a.reverse
+      @index = @photos.index(@photo)
+      @older = @photos[@index - 1] if @index.positive?
+      @newer = @photos[@index + 1]
     end
 
     # The date of the photo, on its own page (a native modal in the Android app, like every /edit page).
@@ -56,14 +60,11 @@ module Plants
     end
 
     # The plant's photos are newest first: "previous" is the older one, "next" the newer one, to follow its growth.
-    # The position counts from the oldest: "1 / 12" is the first photo taken, "12 / 12" the latest.
     def find_neighbours
       photos = @plant.photos.to_a
       index = photos.index(@photo)
       @older = photos[index + 1]
       @newer = index.positive? ? photos[index - 1] : nil
-      @count = photos.size
-      @position = photos.size - index
     end
 
     def find_photo(plant)

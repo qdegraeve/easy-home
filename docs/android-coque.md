@@ -273,8 +273,9 @@ Ce qu'il faut savoir :
 - Pourquoi la connexion remplace la pile : elle finit par `/new` et s'ouvrait donc en modal. Après la connexion, la
   modal se refermait sur une page qui n'existait plus, et l'app restait figée. Avec `replace_root`, la connexion et
   l'accueil repartent d'une pile vide, et le bouton retour ne ramène jamais à l'écran de connexion.
-- La visionneuse photo (`/plants/:id/photos/:id`) n'a pas « tirer pour rafraîchir » : le geste gênerait le glisser
-  d'une photo à l'autre. Sa date se modifie dans une page `/edit`, donc en modal.
+- La visionneuse photo (`/plants/:id/photos/:id`) n'a pas « tirer pour rafraîchir » : le geste gênerait le défilement
+  d'une photo à l'autre. Ce défilement reste dans la page : changer de page à chaque photo remplaçait l'écran natif
+  et sa barre du haut, ce qui saccadait. Sa date se modifie dans une page `/edit`, donc en modal.
 - **D'où viennent les règles** : l'app charge d'abord la copie embarquée, puis la dernière version mise en cache, puis
   télécharge celle du serveur en arrière-plan (`GET /configurations/android_v1`) et la met en cache. On change donc la
   navigation **sans republier l'app**. Le `v1` dans l'URL ne change jamais de sens : un changement incompatible

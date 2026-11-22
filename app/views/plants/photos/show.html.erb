@@ -1,79 +1,101 @@
-<%# The photo viewer (gallery of a plant): the photo large on a dark background, the older one on the left, the newer
-    one on the right, as on a timeline. Swipe and arrow keys follow the same links (photo_viewer_controller.js).
-    Each photo has its own page, replaced on the way ("back" leaves the photos instead of going through each). %>
+<%# The photo viewer (gallery of a plant): its photos side by side on a dark background, the oldest on the left as on
+    a timeline. The finger scrolls from one to the other (native scroll, snapped on each photo), without loading
+    another page: in the Android app, the screen and its top bar stay. The date, the position, the arrows, the
+    actions and the address follow the photo shown (photo_viewer_controller.js). %>
 <% content_for(:body_class, "bg-ink text-white") %>
-<% content_for(:head) { tag.meta(name: "view-transition", content: "same-origin") } %>
-<% date = l(@photo.taken_at.to_date, format: :long) %>
-<% cover = @plant.cover_photo_id == @photo.id %>
-<% preload = [ @older, @newer ].compact.map { url_for(it.image.variant(:large)) } %>
+<% content_for(:title, t(".page_title", name: @plant.name)) %>
+<%# Not in the Turbo cache: its snapshot would be saved under the address of the first photo, with another one shown. %>
+<% content_for(:head) { tag.meta(name: "turbo-cache-control", content: "no-cache") } %>
+<% can_update = policy(@photo).update? %>
+<% link_class = "inline-grid size-12 shrink-0 place-items-center rounded-full text-white hover:bg-white/10 " \
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white " \
+                "aria-disabled:invisible md:absolute md:top-1/3 md:bg-white/10" %>
 
-<div class="mx-auto max-w-3xl" data-controller="photo-viewer" data-photo-viewer-preload-value="<%= preload.to_json %>"
-     data-action="keydown@window->photo-viewer#key">
+<div class="mx-auto max-w-3xl" data-controller="photo-viewer" data-photo-viewer-index-value="<%= @index %>"
+     data-action="keydown@window->photo-viewer#key resize@window->photo-viewer#realign">
   <% if (back = back_link_to(t("plants.tasks.back", name: @plant.name), plant_path(@plant, tab: "photos"))) %>
     <p class="[&_a]:text-white/70"><%= back %></p>
   <% end %>
 
   <div class="relative mt-3">
-    <div class="-mx-4 grid min-h-[50dvh] place-items-center overflow-hidden [touch-action:pan-y_pinch-zoom] sm:mx-0"
-         data-action="pointerdown->photo-viewer#start pointermove->photo-viewer#move pointerup->photo-viewer#end
-                      pointercancel->photo-viewer#cancel">
-      <%= image_tag @photo.image.variant(:large), alt: t(".alt", name: @plant.name, date:), draggable: false,
-            data: { photo_viewer_target: "image" },
-            class: "max-h-[70dvh] max-w-full select-none object-contain [view-transition-name:photo] sm:rounded-lg" %>
-    </div>
+    <ul class="-mx-4 flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] sm:mx-0"
+        aria-label="<%= t(".photos", name: @plant.name) %>" data-photo-viewer-target="strip"
+        data-action="scroll->photo-viewer#scrolled scrollend->photo-viewer#settle">
+      <% @photos.each_with_index do |photo, index| %>
+        <% date = l(photo.taken_at.to_date, format: :long) %>
+        <li class="grid h-[70dvh] w-full shrink-0 snap-center snap-always place-items-center px-1"
+            data-photo-viewer-target="slide" data-url="<%= plant_photo_path(@plant, photo) %>"
+            data-date="<%= photo.taken_at.to_date.iso8601 %>"
+            data-title="<%= t(".title", date:) %>" data-position="<%= t(".position", position: index + 1,
+                                                                             count: @photos.size) %>"
+            data-cover="<%= photo.id == @plant.cover_photo_id %>">
+          <%= image_tag photo.image.variant(:large), alt: t(".alt", name: @plant.name, date:), draggable: false,
+                loading: ((index - @index).abs <= 1 ? "eager" : "lazy"), decoding: "async",
+                class: "max-h-full max-w-full select-none object-contain sm:rounded-lg" %>
+          <template data-photo-viewer-target="actions">
+            <%= render "actions", plant: @plant, photo:, can_update: %>
+          </template>
+        </li>
+      <% end %>
+    </ul>
 
+    <%# The arrows are links to the other photos (without JavaScript, they open them); the controller scrolls
+        instead. %>
     <nav aria-label="<%= t(".browse") %>" class="mt-3 flex items-center justify-between gap-2">
-      <% link_class = "inline-grid size-12 shrink-0 place-items-center rounded-full text-white hover:bg-white/10 " \
-                      "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white " \
-                      "md:absolute md:top-1/3 md:bg-white/10" %>
-      <% if @older %>
-        <%= link_to plant_photo_path(@plant, @older), class: "#{link_class} md:-left-16",
-              data: { turbo_action: "replace", photo_viewer_target: "older", action: "photo-viewer#mark" } do %>
-          <%= icon(:chevron_left) %><span class="sr-only"><%= t(".older") %></span>
-        <% end %>
-      <% else %>
-        <span class="size-12 shrink-0 md:hidden"></span>
+      <%= link_to(@older ? plant_photo_path(@plant, @older) : "#", class: "#{link_class} md:-left-16",
+            aria: { disabled: @older.nil? || nil },
+            data: { photo_viewer_target: "older", action: "photo-viewer#older" }) do %>
+        <%= icon(:chevron_left) %><span class="sr-only"><%= t(".older") %></span>
       <% end %>
 
-      <div class="min-w-0 flex-1 text-center">
-        <h1 class="truncate text-base font-semibold"><%= page_title t(".title", date:) %></h1>
+      <div class="min-w-0 flex-1 text-center" aria-live="polite">
+        <h1 class="truncate text-base font-semibold" data-photo-viewer-target="title">
+          <%= t(".title", date: l(@photo.taken_at.to_date, format: :long)) %>
+        </h1>
         <p class="text-sm tabular-nums text-white/70">
-          <%= t(".position", position: @position, count: @count) %>
-          <% if cover %>
-            <span class="ml-2 inline-flex items-center gap-1 font-semibold text-action-soft">
-              <%= icon(:check, size: 16) %><%= t(".cover") %>
-            </span>
-          <% end %>
+          <span data-photo-viewer-target="position">
+            <%= t(".position", position: @index + 1, count: @photos.size) %>
+          </span>
+          <span class="ml-2 inline-flex items-center gap-1 font-semibold text-action-soft"
+                data-photo-viewer-target="cover" <%= "hidden" unless @photo.id == @plant.cover_photo_id %>>
+            <%= icon(:check, size: 16) %><%= t(".cover") %>
+          </span>
         </p>
       </div>
 
-      <% if @newer %>
-        <%= link_to plant_photo_path(@plant, @newer), class: "#{link_class} md:-right-16",
-              data: { turbo_action: "replace", photo_viewer_target: "newer", action: "photo-viewer#mark" } do %>
-          <%= icon(:chevron_right) %><span class="sr-only"><%= t(".newer") %></span>
-        <% end %>
-      <% else %>
-        <span class="size-12 shrink-0 md:hidden"></span>
+      <%= link_to(@newer ? plant_photo_path(@plant, @newer) : "#", class: "#{link_class} md:-right-16",
+            aria: { disabled: @newer.nil? || nil },
+            data: { photo_viewer_target: "newer", action: "photo-viewer#newer" }) do %>
+        <%= icon(:chevron_right) %><span class="sr-only"><%= t(".newer") %></span>
       <% end %>
     </nav>
   </div>
 
-  <%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu); the id changes with
-      the cover, so that a refresh sends the menu again. The cover and the deletion stay in the viewer, replacing the
-      page: "back" never comes back to a deleted photo. %>
-  <div id="photo-actions-<%= cover ? "cover" : "photo" %>" class="mt-6 flex flex-wrap justify-center gap-2"
-       data-controller="bridge--menu">
-    <% if policy(@photo).update? %>
-      <%= link_to t(".edit_date"), edit_plant_photo_path(@plant, @photo), class: button_class(:on_dark),
-            data: { bridge__menu_target: "item" } %>
-      <% unless cover %>
-        <%= button_to t(".make_cover"), plant_photo_cover_path(@plant, @photo), class: button_class(:on_dark),
-              form: { data: { turbo_action: "replace" } }, data: { bridge__menu_target: "item" } %>
-      <% end %>
-    <% end %>
-    <%= button_to t(".destroy"), plant_photo_path(@plant, @photo), method: :delete,
-          form: { data: { turbo_action: "replace", action: "photo-viewer#forgetDirection",
-                          **confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) } },
-          class: button_class(:on_dark), data: { bridge__menu_target: "item" } %>
+  <%# In the Android app, these actions go to the "⋮" menu of the native top bar (bridge--menu): swapped for those of
+      the photo shown, the menu is sent again. %>
+  <div class="mt-6 flex flex-wrap justify-center gap-2" data-controller="bridge--menu"
+       data-photo-viewer-target="menu">
+    <%= render "actions", plant: @plant, photo: @photo, can_update: %>
   </div>
+
+  <% if can_update %>
+    <dialog aria-label="<%= t("plants.photos.edit.title") %>" data-photo-viewer-target="dateDialog"
+            class="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl bg-surface p-5 text-ink shadow-xl
+                   backdrop:bg-ink/60">
+      <%= form_with model: @photo, url: plant_photo_path(@plant, @photo), method: :patch, class: "space-y-4",
+                    data: { turbo_action: "replace", photo_viewer_target: "dateForm" } do |f| %>
+        <div>
+          <%= f.label :taken_at, class: "block text-sm font-semibold" %>
+          <%= f.date_field :taken_at, required: true, max: Time.zone.today, data: { photo_viewer_target: "dateField" },
+                class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" class="rounded-xl px-4 py-3 text-sm text-muted hover:bg-subtle"
+                  data-action="photo-viewer#closeDate"><%= t("shared.confirm_dialog.cancel") %></button>
+          <%= f.submit t("plants.photos.edit.save_date"),
+                class: "rounded-xl bg-action px-4 py-3 text-sm font-semibold text-white" %>
+        </div>
+      <% end %>
+    </dialog>
+  <% end %>
 </div>
