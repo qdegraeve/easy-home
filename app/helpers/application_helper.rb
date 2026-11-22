@@ -62,6 +62,24 @@ module ApplicationHelper
     "inline-flex min-h-11 items-center rounded-lg px-2 text-xs #{color}"
   end
 
+  # Round "done" button of a list row (design review): an empty circle, an action still to do, that fills on press
+  # and while the request is sent (Turbo disables the button), never filled at rest, which would read as "done".
+  def done_button_class
+    "grid size-11 shrink-0 place-items-center rounded-full border-2 border-action bg-surface text-action " \
+      "hover:bg-action-soft active:bg-action active:text-white disabled:bg-action disabled:text-white"
+  end
+
+  # Small action of a row that changes the task, like "Reporter": a bordered pill, so it reads as a button and not as
+  # a date, inside a 44 px touch target (the inner span carries the pill).
+  def chip_class
+    "group inline-flex min-h-11 shrink-0 items-center"
+  end
+
+  def chip_inner_class
+    "inline-flex h-8 items-center gap-1 rounded-full border border-field px-3 text-sm font-medium text-ink " \
+      "group-hover:bg-subtle group-active:bg-subtle"
+  end
+
   SECTIONS = {
     today: %w[home today/waterings],
     house: %w[house plants plants/tasks plants/photos plants/analyses plants/analysis_questions households locations],

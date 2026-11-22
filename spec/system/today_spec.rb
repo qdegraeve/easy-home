@@ -35,7 +35,7 @@ RSpec.describe "Today", type: :system do
     # One line for the three waterings due, where they are; the one of the coming days folded under "Bientôt".
     expect(page).to have_content("À faire aujourd'hui · 3")
     expect(page).to have_content("Terrasse 2 · sans emplacement 1")
-    expect(page).to have_no_button("Arrosée : Basilic")
+    expect(page).to have_no_button("Marquer comme arrosée : Basilic")
     expect(page).to have_content("Bientôt · 1")
     find("summary", text: "Bientôt").click
     expect(page).to have_content("Arroser Cactus")
@@ -61,10 +61,10 @@ RSpec.describe "Today", type: :system do
     expect(page).to have_content("À faire aujourd'hui · 1")
 
     # A single completion can be undone from its toast too.
-    click_on "Arrosée : Menthe"
+    click_on "Marquer comme arrosée : Menthe"
     expect(page).to have_content("Rien à faire aujourd'hui.")
     within("[data-controller=toast]") { click_on "Annuler" }
     expect(page).to have_content("Annulé, prochaine échéance recalculée.")
-    expect(page).to have_button("Arrosée : Menthe")
+    expect(page).to have_button("Marquer comme arrosée : Menthe")
   end
 end

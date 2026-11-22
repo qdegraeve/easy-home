@@ -26,7 +26,7 @@ RSpec.describe "Plant tasks", type: :request do
     expect(response).to redirect_to(plant_path(plant))
     follow_redirect!
     expect(response.body).to include("Tâche « Tailler » ajoutée.", "Une fois", "dans 14 j")
-    expect(response.body).to include("Fait : Tailler (Citronnier)")
+    expect(response.body).to include("Marquer comme fait : Tailler (Citronnier)")
   end
 
   it "renders the form again without a title" do
@@ -173,8 +173,8 @@ RSpec.describe "Plant tasks", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 2", "Arrosée : Citronnier")
-      expect(response.body).to include("Fait : Engrais (Citronnier)")
+      expect(response.body).to include("À faire aujourd&#39;hui · 2", "Marquer comme arrosée : Citronnier")
+      expect(response.body).to include("Marquer comme fait : Engrais (Citronnier)")
       expect(response.body).to include("prévu hier")
       expect(response.body).not_to include("Rempoter")
     end

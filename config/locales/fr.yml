@@ -210,14 +210,14 @@ fr:
     once: "Tâche"
     no_location: "sans emplacement"
   task_row_component:
-    done_watering: "Arrosée : %{name}"
-    done_with_subject: "Fait : %{title} (%{subject})"
-    done: "Fait : %{title}"
+    done_watering: "Marquer comme arrosée : %{name}"
+    done_with_subject: "Marquer comme fait : %{title} (%{subject})"
+    done: "Marquer comme fait : %{title}"
     watered_today: "Arrosée aujourd'hui"
     done_today: "Fait aujourd'hui"
-    tomorrow: "Demain"
-    postpone: "Décaler à demain : %{title}"
-    postpone_with_subject: "Décaler à demain : %{title} (%{subject})"
+    postpone_button: "Reporter"
+    postpone: "Reporter à demain : %{title}"
+    postpone_with_subject: "Reporter à demain : %{title} (%{subject})"
   due_label:
     overdue:
       one: "prévu hier"
@@ -247,8 +247,8 @@ fr:
       add_label: "Plante"
       archived: "Plantes archivées · %{count}"
       to_review: "Analyse à revoir : le lieu a changé"
-    water: "Arrosée"
-    water_label: "Arrosée : %{name}"
+    water: "J'ai arrosé"
+    water_label: "Marquer comme arrosée : %{name}"
     watering_task_title: "Arrosage"
     form:
       name_placeholder: "Ex. Hibiscus de l'entrée"
@@ -494,7 +494,7 @@ fr:
         already: "« %{name} » n'était pas archivée."
   tasks:
     done: "Fait"
-    done_label: "Fait : %{title} (%{subject})"
+    done_label: "Marquer comme fait : %{title} (%{subject})"
   task_occurrences:
     completions:
       create:
@@ -509,7 +509,7 @@ fr:
         not_done: "Rien à annuler."
     postponements:
       create:
-        success: "%{title} décalé à demain pour « %{subject} »."
+        success: "Reporté à demain : %{title} (%{subject})."
         not_pending: "C'était déjà fait ou décalé."
         inactive: "Cette tâche est arrêtée."
         not_due: "Cette tâche n'est pas encore due."

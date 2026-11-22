@@ -1,14 +1,16 @@
-<%# "Arrosée" / "Fait" button of an open occurrence, with its text (lists use TaskRowComponent's round button). %>
+<%# "J'ai arrosé" / "Fait" button of an open occurrence, with its text (lists use TaskRowComponent's round button). The
+    main action only when due: before, doing it early stays possible, as a secondary button. %>
 <% task = occurrence.task %>
 <% if task.watering? %>
   <% label, aria_label = t("plants.water"), t("plants.water_label", name: task.subject.name) %>
 <% else %>
   <% label, aria_label = t("tasks.done"), t("tasks.done_label", title: task.title, subject: task.subject.name) %>
 <% end %>
+<% variant = occurrence.due_at.to_date <= Time.zone.today ? :primary : :secondary %>
 <%= button_to(
   task_occurrence_completion_path(occurrence),
   aria: { label: aria_label },
-  class: button_class(:primary)
+  class: [ button_class(variant), "shrink-0 whitespace-nowrap" ]
 ) do %>
   <%= icon(:check) %><%= label %>
 <% end %>

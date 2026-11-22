@@ -19,7 +19,7 @@
           task_occurrences_batch_completion_path,
           params: { occurrence_ids: waterings.map(&:id) },
           aria: { label: t(".water_all", count: waterings.size) },
-          class: "grid size-11 shrink-0 place-items-center rounded-full bg-action text-white hover:bg-action-strong"
+          class: helpers.done_button_class
         ) do %>
           <%= helpers.icon(:check, size: 22) %>
         <% end %>

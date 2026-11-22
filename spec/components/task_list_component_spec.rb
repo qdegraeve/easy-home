@@ -43,13 +43,13 @@ RSpec.describe TaskListComponent, type: :component do
     expect(page.all("li").size).to eq(2)
     expect(page).to have_text("Terrasse 2 · sans emplacement 1")
     expect(page).to have_button("Tout arroser : 3 plantes")
-    expect(page).to have_button("Fait : Tailler (Basilic)")
+    expect(page).to have_button("Marquer comme fait : Tailler (Basilic)")
   end
 
   it "keeps a single watering on its own line, with the plant's name" do
     render_inline(described_class.new(occurrences: [ due_watering("Aloe") ], title: "Aujourd'hui", id: "today"))
 
-    expect(page).to have_button("Arrosée : Aloe")
+    expect(page).to have_button("Marquer comme arrosée : Aloe")
     expect(page).to have_no_text("Tout arroser")
   end
 

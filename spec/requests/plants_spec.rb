@@ -13,6 +13,10 @@ RSpec.describe "Plants", type: :request do
     post session_path, params: { email: user.email, password: "password" }
   end
 
+  def watering_button
+    Nokogiri::HTML(response.body).at_css("button[aria-label='Marquer comme arrosée : Basilic']")
+  end
+
   describe "GET / and GET /plants" do
     it "lists what to do today on the home page, and the plants by location, archived ones apart, in Plantes" do
       terrasse = create(:location, household:, name: "Terrasse", exposure: :partial_shade)
@@ -24,8 +28,8 @@ RSpec.describe "Plants", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Arrosée : Basilic")
-      expect(response.body).not_to include("Arrosée : Aloe")
+      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Marquer comme arrosée : Basilic")
+      expect(response.body).not_to include("Marquer comme arrosée : Aloe")
 
       get plants_path
 
@@ -125,6 +129,20 @@ RSpec.describe "Plants", type: :request do
 
       expect(response.body).to include("Tous les 2 jours", "Prochain arrosage :", "demain")
       expect(response.body).to include("Dernier arrosage : dim 15 nov.")
+    end
+
+    it "offers \"J'ai arrosé\" as the main button on the due day only, as a secondary one before" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-15 08:00"))
+      sign_in(user)
+
+      get plant_path(plant)
+      expect(watering_button["class"]).to include("bg-action-soft")
+
+      plant.watering_task.pending_occurrence.update!(due_at: Time.zone.parse("2026-11-16 00:00"))
+      get plant_path(plant)
+      expect(watering_button["class"]).not_to include("bg-action-soft")
+      expect(watering_button.text).to include("J'ai arrosé")
     end
 
     it "tells in the history what the rain did: a watering, then a watering moved by a day" do
@@ -338,7 +356,7 @@ RSpec.describe "Plants", type: :request do
       post task_occurrence_postponement_path(occurrence), headers: { "HTTP_REFERER" => root_url }
 
       expect(response).to redirect_to(root_url)
-      expect(flash[:notice]).to eq("Arrosage décalé à demain pour « Basilic ».")
+      expect(flash[:notice]).to eq("Reporté à demain : Arrosage (Basilic).")
       expect(occurrence.reload).to be_postponed
       expect(TaskOccurrence.pending.find_by(task: occurrence.task).due_at.to_date).to eq(Time.zone.tomorrow)
     end
