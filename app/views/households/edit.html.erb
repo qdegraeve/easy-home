@@ -2,7 +2,7 @@
 <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
 
 <div class="mt-6 space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
-  <section class="space-y-3 self-start rounded-2xl bg-surface p-4 shadow-sm">
+  <section class="space-y-3 self-start rounded-2xl bg-surface p-4">
     <h2 class="font-semibold"><%= heading_with_icon(:map_pin, t(".situation")) %></h2>
     <p class="text-sm text-muted"><%= t(".situation_help") %></p>
 
@@ -37,7 +37,7 @@
           ) %>
           <span class="text-sm"><%= t(".meters") %></span>
         </div>
-        <p class="mt-1 text-xs text-muted">
+        <p class="mt-1 text-[13px] text-muted">
           <%= @household.located? && @household.altitude_m.nil? ? t(".altitude_unknown") : t(".altitude_help") %>
         </p>
       </div>
@@ -51,7 +51,7 @@
 
     <% locations = @household.locations.includes(:plants).order(:name) %>
     <% if locations.any? %>
-      <ul class="divide-y divide-line rounded-2xl bg-surface shadow-sm">
+      <ul class="divide-y divide-line rounded-2xl bg-surface">
         <% locations.each do |location| %>
           <li class="flex items-center justify-between gap-3 p-3">
             <%= link_to edit_location_path(location), aria: { label: t(".edit_label", name: location.name) },
@@ -88,10 +88,10 @@
         <% end %>
       </ul>
     <% else %>
-      <p class="rounded-2xl bg-surface p-4 text-sm text-muted shadow-sm"><%= t(".no_locations") %></p>
+      <p class="rounded-2xl bg-surface p-4 text-sm text-muted"><%= t(".no_locations") %></p>
     <% end %>
 
-    <%= form_with model: [ @household, @location ], class: "space-y-3 rounded-2xl bg-surface p-4 shadow-sm" do |form| %>
+    <%= form_with model: [ @household, @location ], class: "space-y-3 rounded-2xl bg-surface p-4" do |form| %>
       <h3 class="font-semibold"><%= t(".new_location") %></h3>
       <%= render "locations/fields", form: %>
 

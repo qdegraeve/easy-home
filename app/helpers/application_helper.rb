@@ -63,7 +63,7 @@ module ApplicationHelper
     else
       "text-muted hover:bg-subtle active:bg-subtle"
     end
-    "inline-flex min-h-11 items-center rounded-lg px-2 text-xs #{color}"
+    "inline-flex min-h-11 items-center rounded-xl px-2 text-sm #{color}"
   end
 
   # "Basilic, Citronnier et Menthe", or "Basilic, Citronnier et 2 autres" past three names: a sentence stays short.
@@ -81,13 +81,23 @@ module ApplicationHelper
 
   # Small action of a row that changes the task, like "Reporter": a bordered pill, so it reads as a button and not as
   # a date, inside a 44 px touch target (the inner span carries the pill).
+  # A <summary> that folds a list (design review): no browser triangle, a chevron that turns when open (the parent
+  # <details> carries `group/fold`, a named group, so that other groups do not mix). Used with `summary_chevron`.
+  def summary_class
+    "flex min-h-11 cursor-pointer list-none items-center gap-1.5 py-2 font-semibold [&::-webkit-details-marker]:hidden"
+  end
+
+  def summary_chevron
+    icon(:chevron_down, size: 16, class: "text-muted transition-transform group-open/fold:rotate-180")
+  end
+
   def chip_class
     "group inline-flex min-h-11 shrink-0 items-center"
   end
 
   def chip_inner_class
-    "inline-flex h-8 items-center gap-1 rounded-full border border-field px-3 text-sm font-medium text-ink " \
-      "group-hover:bg-subtle group-active:bg-subtle"
+    "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full border border-field px-3 text-sm font-medium " \
+      "text-ink group-hover:bg-subtle group-active:bg-subtle"
   end
 
   SECTIONS = {

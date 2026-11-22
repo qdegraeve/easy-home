@@ -60,9 +60,9 @@
     <% end %>
 
     <% if @done_today.any? %>
-      <details id="done-today">
-        <summary class="cursor-pointer py-3 font-semibold">
-          <%= t(".done_today_list", count: @done_today.size) %>
+      <details id="done-today" class="group/fold">
+        <summary class="<%= summary_class %>">
+          <%= t(".done_today_list", count: @done_today.size) %><%= summary_chevron %>
         </summary>
         <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
           <% @done_today.each do |entry| %>
@@ -74,8 +74,10 @@
 
     <%# Ids: a morph refresh keeps each list open or folded as the user left it, even when the other one appears. %>
     <% if @upcoming.any? %>
-      <details id="upcoming">
-        <summary class="cursor-pointer py-3 font-semibold"><%= t(".upcoming", count: @upcoming.size) %></summary>
+      <details id="upcoming" class="group/fold">
+        <summary class="<%= summary_class %>">
+          <%= t(".upcoming", count: @upcoming.size) %><%= summary_chevron %>
+        </summary>
         <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
           <% @upcoming.each do |occurrence| %>
             <% task = occurrence.task %>

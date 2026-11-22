@@ -29,7 +29,8 @@
     <%# Only when they can be taken (not on an archived plant, not for a guest). %>
     <% open = policy(analysis).accept? ? analysis.open_proposals_count : 0 %>
     <% if open.positive? %>
-      <p class="mt-2 text-sm font-semibold text-action"><%= t("plants.analyses.summary.proposals", count: open) %></p>
+      <%# A state, not a link: in ink (green is for what can be tapped). %>
+      <p class="mt-2 text-sm font-semibold"><%= t("plants.analyses.summary.proposals", count: open) %></p>
     <% end %>
   <% end %>
   <%= link_to t("plants.analyses.summary.see"), plant_analysis_path(analysis.plant, analysis),

@@ -6,7 +6,7 @@
         <%= link_to helpers.plant_photo_path(plant, photo),
               class: "block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action" do %>
           <%= image_tag photo.image.variant(:thumb), alt: alt(photo), loading: "lazy", decoding: "async",
-                width: 320, height: 320, class: "aspect-square w-full bg-subtle object-cover sm:rounded-md" %>
+                width: 320, height: 320, class: "aspect-square w-full bg-subtle object-cover sm:rounded-xl" %>
           <% if cover?(photo) %>
             <span class="absolute left-1.5 top-1.5 rounded-full bg-ink/75 px-2 py-0.5 text-[11px] font-semibold
                          text-white">

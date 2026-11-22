@@ -19,7 +19,7 @@
       <% if form.photo.present? %>
         <p class="mt-1 text-sm font-semibold text-warn"><%= t("plants.form.photo_again") %></p>
       <% end %>
-      <p class="mt-1 text-xs text-muted"><%= t("plants.form.photo_help") %></p>
+      <p class="mt-1 text-[13px] text-muted"><%= t("plants.form.photo_help") %></p>
     </div>
   <% end %>
 
@@ -55,7 +55,7 @@
       <span class="text-sm"><%= t("plants.form.days") %></span>
     </div>
     <% if adding %>
-      <p class="mt-1 text-xs text-muted"><%= t("plants.form.watering_help") %></p>
+      <p class="mt-1 text-[13px] text-muted"><%= t("plants.form.watering_help") %></p>
     <% end %>
   </div>
 
@@ -78,7 +78,7 @@
           <%= f.label :last_watered_on, class: "block text-sm font-semibold" %>
           <%= f.date_field :last_watered_on, max: Time.zone.today,
                 class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
-          <p class="mt-1 text-xs text-muted"><%= t("plants.form.last_watered_help") %></p>
+          <p class="mt-1 text-[13px] text-muted"><%= t("plants.form.last_watered_help") %></p>
         </div>
       </div>
     </details>
