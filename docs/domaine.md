@@ -154,6 +154,10 @@ pending ──(Fait)──────────▶ done
 - **Décaler** (`Tasks::Postpone`, bouton « Demain » d'une ligne d'« Aujourd'hui ») : une échéance due ou en retard
   est fermée en `postponed` (une ligne discrète du journal, « Décalé d'un jour », ni faite ni manquée) et la même
   tâche est ouverte le lendemain. La récurrence n'est pas touchée : elle part toujours de la dernière réalisation.
+  « Annuler » dans le toast défait le décalage (`Tasks::CancelPostponement`) tant que la tâche n'a pas été faite. Un
+  recalcul ne revient jamais avant le lendemain d'un décalage postérieur à la dernière réalisation. Décaler une tâche
+  rouverte après un oubli en fait une nouvelle échéance, qui peut de nouveau être manquée, une fois. Pas de « Demain »
+  sur la ligne groupée « Arroser · N » pour l'instant (question ouverte).
 
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.

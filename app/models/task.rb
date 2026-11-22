@@ -35,6 +35,14 @@ class Task < ApplicationRecord
     Tolerance.grace_days(importance:, recurrence:)
   end
 
+  # The occurrence to act on when a page showed one closed since (missed, postponed): the one still open of the task,
+  # if any. A pending or done occurrence stays itself.
+  def still_open(occurrence)
+    return occurrence unless occurrence.missed? || occurrence.postponed?
+
+    occurrences.pending.first || occurrence
+  end
+
   # due_at moved forward when it would start past the tolerance (see Tolerance.earliest).
   def due_within_tolerance(due_at)
     Tolerance.earliest(due_at, grace_days:, today: Time.zone.today)

@@ -10,7 +10,7 @@ module Tasks
       ActiveRecord::Base.transaction do
         task = occurrence.task
         task.lock!
-        occurrence = still_to_do(task, occurrence.reload)
+        occurrence = task.still_open(occurrence.reload)
         yield ensure_open(task, occurrence)
 
         completed_at = Time.current
@@ -23,14 +23,6 @@ module Tasks
     end
 
     private
-
-    # Tapped on a page shown before it was missed or postponed: the same task, still open, is the one to do.
-    def still_to_do(task, occurrence)
-      return task.occurrences.pending.find_by(reopened_after_miss: true) || occurrence if occurrence.missed?
-      return task.occurrences.pending.first || occurrence if occurrence.postponed?
-
-      occurrence
-    end
 
     def ensure_open(task, occurrence)
       return Failure[:missed, occurrence] if occurrence.missed?

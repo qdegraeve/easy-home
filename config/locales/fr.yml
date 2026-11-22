@@ -499,6 +499,11 @@ fr:
         not_pending: "C'était déjà fait ou décalé."
         inactive: "Cette tâche est arrêtée."
         not_due: "Cette tâche n'est pas encore due."
+        missed: "Trop tard : cette tâche a été notée manquée."
+      destroy:
+        success: "Décalage annulé."
+        not_postponed: "Rien à annuler."
+        too_late: "Trop tard : la tâche a déjà été faite."
     batch_completions:
       create:
         waterings:

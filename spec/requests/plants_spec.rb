@@ -325,6 +325,29 @@ RSpec.describe "Plants", type: :request do
       expect(TaskOccurrence.pending.find_by(task: occurrence.task).due_at.to_date).to eq(Time.zone.tomorrow)
     end
 
+    it "is undone from the toast" do
+      sign_in(user)
+
+      post task_occurrence_postponement_path(occurrence)
+      expect(flash[:undo_postponement_id]).to eq(occurrence.id)
+
+      delete task_occurrence_postponement_path(occurrence)
+      expect(flash[:notice]).to eq("Décalage annulé.")
+      expect(occurrence.reload).to be_pending
+      expect(plant.watering_task.occurrences.pending.sole).to eq(occurrence)
+    end
+
+    it "lets the toast of a stale \"Fait\" undo the task actually done" do
+      sign_in(user)
+      post task_occurrence_postponement_path(occurrence)
+      tomorrow = TaskOccurrence.pending.find_by(task: occurrence.task)
+
+      post task_occurrence_completion_path(occurrence) # the postponed one, from a page shown before
+
+      expect(flash[:undo_ids]).to eq([ tomorrow.id ])
+      expect(tomorrow.reload).to be_done
+    end
+
     it "rejects the occurrence of another household, and a guest" do
       other = create(:plant, :watered).watering_task.pending_occurrence
       sign_in(user)
