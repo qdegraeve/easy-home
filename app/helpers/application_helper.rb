@@ -87,7 +87,11 @@ module ApplicationHelper
   end
 
   def summary_chevron
-    icon(:chevron_down, size: 16, class: "text-muted transition-transform group-open/fold:rotate-180 motion-reduce:transition-none")
+    icon(
+      :chevron_down,
+      size: 16,
+      class: "text-muted transition-transform group-open/fold:rotate-180 motion-reduce:transition-none"
+    )
   end
 
   # Small action of a row, like "Reporter" or a proposal of an analysis: a bordered pill, so it reads as a button and
