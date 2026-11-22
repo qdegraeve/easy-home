@@ -22,8 +22,7 @@
       <span class="min-w-0 flex-1">
         <%= t(
           ".rain.#{rainfall.effect}",
-          count: @rain[:count],
-          millimeters: number_with_precision(rainfall.millimeters, precision: 1, strip_insignificant_zeros: true),
+          names: names_sentence(@rain[:names]),
           when: t(rainfall.fell_on == Time.zone.today ? ".rain.today" : ".rain.yesterday")
         ) %>
         <%= link_to t(".rain.see_journal"), journal_path, class: "font-semibold text-action underline" %>

@@ -57,8 +57,14 @@
         <% end %>
       </div>
     <% end %>
-    <% if @last_watered_at %>
-      <p class="text-sm text-muted"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
+    <% if @postponed_by_rain && @watering_task.pending_occurrence %>
+      <p class="text-sm text-muted"><%= heading_with_icon(:cloud_rain, t(".postponed_by_rain_note")) %></p>
+    <% end %>
+    <% if @last_watering %>
+      <p class="text-sm text-muted">
+        <%= t(@last_watering.by_rain? ? ".last_watered_by_rain" : ".last_watered",
+              date: l(@last_watering.completed_at.to_date, format: :day)) %>
+      </p>
     <% end %>
   </section>
 

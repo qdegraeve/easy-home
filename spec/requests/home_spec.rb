@@ -100,21 +100,22 @@ RSpec.describe "Home", type: :request do
 
     before do
       garden = create(:location, :rainy, household:)
-      2.times do
-        create(:plant, :watered, household:, location: garden, last_watered_at: Time.zone.parse("2026-11-13 08:00"))
+      %w[Citronnier Basilic].each do |name|
+        create(:plant, :watered, household:, name:, location: garden,
+                                 last_watered_at: Time.zone.parse("2026-11-13 08:00"))
       end
       post session_path, params: { email: user.email, password: "password" }
     end
 
-    it "says the next day that a shower postponed the waterings, then no more" do
+    it "says the next day that a shower postponed the waterings of the plants it names, then no more" do
       rain(6.4, at: "2026-11-16 22:00")
 
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
       expect(response.parsed_body.text.squish)
-        .to include("Averse hier (6,4 mm) : arrosage de 2 plantes décalé d'un jour.")
+        .to include("Petite pluie hier : arrosage de Basilic et Citronnier reporté d'un jour.")
 
       travel_to(Time.zone.parse("2026-11-18 07:00")) { get root_path }
-      expect(response.body).not_to include("Averse")
+      expect(response.body).not_to include("Petite pluie")
     end
 
     it "says nothing for a drizzle" do
@@ -122,11 +123,11 @@ RSpec.describe "Home", type: :request do
 
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
 
-      expect(response.body).not_to include("Pluie", "Averse")
+      expect(response.body).not_to include("Pluie", "Petite pluie")
     end
 
     it "counts only the plants of this household watered by the rain" do
-      first = household.plants.first
+      first = household.plants.find_by!(name: "Basilic")
       travel_to(Time.zone.parse("2026-11-16 09:00")) do
         Tasks::Complete.new.call(occurrence: first.watering_task.pending_occurrence, user:)
       end
@@ -143,7 +144,7 @@ RSpec.describe "Home", type: :request do
       travel_to(Time.zone.parse("2026-11-17 07:00")) { get root_path }
 
       expect(TaskOccurrence.by_rain.done.count).to eq(2)
-      expect(response.parsed_body.text.squish).to include("Pluie hier (14 mm) : 1 plante arrosée.")
+      expect(response.parsed_body.text.squish).to include("Pluie hier : elle compte comme l'arrosage de Citronnier.")
     end
   end
 end

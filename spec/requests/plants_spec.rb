@@ -162,9 +162,32 @@ RSpec.describe "Plants", type: :request do
       text = response.parsed_body.text.squish
       expect(text).to include(
         "Arrosée par la pluie lun 16 nov.",
-        "Arrosage : décalé d'un jour par la pluie mer 18 nov."
+        "Arrosage : échéance reportée d'un jour par la pluie mer 18 nov."
       )
-      expect(response.body.scan("M4 14.899").size).to eq(1) # the rain cloud icon, on the watering by the rain
+      # The rain cloud icon on the watering by the rain, in the history.
+      expect(response.parsed_body.at_css("section[aria-labelledby=journal]").to_html.scan("M4 14.899").size).to eq(1)
+    end
+
+    it "says on the watering card why the date moved, and that the last watering was the rain's" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-14 08:00"))
+      Tasks::Complete.new.call(occurrence: plant.watering_task.pending_occurrence, user: nil, source: :rain)
+      sign_in(user)
+
+      get plant_path(plant)
+      text = response.parsed_body.text.squish
+      expect(text).to include("Dernier arrosage : lun 16 nov., par la pluie")
+      expect(text).not_to include("Reporté d'un jour par la pluie")
+
+      travel 2.days
+      Tasks::Postpone.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user: nil, source: :rain)
+      get plant_path(plant)
+      card = response.parsed_body.at_css("section[aria-labelledby=watering]").text.squish
+      expect(card).to include("Prochain arrosage : demain", "Reporté d'un jour par la pluie")
+
+      Tasks::Complete.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user:)
+      get plant_path(plant)
+      expect(response.parsed_body.text.squish).not_to include("Reporté d'un jour par la pluie", "par la pluie Dernier")
     end
 
     it "falls back to the care tab on an unknown tab" do

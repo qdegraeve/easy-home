@@ -35,8 +35,12 @@ position (ADR 0009), et Open-Meteo y était annoncé pour la météo.
 - **Mêmes services** : la pluie passe par `Tasks::Complete` et `Tasks::Postpone` (paramètre `source:`), sous le même
   verrou que les gestes de l'utilisateur. Une validation par la pluie s'annule depuis le journal ou l'historique comme
   une validation manuelle.
-- **Affichage** : sur « Aujourd'hui », une ligne le lendemain (« Pluie hier (14 mm) : 2 plantes arrosées. ») ; dans le
-  journal, « par la pluie » à la place de l'auteur ; dans l'historique de la plante, « Arrosée par la pluie ».
+- **Affichage** (revu après la revue des designers, PR 13) : sur « Aujourd'hui », une ligne le lendemain qui nomme les
+  plantes, sans millimètres (« Pluie hier : elle compte comme l'arrosage de Basilic et Citronnier. », « Petite pluie
+  hier : arrosage de Basilic reporté d'un jour. », au-delà de trois plantes « Basilic, Citronnier et 2 autres ») ; sur
+  la fiche, « Reporté d'un jour par la pluie » sous la prochaine échéance et « Dernier arrosage : …, par la pluie » ;
+  dans le journal, « par la pluie » à la place de l'auteur et « Échéance reportée d'un jour » pour un report ; dans
+  l'historique de la plante, « Arrosée par la pluie ».
 
 ## Alternatives écartées
 

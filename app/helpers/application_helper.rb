@@ -62,6 +62,12 @@ module ApplicationHelper
     "inline-flex min-h-11 items-center rounded-lg px-2 text-xs #{color}"
   end
 
+  # "Basilic, Citronnier et Menthe", or "Basilic, Citronnier et 2 autres" past three names: a sentence stays short.
+  def names_sentence(names)
+    shown = names.size > 3 ? names.first(2) + [ t("home.show.rain.others", count: names.size - 2) ] : names
+    shown.to_sentence(words_connector: ", ", two_words_connector: " et ", last_word_connector: " et ")
+  end
+
   # Round "done" button of a list row (design review): an empty circle, an action still to do, that fills on press
   # and while the request is sent (Turbo disables the button), never filled at rest, which would read as "done".
   def done_button_class

@@ -26,7 +26,11 @@ class PlantsController < ApplicationController
     # What was done, postponed (Tasks::Postpone) or missed (Tasks::MarkMissed).
     @journal = TaskOccurrence.where(task: @plant.tasks, status: %i[done missed postponed])
       .includes(:task).order(completed_at: :desc).limit(30)
-    @last_watered_at = occurrences.where(task: @watering_task).maximum(:completed_at)
+    @last_watering = occurrences.where(task: @watering_task).order(completed_at: :desc, id: :desc).first
+    # The pending watering was moved by the rain: said under its date, which would otherwise look wrong.
+    last_closed = TaskOccurrence.where(task: @watering_task, status: %i[done postponed])
+      .order(completed_at: :desc, id: :desc).first
+    @postponed_by_rain = last_closed&.postponed? && last_closed.by_rain?
     @done_today_task_ids = occurrences.where(completed_at: Time.zone.today.all_day).distinct.pluck(:task_id)
   end
 
