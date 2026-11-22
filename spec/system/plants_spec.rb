@@ -36,7 +36,7 @@ RSpec.describe "Plants", type: :system do
     # Watering from the home page, once a day.
     go_to_tab("Aujourd'hui")
     expect(page).to have_content("À faire aujourd'hui · 1")
-    click_on "Arrosée : Basilic"
+    click_on "J'ai arrosé : Basilic"
     expect(page).to have_content("Arrosage noté pour « Basilic ».")
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
@@ -49,7 +49,7 @@ RSpec.describe "Plants", type: :system do
     open_plant("Basilic")
     expect(page).to have_content("Prochain arrosage : dans 2 j")
     expect(page).to have_content("Arrosée aujourd'hui")
-    expect(page).to have_no_button("Arrosée : Basilic")
+    expect(page).to have_no_button("J'ai arrosé : Basilic")
 
     # Correction: today's watering was a mistake.
     open_plant_tab("Historique")
@@ -58,7 +58,7 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")
     expect(page).to have_content("Prochain arrosage : aujourd'hui")
     expect(page).to have_content("Dernier arrosage : sam 14 nov.")
-    expect(page).to have_button("Arrosée : Basilic")
+    expect(page).to have_button("J'ai arrosé : Basilic")
 
     # New interval: the occurrence is rescheduled from the last watering (Nov 14 + 5 days).
     click_on "Modifier"
@@ -78,7 +78,7 @@ RSpec.describe "Plants", type: :system do
     within("dialog", text: "Les rappels s'arrêtent") { click_on "Archiver" }
     expect(page).to have_content("Plante « Basilic » archivée.")
     expect(page).to have_content("plus de rappel")
-    expect(page).to have_no_button("Arrosée : Basilic")
+    expect(page).to have_no_button("J'ai arrosé : Basilic")
     click_on "← Plantes"
     expect(page).to have_content("Plantes archivées · 1")
 
@@ -87,9 +87,13 @@ RSpec.describe "Plants", type: :system do
     travel 7.days
     find("summary", text: "Plantes archivées · 1").click
     click_on "Basilic"
+    # Turbo first shows the cached copy of this page (a preview), then replaces it: wait for the real page, or the
+    # click could hit a button of the preview just removed.
+    expect(page).to have_current_path(%r{/plants/\d+\z})
+    expect(page).to have_no_css("html[data-turbo-preview]")
     click_on "Restaurer"
     expect(page).to have_content("Plante « Basilic » restaurée.")
     expect(page).to have_content("Prochain arrosage : prévu hier")
-    expect(page).to have_button("Arrosée : Basilic")
+    expect(page).to have_button("J'ai arrosé : Basilic")
   end
 end

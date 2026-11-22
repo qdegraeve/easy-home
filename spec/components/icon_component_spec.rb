@@ -25,7 +25,7 @@ RSpec.describe IconComponent, type: :component do
   it "uses only icons that exist, in the views and in the icon tables of the helpers" do
     used = Rails.root.glob("app/{views,components,helpers}/**/*.{erb,rb}").flat_map do |file|
       # icon(:name), heading_with_icon(:name, …) and icon(condition ? :one : :other)
-      call = /(?:IconComponent\.new|\bicon|heading_with_icon)\((?:[^,()]*\? )?:([a-z_]+)(?: : :([a-z_]+))?/
+      call = /(?:IconComponent\.new|\bicon|heading_with_icon)\((?:[^,()]*\? )?:([a-z0-9_]+)(?: : :([a-z0-9_]+))?/
       File.read(file).scan(call).flatten.compact
     end
     used += ApplicationHelper::EXPOSURE_ICONS.values + ApplicationHelper::HEALTH_ICONS.values.map(&:first)

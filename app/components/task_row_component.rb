@@ -1,6 +1,7 @@
 # One open task in a list (UX review, "Ligne de tâche"): domain mark, what to do, when it is due, and a round "done"
-# button of 44 px. Once done today, the button gives way to a calm "done today" label. With postpone, a due or late
-# task also offers "Demain" (Tasks::Postpone), rather than staying late.
+# button of 44 px, empty until pressed (an action, not a state). Once done today, the button gives way to a calm
+# "done today" label. With postpone, a due or late task also offers a "Reporter" pill (Tasks::Postpone), rather than
+# staying late.
 #
 #   render TaskRowComponent.new(occurrence:, title: "Citronnier", href: plant_path(plant), detail: "Arrosage")
 #   => Citronnier / Arrosage · demain
@@ -25,7 +26,7 @@ class TaskRowComponent < ViewComponent::Base
     @postpone && !done_today && occurrence.due_at.to_date <= Time.zone.today
   end
 
-  # "Décaler à demain : Tailler (Citronnier)".
+  # "Reporter à demain : Tailler (Citronnier)".
   def postpone_label
     return t(".postpone", title: task.title) unless task.subject
 
@@ -38,7 +39,8 @@ class TaskRowComponent < ViewComponent::Base
     task.critical? ? :triangle_alert : :list_todo
   end
 
-  # Button name for screen readers: "Arrosée : Citronnier", "Fait : Tailler (Citronnier)", "Fait : Poubelle jaune".
+  # Button name for screen readers, an action: "J'ai arrosé : Citronnier", "Marquer comme fait : Tailler
+  # (Citronnier)".
   def done_label
     return t(".done_watering", name: task.subject.name) if task.watering?
     return t(".done_with_subject", title: task.title, subject: task.subject.name) if task.subject

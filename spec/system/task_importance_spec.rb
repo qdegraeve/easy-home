@@ -61,14 +61,14 @@ RSpec.describe "Task importance", type: :system do
     expect(page).to have_content("À faire aujourd'hui · 1")
 
     # Tapped by mistake: undone from the toast.
-    click_on "Décaler à demain : Arrosage (Citronnier)"
-    expect(page).to have_content("Arrosage décalé à demain pour « Citronnier ».")
+    click_on "Reporter à demain : Arrosage (Citronnier)"
+    expect(page).to have_content("Reporté à demain : Arrosage (Citronnier).")
     expect(page).to have_content("Rien à faire aujourd'hui.")
     within("#toasts") { click_on "Annuler" }
     expect(page).to have_content("Décalage annulé.")
     expect(page).to have_content("À faire aujourd'hui · 1")
 
-    click_on "Décaler à demain : Arrosage (Citronnier)"
+    click_on "Reporter à demain : Arrosage (Citronnier)"
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
     go_to_tab("Journal")
@@ -81,6 +81,6 @@ RSpec.describe "Task importance", type: :system do
     travel_to(Time.zone.parse("2026-11-17 09:00"))
     go_to_tab("Aujourd'hui")
     expect(page).to have_content("À faire aujourd'hui · 1")
-    expect(page).to have_button("Arrosée : Citronnier")
+    expect(page).to have_button("J'ai arrosé : Citronnier")
   end
 end

@@ -43,7 +43,7 @@ Point de départ : une dizaine de plantes en extérieur, à La Réunion.
 2. **Inventaire** : chaque plante a un nom, une espèce, un emplacement et des photos.
 3. **Identification** : la première photo propose l'espèce automatiquement ; on la confirme ou on la corrige.
 4. **Arrosage** : chaque plante a son intervalle d'arrosage (récurrence glissante). L'IA propose l'intervalle de départ
-   selon l'espèce et le climat ; on le valide ou on l'ajuste. Un bouton « Arrosée » alimente le journal.
+   selon l'espèce et le climat ; on le valide ou on l'ajuste. Un bouton « J'ai arrosé » alimente le journal.
 5. **Suivi photo** : un historique de photos par plante pour voir l'évolution.
 6. **Analyse** : sur une photo, un bouton « Analyser » donne l'état (bien / à surveiller / à traiter), ce qui est observé
    et les actions conseillées. Une action peut devenir une tâche si on l'accepte.

@@ -156,12 +156,12 @@ pending ──(Fait)──────────▶ done
   ne part jamais au-delà de la marge (`Tolerance.earliest`) : rien n'est manqué d'emblée. Une échéance déplacée perd
   `reopened_after_miss` et peut de nouveau être manquée, une fois.
 - « Fait » appuyé sur une page affichée avant le passage du job valide la tâche rouverte.
-- **Décaler** (`Tasks::Postpone`, bouton « Demain » d'une ligne d'« Aujourd'hui ») : une échéance due ou en retard
+- **Décaler** (`Tasks::Postpone`, bouton « Reporter » d'une ligne d'« Aujourd'hui ») : une échéance due ou en retard
   est fermée en `postponed` (une ligne discrète du journal, « Décalé d'un jour », ni faite ni manquée) et la même
   tâche est ouverte le lendemain. La récurrence n'est pas touchée : elle part toujours de la dernière réalisation.
   « Annuler » dans le toast défait le décalage (`Tasks::CancelPostponement`) tant que la tâche n'a pas été faite. Un
   recalcul ne revient jamais avant le lendemain d'un décalage postérieur à la dernière réalisation. Décaler une tâche
-  rouverte après un oubli en fait une nouvelle échéance, qui peut de nouveau être manquée, une fois. Pas de « Demain »
+  rouverte après un oubli en fait une nouvelle échéance, qui peut de nouveau être manquée, une fois. Pas de « Reporter »
   sur la ligne groupée « Arroser · N » pour l'instant (question ouverte).
 - **Pluie** (`Plants::RecordRain`, job chaque soir à 22 h, ADR 0015) : pour les plantes d'un emplacement qui reçoit
   la pluie, les arrosages dus au plus tard le lendemain sont notés faits par la pluie à partir de 10 mm sur la journée
@@ -230,7 +230,7 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
   unique faite disparaît de la fiche et reste au journal.
 - L'accueil liste **« À faire aujourd'hui »** : toutes les échéances ouvertes dues aujourd'hui ou en retard, arrosages
   et autres tâches.
-- Une tâche ne se fait qu'une fois par jour (`Tasks::Complete`) : un second « Arrosée » le même jour est refusé.
+- Une tâche ne se fait qu'une fois par jour (`Tasks::Complete`) : un second « J'ai arrosé » le même jour est refusé.
 - Une réalisation enregistrée par erreur s'annule depuis le journal (`Tasks::CancelCompletion`) : elle disparaît et
   l'échéance ouverte est recalculée depuis la réalisation précédente.
 - Archiver une plante désactive sa tâche et supprime l'échéance ouverte ; restaurer la recalcule depuis le dernier

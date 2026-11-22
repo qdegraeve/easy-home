@@ -42,7 +42,7 @@ RSpec.describe "Plant tasks", type: :system do
 
     go_to_tab("Aujourd'hui")
     expect(page).to have_content("À faire aujourd'hui · 1")
-    click_on "Fait : Engrais (Citronnier)"
+    click_on "Marquer comme fait : Engrais (Citronnier)"
     expect(page).to have_content("Engrais noté pour « Citronnier ».")
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
@@ -54,9 +54,9 @@ RSpec.describe "Plant tasks", type: :system do
 
     # One-off task done: it leaves the list, stays in the log; cancelled, it comes back.
     open_plant_tab("Soins")
-    click_on "Fait : Tailler (Citronnier)"
+    click_on "Marquer comme fait : Tailler (Citronnier)"
     expect(page).to have_content("Tailler noté pour « Citronnier ».")
-    expect(page).to have_no_button("Fait : Tailler (Citronnier)")
+    expect(page).to have_no_button("Marquer comme fait : Tailler (Citronnier)")
     open_plant_tab("Historique")
     within("section[aria-labelledby=journal]") { expect(page).to have_content("Tailler") }
     click_on "Annuler « Tailler » du lun 16 nov."

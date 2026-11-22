@@ -12,24 +12,28 @@
     <p class="text-sm text-muted">
       <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
     </p>
+    <%# Under the text, not beside the round button: on a narrow phone the title keeps its width. %>
     <% if actions? || postpone? %>
-      <div class="mt-1 flex gap-1">
+      <div class="flex gap-1">
         <%= actions %>
         <% if postpone? %>
-          <%= button_to t(".tomorrow"), task_occurrence_postponement_path(occurrence),
-                aria: { label: postpone_label }, class: helpers.small_action_class %>
+          <%= button_to task_occurrence_postponement_path(occurrence), aria: { label: postpone_label },
+                class: helpers.chip_class do %>
+            <span class="<%= helpers.chip_inner_class %>">
+              <%= helpers.icon(:redo_2, size: 16) %><%= t(".postpone_button") %>
+            </span>
+          <% end %>
         <% end %>
       </div>
     <% end %>
   </div>
   <% if done_today %>
-    <span class="shrink-0 text-sm text-action"><%= done_today_label %></span>
+    <span class="inline-flex shrink-0 items-center gap-1 text-sm text-muted">
+      <%= helpers.icon(:check, size: 16) %><%= done_today_label %>
+    </span>
   <% else %>
-    <%= button_to(
-      task_occurrence_completion_path(occurrence),
-      aria: { label: done_label },
-      class: "grid size-11 shrink-0 place-items-center rounded-full bg-action text-white hover:bg-action-strong"
-    ) do %>
+    <%= button_to task_occurrence_completion_path(occurrence), aria: { label: done_label },
+          class: helpers.done_button_class do %>
       <%= helpers.icon(:check, size: 22) %>
     <% end %>
   <% end %>
