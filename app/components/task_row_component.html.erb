@@ -5,8 +5,11 @@
   </span>
   <div class="min-w-0 flex-1 py-1">
     <%# Title and detail are one touch target (44 px together), not a 44 px title above its detail: a shorter row. %>
-    <%= content_tag(href ? :a : :div, href: href,
-                    class: class_names("block min-h-11", "-mx-1 rounded-lg px-1 active:bg-subtle": href)) do %>
+    <%= content_tag(
+      href ? :a : :div,
+      href:,
+      class: class_names("block min-h-11", "-mx-1 rounded-lg px-1 active:bg-subtle": href)
+    ) do %>
       <span class="block font-medium"><%= title %></span>
       <span class="block text-sm text-muted">
         <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>

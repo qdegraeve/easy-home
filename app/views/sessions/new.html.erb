@@ -1,8 +1,9 @@
 <div class="mx-auto max-w-sm pt-10">
   <p class="text-xs font-semibold uppercase tracking-wide text-action"><%= t("layouts.application.app_name") %></p>
-  <h1 class="mb-6 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+  <h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
 
-  <%= form_with url: session_path, class: "space-y-4" do |form| %>
+  <%# The gap is on the form: in the app, the title is hidden and its margins with it. %>
+  <%= form_with url: session_path, class: "mt-6 space-y-4" do |form| %>
     <%= form.label :email, t(".email_label"), class: "block text-sm font-semibold" %>
     <%= form.email_field(
       :email,

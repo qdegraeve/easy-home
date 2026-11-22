@@ -30,8 +30,9 @@
 }
 
 /* System controls and states in the app's colors rather than the browser's blue (design review): checkboxes, radios,
-   focus ring, Turbo's progress bar, placeholders. The grey flash of a tap in Android webviews gives way to the
-   `active:` states of the elements. */
+   focus ring, Turbo's progress bar, placeholders. The grey flash of a tap in Android webviews gives way to a calm
+   pressed state: the `active:` utilities of the buttons and rows, and a light background for any other link or
+   summary (base layer: an element's own background utility wins). */
 @layer base {
   :root {
     accent-color: var(--color-action);
@@ -39,7 +40,12 @@
   }
 
   :focus-visible {
-    outline-color: var(--color-action);
+    outline: 2px solid var(--color-action);
+    outline-offset: 2px;
+  }
+
+  :where(a[href], summary):active {
+    background-color: var(--color-subtle);
   }
 
   ::placeholder {

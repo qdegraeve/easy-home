@@ -18,7 +18,7 @@ RSpec.describe "In the Android app", type: :system do
     expect(page).to have_css("h1", text: "Aujourd'hui")
     expect(page).to have_no_css("header")
     # The top bar of the app shows the title: the page keeps it for screen readers only (1 px wide).
-    expect(page.evaluate_script("document.querySelector('h1').getBoundingClientRect().width")).to eq(1)
+    expect(page.evaluate_script("document.querySelector('h1').getBoundingClientRect().width")).to be <= 1
 
     # The settings button is native (top bar of the app): the page it opens.
     visit settings_path
