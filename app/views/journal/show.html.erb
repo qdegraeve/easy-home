@@ -23,14 +23,21 @@
           date_label = l(date, format: :day)
           cancel_confirm = t(".cancel_confirm", what:, date: date_label)
         %>
-        <% if entry.missed? %>
+        <% unless entry.done? %>
+          <%# Missed or postponed: a discreet line, nothing to cancel. %>
           <% group.with_row do %>
             <div class="flex min-h-14 items-center gap-3 px-3 text-muted">
-              <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle"><%= icon(:x) %></span>
+              <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle">
+                <%= icon(entry.missed? ? :x : :hourglass) %>
+              </span>
               <span class="min-w-0 flex-1 py-2">
                 <span class="block font-medium"><%= what %></span>
                 <span class="text-sm">
-                  <%= t(".missed", date: l(entry.due_at.to_date, format: :day)) %>
+                  <% if entry.missed? %>
+                    <%= t(".missed", date: l(entry.due_at.to_date, format: :day)) %>
+                  <% else %>
+                    <%= [ t(".postponed"), who.presence ].compact.join(" · ") %>
+                  <% end %>
                 </span>
               </span>
             </div>

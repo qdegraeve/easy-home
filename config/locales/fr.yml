@@ -147,13 +147,14 @@ fr:
     show:
       title: "Journal"
       period:
-        one: "Ce qui a été fait ou manqué depuis hier."
-        other: "Ce qui a été fait ou manqué ces %{count} derniers jours."
+        one: "Ce qui a été fait, décalé ou manqué depuis hier."
+        other: "Ce qui a été fait, décalé ou manqué ces %{count} derniers jours."
       empty: "Rien de fait pour l'instant : les tâches validées apparaîtront ici."
       watered: "Arrosage · %{name}"
       task_of: "%{title} · %{name}"
       by_you: "par vous"
       missed: "Non fait, prévu le %{date}"
+      postponed: "Décalé d'un jour"
       cancel: "Annuler"
       cancel_label: "Annuler « %{what} » du %{date}"
       cancel_confirm: "Annuler « %{what} » du %{date} ? La prochaine échéance sera recalculée."
@@ -202,6 +203,9 @@ fr:
     done: "Fait : %{title}"
     watered_today: "Arrosée aujourd'hui"
     done_today: "Fait aujourd'hui"
+    tomorrow: "Demain"
+    postpone: "Décaler à demain : %{title}"
+    postpone_with_subject: "Décaler à demain : %{title} (%{subject})"
   due_label:
     overdue:
       one: "prévu hier"
@@ -305,6 +309,7 @@ fr:
       watering_missed: "Arrosage manqué"
       task_missed: "%{title} : manquée"
       due_on: "prévu le %{date}"
+      postponed: "%{title} : décalé d'un jour"
       cancel_task_label: "Annuler « %{title} » du %{date}"
       cancel_task_confirm: "Annuler « %{title} » du %{date} ? La prochaine échéance sera recalculée."
       cancel: "Annuler"
@@ -488,6 +493,12 @@ fr:
         success: "%{title} annulé, prochaine échéance recalculée."
         success_stopped: "%{title} annulé."
         not_done: "Rien à annuler."
+    postponements:
+      create:
+        success: "%{title} décalé à demain pour « %{subject} »."
+        not_pending: "C'était déjà fait ou décalé."
+        inactive: "Cette tâche est arrêtée."
+        not_due: "Cette tâche n'est pas encore due."
     batch_completions:
       create:
         waterings:

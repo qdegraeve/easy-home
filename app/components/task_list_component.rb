@@ -22,7 +22,8 @@ class TaskListComponent < ViewComponent::Base
       occurrence:,
       title: task.subject&.name || task.title,
       href: task.subject && helpers.polymorphic_path(task.subject),
-      detail: task.watering? ? t(".watering") : (task.subject ? task.title : t(".once"))
+      detail: task.watering? ? t(".watering") : (task.subject ? task.title : t(".once")),
+      postpone: true
     )
   end
 

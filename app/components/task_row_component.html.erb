@@ -12,8 +12,14 @@
     <p class="text-sm text-muted">
       <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
     </p>
-    <% if actions? %>
-      <div class="mt-1 flex gap-1"><%= actions %></div>
+    <% if actions? || postpone? %>
+      <div class="mt-1 flex gap-1">
+        <%= actions %>
+        <% if postpone? %>
+          <%= button_to t(".tomorrow"), task_occurrence_postponement_path(occurrence),
+                aria: { label: postpone_label }, class: helpers.small_action_class %>
+        <% end %>
+      </div>
     <% end %>
   </div>
   <% if done_today %>

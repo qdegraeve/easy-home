@@ -24,11 +24,12 @@ module Tasks
 
     private
 
-    # Tapped on a page shown before it was missed: the same task, reopened (Tasks::MarkMissed), is the one to do.
+    # Tapped on a page shown before it was missed or postponed: the same task, still open, is the one to do.
     def still_to_do(task, occurrence)
-      return occurrence unless occurrence.missed?
+      return task.occurrences.pending.find_by(reopened_after_miss: true) || occurrence if occurrence.missed?
+      return task.occurrences.pending.first || occurrence if occurrence.postponed?
 
-      task.occurrences.pending.find_by(reopened_after_miss: true) || occurrence
+      occurrence
     end
 
     def ensure_open(task, occurrence)

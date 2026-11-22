@@ -308,6 +308,36 @@ RSpec.describe "Plants", type: :request do
     end
   end
 
+  describe "POST /task_occurrences/:id/postponement" do
+    let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
+    let(:occurrence) { plant.watering_task.pending_occurrence }
+
+    before { occurrence.update!(due_at: Time.zone.today.in_time_zone) }
+
+    it "postpones the task to tomorrow and goes back to the previous page" do
+      sign_in(user)
+
+      post task_occurrence_postponement_path(occurrence), headers: { "HTTP_REFERER" => root_url }
+
+      expect(response).to redirect_to(root_url)
+      expect(flash[:notice]).to eq("Arrosage décalé à demain pour « Basilic ».")
+      expect(occurrence.reload).to be_postponed
+      expect(TaskOccurrence.pending.find_by(task: occurrence.task).due_at.to_date).to eq(Time.zone.tomorrow)
+    end
+
+    it "rejects the occurrence of another household, and a guest" do
+      other = create(:plant, :watered).watering_task.pending_occurrence
+      sign_in(user)
+      post task_occurrence_postponement_path(other)
+      expect(response).to have_http_status(:not_found)
+
+      sign_in(guest)
+      post task_occurrence_postponement_path(occurrence)
+      expect(response).to have_http_status(:not_found)
+      expect([ other.reload, occurrence.reload ]).to all(be_pending)
+    end
+  end
+
   describe "POST /task_occurrences/:id/completion" do
     let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
     let(:occurrence) { plant.watering_task.pending_occurrence }

@@ -98,7 +98,7 @@ Task
 TaskOccurrence                   # = une ligne du journal
   task, due_at                   # une seule échéance pending par tâche (index unique partiel)
   notify_at                      # due_at - reminder_offset, indexé pour le planificateur
-  status (pending | done | skipped | missed)
+  status (pending | done | skipped | missed | postponed)
   completed_by (User, optionnel), completed_at
   note
   feedback : jsonb               # données de recalibrage (ex. { indicator_on: true })
@@ -134,7 +134,8 @@ HouseholdMember
 
 ```
 pending ──(Fait)──────────▶ done
-   │  └──(Sauter)─────────▶ skipped
+   │  ├──(Sauter)─────────▶ skipped
+   │  └──(Demain)─────────▶ postponed   (+ la même tâche ouverte le lendemain)
    └──(délai de grâce dépassé)──▶ missed
 ```
 
@@ -150,6 +151,9 @@ pending ──(Fait)──────────▶ done
   ne part jamais au-delà de la marge (`Tolerance.earliest`) : rien n'est manqué d'emblée. Une échéance déplacée perd
   `reopened_after_miss` et peut de nouveau être manquée, une fois.
 - « Fait » appuyé sur une page affichée avant le passage du job valide la tâche rouverte.
+- **Décaler** (`Tasks::Postpone`, bouton « Demain » d'une ligne d'« Aujourd'hui ») : une échéance due ou en retard
+  est fermée en `postponed` (une ligne discrète du journal, « Décalé d'un jour », ni faite ni manquée) et la même
+  tâche est ouverte le lendemain. La récurrence n'est pas touchée : elle part toujours de la dernière réalisation.
 
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
