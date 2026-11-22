@@ -57,7 +57,7 @@ module Plants
     end
 
     def task_params
-      params.expect(task: [ :title, :recurrence_type, :due_on, :interval_days ])
+      params.expect(task: [ :title, :recurrence_type, :due_on, :interval_days, :critical ])
     end
   end
 end

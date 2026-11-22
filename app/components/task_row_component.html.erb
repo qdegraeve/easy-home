@@ -1,5 +1,6 @@
 <div class="flex items-center gap-3 px-3 py-2">
-  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
+  <span class="<%= class_names("grid size-9 shrink-0 place-items-center rounded-full",
+                               task.critical? ? "bg-alert-soft text-alert" : "bg-subtle text-plants") %>">
     <%= helpers.icon(mark_icon) %>
   </span>
   <div class="min-w-0 flex-1 py-1">
@@ -8,7 +9,9 @@
     <% else %>
       <p class="font-medium"><%= title %></p>
     <% end %>
-    <p class="text-sm text-muted"><%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
+    <p class="text-sm text-muted">
+      <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
+    </p>
     <% if actions? %>
       <div class="mt-1 flex gap-1"><%= actions %></div>
     <% end %>

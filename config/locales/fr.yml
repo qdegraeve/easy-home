@@ -144,12 +144,13 @@ fr:
     show:
       title: "Journal"
       period:
-        one: "Ce qui a été fait depuis hier."
-        other: "Ce qui a été fait ces %{count} derniers jours."
+        one: "Ce qui a été fait ou manqué depuis hier."
+        other: "Ce qui a été fait ou manqué ces %{count} derniers jours."
       empty: "Rien de fait pour l'instant : les tâches validées apparaîtront ici."
       watered: "Arrosage · %{name}"
       task_of: "%{title} · %{name}"
       by_you: "par vous"
+      missed: "Manquée, prévue le %{date}"
       cancel: "Annuler"
       cancel_label: "Annuler « %{what} » du %{date}"
       cancel_confirm: "Annuler « %{what} » du %{date} ? La prochaine échéance sera recalculée."
@@ -298,6 +299,9 @@ fr:
       destroy_task_label: "Supprimer « %{title} »"
       destroy_task_confirm: "Supprimer la tâche « %{title} » et son historique ?"
       done_entry: "%{title}"
+      watering_missed: "Arrosage manqué"
+      task_missed: "%{title} : manquée"
+      due_on: "prévu le %{date}"
       cancel_task_label: "Annuler « %{title} » du %{date}"
       cancel_task_confirm: "Annuler « %{title} » du %{date} ? La prochaine échéance sera recalculée."
       cancel: "Annuler"
@@ -438,6 +442,8 @@ fr:
       form:
         title_placeholder: "Ex. Engrais, tailler, rempoter"
         repeat: "Quand ?"
+        critical: "À ne pas rater"
+        critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
         kinds:
           once: "Une seule fois"
           sliding: "Tous les N jours après la dernière fois"

@@ -193,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "importance", default: "flexible", null: false
     t.index ["household_id"], name: "index_tasks_on_household_id"
     t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject"
   end

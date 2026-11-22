@@ -83,4 +83,12 @@ RSpec.describe Recurrence::Sliding do
       end
     end
   end
+
+  describe "#due_after_missed" do
+    it "is due again from the day it was missed, in the time zone of the app" do
+      due = described_class.new(interval_days: 7).due_after_missed(on: Date.new(2026, 11, 22))
+
+      expect(due).to eq(zone.parse("2026-11-22 00:00"))
+    end
+  end
 end

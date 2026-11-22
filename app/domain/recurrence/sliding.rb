@@ -24,5 +24,10 @@ module Recurrence
 
       (last_completed_at.to_date + interval_days).in_time_zone(last_completed_at.time_zone)
     end
+
+    # Missed: still to do, from the day it was missed (the plant still needs water).
+    def due_after_missed(on:)
+      on.in_time_zone
+    end
   end
 end
