@@ -58,4 +58,19 @@ RSpec.describe TaskListComponent, type: :component do
 
     expect(page).to have_text("Rien à faire.")
   end
+
+  it "puts the tasks that must not be missed first, marked in red" do
+    occurrences = [ due_watering("Basilic"), due_watering("Menthe") ]
+    plant = occurrences.first.task.subject
+    treatment = create(:task, household:, subject: plant, title: "Traitement", template_key: nil, importance: :critical,
+                              recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+    occurrences << treatment.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
+
+    render_inline(described_class.new(occurrences:, title: "À faire", id: "due"))
+
+    rows = page.all("li")
+    expect(rows.first).to have_text("Traitement")
+    expect(rows.first).to have_css(".text-alert", text: "aujourd'hui")
+    expect(rows.last).to have_text("Arroser")
+  end
 end

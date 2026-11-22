@@ -1,7 +1,19 @@
-<%# "Historique" tab: what was done for the plant, then its analyses. %>
+<%# "Historique" tab: what was done or missed for the plant, then its analyses. %>
 <%= render ListGroupComponent.new(title: t("plants.show.journal"), id: "journal", icon: :history) do |group| %>
   <% @journal.each do |entry| %>
     <% date = l(entry.completed_at.to_date, format: :day) %>
+    <% if entry.missed? %>
+      <% group.with_row do %>
+        <div class="flex min-h-12 items-center justify-between gap-3 px-3 text-sm text-muted">
+          <span>
+            <%= heading_with_icon(:x, entry.task.watering? ? t("plants.show.watering_missed")
+                                                           : t("plants.show.task_missed", title: entry.task.title)) %>
+          </span>
+          <span class="shrink-0"><%= t("plants.show.due_on", date: l(entry.due_at.to_date, format: :day)) %></span>
+        </div>
+      <% end %>
+      <% next %>
+    <% end %>
     <% if entry.task.watering? %>
       <% label = t("plants.show.watered") %>
       <% cancel_label, cancel_confirm = t("plants.show.cancel_label", date:), t("plants.show.cancel_confirm", date:) %>

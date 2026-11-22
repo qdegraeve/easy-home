@@ -54,7 +54,9 @@ module Plants
       )
       watered_at = (form.last_watered_on || Time.zone.today).in_time_zone
       task.occurrences.create!(status: :done, due_at: watered_at, completed_at: watered_at, completed_by: user)
-      task.occurrences.create!(due_at: task.recurrence.next_due_at(last_completed_at: watered_at))
+      # Watered long ago: due within its tolerance, not missed at once (Tolerance.earliest).
+      next_due_at = task.recurrence.next_due_at(last_completed_at: watered_at)
+      task.occurrences.create!(due_at: task.due_within_tolerance(next_due_at))
     end
   end
 end

@@ -20,7 +20,9 @@ class TaskRowComponent < ViewComponent::Base
   attr_reader :occurrence, :task, :title, :detail, :href, :done_today
 
   def mark_icon
-    task.watering? ? :droplet : :list_todo
+    return :droplet if task.watering?
+
+    task.critical? ? :triangle_alert : :list_todo
   end
 
   # Button name for screen readers: "Arrosée : Citronnier", "Fait : Tailler (Citronnier)", "Fait : Poubelle jaune".

@@ -27,7 +27,7 @@ RSpec.describe "Plant archiving" do
   end
 
   describe Plants::Restore do
-    it "resumes watering, next occurrence recomputed from the last watering (here late)" do
+    it "resumes watering, recomputed from the last watering, late but within its tolerance (not missed at once)" do
       Plants::Archive.new.call(plant:)
 
       result = described_class.new.call(plant: plant.reload)
@@ -36,7 +36,9 @@ RSpec.describe "Plant archiving" do
       expect(plant.reload).not_to be_archived
       task = plant.watering_task
       expect(task).to be_active
-      expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-04 00:00"))
+      # Due on the 4th, every 3 days with 1 day of tolerance: on the 15th.
+      expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-15 00:00"))
+      expect(Tasks::MarkMissed.new.call.value!).to eq(0)
     end
 
     it "resumes other tasks too: the repeating one restarts, the done one-off stays finished" do

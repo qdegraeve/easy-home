@@ -1,4 +1,7 @@
 <%= render ListGroupComponent.new(title:, id:) do |group| %>
+  <% critical.each do |occurrence| %>
+    <% group.with_row { render(row(occurrence)) } %>
+  <% end %>
   <% if waterings.any? %>
     <% group.with_row do %>
       <div class="flex items-center gap-3 px-3 py-2">
@@ -24,15 +27,7 @@
     <% end %>
   <% end %>
   <% others.each do |occurrence| %>
-    <% task = occurrence.task %>
-    <% group.with_row do %>
-      <%= render TaskRowComponent.new(
-        occurrence:,
-        title: task.subject&.name || task.title,
-        href: task.subject && polymorphic_path(task.subject),
-        detail: task.watering? ? t(".watering") : (task.subject ? task.title : t(".once"))
-      ) %>
-    <% end %>
+    <% group.with_row { render(row(occurrence)) } %>
   <% end %>
   <% if empty %><%= render EmptyStateComponent.new(text: empty) %><% end %>
 <% end %>

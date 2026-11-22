@@ -16,7 +16,11 @@ module Tasks
           attributes[:recurrence_config]["start_on"] = task.recurrence_config["start_on"]
         end
         task.update!(attributes)
-        task.occurrences.pending.first&.update!(due_at: form.due_on.in_time_zone)
+        # A new due date can be missed again, once (Tasks::MarkMissed).
+        task.occurrences.pending.first&.update!(
+          due_at: task.due_within_tolerance(form.due_on.in_time_zone),
+          reopened_after_miss: false
+        )
       end
 
       Success(task)

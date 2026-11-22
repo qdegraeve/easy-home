@@ -50,5 +50,15 @@
     </div>
   <% end %>
 
+  <div>
+    <label class="flex items-start gap-3 rounded-xl border border-field bg-surface px-3 py-3">
+      <%= f.check_box :critical, class: "mt-1" %>
+      <span>
+        <span class="block font-semibold"><%= t("plants.tasks.form.critical") %></span>
+        <span class="block text-sm text-muted"><%= t("plants.tasks.form.critical_help") %></span>
+      </span>
+    </label>
+  </div>
+
   <%= f.submit submit, class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
 <% end %>

@@ -8,6 +8,8 @@ class Task < ApplicationRecord
   attr_readonly :household_id
 
   enum :recurrence_type, { sliding: "sliding", once: "once" }, validate: true
+  # Flexible (watering, upkeep: a tolerance before missed) or critical ("à ne pas rater": first, in red, no tolerance).
+  enum :importance, { flexible: "flexible", critical: "critical" }, validate: true
 
   scope :active, -> { where(active: true) }
 
@@ -26,6 +28,16 @@ class Task < ApplicationRecord
 
   def watering?
     template_key == Plant::WATERING_TEMPLATE_KEY
+  end
+
+  # Days a late occurrence stays to do before it is missed, or nil when never missed (see Tolerance).
+  def grace_days
+    Tolerance.grace_days(importance:, recurrence:)
+  end
+
+  # due_at moved forward when it would start past the tolerance (see Tolerance.earliest).
+  def due_within_tolerance(due_at)
+    Tolerance.earliest(due_at, grace_days:, today: Time.zone.today)
   end
 
   private

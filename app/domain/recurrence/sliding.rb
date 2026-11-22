@@ -24,5 +24,10 @@ module Recurrence
 
       (last_completed_at.to_date + interval_days).in_time_zone(last_completed_at.time_zone)
     end
+
+    # Missed, it is still to do (the plant still needs water).
+    def closed_by_miss?
+      false
+    end
   end
 end
