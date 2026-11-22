@@ -702,6 +702,13 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
     d'une liste dont le seul choix était « Aucun emplacement » ; les réglages de notifications s'enregistrent à
     chaque changement (toast « Enregistré. », plus de bouton), la sous-option est rangée sous l'option principale,
     et le texte sans téléphone diffère dans l'app et dans le navigateur.
+17. **PR 17 · Finitions de style** (revue des designers, lot 6) : plus d'ombre dans le flux (sauf le segment actif,
+    le toast et les dialogues) ; trois rayons (`rounded-xl`, `rounded-2xl`, `rounded-full`) ; plus de texte en 12 px
+    (aides en 13 px) ; propositions de l'analyse toutes en pastille, acceptées en pastille pleine avec une coche ;
+    sélection des photos : coche seulement sur les photos choisies (défaut corrigé), vignettes à pleine opacité ;
+    listes repliables avec un chevron qui tourne au lieu du triangle du navigateur ; vert réservé à ce qui se
+    touche (« Foyer actif », « N propositions à valider » en encre) ; phrase « Poubelles, piscine… viendront ici »
+    retirée.
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.

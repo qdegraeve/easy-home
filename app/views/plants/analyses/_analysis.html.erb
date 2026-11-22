@@ -1,6 +1,6 @@
 <%# One analysis in full: pending, failed (with a restart button) or done, with its proposals and questions. Rendered
     on its own page; the plant page shows a summary (_summary). %>
-<article class="space-y-3 rounded-2xl bg-surface p-4 shadow-sm">
+<article class="space-y-3 rounded-2xl bg-surface p-4">
   <header class="flex items-center justify-between gap-3 text-sm text-muted">
     <span><%= t("plants.analyses.analysis.requested_on", date: l(analysis.created_at.to_date, format: :day)) %></span>
     <% if analysis.done? %>
@@ -19,13 +19,14 @@
     <% if restart && analysis.photos.any? %>
       <%= button_to t("plants.analyses.analysis.restart"), plant_analyses_path(analysis.plant),
             params: { plant_analysis: { note: analysis.user_note, photo_ids: analysis.photo_ids } },
-            class: "rounded-xl bg-surface px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-line" %>
+            class: button_class(:secondary) %>
     <% end %>
   <% else %>
     <% acceptable = policy(analysis).accept? %>
     <% if analysis.species_name %>
+      <%# The text column shrinks and breaks long words: the pill beside it never wraps (narrow phones). %>
       <div class="flex items-start justify-between gap-3">
-        <p>
+        <p class="min-w-0 break-words">
           <span class="italic"><%= analysis.species_name %></span>
           <% if analysis.species_common_name %>(<%= analysis.species_common_name %>)<% end %>
           <span class="text-sm text-muted">
@@ -43,7 +44,7 @@
     <%= simple_format(h(analysis.observations), class: "text-sm") %>
     <% if analysis.watering_interval_days %>
       <div class="flex items-center justify-between gap-3">
-        <p class="text-sm">
+        <p class="min-w-0 break-words text-sm">
           <%= heading_with_icon(
             :droplet,
             t("plants.analyses.analysis.watering", count: analysis.watering_interval_days),
@@ -62,7 +63,7 @@
       <ul class="space-y-2 text-sm">
         <% analysis.actions.each_with_index do |action, index| %>
           <li class="flex items-start justify-between gap-3">
-            <div>
+            <div class="min-w-0 break-words">
               <p class="font-medium">
                 <%= action["title"] %>
                 <span class="font-normal text-muted">
@@ -83,14 +84,14 @@
     <% end %>
   <% end %>
 
-  <footer class="space-y-2 border-t border-line pt-3 text-xs text-muted">
+  <footer class="space-y-2 border-t border-line pt-3 text-[13px] text-muted">
     <% if analysis.user_note.present? %>
       <p><%= t("plants.analyses.analysis.note", note: analysis.user_note) %></p>
     <% end %>
     <ul class="flex gap-2" aria-label="<%= t("plants.analyses.analysis.photos") %>">
       <% analysis.photos_oldest_first.each do |photo| %>
         <li>
-          <%= image_tag photo.image.variant(:thumb), class: "h-12 w-12 rounded-lg object-cover",
+          <%= image_tag photo.image.variant(:thumb), class: "h-12 w-12 rounded-xl object-cover",
                 alt: t("plants.analyses.analysis.photo_alt", date: l(photo.taken_at.to_date, format: :day)) %>
         </li>
       <% end %>

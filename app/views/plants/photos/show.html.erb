@@ -31,7 +31,7 @@
             data-cover="<%= photo.id == @plant.cover_photo_id %>">
           <%= image_tag photo.image.variant(:large), alt: t(".alt", name: @plant.name, date:), draggable: false,
                 loading: ((index - @index).abs <= 1 ? "eager" : "lazy"), decoding: "async",
-                class: "max-h-full max-w-full select-none object-contain sm:rounded-lg" %>
+                class: "max-h-full max-w-full select-none object-contain sm:rounded-xl" %>
           <template data-photo-viewer-target="actions">
             <%= render "actions", plant: @plant, photo:, can_update: %>
           </template>

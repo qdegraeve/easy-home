@@ -142,7 +142,6 @@ fr:
         zero: "Aucune plante"
         one: "%{count} plante"
         other: "%{count} plantes"
-      more_soon: "Poubelles, piscine, animaux et équipements viendront ici."
       to_review:
         one: "%{count} analyse à revoir"
         other: "%{count} analyses à revoir"

@@ -24,12 +24,12 @@
         <%# Undo what was just done (a completion, or several): an error of the finger, repaired on the spot. %>
         <%= button_to t(".undo"), task_occurrences_batch_completion_path, method: :delete,
               params: { occurrence_ids: flash[:undo_ids] },
-              class: "-my-2 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 font-semibold " \
+              class: "-my-2 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 font-semibold " \
                      "text-action-soft hover:bg-white/10" %>
       <% elsif flash[:undo_postponement_id].present? %>
         <%# Undo a "Reporter" tapped by mistake. %>
         <%= button_to t(".undo"), task_occurrence_postponement_path(flash[:undo_postponement_id]), method: :delete,
-              class: "-my-2 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded-lg px-3 font-semibold " \
+              class: "-my-2 -mr-2 inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 font-semibold " \
                      "text-action-soft hover:bg-white/10" %>
       <% end %>
     </div>
@@ -48,7 +48,7 @@
         type="button"
         data-action="toast#close"
         aria-label="<%= t(".close") %>"
-        class="-my-2 -mr-2 grid size-11 shrink-0 place-items-center rounded-lg hover:bg-white/10"
+        class="-my-2 -mr-2 grid size-11 shrink-0 place-items-center rounded-xl hover:bg-white/10"
       ><%= icon(:x, size: 18) %></button>
     </div>
   <% end %>

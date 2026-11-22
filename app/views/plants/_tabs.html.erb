@@ -11,7 +11,7 @@
             "text-muted hover:text-ink": tab != current
           ) do %>
       <%= t("plants.tabs.#{tab}") %>
-      <% if count&.positive? %><span class="text-xs font-normal text-muted"><%= count %></span><% end %>
+      <% if count&.positive? %><span class="text-[13px] font-normal text-muted"><%= count %></span><% end %>
     <% end %>
   <% end %>
 </nav>
