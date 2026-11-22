@@ -667,7 +667,7 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
    analyse résumée avec sa page, photo en un geste, photo de couverture) et **ajout rapide** (#36, #39, #40, #42,
    fait en 9b : photo d'abord, champs repliés, vignettes cliquables, navigation entre photos).
 10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24 ; #18, #19 et #20 faits en 10a, sans attendre les
-    poubelles, choix du propriétaire) : marge proportionnelle, report tracé, catalogue,
+    poubelles, choix du propriétaire ; #21 et #22 faits en 10b) : marge proportionnelle, report tracé, catalogue,
     résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
     concrète.
 11. **PR 11 · Arrosage et météo** (#23) : ADR, adaptateur Open-Meteo, job du soir, arrosage noté par la pluie.

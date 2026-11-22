@@ -73,6 +73,7 @@ fr:
         one: "1 tâche aujourd'hui"
         other: "%{count} tâches aujourd'hui"
       watering: "arroser %{name}"
+      waterings: "arroser %{count} plantes"
       task: "%{title} (%{name})"
   notification_settings:
     edit:
@@ -82,6 +83,8 @@ fr:
         Chaque matin, un résumé des tâches du jour et de celles en retard, sur les téléphones où l'app
         Easy Home est connectée. Rien n'est envoyé les jours sans tâche.
       digest_enabled: "Recevoir le résumé du matin"
+      critical_only: "Seulement ce qui ne doit pas être raté"
+      critical_only_help: "Le résumé ne cite que les tâches « à ne pas rater » ; rien n'est envoyé les autres jours."
       households: "Foyers à inclure"
       submit: "Enregistrer"
       devices: "Téléphones"

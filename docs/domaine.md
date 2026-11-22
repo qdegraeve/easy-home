@@ -115,6 +115,7 @@ ApplicationPushDevice            # gem action_push_native (ADR 0012)
 
 User (réglages des notifications)
   digest_enabled, digest_minute  # résumé du matin : activé, heure en minutes après minuit (quarts d'heure, 5 h-22 h)
+  digest_scope (all | critical)  # tout, ou seulement les tâches « à ne pas rater »
   last_digest_on                 # jour du dernier résumé : un seul par jour
 
 HouseholdMember
@@ -154,7 +155,9 @@ pending ──(Fait)──────────▶ done
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
 - Une récurrence **glissante** ou **basée sur l'usage** part de la date de réalisation.
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
-  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). À venir : relances
+  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). Groupé comme
+  l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
+  reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. À venir : relances
   des tâches « à ne pas rater ».
 
 ## Moteur de récurrence

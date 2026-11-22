@@ -15,7 +15,7 @@ RSpec.describe Notifications::SendDigest do
     create(:plant, :watered, household:, name:, interval_days: 3, last_watered_at:)
   end
 
-  it "sends one notification listing the tasks due today or late, to each phone of the user" do
+  it "sends one notification listing the tasks due today or late, the waterings grouped, to each phone of the user" do
     lemon = due_plant("Citronnier")
     due_plant("Basilic", last_watered_at: Time.zone.parse("2026-11-10 08:00")) # late
     due_plant("Menthe", last_watered_at: Time.zone.parse("2026-11-15 08:00")) # due on the 18th
@@ -28,13 +28,39 @@ RSpec.describe Notifications::SendDigest do
         "ApplicationPushNotification",
         hash_including(
           title: "3 tâches aujourd'hui",
-          body: "Arroser Basilic, arroser Citronnier, Pailler le pied (Citronnier)",
+          body: "Arroser 2 plantes, Pailler le pied (Citronnier)",
           thread_id: "digest",
           data: { path: "/" }
         ),
         device
       ).and have_enqueued_job(ApplicationPushNotificationJob).with(anything, anything, other_phone)
     expect(user.reload.last_digest_on).to eq(today)
+  end
+
+  it "puts the tasks that must not be missed first, and names a single watering" do
+    lemon = due_plant("Citronnier")
+    create(:task, household:, subject: lemon, title: "Traitement", template_key: nil, importance: :critical,
+                  recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+      .occurrences.create!(due_at: today.in_time_zone)
+
+    expect { described_class.new.call(user:, today:) }
+      .to have_enqueued_job(ApplicationPushNotificationJob)
+      .with(anything, hash_including(body: "Traitement (Citronnier), arroser Citronnier"), device)
+  end
+
+  it "lists only the tasks that must not be missed when the user asked so, and nothing on the other days" do
+    user.update!(digest_scope: :critical)
+    lemon = due_plant("Citronnier")
+
+    expect(described_class.new.call(user:, today:).failure.first).to eq(:nothing_due)
+
+    user.reload.update!(last_digest_on: nil) # the next day, as it were
+    create(:task, household:, subject: lemon, title: "Traitement", template_key: nil, importance: :critical,
+                  recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+      .occurrences.create!(due_at: today.in_time_zone)
+    expect { described_class.new.call(user:, today:) }
+      .to have_enqueued_job(ApplicationPushNotificationJob)
+      .with(anything, hash_including(title: "1 tâche aujourd'hui", body: "Traitement (Citronnier)"), device)
   end
 
   it "sends nothing when nothing is due, and does not try again the same day" do
@@ -75,15 +101,16 @@ RSpec.describe Notifications::SendDigest do
   end
 
   it "names a task without subject by its title, and shortens a long list" do
-    create(:task, household:, subject: nil, title: "Sortir la poubelle jaune", template_key: nil,
-                  recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
-      .occurrences.create!(due_at: today.in_time_zone)
-    20.times { |index| due_plant("Plante numéro #{index}") }
+    15.times do |index|
+      create(:task, household:, subject: nil, title: "Tâche numéro #{index}", template_key: nil,
+                    recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+        .occurrences.create!(due_at: today.in_time_zone)
+    end
 
     described_class.new.call(user:, today:)
 
     body = enqueued_jobs.sole[:args].second["body"]
-    expect(body).to start_with("Sortir la poubelle jaune, arroser Plante numéro 0, arroser Plante numéro 1")
+    expect(body).to start_with("Tâche numéro 0, Tâche numéro 1")
     expect(body).to end_with("...")
     expect(body.length).to eq(described_class::MAX_BODY_LENGTH)
   end
