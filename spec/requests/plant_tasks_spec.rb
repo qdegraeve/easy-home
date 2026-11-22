@@ -73,6 +73,19 @@ RSpec.describe "Plant tasks", type: :request do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))
   end
 
+  it "marks a task as one that must not be missed, and back" do
+    task = add_task
+    sign_in(user)
+
+    patch plant_task_path(plant, task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "1" } }
+    expect(task.reload).to be_critical
+    get edit_plant_task_path(plant, task)
+    expect(response.parsed_body.at_css("input[type=checkbox][name='task[critical]']")["checked"]).to eq("checked")
+
+    patch plant_task_path(plant, task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "0" } }
+    expect(task.reload).to be_flexible
+  end
+
   it "edits then deletes a manual task" do
     task = add_task
     sign_in(user)

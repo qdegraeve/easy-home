@@ -88,6 +88,7 @@ Task
   subject (polymorphe, optionnel)  # Plant… ; même foyer que la tâche ; null pour une tâche manuelle
   title, description
   template_key (ex. "plant.watering")
+  importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
   recurrence_type (once | fixed | sliding | usage_based)
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_offset                # quand notifier avant l'échéance (ex. la veille à 19h)
@@ -136,12 +137,20 @@ pending ──(Fait)──────────▶ done
    └──(délai de grâce dépassé)──▶ missed
 ```
 
+- **Tolérance** (`Tolerance`, `app/domain`) : une tâche « à ne pas rater » n'en a aucune, elle est manquée le
+  lendemain de son jour. Une tâche souple répétée a une marge d'un quart de son intervalle, de 0 à 3 jours (1 jour : 0,
+  3 jours : 1, 7 jours : 2, 14 jours : 3). Une tâche unique souple n'est jamais manquée : elle reste à faire jusqu'à
+  ce qu'elle soit faite ou supprimée.
+- `Tasks::MarkMissed` (job toutes les heures) ferme en `missed` les échéances au-delà de leur marge : une ligne du
+  journal, `completed_at` étant le moment de la fermeture. Une tâche glissante redevient due le jour même (la plante a
+  toujours soif) ; une tâche unique n'en a plus. Un recalcul (`Tasks::Reschedule`) ne revient jamais avant ce jour.
+
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
 - Une récurrence **glissante** ou **basée sur l'usage** part de la date de réalisation.
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
-  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). À venir : relances,
-  et un job qui marque les échéances `missed`.
+  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). À venir : relances
+  des tâches « à ne pas rater ».
 
 ## Moteur de récurrence
 

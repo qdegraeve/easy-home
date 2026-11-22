@@ -26,4 +26,15 @@ RSpec.describe DueLabelComponent, type: :component do
     render_inline(described_class.new(due_at: Time.zone.parse("2026-11-16 00:00")))
     expect(page).to have_css("span.font-semibold", text: "aujourd'hui")
   end
+
+  it "shows in red, on its day and once late, a task that must not be missed" do
+    render_inline(described_class.new(due_at: Time.zone.parse("2026-11-15 00:00"), critical: true))
+    expect(page).to have_css("span.text-alert", text: "prévu hier")
+
+    render_inline(described_class.new(due_at: Time.zone.parse("2026-11-16 00:00"), critical: true))
+    expect(page).to have_css("span.text-alert", text: "aujourd'hui")
+
+    render_inline(described_class.new(due_at: Time.zone.parse("2026-11-17 00:00"), critical: true))
+    expect(page).to have_no_css("span.text-alert")
+  end
 end

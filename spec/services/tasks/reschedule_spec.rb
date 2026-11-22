@@ -32,4 +32,16 @@ RSpec.describe Tasks::Reschedule do
 
     expect(described_class.new.call(task:).value!.due_at).to eq(Time.zone.parse("2026-11-18 00:00"))
   end
+
+  it "never goes back before a miss since the last completion: it would be missed again at once" do
+    task = create(:task, recurrence_config: { "interval_days" => 7 })
+    create(:task_occurrence, :done, task:, completed_at: Time.zone.parse("2026-11-01 08:00"))
+    create(:task_occurrence, task:, status: :missed, due_at: Time.zone.parse("2026-11-08 00:00"),
+                             completed_at: Time.zone.parse("2026-11-11 01:05"))
+
+    expect(described_class.new.call(task:).value!.due_at).to eq(Time.zone.parse("2026-11-11 00:00"))
+
+    create(:task_occurrence, :done, task:, completed_at: Time.zone.parse("2026-11-12 08:00"))
+    expect(described_class.new.call(task:).value!.due_at).to eq(Time.zone.parse("2026-11-19 00:00"))
+  end
 end
