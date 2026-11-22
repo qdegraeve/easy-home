@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Testing the Android app away from home (docs/hotwire-native.md): a second development server, reachable from the
+# internet through a Cloudflare quick tunnel (a random https://….trycloudflare.com address, no account). bin/dev keeps
+# running for the assets and the jobs. The computer stays awake until Ctrl-C, which stops both.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+PORT="${PORT:-3001}"
+command -v cloudflared > /dev/null || { echo "cloudflared is missing: brew install cloudflared" >&2; exit 1; }
+
+DEV_TUNNEL=1 bin/rails server -p "$PORT" -P tmp/pids/tunnel.pid &
+server=$!
+trap 'kill "$server" 2> /dev/null' EXIT
+
+echo "Put the https://….trycloudflare.com address below in android/local.properties (easyhome.baseUrl=…),"
+echo "then: cd android && ./gradlew installDebug"
+caffeinate -i cloudflared tunnel --no-autoupdate --url "http://localhost:$PORT"
