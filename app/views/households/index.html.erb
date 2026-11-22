@@ -1,4 +1,4 @@
-<h1 class="text-2xl font-bold"><%= page_title t(".title") %></h1>
+<h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
 
 <%= render ListGroupComponent.new do |group| %>
   <% @households.each do |household| %>

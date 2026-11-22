@@ -16,15 +16,23 @@ class TaskListComponent < ViewComponent::Base
 
   attr_reader :critical, :waterings, :others, :title, :id, :empty
 
+  # The gesture first (UX review, "une ligne par geste"): "Traiter au savon noir" over "Citronnier". A watering keeps
+  # the plant as its title, the drop says the gesture.
   def row(occurrence)
     task = occurrence.task
     TaskRowComponent.new(
       occurrence:,
-      title: task.subject&.name || task.title,
+      title: task.watering? ? task.subject.name : task.title,
       href: task.subject && helpers.polymorphic_path(task.subject),
-      detail: task.watering? ? t(".watering") : (task.subject ? task.title : t(".once")),
+      detail: row_detail(task),
       postpone: true
     )
+  end
+
+  def row_detail(task)
+    return t(".watering") if task.watering?
+
+    task.subject ? task.subject.name : t(".once")
   end
 
   # "Terrasse 3 · salon 1": where the plants to water are, by location (plants without location last).

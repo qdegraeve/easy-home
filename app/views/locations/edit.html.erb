@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-2xl">
   <%= back_link_to t(".back"), edit_household_path(@location.household) %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", name: @location.name_in_database) %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title", name: @location.name_in_database) %></h1>
 
   <% if @analysed_plants_count.positive? %>
     <p class="mt-2 rounded-xl bg-warn-soft px-3 py-2 text-sm">

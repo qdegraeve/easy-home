@@ -3,7 +3,7 @@
       (its URL stays the analysis'). Native "back" would leave the analysis; this link reloads it instead. %>
   <%= link_to t("plants.tasks.back", name: @plant.name), plant_analysis_path(@plant, @analysis),
         class: "text-sm text-muted underline" %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
 
   <div class="mt-6">
     <%= render "plants/analysis_questions/form", analysis: @analysis, form: @form %>

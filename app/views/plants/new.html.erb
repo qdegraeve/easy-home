@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-md">
   <%= back_link_to t("plants.back"), plants_path %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
 
   <div class="mt-6">
     <%= render "form", form: @form, url: plants_path, method: :post, adding: true, submit: t(".submit") %>

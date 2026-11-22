@@ -37,10 +37,10 @@ module ApplicationHelper
   end
 
   BUTTON_VARIANTS = {
-    primary: "bg-action font-semibold text-white hover:bg-action-strong",
-    secondary: "bg-action-soft font-semibold text-action hover:bg-subtle",
-    tertiary: "font-semibold text-action hover:bg-subtle",
-    danger: "font-semibold text-alert hover:bg-alert-soft",
+    primary: "bg-action font-semibold text-white hover:bg-action-strong active:bg-action-strong",
+    secondary: "bg-action-soft font-semibold text-action hover:bg-subtle active:bg-subtle",
+    tertiary: "font-semibold text-action hover:bg-subtle active:bg-subtle",
+    danger: "font-semibold text-alert hover:bg-alert-soft active:bg-alert-soft",
     # On the dark photo viewer: white text, the danger tone is carried by the confirmation.
     on_dark: "font-semibold text-white/90 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 " \
              "focus-visible:outline-white"
@@ -58,7 +58,11 @@ module ApplicationHelper
 
   # Small secondary action next to a row (edit, delete, cancel): small text, but a 44 px touch target.
   def small_action_class(tone = :muted)
-    color = tone == :danger ? "text-alert hover:bg-alert-soft" : "text-muted hover:bg-subtle"
+    color = if tone == :danger
+      "text-alert hover:bg-alert-soft active:bg-alert-soft"
+    else
+      "text-muted hover:bg-subtle active:bg-subtle"
+    end
     "inline-flex min-h-11 items-center rounded-lg px-2 text-xs #{color}"
   end
 

@@ -83,7 +83,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Analyse en échec : message visible, relance avec les mêmes photos et la même remarque | `spec/system/plant_analyses_spec.rb` | Fait |
 | Discussion sur une analyse : question avec photo jointe, réponse affichée, question suivante avec le fil | `spec/system/plant_analyses_spec.rb` | Fait |
 | Propositions d'une analyse acceptées : espèce sur la fiche, intervalle d'arrosage, action devenue tâche | `spec/system/plant_analyses_spec.rb` | Fait |
-| Dans l'app Android : sans en-tête web, réglages (bouton natif) et déconnexion | `spec/system/native_app_spec.rb` | Fait |
+| Dans l'app Android : sans en-tête web ni titre d'écran en double, réglages (bouton natif) et déconnexion | `spec/system/native_app_spec.rb` | Fait |
 | Aujourd'hui : tout l'arrosage du jour en un geste, annulé depuis le toast, puis détail par emplacement avec une plante décochée ; « Fait aujourd'hui » replié avec l'auteur ; « Bientôt » replié et resté ouvert après validation | `spec/system/today_spec.rb` | Fait |
 | Sections : Aujourd'hui, Maison, Plantes, une plante, puis Journal avec une validation annulée | `spec/system/sections_spec.rb` | Fait |
 | Emplacement modifié : analyse signalée à revoir (Maison, Plantes, fiche), relance avec la remarque pré-remplie | `spec/system/location_change_spec.rb` | Fait |

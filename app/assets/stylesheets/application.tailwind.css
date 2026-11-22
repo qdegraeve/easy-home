@@ -29,6 +29,42 @@
   --color-gear: #55657a;
 }
 
+/* System controls and states in the app's colors rather than the browser's blue (design review): checkboxes, radios,
+   focus ring, Turbo's progress bar, placeholders. The grey flash of a tap in Android webviews gives way to the
+   `active:` states of the elements. */
+@layer base {
+  :root {
+    accent-color: var(--color-action);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline-color: var(--color-action);
+  }
+
+  ::placeholder {
+    color: var(--color-muted);
+    opacity: 1;
+  }
+}
+
+.turbo-progress-bar {
+  background-color: var(--color-action);
+}
+
+/* In the Android app, the screen title is in the native top bar: the page keeps it for screen readers only. */
+[data-native-app] [data-screen-title] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Turbo disables the submit button while its form is sent (no double tap): make it visible. */
 @layer base {
   form[aria-busy="true"] :is(button, input[type="submit"]):disabled {

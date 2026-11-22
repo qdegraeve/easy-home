@@ -6,7 +6,7 @@
 
 <div class="mx-auto max-w-2xl">
   <%= back_link_to t("plants.tasks.back", name: @plant.name), @plant %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", name: @plant.name) %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title", name: @plant.name) %></h1>
 
   <div class="mt-4">
     <%# A failed analysis is restarted here, where the user waited for it. %>
