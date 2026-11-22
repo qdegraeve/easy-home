@@ -1,7 +1,7 @@
 module Plants
   # Adds a plant with its watering task (sliding recurrence) and its optional first photo, all or nothing: a photo
   # that cannot be read leaves no plant behind. The declared last watering goes into the log and is the starting
-  # point of the first occurrence.
+  # point of the first occurrence. A new location typed in the form (the household had none) is created with it.
   class Add
     include Dry::Monads[:result, :do]
 
@@ -22,14 +22,27 @@ module Plants
 
     def create_plant(household, user, form)
       ActiveRecord::Base.transaction do
+        attributes = form.plant_attributes
+        attributes[:location_id] = find_or_create_location(household, form).id if form.new_location?
         plant = household.plants.create!(
-          **form.plant_attributes,
-          species_source: (:user if form.plant_attributes[:species])
+          **attributes,
+          species_source: (:user if attributes[:species])
         )
         create_watering_task(plant, form, user)
         yield add_photo(plant, form) if form.photo.present?
         Success(plant)
       end
+    end
+
+    # The place typed for a first plant. Someone else may have created it meanwhile (house page, another first plant):
+    # the existing one is kept, whatever its case, rather than failing.
+    def find_or_create_location(household, form)
+      name = form.new_location_attributes[:name]
+      household.locations.find_by("lower(name) = ?", name.downcase) ||
+        # A savepoint: a failed insert must not abort the transaction of the plant.
+        Location.transaction(requires_new: true) { household.locations.create!(form.new_location_attributes) }
+    rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+      household.locations.find_by!("lower(name) = ?", name.downcase)
     end
 
     # The first photo is analysed right away, mostly to identify the species (the job starts after the commit).

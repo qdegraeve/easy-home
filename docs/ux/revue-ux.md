@@ -697,6 +697,11 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
     plus répété sous la barre native (gardé pour les lecteurs d'écran, `data-screen-title`) ; cases, boutons radio,
     anneau de focus, barre de chargement Turbo et textes d'exemple aux couleurs de l'app ; retour au toucher
     (`active:`) sur les boutons et les lignes, sans le flash gris d'Android.
+16. **PR 16 · Première plante et notifications** (revue des designers, lot 5) : un foyer sans emplacement crée celui
+    de sa première plante dans le même formulaire (« Où est-elle ? », exposition, « reçoit la pluie »), au lieu
+    d'une liste dont le seul choix était « Aucun emplacement » ; les réglages de notifications s'enregistrent à
+    chaque changement (toast « Enregistré. », plus de bouton), la sous-option est rangée sous l'option principale,
+    et le texte sans téléphone diffère dans l'app et dans le navigateur.
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.

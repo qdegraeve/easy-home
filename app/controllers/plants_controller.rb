@@ -44,7 +44,7 @@ class PlantsController < ApplicationController
     return redirect_to(new_household_path) unless household
 
     authorize Plant.new(household:)
-    result = Plants::Add.new.call(household:, user: Current.user, params: plant_params)
+    result = Plants::Add.new.call(household:, user: Current.user, params: new_plant_params)
 
     if result.success?
       plant = result.value!
@@ -84,7 +84,15 @@ class PlantsController < ApplicationController
     policy_scope(Plant).find(params[:id]).tap { |plant| authorize plant }
   end
 
+  PLANT_PARAMS = [ :name, :species, :location_id, :watering_interval_days, :last_watered_on, :photo ].freeze
+  # Only when adding: the place of a first plant, created with it.
+  NEW_LOCATION_PARAMS = [ :new_location_name, :new_location_exposure, :new_location_rain_exposed ].freeze
+
   def plant_params
-    params.expect(plant: [ :name, :species, :location_id, :watering_interval_days, :last_watered_on, :photo ])
+    params.expect(plant: PLANT_PARAMS)
+  end
+
+  def new_plant_params
+    params.expect(plant: PLANT_PARAMS + NEW_LOCATION_PARAMS)
   end
 end

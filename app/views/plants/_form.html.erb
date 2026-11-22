@@ -29,17 +29,22 @@
           class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
   </div>
 
-  <div>
-    <%= f.label :location_id, class: "block text-sm font-semibold" %>
-    <%= f.collection_select(
-      :location_id,
-      form.household.locations.order(:name),
-      :id,
-      :name,
-      { include_blank: t("plants.form.no_location") },
-      class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3"
-    ) %>
-  </div>
+  <% locations = form.household.locations.order(:name) %>
+  <% if adding && locations.none? %>
+    <%= render "plants/new_location_fields", f: %>
+  <% else %>
+    <div>
+      <%= f.label :location_id, class: "block text-sm font-semibold" %>
+      <%= f.collection_select(
+        :location_id,
+        locations,
+        :id,
+        :name,
+        { include_blank: t("plants.form.no_location") },
+        class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3"
+      ) %>
+    </div>
+  <% end %>
 
   <div>
     <%= f.label :watering_interval_days, class: "block text-sm font-semibold" %>

@@ -3,7 +3,9 @@
   <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
   <p class="mt-1 text-sm text-muted"><%= t(".intro") %></p>
 
-  <%= form_with model: @form, url: notification_settings_path, method: :patch, class: "mt-6 space-y-6" do |f| %>
+  <%# Saved on each change (autosave): a toast says it, the form stays as set. %>
+  <%= form_with model: @form, url: notification_settings_path, method: :patch, class: "mt-6 space-y-6",
+        data: { controller: "autosave", action: "change->autosave#save turbo:submit-end->autosave#sent" } do |f| %>
     <%= render "shared/errors", record: @form %>
 
     <label class="flex items-center gap-3">
@@ -11,10 +13,11 @@
       <span class="font-semibold"><%= t(".digest_enabled") %></span>
     </label>
 
-    <label class="flex items-start gap-3">
+    <%# A refinement of the digest: under it, lighter. %>
+    <label class="-mt-3 flex items-start gap-3 pl-8">
       <%= f.check_box :critical_only, class: "mt-0.5 h-5 w-5 rounded" %>
       <span>
-        <span class="block font-semibold"><%= t(".critical_only") %></span>
+        <span class="block"><%= t(".critical_only") %></span>
         <span class="block text-sm text-muted"><%= t(".critical_only_help") %></span>
       </span>
     </label>
@@ -48,18 +51,17 @@
       <% end %>
     <% end %>
 
-    <%= f.submit t(".submit"), class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
+    <%= f.submit t(".submit"), class: button_class(:primary, block: true), data: { autosave_target: "submit" } %>
   <% end %>
 
-  <section class="mt-8 rounded-2xl bg-surface p-4 text-sm shadow-sm" aria-labelledby="devices">
+  <section class="mt-8 rounded-2xl bg-surface p-4 text-sm" aria-labelledby="devices">
     <h2 id="devices" class="font-semibold"><%= t(".devices") %></h2>
     <% if (count = Current.user.push_devices.count).positive? %>
       <p class="mt-1"><%= t(".devices_count", count:) %></p>
-      <%= button_to t(".test"), test_notification_path,
-            class: "mt-3 rounded-xl bg-surface px-3 py-2 text-sm font-semibold text-action shadow-sm " \
-                   "ring-1 ring-line" %>
+      <%= button_to t(".test"), test_notification_path, class: "mt-3 #{button_class(:secondary)}" %>
     <% else %>
-      <p class="mt-1 text-muted"><%= t(".no_device") %></p>
+      <%# Said differently in the app (this phone) and in a browser (the app is needed). %>
+      <p class="mt-1 text-muted"><%= t(hotwire_native_app? ? ".no_device_app" : ".no_device_web") %></p>
     <% end %>
   </section>
 </div>

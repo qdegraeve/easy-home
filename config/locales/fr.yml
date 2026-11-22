@@ -9,6 +9,10 @@ fr:
   activemodel:
     errors:
       models:
+        plant:
+          attributes:
+            new_location_exposure:
+              inclusion: "de l'emplacement : choisissez soleil, mi-ombre ou ombre"
         plant_analysis:
           attributes:
             photo_ids:
@@ -38,6 +42,9 @@ fr:
         name: "Nom"
         species: "Espèce"
         location_id: "Emplacement"
+        new_location_name: "Où est-elle ?"
+        new_location_exposure: "Exposition"
+        new_location_rain_exposed: "Dehors, à découvert : reçoit la pluie"
         watering_interval_days: "Arrosage"
         last_watered_on: "Dernier arrosage"
       task:
@@ -80,9 +87,7 @@ fr:
     edit:
       back: "← Réglages"
       title: "Notifications"
-      intro: >-
-        Chaque matin, un résumé des tâches du jour et de celles en retard, sur les téléphones où l'app
-        Easy Home est connectée. Rien n'est envoyé les jours sans tâche.
+      intro: "Un résumé chaque matin, seulement les jours où il y a quelque chose à faire."
       digest_enabled: "Recevoir le résumé du matin"
       critical_only: "Seulement ce qui ne doit pas être raté"
       critical_only_help: "Le résumé ne cite que les tâches « à ne pas rater » ; rien n'est envoyé les autres jours."
@@ -92,11 +97,12 @@ fr:
       devices_count:
         one: "1 téléphone reçoit les notifications."
         other: "%{count} téléphones reçoivent les notifications."
-      no_device: >-
-        Aucun téléphone pour l'instant : les notifications s'activent depuis l'app Android, sur cette page.
+      no_device_app: "Ce téléphone ne reçoit pas encore les notifications : elles arrivent avec une prochaine version
+        de l'app."
+      no_device_web: "Les notifications arrivent sur les téléphones où l'app Android est installée."
       test: "M'envoyer une notification de test"
     update:
-      success: "Réglages des notifications enregistrés."
+      success: "Enregistré."
   test_notifications:
     create:
       title: "Notification de test"
@@ -258,6 +264,8 @@ fr:
       name_placeholder: "Ex. Hibiscus de l'entrée"
       species_placeholder: "Facultatif, ex. Hibiscus rosa-sinensis"
       no_location: "Aucun emplacement"
+      new_location_placeholder: "Facultatif, ex. Terrasse, Salon"
+      new_location_hint: "L'emplacement sera créé avec la plante ; les suivantes pourront le choisir."
       every: "Tous les"
       days: "jours"
       last_watered_help: "Point de départ du calcul du prochain arrosage."

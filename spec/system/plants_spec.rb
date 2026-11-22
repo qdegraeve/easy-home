@@ -7,8 +7,7 @@ RSpec.describe "Plants", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   it "adds a plant, waters it, fixes the log, changes the interval, archives then restores it" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
-    create(:location, household: user.households.first, name: "Terrasse", exposure: :partial_shade)
+    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
@@ -16,15 +15,18 @@ RSpec.describe "Plants", type: :system do
     click_on "Se connecter"
     click_on "Ajouter une plante"
 
-    # Invalid input (the browser blocks the others): the server error shows and values are kept.
+    # Invalid input (the browser blocks the others): the server error shows and values are kept. The household has no
+    # place yet: the one of this first plant is typed here.
     fill_in "Nom", with: "   "
-    select "Terrasse", from: "Emplacement"
+    fill_in "Où est-elle ?", with: "Terrasse"
+    find("label", text: "Mi-ombre").click
     fill_in "Arrosage", with: "2"
     find("summary", text: "Plus de détails").click
     fill_in "Dernier arrosage", with: Date.new(2026, 11, 14)
     click_on "Ajouter la plante"
     expect(page).to have_content("Nom doit être rempli(e)")
     expect(page).to have_field("Arrosage", with: "2")
+    expect(page).to have_field("Où est-elle ?", with: "Terrasse")
 
     fill_in "Nom", with: "Basilic"
     click_on "Ajouter la plante"
@@ -32,6 +34,7 @@ RSpec.describe "Plants", type: :system do
     expect(page).to have_content("Tous les 2 jours")
     expect(page).to have_content("Prochain arrosage : aujourd'hui")
     expect(page).to have_content("Dernier arrosage : sam 14 nov.")
+    expect(page).to have_content(/Terrasse ·\s+Mi-ombre/)
 
     # Watering from the home page, once a day.
     go_to_tab("Aujourd'hui")

@@ -10,7 +10,14 @@ class NotificationSettingsController < ApplicationController
     result = Notifications::UpdateSettings.new.call(user: Current.user, params: settings_params)
 
     if result.success?
-      redirect_to edit_notification_settings_path, notice: t(".success")
+      respond_to do |format|
+        # Saved on each change: only the toast, the form is left as the user set it.
+        format.turbo_stream do
+          flash.now[:notice] = t(".success")
+          render turbo_stream: turbo_stream.replace("toasts", partial: "layouts/flash")
+        end
+        format.html { redirect_to edit_notification_settings_path, notice: t(".success") }
+      end
     else
       _code, @form = result.failure
       render :edit, status: :unprocessable_content

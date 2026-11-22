@@ -7,6 +7,9 @@ import { application } from "./application"
 import AddressAutocompleteController from "./address_autocomplete_controller"
 application.register("address-autocomplete", AddressAutocompleteController)
 
+import AutosaveController from "./autosave_controller"
+application.register("autosave", AutosaveController)
+
 import Bridge__ButtonController from "./bridge/button_controller"
 application.register("bridge--button", Bridge__ButtonController)
 
@@ -21,6 +24,9 @@ application.register("photo-picker", PhotoPickerController)
 
 import PhotoViewerController from "./photo_viewer_controller"
 application.register("photo-viewer", PhotoViewerController)
+
+import RequiredWithController from "./required_with_controller"
+application.register("required-with", RequiredWithController)
 
 import ToastController from "./toast_controller"
 application.register("toast", ToastController)
