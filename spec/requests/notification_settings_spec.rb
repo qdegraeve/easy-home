@@ -14,7 +14,8 @@ RSpec.describe "Notification settings", type: :request do
 
     get edit_notification_settings_path
 
-    expect(response.body).to include("Recevoir le résumé du matin", "Maison", "Chez Mamie", "Aucun téléphone")
+    expect(response.body).to include("Recevoir le résumé du matin", "Maison", "Chez Mamie")
+    expect(response.body).to include("Les notifications arrivent sur les téléphones")
     expect(response.body).to match(/<option selected="selected" value="08:00">/)
   end
 
@@ -35,6 +36,26 @@ RSpec.describe "Notification settings", type: :request do
     expect(user.reload).to have_attributes(digest_enabled: false, digest_minute: 7 * 60 + 15)
     expect(other.reload.digest).to be(false)
     expect(user.household_members.find_by(household: home).digest).to be(true)
+  end
+
+  it "answers a change saved from the page with the toast only, leaving the form as it is" do
+    sign_in(user)
+
+    patch notification_settings_path,
+      params: {
+        notification_settings: {
+          digest_enabled: "0",
+          digest_time: "08:00",
+          critical_only: "0",
+          household_ids: [ home.id ]
+        }
+      },
+      headers: { "Accept" => "text/vnd.turbo-stream.html, text/html" }
+
+    expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+    expect(response.body).to include('action="replace" target="toasts"', "Enregistré.")
+    expect(response.body).not_to include("Recevoir le résumé du matin")
+    expect(user.reload.digest_enabled).to be(false)
   end
 
   it "saves the digest scope: only what must not be missed, then everything again" do

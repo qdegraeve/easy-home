@@ -52,6 +52,7 @@ RSpec.describe "Plants", type: :request do
 
   describe "GET /plants/new" do
     it "asks for the photo first and a few fields, the watering prefilled, the rest folded" do
+      create(:location, household:)
       sign_in(user)
 
       get new_plant_path
@@ -97,6 +98,52 @@ RSpec.describe "Plants", type: :request do
       plant = household.plants.sole
       expect(response).to redirect_to(plant_path(plant))
       expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-18 00:00"))
+    end
+
+    it "creates the place of the first plant with it, when the household has none" do
+      sign_in(user)
+
+      get new_plant_path
+      expect(response.body).to include("Où est-elle ?")
+      expect(response.body).not_to include("Aucun emplacement")
+
+      post plants_path, params: {
+        plant: {
+          name: "Basilic",
+          watering_interval_days: "2",
+          new_location_name: " Terrasse ",
+          new_location_exposure: "full_sun",
+          new_location_rain_exposed: "1"
+        }
+      }
+
+      location = household.locations.sole
+      expect(location).to have_attributes(name: "Terrasse", exposure: "full_sun", rain_exposed: true)
+      expect(household.plants.sole.location).to eq(location)
+
+      get new_plant_path
+      expect(response.body).not_to include("Où est-elle ?")
+      expect(response.body).to include("Aucun emplacement", "Terrasse")
+    end
+
+    it "asks for the exposure of the new place, and creates nothing without it" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "Salon" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Exposition de l&#39;emplacement : choisissez soleil, mi-ombre ou ombre")
+      expect(response.body).to include('value="Salon"')
+      expect(Location.count + Plant.count).to eq(0)
+    end
+
+    it "leaves the plant without place when none is typed" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "" } }
+
+      expect(household.plants.sole.location).to be_nil
+      expect(household.locations).to be_empty
     end
 
     it "renders the form again on an invalid interval" do

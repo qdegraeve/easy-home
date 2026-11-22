@@ -76,7 +76,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Premier foyer à la première connexion, second foyer, changement de foyer | `spec/system/households_spec.rb` | Fait |
 | Mot de passe oublié jusqu'à la reconnexion | `spec/system/password_reset_spec.rb` | À faire |
 | Ma maison : adresse choisie dans les suggestions, altitude affichée, ajout et suppression d'un emplacement | `spec/system/house_spec.rb` | Fait |
-| Ajout rapide d'une plante (photo d'abord, arrosage prérempli à 7 jours, espèce et dernier arrosage repliés), arrosage unique du jour, annulation, intervalle, archivage et restauration | `spec/system/plants_spec.rb` | Fait |
+| Ajout rapide d'une plante (emplacement créé avec la première plante, photo d'abord, arrosage prérempli à 7 jours, espèce et dernier arrosage repliés), arrosage unique du jour, annulation, intervalle, archivage et restauration | `spec/system/plants_spec.rb` | Fait |
 | Tâches d'une plante : ajout (unique, répétée), fait depuis l'accueil et la fiche, annulation, modification, suppression | `spec/system/plant_tasks_spec.rb` | Fait |
 | Suivi photo : photo à l'ajout d'une plante (sélecteur en français, datée par l'EXIF), ajout en un geste depuis l'onglet Photos, fichier refusé, galerie par mois, visionneuse sans rechargement (position, flèches, touches du clavier, actions et adresse qui suivent la photo), date corrigée dans sa page, photo de couverture (en tête de fiche, marquée dans la galerie), suppression puis photo suivante | `spec/system/plant_photos_spec.rb` | Fait |
 | Analyse : automatique sur la première photo, résumée sur la fiche, puis sélection de photos (la vignette entière se coche) et remarque, résultat affiché, historique | `spec/system/plant_analyses_spec.rb` | Fait |
@@ -90,7 +90,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Importance et tolérance : tâche « à ne pas rater » en tête et en rouge, puis manquée le lendemain ; arrosage en retard manqué au-delà de sa marge et de nouveau dû ; lignes « manquée » dans le journal et l'historique ; « Reporter » décale une tâche à demain, tracé dans le journal | `spec/system/task_importance_spec.rb` | Fait |
 | Dans l'app : actions de la plante dans le menu natif, à jour après un archivage, suppression confirmée ; boutons natifs « Tâche » et « Analyse » de l'onglet Soins ; couverture et suppression d'une photo dans le menu natif | `spec/system/native_app_spec.rb` | Fait |
 | Pluie : emplacement marqué « Reçoit la pluie », forte pluie le soir, arrosage noté fait (ligne sur Aujourd'hui, « par la pluie » dans le journal), annulé | `spec/system/rain_spec.rb` | Fait |
-| Réglages des notifications : résumé coupé, heure, « seulement ce qui ne doit pas être raté », foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
+| Réglages des notifications, enregistrés à chaque changement : résumé coupé, heure, « seulement ce qui ne doit pas être raté », foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
 | Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 5 |

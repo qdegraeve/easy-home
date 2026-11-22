@@ -85,6 +85,18 @@ class PlantsController < ApplicationController
   end
 
   def plant_params
-    params.expect(plant: [ :name, :species, :location_id, :watering_interval_days, :last_watered_on, :photo ])
+    params.expect(
+      plant: [
+        :name,
+        :species,
+        :location_id,
+        :watering_interval_days,
+        :last_watered_on,
+        :photo,
+        :new_location_name,
+        :new_location_exposure,
+        :new_location_rain_exposed
+      ]
+    )
   end
 end

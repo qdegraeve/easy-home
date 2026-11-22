@@ -1,7 +1,7 @@
 module Plants
   # Adds a plant with its watering task (sliding recurrence) and its optional first photo, all or nothing: a photo
   # that cannot be read leaves no plant behind. The declared last watering goes into the log and is the starting
-  # point of the first occurrence.
+  # point of the first occurrence. A new location typed in the form (the household had none) is created with it.
   class Add
     include Dry::Monads[:result, :do]
 
@@ -22,9 +22,11 @@ module Plants
 
     def create_plant(household, user, form)
       ActiveRecord::Base.transaction do
+        attributes = form.plant_attributes
+        attributes[:location_id] = household.locations.create!(form.new_location_attributes).id if form.new_location?
         plant = household.plants.create!(
-          **form.plant_attributes,
-          species_source: (:user if form.plant_attributes[:species])
+          **attributes,
+          species_source: (:user if attributes[:species])
         )
         create_watering_task(plant, form, user)
         yield add_photo(plant, form) if form.photo.present?
