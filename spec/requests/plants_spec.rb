@@ -161,7 +161,7 @@ RSpec.describe "Plants", type: :request do
 
       text = response.parsed_body.text.squish
       expect(text).to include(
-        "Arrosée par la pluie lun 16 nov.",
+        "Arrosé par la pluie lun 16 nov.",
         "Arrosage : échéance reportée par la pluie mer 18 nov."
       )
       # The rain cloud icon on the watering by the rain, in the history.

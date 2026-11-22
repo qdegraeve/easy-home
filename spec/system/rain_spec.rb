@@ -43,7 +43,7 @@ RSpec.describe "Rain", type: :system do
     click_on "Voir le journal"
     expect(page).to have_content("Arrosé par la pluie")
     click_on "Annuler « Arrosage · Citronnier » du lun 16 nov."
-    within("dialog", text: "Annuler « Arrosage · Citronnier »") { click_on "Retirer" }
+    within("dialog", text: "Retirer « Arrosage · Citronnier »") { click_on "Retirer" }
     expect(page).to have_no_content("par la pluie")
 
     go_to_tab("Aujourd'hui")

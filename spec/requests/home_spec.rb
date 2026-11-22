@@ -69,7 +69,7 @@ RSpec.describe "Home", type: :request do
       )
     end
 
-    it "counts what was done today and leads to the journal" do
+    it "says nothing is left, and shows once below what was done today" do
       plant = create(
         :plant,
         :watered,
@@ -81,7 +81,9 @@ RSpec.describe "Home", type: :request do
 
       get root_path
 
-      expect(response.parsed_body.text.squish).to include("Une tâche faite aujourd'hui. Bravo !", "Voir le journal")
+      text = response.parsed_body.text.squish
+      expect(text).to include("Rien à faire aujourd'hui.", "Tout est à jour dans la maison.", "Fait aujourd'hui · 1")
+      expect(text).not_to include("Bravo")
     end
   end
 

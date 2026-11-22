@@ -16,7 +16,7 @@ class JournalEntryComponent < ViewComponent::Base
   attr_reader :entry, :task, :user
 
   def title
-    task.watering? ? task.subject.name : task.title
+    task.watering? ? task.subject&.name || task.title : task.title
   end
 
   # "Arrosé · par Sam · 18 h 00", "Citronnier · Échéance reportée · par vous", "Non fait, prévu le lun 16 nov.".
@@ -32,13 +32,14 @@ class JournalEntryComponent < ViewComponent::Base
     parts.compact.join(" · ")
   end
 
-  # "par vous", "par Sam" (the start of the e-mail, until people have a name), "par la pluie", or nothing.
+  # "par vous", "par Sam", "par la pluie", or nothing. Until people have a name, the start of the e-mail, up to the
+  # first dot or underscore ("sam.dupont@…" gives "Sam").
   def author
     return t(entry.done? && task.watering? ? ".watered_by_rain" : ".by_rain") if entry.by_rain?
     return unless entry.completed_by
     return t(".by_you") if entry.completed_by == user
 
-    t(".by", name: entry.completed_by.email.split("@").first.upcase_first)
+    t(".by", name: entry.completed_by.email.split(/[@._]/).first.upcase_first)
   end
 
   def icon_name
@@ -51,9 +52,14 @@ class JournalEntryComponent < ViewComponent::Base
 
   # "Arrosage · Basilic", "Tailler · Citronnier": names the line in the cancel button and its confirmation.
   def what
-    return t(".what_watering", name: task.subject.name) if task.watering?
+    return t(".what_watering", name: task.subject.name) if task.watering? && task.subject
 
     task.subject ? t(".what_task", title: task.title, name: task.subject.name) : task.title
+  end
+
+  # Nothing is rescheduled for a stopped task (an archived plant): the confirmation does not promise it.
+  def confirm_message
+    t(task.active? ? ".cancel_confirm" : ".cancel_confirm_stopped", what:, date: date_label)
   end
 
   def date_label

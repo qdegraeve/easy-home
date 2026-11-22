@@ -69,5 +69,11 @@ RSpec.describe "Today", type: :system do
     within("[data-controller=toast]") { click_on "Annuler" }
     expect(page).to have_content("Annulé, prochaine échéance recalculée.")
     expect(page).to have_button("J'ai arrosé : Menthe")
+
+    # Undone from "Fait aujourd'hui" too, which stayed open through the refreshes.
+    within("#done-today") { click_on "Annuler « Arrosage · Aloe » du lun 16 nov." }
+    within("dialog", text: "du journal ?") { click_on "Retirer" }
+    expect(page).to have_css("details#done-today[open]", text: "Fait aujourd'hui · 1")
+    expect(page).to have_content("À faire aujourd'hui · 2")
   end
 end

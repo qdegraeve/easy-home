@@ -36,7 +36,7 @@ RSpec.describe "Sections", type: :system do
     expect(page).to have_content("Arrosé · par vous")
     expect(page).to have_css("h2", text: "16 novembre 2026")
     click_on "Annuler « Arrosage · Basilic » du lun 16 nov."
-    within("dialog", text: "La ligne sera retirée du journal") do
+    within("dialog", text: "du journal ? La prochaine échéance sera recalculée.") do
       expect(page).to have_button("Garder")
       click_on "Retirer"
     end

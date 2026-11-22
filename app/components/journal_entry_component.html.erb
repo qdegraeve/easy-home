@@ -10,7 +10,7 @@
   <% if entry.done? %>
     <%= button_to t(".cancel"), task_occurrence_completion_path(entry), method: :delete,
           aria: { label: t(".cancel_label", what:, date: date_label) },
-          form: { data: helpers.confirm_data(t(".cancel_confirm", what:, date: date_label),
+          form: { data: helpers.confirm_data(confirm_message,
                                              button: t(".cancel_confirm_button"), cancel: t(".keep")) },
           class: "mr-1 #{helpers.small_action_class}" %>
   <% end %>
