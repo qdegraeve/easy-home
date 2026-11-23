@@ -29,7 +29,7 @@
       </span>
     </p>
   <% end %>
-  <% if @has_plants %>
+  <% if @has_content %>
     <% if @due_today.any? %>
       <%= render TaskListComponent.new(
         occurrences: @due_today,

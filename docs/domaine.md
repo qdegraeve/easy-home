@@ -14,7 +14,7 @@
 | Sujet d'une tâche | `Task#subject` | La plante ou l'équipement auquel une tâche se rattache (polymorphe) ; nul pour une **tâche de la maison** (poubelles). |
 | Suggestion | `config/catalogue.yml` (à venir) | Tâche toute prête d'un type d'équipement ou de la maison, copiée dans la tâche à sa création (pas en base). |
 | Tâche | `Task` | Une chose à faire, une fois ou de façon répétée. |
-| Comment faire | `Task#instructions` (à venir) | Le mode opératoire d'une tâche, lu au moment de la faire, dans sa feuille. |
+| Comment faire | `Task#instructions` | Le mode opératoire d'une tâche, lu au moment de la faire, dans sa feuille. |
 | À savoir | `Equipment#notes` (à venir) | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
@@ -98,7 +98,7 @@ Task
   household (lecture seule)      # toujours présent : droits et listes passent par lui
   subject (polymorphe, optionnel)  # Plant, Equipment ; même foyer que la tâche ; null : tâche de la maison
   title
-  instructions : text            # à venir (PR 1) : « Comment faire »
+  instructions : text            # « Comment faire » (5 000 caractères au plus), lu dans la feuille de la tâche
   template_key (ex. "plant.watering")   # tâche gérée par son sujet (réglée depuis la plante)
   suggestion_key                 # à venir (PR 2) : suggestion d'origine (ex. "house.bins.yellow"), sans comportement
   importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
@@ -218,6 +218,18 @@ d'équipement) sont décrits dans `config/catalogue.yml`, leurs textes dans `con
 table (ADR 0016). Une suggestion est **copiée** dans la tâche à sa création (titre, rythme, importance, rappel,
 Comment faire) : tout reste modifiable, y compris le type de rythme. Un équipement de type « Autre » n'a pas de
 suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.md`.
+
+## Tâches de la maison
+
+- Une tâche sans sujet appartient à la maison (poubelles, aérer la cave) : `Tasks::Add` la crée pour le foyer
+  courant (`TasksController`, `/tasks/new`), elle se liste dans « Maison → Tâches de la maison » (une tâche unique déjà
+  faite en sort, elle reste au journal) et apparaît dans « Aujourd'hui » sans sous-titre.
+- Toute tâche a sa **feuille** (`tasks#show`, modale dans l'app) : le titre, la plante ou « Tâche de la maison », la
+  prochaine échéance avec « Fait » et « Reporter », la dernière fois, et le **Comment faire** (texte de l'utilisateur,
+  échappé, retours à la ligne gardés). Une ligne d'« Aujourd'hui » ou de la fiche plante ouvre la feuille (sauf
+  l'arrosage, qui mène à la plante) ; une icône livre signale un Comment faire. La feuille mène à la modification, où
+  la tâche se supprime aussi.
+- « Aujourd'hui » liste les tâches dès que le foyer suit quelque chose (une plante ou une tâche), même sans plante.
 
 ## Plantes
 

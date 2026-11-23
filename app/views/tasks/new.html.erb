@@ -1,0 +1,13 @@
+<div class="mx-auto max-w-md">
+  <% if @subject %>
+    <%= back_link_to t("plants.tasks.back", name: @subject.name), @subject %>
+  <% else %>
+    <%= back_link_to t("tasks.back_house"), house_tasks_path %>
+  <% end %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+
+  <div class="mt-6">
+    <%= render "form", form: @form, url: @subject ? polymorphic_path([ @subject, :tasks ]) : tasks_path,
+          method: :post, adding: true, house: @subject.nil?, submit: t(".submit") %>
+  </div>
+</div>

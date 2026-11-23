@@ -49,6 +49,7 @@ fr:
         last_watered_on: "Dernier arrosage"
       task:
         title: "Tâche"
+        instructions: "Comment faire"
         recurrence_type: "Répétition"
         due_on: "Date"
         interval_days: "Répétition"
@@ -145,6 +146,12 @@ fr:
       to_review:
         one: "%{count} analyse à revoir"
         other: "%{count} analyses à revoir"
+      house_tasks: "Tâches de la maison"
+      house_tasks_count:
+        one: "%{count} tâche"
+        other: "%{count} tâches"
+      add: "Ajouter"
+      add_label: "Ajouter une plante ou une tâche"
       places: "Lieux de la maison"
       address_and_locations: "Adresse et emplacements"
       no_address: "Adresse à renseigner"
@@ -152,6 +159,26 @@ fr:
         zero: "aucun emplacement"
         one: "%{count} emplacement"
         other: "%{count} emplacements"
+    new:
+      back: "← Maison"
+      title: "Ajouter"
+      choose: "Que voulez-vous ajouter ?"
+      plant: "Une plante"
+      plant_hint: "Son arrosage, ses photos, son analyse"
+      task: "Une tâche de la maison"
+      task_hint: "Les poubelles, aérer la cave…"
+  house_tasks:
+    index:
+      back: "← Maison"
+      title: "Tâches de la maison"
+      intro: "Ce qui ne dépend ni d'une plante ni d'un équipement."
+      tasks:
+        zero: "À venir"
+        one: "À venir · %{count}"
+        other: "À venir · %{count}"
+      empty: "Aucune tâche de la maison pour l'instant."
+      add: "Ajouter une tâche"
+      add_label: "Tâche"
   journal:
     show:
       title: "Journal"
@@ -226,6 +253,7 @@ fr:
     watered_today: "Arrosée aujourd'hui"
     done_today: "Fait aujourd'hui"
     postpone_button: "Reporter"
+    has_instructions: "Comment faire disponible"
     postpone: "Reporter à demain : %{title}"
     postpone_with_subject: "Reporter à demain : %{title} (%{subject})"
   due_label:
@@ -326,11 +354,6 @@ fr:
       add_task: "Ajouter une tâche"
       add_task_label: "Tâche"
       once: "Une fois"
-      edit_task: "Modifier"
-      edit_task_label: "Modifier « %{title} »"
-      destroy_task: "Supprimer"
-      destroy_task_label: "Supprimer « %{title} »"
-      destroy_task_confirm: "Supprimer la tâche « %{title} » et son historique ?"
       done_entry: "%{title}"
       watering_missed: "Arrosage manqué"
       task_missed: "%{title} : manquée"
@@ -475,30 +498,6 @@ fr:
         success: "Photo supprimée."
     tasks:
       back: "← %{name}"
-      form:
-        title_placeholder: "Ex. Engrais, tailler, rempoter"
-        repeat: "Quand ?"
-        critical: "À ne pas rater"
-        critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
-        kinds:
-          once: "Une seule fois"
-          sliding: "Tous les N jours après la dernière fois"
-        due_on:
-          once: "Date"
-          first: "Première fois"
-          sliding: "Prochaine fois"
-      new:
-        title: "Ajouter une tâche"
-        submit: "Ajouter la tâche"
-      create:
-        success: "Tâche « %{title} » ajoutée."
-      edit:
-        title: "Modifier « %{title} »"
-        submit: "Enregistrer"
-      update:
-        success: "Tâche « %{title} » enregistrée."
-      destroy:
-        success: "Tâche « %{title} » supprimée."
     archives:
       create:
         success: "Plante « %{name} » archivée."
@@ -507,10 +506,52 @@ fr:
         success: "Plante « %{name} » restaurée."
         already: "« %{name} » n'était pas archivée."
   tasks:
+    back_house: "← Tâches de la maison"
+    form:
+      title_placeholder: "Ex. Engrais, tailler, rempoter"
+      title_placeholder_house: "Ex. Sortir la poubelle jaune, aérer la cave"
+      repeat: "Quand ?"
+      critical: "À ne pas rater"
+      critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
+      instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."
+      instructions_placeholder: "Ex. Sortir le bac jaune devant le portail, couvercle fermé."
+      kinds:
+        once: "Une seule fois"
+        sliding: "Tous les N jours après la dernière fois"
+      due_on:
+        once: "Date"
+        first: "Première fois"
+        sliding: "Prochaine fois"
+    new:
+      title: "Ajouter une tâche"
+      submit: "Ajouter la tâche"
+    create:
+      success: "Tâche « %{title} » ajoutée."
+    edit:
+      title: "Modifier « %{title} »"
+      submit: "Enregistrer"
+      destroy: "Supprimer la tâche"
+      destroy_confirm: "Supprimer « %{title} » ? Son historique part aussi."
+    update:
+      success: "Tâche « %{title} » enregistrée."
+    destroy:
+      success: "Tâche « %{title} » supprimée."
+    show:
+      house: "Tâche de la maison"
+      next: "Prochaine fois :"
+      none: "Plus d'échéance."
+      instructions: "Comment faire"
+      no_instructions: "Pas encore de « Comment faire »."
+      add_instructions: "Ajouter le comment faire"
+      last_done: "Dernière fois : %{date}"
+      edit: "Modifier"
+      done: "Fait"
+      done_label: "Marquer comme fait : %{title}"
   task_occurrences:
     completions:
       create:
         success: "%{title} noté pour « %{subject} »."
+        success_without_subject: "%{title} noté."
         not_pending: "C'était déjà fait."
         missed: "Trop tard : cette tâche a été notée manquée."
         inactive: "Cette tâche est arrêtée."

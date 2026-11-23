@@ -6,7 +6,7 @@ module TaskOccurrences
 
       notice = if result.success?
         flash[:undo_ids] = [ result.value!.id ] # the occurrence done, maybe the reopened one (Tasks::Complete)
-        t(".success", title: occurrence.task.title, subject: occurrence.task.subject&.name)
+        done_notice(occurrence.task)
       else
         t(".#{result.failure.first}")
       end
@@ -27,6 +27,13 @@ module TaskOccurrences
     end
 
     private
+
+    # "Tailler noté pour « Citronnier ».", or "Sortir la poubelle jaune noté." for a task of the house.
+    def done_notice(task)
+      return t(".success_without_subject", title: task.title) unless task.subject
+
+      t(".success", title: task.title, subject: task.subject.name)
+    end
 
     def find_occurrence
       occurrence = policy_scope(TaskOccurrence).find(params[:task_occurrence_id])

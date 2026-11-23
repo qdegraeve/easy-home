@@ -1,0 +1,19 @@
+<div class="mx-auto max-w-md">
+  <% if @task.subject %>
+    <%= back_link_to t("plants.tasks.back", name: @task.subject.name), @task.subject %>
+  <% else %>
+    <%= back_link_to t("tasks.back_house"), house_tasks_path %>
+  <% end %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title", title: @task.title) %></h1>
+
+  <div class="mt-6">
+    <%= render "form", form: @form, url: task_path(@task), method: :patch, adding: false, house: @task.subject.nil?,
+          submit: t(".submit") %>
+  </div>
+
+  <%# Deleting lives here, not on the rows of a list (design review: red only behind a confirmation). %>
+  <%= button_to t(".destroy"), task_path(@task), method: :delete,
+        form: { class: "mt-6", data: confirm_data(t(".destroy_confirm", title: @task.title), button: t(".destroy"),
+                                                  danger: true) },
+        class: button_class(:danger, block: true) %>
+</div>

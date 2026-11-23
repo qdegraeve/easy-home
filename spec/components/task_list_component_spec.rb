@@ -44,19 +44,19 @@ RSpec.describe TaskListComponent, type: :component do
     expect(page).to have_text("Terrasse 2 · sans emplacement 1")
     expect(page).to have_button("Tout arroser : 3 plantes")
     expect(page).to have_button("Marquer comme fait : Tailler (Basilic)")
-    # The gesture first, then the plant; the whole text leads to the plant.
-    expect(page).to have_link(text: /\A\s*Tailler\s+Basilic · aujourd'hui/, href: "/plants/#{pruning.subject.id}")
+    # The gesture first, then the plant; the whole text opens the task sheet, a watering leads to its plant.
+    expect(page).to have_link(text: /\A\s*Tailler\s+Basilic · aujourd'hui/, href: "/tasks/#{pruning.id}")
   end
 
-  it "shows a task without subject as text, not as a link" do
+  it "shows a task of the house with no detail, its sheet a tap away, and the book when it says how to do it" do
     bins = create(:task, household:, subject: nil, title: "Poubelle jaune", template_key: nil, recurrence_type: :once,
-                         recurrence_config: { "due_on" => "2026-11-16" })
+                         recurrence_config: { "due_on" => "2026-11-16" }, instructions: "Bac devant le portail.")
     occurrence = bins.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
 
     render_inline(described_class.new(occurrences: [ occurrence ], title: "Aujourd'hui", id: "today"))
 
-    expect(page).to have_text(/Poubelle jaune\s+Tâche · aujourd'hui/)
-    expect(page).to have_no_link
+    expect(page).to have_link(text: /\A\s*Poubelle jaune\s+aujourd'hui\s*\z/, href: "/tasks/#{bins.id}")
+    expect(page).to have_css("svg[aria-label='Comment faire disponible']")
   end
 
   it "keeps a single watering on its own line, with the plant's name" do

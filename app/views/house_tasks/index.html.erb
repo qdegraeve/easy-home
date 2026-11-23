@@ -1,0 +1,21 @@
+<%= back_link_to t(".back"), house_path %>
+<h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+<p class="text-sm text-muted"><%= t(".intro") %></p>
+
+<div class="mt-6 space-y-6 lg:max-w-2xl">
+  <%= render ListGroupComponent.new(title: t(".tasks", count: @tasks.size), id: "house-tasks") do |group| %>
+    <% @tasks.each do |task| %>
+      <% group.with_row do %>
+        <%= render TaskRowComponent.new(occurrence: task.pending_occurrence, title: task.title, href: task_path(task)) %>
+      <% end %>
+    <% end %>
+    <%= render EmptyStateComponent.new(text: t(".empty")) if @tasks.empty? %>
+  <% end %>
+
+  <% if policy(Task.new(household: @household)).create? %>
+    <%# In the Android app, a "+" button of the native top bar (bridge--button). %>
+    <%= link_to t(".add"), new_task_path, class: button_class(:primary, block: true),
+          data: { controller: "bridge--button", bridge_title: t(".add"), bridge_label: t(".add_label"),
+                  bridge_icon: "plus" } %>
+  <% end %>
+</div>

@@ -8,7 +8,7 @@
 class TaskRowComponent < ViewComponent::Base
   renders_one :actions
 
-  def initialize(occurrence:, title:, detail:, href: nil, done_today: false, postpone: false)
+  def initialize(occurrence:, title:, detail: nil, href: nil, done_today: false, postpone: false)
     @occurrence = occurrence
     @task = occurrence.task
     @title = title
@@ -35,8 +35,9 @@ class TaskRowComponent < ViewComponent::Base
 
   def mark_icon
     return :droplet if task.watering?
+    return :triangle_alert if task.critical?
 
-    task.critical? ? :triangle_alert : :list_todo
+    task.subject ? :list_todo : :house
   end
 
   # Button name for screen readers, an action: "J'ai arrosé : Citronnier", "Marquer comme fait : Tailler

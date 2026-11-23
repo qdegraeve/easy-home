@@ -12,8 +12,13 @@ class Task < ApplicationRecord
   enum :importance, { flexible: "flexible", critical: "critical" }, validate: true
 
   scope :active, -> { where(active: true) }
+  # Tasks of the house itself (bins…), attached to neither a plant nor an equipment.
+  scope :without_subject, -> { where(subject_type: nil) }
+
+  INSTRUCTIONS_MAX = 5_000
 
   validates :title, presence: true, length: { maximum: 100 }
+  validates :instructions, length: { maximum: INSTRUCTIONS_MAX }
   validate :subject_must_belong_to_household
   validate :recurrence_must_be_valid
 
@@ -21,7 +26,6 @@ class Task < ApplicationRecord
     Recurrence.build(type: recurrence_type, config: recurrence_config)
   end
 
-  # Task added by hand (fertilizer, pruning…), as opposed to a task created with its subject (watering).
   # The open occurrence is where the rain put it (Plants::RecordRain postponing it): the last closed occurrence is a
   # rain postponement and the open one still has the date Tasks::Postpone gave it, not one a missed watering or an edit
   # of the task set since.
@@ -32,6 +36,7 @@ class Task < ApplicationRecord
     pending_occurrence.due_at.to_date == [ last_closed.due_at.to_date, last_closed.completed_at.to_date ].max + 1
   end
 
+  # Task added by hand (fertilizer, pruning, bins…), as opposed to a task created with its subject (watering).
   def manual?
     template_key.nil?
   end
