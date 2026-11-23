@@ -8,17 +8,16 @@ class EquipmentController < ApplicationController
     return redirect_to(new_household_path) unless @household
 
     authorize @household, :update?
-    @equipment = policy_scope(Equipment).where(household: @household).order(:name)
-      .includes(tasks: :pending_occurrence)
+    @equipment = policy_scope(Equipment).where(household: @household).order(:name).to_a
+    # The next due date of each, in one query.
+    @next_due = Task.to_do.where(subject: @equipment).group(:subject_id).minimum("task_occurrences.due_at")
   end
 
   def show
     @equipment = find_equipment
     @tab = params[:tab].presence_in(TABS) || "care"
-    @tasks = @equipment.tasks.active.includes(:pending_occurrence).select(&:pending_occurrence)
-      .sort_by { |task| [ task.pending_occurrence.due_at, task.id ] }
-    @history = TaskOccurrence.where(task: @equipment.tasks, status: %i[done missed postponed])
-      .includes(:completed_by, task: :subject).order(completed_at: :desc, id: :desc).limit(30)
+    @tasks = @equipment.tasks.to_do.includes(:pending_occurrence).order("task_occurrences.due_at", :id)
+    @history = SubjectHistoryQuery.new.call(subject: @equipment)
   end
 
   def new

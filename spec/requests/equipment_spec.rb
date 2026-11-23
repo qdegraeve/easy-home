@@ -56,14 +56,15 @@ RSpec.describe "Equipment", type: :request do
   end
 
   it "lists the equipment of the household on Maison and on its page, not another household's" do
-    create(:equipment, household:, name: "Piscine")
+    pool = create(:equipment, household:, name: "Piscine")
+    Tasks::Add.new.call(subject: pool, params: { title: "pH", due_on: "2026-11-19" })
     create(:equipment, name: "Voisin")
     sign_in(user)
 
     get house_path
     expect(response.parsed_body.text.squish).to include("Équipements 1 équipement")
     get equipment_index_path
-    expect(response.parsed_body.text.squish).to include("Piscine")
+    expect(response.parsed_body.text.squish).to include("Piscine Lave-vaisselle · dans 3 j")
     expect(response.body).not_to include("Voisin")
   end
 
@@ -81,6 +82,48 @@ RSpec.describe "Equipment", type: :request do
       .to eq([ 0, 0, 0 ])
   end
 
+  it "preselects the kind given in the link, ignores an unknown one, and re-renders an invalid change" do
+    equipment = create(:equipment, household:, name: "Piscine")
+    sign_in(user)
+
+    get new_equipment_path(kind: "pool")
+    expect(response.parsed_body.at_css("input[name='equipment[kind]'][value=pool]")["checked"]).to eq("checked")
+    get new_equipment_path(kind: "spaceship")
+    expect(response.parsed_body.css("input[name='equipment[kind]'][checked]")).to be_empty
+
+    get edit_equipment_path(equipment)
+    expect(response.body).to include('value="Piscine"')
+    patch equipment_path(equipment), params: { equipment: { kind: "spaceship" } }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(equipment.reload.kind).to eq("dishwasher")
+  end
+
+  it "keeps working for an equipment whose kind left the catalogue, shown as Autre" do
+    equipment = create(:equipment, household:, name: "Vieux poêle")
+    equipment.update_column(:kind, "stove")
+    Tasks::Add.new.call(subject: equipment, params: { title: "Ramoner", due_on: "2026-11-16" })
+    sign_in(user)
+
+    get root_path
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.text.squish).to include("Ramoner Vieux poêle · aujourd'hui")
+    get equipment_index_path
+    expect(response.parsed_body.text.squish).to include("Vieux poêle Autre · aujourd'hui")
+    get equipment_path(equipment)
+    expect(response).to have_http_status(:ok)
+    patch equipment_path(equipment), params: { equipment: { name: "Poêle du salon" } }
+    expect(equipment.reload.name).to eq("Poêle du salon")
+  end
+
+  it "offers months as the unit of a task of an equipment" do
+    equipment = create(:equipment, household:)
+    sign_in(user)
+
+    get new_equipment_task_path(equipment)
+
+    expect(response.parsed_body.at_css("select[name='task[unit]'] option[selected]")["value"]).to eq("months")
+  end
+
   describe "access denied" do
     let(:equipment) { create(:equipment, household:) }
 
@@ -93,6 +136,10 @@ RSpec.describe "Equipment", type: :request do
         sign_in(instance_exec(household, &intruder))
 
         get equipment_path(equipment)
+        expect(response).to have_http_status(:not_found)
+        get edit_equipment_path(equipment)
+        expect(response).to have_http_status(:not_found)
+        get new_equipment_task_path(equipment)
         expect(response).to have_http_status(:not_found)
         patch equipment_path(equipment), params: { equipment: { name: "X" } }
         expect(response).to have_http_status(:not_found)
@@ -109,6 +156,8 @@ RSpec.describe "Equipment", type: :request do
       sign_in(create(:household_member, household:, role: :guest).user)
 
       get equipment_index_path
+      expect(response).to have_http_status(:forbidden)
+      get new_equipment_path
       expect(response).to have_http_status(:forbidden)
       post equipment_index_path, params: { equipment: { kind: "pool" } }
       expect(response).to have_http_status(:forbidden)

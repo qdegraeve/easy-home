@@ -5,7 +5,7 @@
   <%= render ListGroupComponent.new(id: "equipment") do |group| %>
     <% @equipment.each do |equipment| %>
       <% group.with_row do %>
-        <% next_occurrence = equipment.tasks.select(&:active?).filter_map(&:pending_occurrence).min_by(&:due_at) %>
+        <% next_due_at = @next_due[equipment.id] %>
         <%= link_to equipment_path(equipment),
               class: "flex min-h-14 items-center gap-3 px-3 py-2 active:bg-subtle" do %>
           <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-gear">
@@ -15,8 +15,8 @@
             <span class="block font-medium"><%= equipment.name %></span>
             <span class="text-sm text-muted">
               <%= equipment.kind_info.name %>
-              <% if next_occurrence %>
-                · <%= render DueLabelComponent.new(due_at: next_occurrence.due_at) %>
+              <% if next_due_at %>
+                · <%= render DueLabelComponent.new(due_at: next_due_at) %>
               <% end %>
             </span>
           </span>

@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Equipment, type: :model do
-  include ActiveJob::TestHelper
-
   it_behaves_like "a task subject" do
     subject { create(:equipment) }
   end

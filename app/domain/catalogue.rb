@@ -66,7 +66,8 @@ module Catalogue
     end
 
     def equipment_kind(key)
-      equipment_kinds.find { |kind| kind.key == key.to_s }
+      @equipment_kinds_by_key ||= Ractor.make_shareable(equipment_kinds.index_by(&:key))
+      @equipment_kinds_by_key[key.to_s]
     end
 
     def equipment_kind_keys

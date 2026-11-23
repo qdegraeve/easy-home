@@ -9,7 +9,8 @@ class IconComponent < ViewComponent::Base
   end.freeze
 
   def initialize(name, size: 20, label: nil, class: nil)
-    @shape = SHAPES.fetch(name.to_s.tr("_", "-")) { raise ArgumentError, "Unknown icon #{name.inspect} (#{DIRECTORY})" }
+    @name = name.to_s.tr("_", "-")
+    @shape = SHAPES.fetch(@name) { raise ArgumentError, "Unknown icon #{name.inspect} (#{DIRECTORY})" }
     @size = size
     @label = label
     @css_class = binding.local_variable_get(:class)
@@ -30,7 +31,8 @@ class IconComponent < ViewComponent::Base
       class: [ "inline-block shrink-0 align-[-0.2em]", @css_class ],
       role: @label ? "img" : nil,
       "aria-label": @label,
-      "aria-hidden": @label ? nil : "true"
+      "aria-hidden": @label ? nil : "true",
+      data: { icon: @name } # which icon it is, for the specs and the eye
     )
   end
 end

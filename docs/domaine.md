@@ -245,6 +245,7 @@ suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.
   tâches). Maison montre la section « Équipements » dès qu'il y en a un.
 - Ses tâches se créent depuis sa fiche (`/equipment/:id/tasks/new`) et vivent comme les autres : Aujourd'hui les
   sous-titre du nom de l'équipement, avec l'icône de son type ; la feuille, le journal et les rappels le nomment.
+- Un type retiré du catalogue se lit « Autre » : l'équipement reste affiché et modifiable.
 - Pas d'archivage : supprimer un équipement (depuis sa modification, avec confirmation) supprime ses tâches et leur
   historique. Les photos de l'équipement et d'une tâche arrivent avec la PR 6b.
 

@@ -4,6 +4,9 @@
 # current household.
 class TasksController < ApplicationController
   SUBJECTS = { plant_id: Plant, equipment_id: Equipment }.freeze
+  # The unit offered for "every N…": days for a plant (fertilizer every 14 days), months for an equipment (the filter
+  # every month), weeks for the house (the bins).
+  DEFAULT_UNITS = { "Plant" => "days", "Equipment" => "months", nil => "weeks" }.freeze
 
   before_action :load_target, only: [ :new, :create ]
 
@@ -17,11 +20,10 @@ class TasksController < ApplicationController
   # plant, it is ignored.
   def new
     suggestion = Catalogue.suggestion(params[:suggestion]) unless @subject
-    # Every N days for a plant (fertilizer every 14 days), weeks for the house (the bins).
     @form = if suggestion
       TaskForm.from_suggestion(suggestion)
     else
-      TaskForm.new(due_on: Time.zone.today, unit: @subject ? "days" : "weeks")
+      TaskForm.new(due_on: Time.zone.today, unit: DEFAULT_UNITS.fetch(@subject&.class&.name))
     end
     @suggestions = suggestions
   end

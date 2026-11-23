@@ -6,8 +6,9 @@ RSpec.shared_examples "a task subject" do
     task.occurrences.create!(due_at: Time.current, status: :done, completed_at: Time.current)
 
     expect(subject.name).to be_present
-    expect([ true, false ]).to include(subject.archived?)
+    expect(subject.archived?).to be_in([ true, false ])
     expect(subject.tasks).to include(task)
+    expect { subject.update!(household: create(:household)) }.to raise_error(ActiveRecord::ActiveRecordError)
 
     subject.destroy!
 

@@ -6,8 +6,7 @@ class Equipment < ApplicationRecord
 
   belongs_to :household
   has_many :tasks, as: :subject, dependent: :destroy
-  has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy,
-                                                              inverse_of: :subject
+  has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy, inverse_of: :subject
 
   # Authorization goes through the household: it never changes (ADR 0010).
   attr_readonly :household_id
@@ -16,12 +15,19 @@ class Equipment < ApplicationRecord
   # Named after its kind when no name is typed ("Lave-vaisselle"): an attribute default, nothing else.
   before_validation { self.name ||= kind_info&.name }
 
-  validates :kind, inclusion: { in: ->(_) { Catalogue.equipment_kind_keys } }
+  validates :kind, inclusion: { in: ->(_) { Catalogue.equipment_kind_keys } }, if: :kind_changed?
   validates :name, presence: true, length: { maximum: 100 }
   validates :notes, length: { maximum: NOTES_MAX }
 
+  # Its kind in the catalogue; a kind the catalogue no longer has reads as "Autre" (a catalogue change never breaks
+  # what exists, ADR 0016).
   def kind_info
-    Catalogue.equipment_kind(kind)
+    Catalogue.equipment_kind(kind) || Catalogue.equipment_kind("other")
+  end
+
+  # The mark of its tasks in the lists (contract of a subject: a subject may give its own).
+  def icon
+    kind_info.icon
   end
 
   def archived?
