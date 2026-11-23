@@ -50,6 +50,8 @@ fr:
       task:
         title: "Tâche"
         instructions: "Comment faire"
+        interval: "Nombre"
+        unit: "Unité"
         recurrence_type: "Répétition"
         due_on: "Date"
         interval_days: "Répétition"
@@ -241,7 +243,6 @@ fr:
       one: "Tout arroser : %{count} plante"
       other: "Tout arroser : %{count} plantes"
     watering: "Arrosage"
-    once: "Tâche"
     no_location: "sans emplacement"
   names_sentence:
     others:
@@ -354,7 +355,6 @@ fr:
       no_tasks: "Aucune autre tâche : engrais, taille, rempotage…"
       add_task: "Ajouter une tâche"
       add_task_label: "Tâche"
-      once: "Une fois"
       done_entry: "%{title}"
       watering_missed: "Arrosage manqué"
       task_missed: "%{title} : manquée"
@@ -506,6 +506,18 @@ fr:
         already: "« %{name} » n'était pas archivée."
   tasks:
     back_house: "← Tâches de la maison"
+    rhythm:
+      once: "Une fois"
+      sliding:
+        one: "Tous les jours"
+        other: "Tous les %{count} jours"
+      weeks:
+        one: "Chaque semaine, le %{day}"
+        other: "Toutes les %{count} semaines, le %{day}"
+      years:
+        one: "Chaque année, le %{date}"
+        other: "Tous les %{count} ans, le %{date}"
+      first_day: "1er"
     form:
       title_placeholder: "Ex. Engrais, tailler, rempoter"
       title_placeholder_house: "Ex. Sortir la poubelle jaune, aérer la cave"
@@ -516,13 +528,19 @@ fr:
       critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
       instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."
       instructions_placeholder: "Ex. Sortir le bac jaune devant le portail, couvercle fermé."
+      suggestions: "Suggestions"
+      fixed_every: "Toutes les"
+      units:
+        weeks: "semaines"
+        years: "ans"
       kinds:
         once: "Une seule fois"
         sliding: "Tous les N jours après la dernière fois"
+        fixed: "À jour fixe : toutes les N semaines ou chaque année"
       due_on:
         once: "Date"
-        first: "Première fois"
-        sliding: "Prochaine fois"
+        next: "Prochaine fois le"
+        fixed_help: "Le jour de la semaine, ou le jour de l'année, vient de cette date."
     new:
       title: "Ajouter une tâche"
       submit: "Ajouter la tâche"

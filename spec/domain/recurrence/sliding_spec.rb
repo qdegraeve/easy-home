@@ -83,10 +83,4 @@ RSpec.describe Recurrence::Sliding do
       end
     end
   end
-
-  describe "#closed_by_miss?" do
-    it "is not: missed, it is still to do" do
-      expect(described_class.new(interval_days: 7)).not_to be_closed_by_miss
-    end
-  end
 end

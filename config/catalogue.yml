@@ -1,0 +1,19 @@
+# Catalogue of suggestions (ADR 0016, docs/conception/equipements-et-taches.md): ready-made tasks, copied into a task
+# when chosen, then editable. Texts in config/locales/catalogue.fr.yml. Equipment kinds come with the equipment.
+
+# Offered by the task form opened from Maison (a task of the house, no subject), in this order.
+household_suggestions: [bins.yellow, bins.grey, bins.yellow_back, bins.bulky]
+
+suggestions:
+  bins.yellow:
+    importance: critical
+    recurrence: { type: fixed, interval: 2, unit: weeks }
+  bins.grey:
+    importance: critical
+    recurrence: { type: fixed, interval: 1, unit: weeks }
+  bins.yellow_back:
+    importance: flexible
+    recurrence: { type: fixed, interval: 2, unit: weeks }
+  bins.bulky:
+    importance: flexible
+    recurrence: { type: once }

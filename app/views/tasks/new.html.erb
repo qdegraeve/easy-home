@@ -4,6 +4,6 @@
 
   <div class="mt-6">
     <%= render "form", form: @form, url: @subject ? polymorphic_path([ @subject, :tasks ]) : tasks_path,
-          method: :post, adding: true, house: @subject.nil?, submit: t(".submit") %>
+          method: :post, adding: true, house: @subject.nil?, suggestions: @suggestions, submit: t(".submit") %>
   </div>
 </div>

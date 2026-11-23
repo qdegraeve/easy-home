@@ -91,6 +91,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Dans l'app : actions de la plante dans le menu natif, à jour après un archivage, suppression confirmée ; boutons natifs « Tâche » et « Analyse » de l'onglet Soins ; couverture et suppression d'une photo dans le menu natif | `spec/system/native_app_spec.rb` | Fait |
 | Pluie : emplacement marqué « Reçoit la pluie », forte pluie le soir, arrosage noté fait (ligne sur Aujourd'hui, « par la pluie » dans le journal), annulé | `spec/system/rain_spec.rb` | Fait |
 | Tâche de la maison : ajoutée depuis le « + » de Maison avec son Comment faire, à ne pas rater, visible dans « Aujourd'hui » sans plante, feuille ouverte depuis la ligne (Comment faire), faite depuis la feuille, au journal | `spec/system/house_tasks_spec.rb` | Fait |
+| Poubelle jaune : ajoutée depuis sa suggestion (jour fixe, une semaine sur deux, à ne pas rater), faite le soir, suivante dans 2 semaines, suggestion plus proposée ; oubliée, manquée au journal et la collecte suivante ouverte | `spec/system/bins_spec.rb` | Fait |
 | Réglages des notifications, enregistrés à chaque changement : résumé coupé, heure, « seulement ce qui ne doit pas être raté », foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |

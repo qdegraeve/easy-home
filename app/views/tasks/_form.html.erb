@@ -1,5 +1,5 @@
-<%# A manual task, of a plant or of the house (house: true). On creation, the interval field and the date label follow
-    the "Quand ?" choice (CSS :has, no JavaScript). %>
+<%# A manual task, of a plant or of the house (house: true). The fields of the rhythm and the date label follow the
+    "Quand ?" choice (CSS :has, no JavaScript); the rhythm can be changed when editing too. %>
 <%= form_with model: form, url:, method:, class: "group space-y-4" do |f| %>
   <%= render "shared/errors", record: form %>
 
@@ -10,47 +10,66 @@
           class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
   </div>
 
-  <% if adding %>
-    <fieldset>
-      <legend class="text-sm font-semibold"><%= t("tasks.form.repeat") %></legend>
-      <div class="mt-1 space-y-2">
-        <% TaskForm::KINDS.each do |kind| %>
-          <label class="flex items-center gap-2 rounded-xl border border-field bg-surface px-3 py-3">
-            <%= f.radio_button :recurrence_type, kind %>
-            <span><%= t("tasks.form.kinds.#{kind}") %></span>
-          </label>
+  <%# Suggestions of the catalogue (a task of the house): a tap prefills the form, everything stays editable. %>
+  <% if adding && local_assigns[:suggestions].present? %>
+    <div>
+      <p class="text-sm font-semibold"><%= t("tasks.form.suggestions") %></p>
+      <div class="mt-1 flex flex-wrap gap-x-2">
+        <% suggestions.each do |suggestion| %>
+          <%= link_to new_task_path(suggestion: suggestion.key), class: chip_class do %>
+            <span class="<%= chip_inner_class %>"><%= suggestion.title %></span>
+          <% end %>
         <% end %>
-      </div>
-    </fieldset>
-  <% end %>
-
-  <div>
-    <% if adding %>
-      <%= f.label :due_on, class: "block text-sm font-semibold" do %>
-        <span class="group-has-[[value=sliding]:checked]:hidden"><%= t("tasks.form.due_on.once") %></span>
-        <span class="hidden group-has-[[value=sliding]:checked]:inline">
-          <%= t("tasks.form.due_on.first") %>
-        </span>
-      <% end %>
-    <% else %>
-      <%= f.label :due_on, t("tasks.form.due_on.#{form.recurrence_type}"),
-            class: "block text-sm font-semibold" %>
-    <% end %>
-    <%= f.date_field :due_on, required: true,
-          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
-  </div>
-
-  <% if adding || form.sliding? %>
-    <div class="<%= "hidden group-has-[[value=sliding]:checked]:block" if adding %>">
-      <%= f.label :interval_days, class: "block text-sm font-semibold" %>
-      <div class="mt-1 flex items-center gap-2">
-        <span class="text-sm"><%= t("tasks.form.every") %></span>
-        <%= f.number_field :interval_days, min: 1, max: 60,
-              class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
-        <span class="text-sm"><%= t("tasks.form.days") %></span>
       </div>
     </div>
   <% end %>
+  <%= f.hidden_field :suggestion_key if adding && form.suggestion_key %>
+
+  <fieldset>
+    <legend class="text-sm font-semibold"><%= t("tasks.form.repeat") %></legend>
+    <div class="mt-1 space-y-2">
+      <% TaskForm::KINDS.each do |kind| %>
+        <label class="flex items-center gap-2 rounded-xl border border-field bg-surface px-3 py-3">
+          <%= f.radio_button :recurrence_type, kind %>
+          <span><%= t("tasks.form.kinds.#{kind}") %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div>
+    <%= f.label :due_on, class: "block text-sm font-semibold" do %>
+      <span class="hidden group-has-[[value=once]:checked]:inline"><%= t("tasks.form.due_on.once") %></span>
+      <span class="group-has-[[value=once]:checked]:hidden"><%= t("tasks.form.due_on.next") %></span>
+    <% end %>
+    <%= f.date_field :due_on, required: true, aria: { describedby: "due-on-help" },
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    <p id="due-on-help" class="mt-1 hidden text-[13px] text-muted group-has-[[value=fixed]:checked]:block">
+      <%= t("tasks.form.due_on.fixed_help") %>
+    </p>
+  </div>
+
+  <div class="hidden group-has-[[value=sliding]:checked]:block">
+    <%= f.label :interval_days, class: "block text-sm font-semibold" %>
+    <div class="mt-1 flex items-center gap-2">
+      <span class="text-sm"><%= t("tasks.form.every") %></span>
+      <%= f.number_field :interval_days, min: 1, max: 60,
+            class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
+      <span class="text-sm"><%= t("tasks.form.days") %></span>
+    </div>
+  </div>
+
+  <fieldset class="hidden group-has-[[value=fixed]:checked]:block">
+    <legend class="text-sm font-semibold"><%= t("tasks.form.fixed_every") %></legend>
+    <div class="mt-1 flex items-center gap-2">
+      <%= f.label :interval, class: "sr-only" %>
+      <%= f.number_field :interval, min: 1, max: 52,
+            class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
+      <%= f.label :unit, class: "sr-only" %>
+      <%= f.select :unit, TaskForm::FIXED_UNITS.map { |unit| [ t("tasks.form.units.#{unit}"), unit ] }, {},
+            class: "rounded-xl border border-field bg-surface px-3 py-3" %>
+    </div>
+  </fieldset>
 
   <div>
     <label class="flex items-start gap-3 rounded-xl border border-field bg-surface px-3 py-3">

@@ -31,7 +31,7 @@ RSpec.describe "Tasks", type: :request do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-17 00:00"))
     expect(response).to redirect_to(house_tasks_path)
     follow_redirect!
-    expect(response.parsed_body.text.squish).to include("Sortir la poubelle jaune demain")
+    expect(response.parsed_body.text.squish).to include("Sortir la poubelle jaune Une fois · demain")
   end
 
   it "keeps the typed values when the title is missing" do
