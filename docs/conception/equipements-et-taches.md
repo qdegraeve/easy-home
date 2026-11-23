@@ -188,7 +188,7 @@ Inchangés : `due_at not null`, l'index unique partiel « une seule `pending` pa
 
 | Colonne | Avant | Après |
 |---|---|---|
-| `plant_id` | not null, FK | supprimée (PR 9) |
+| `plant_id` | not null, FK | ignorée par le modèle, FK et index retirés (PR 9) ; colonne supprimée au déploiement suivant |
 | `subject_type`, `subject_id` | — | string + bigint, nullables en base en PR 5 (déploiement sans coupure), requis par le modèle, not null en PR 9 ; index `[subject_type, subject_id, taken_at]` ; sujet : `Plant`, `Equipment` ou `Task` (photos d'une tâche, montrées dans sa feuille) |
 
 Gardé : FK `plants.cover_photo_id → photos` (couverture des plantes seulement). Les validations remplacent la FK
@@ -565,4 +565,4 @@ Chaque PR met à jour `docs/domaine.md`, `docs/tests.md` (parcours critiques) et
 | 6 | **Équipements** : modèle, écran 1 (types en pastilles), fiche à 3 onglets, À savoir, photos, tâches depuis la fiche, section Équipements, `+` à trois choix, photos d'une tâche (dans sa feuille), modifier (type compris), supprimer | « Clim chambre » avec sa photo, ses notes et ses tâches | ajouter un équipement avec photo et À savoir → fiche → ajouter une tâche → la faire depuis Aujourd'hui (sous-titre = nom) → supprimer (confirmation) → tâches et journal partis ; spec partagée « a task subject » |
 | 7 | **« Quand il le faut »** : `OnDemand`, `Tasks::RecordDone`, « il y a 6 sem. [Fait] » sur la fiche, passage d'un rythme à l'autre | « Remettre du sel » sans rappel, avec la dernière fois | tâche « quand il le faut » sur un équipement → absente d'Aujourd'hui → Fait sur la fiche → « aujourd'hui », au journal, annulable ; la passer à « tous les mois » → échéance ouverte |
 | 8 | **Suggestions par type** : Piscine, Lave-vaisselle, Chauffe-eau avec leur Comment faire ; écran 2 ; suggestions dans le formulaire d'une fiche | ajouter un lave-vaisselle et ses 3 tâches d'entretien en 3 appuis | ajouter un lave-vaisselle → écran 2 (« 1re fois le … » sur chaque ligne) → cocher le filtre et le sel → fiche avec les deux tâches et leur Comment faire ; rien dans Aujourd'hui ; spec de cohérence du catalogue |
-| 9 | **Nettoyage** : suppression de `photos.plant_id` | rien | specs vertes |
+| 9 | **Nettoyage**, déployé après les PR 1 à 8 : sujet des photos requis en base, `photos.plant_id` ignorée (supprimée au déploiement suivant), ancien format `interval_days` plus lu | rien | specs vertes |

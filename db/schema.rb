@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,9 +102,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_090000) do
     t.datetime "taken_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "subject_type"
-    t.bigint "subject_id"
-    t.index ["plant_id", "taken_at"], name: "index_photos_on_plant_id_and_taken_at"
+    t.string "subject_type", null: false
+    t.bigint "subject_id", null: false
     t.index ["subject_type", "subject_id", "taken_at"], name: "index_photos_on_subject_type_and_subject_id_and_taken_at"
   end
 
@@ -250,7 +249,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_090000) do
   add_foreign_key "household_members", "households"
   add_foreign_key "household_members", "users"
   add_foreign_key "locations", "households"
-  add_foreign_key "photos", "plants"
   add_foreign_key "plant_analyses", "plants"
   add_foreign_key "plant_analyses", "users", column: "requested_by_id"
   add_foreign_key "plant_analysis_photos", "photos"
