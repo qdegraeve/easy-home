@@ -13,7 +13,7 @@
 
 <div class="mx-auto max-w-3xl" data-controller="photo-viewer" data-photo-viewer-index-value="<%= @index %>"
      data-action="keydown@window->photo-viewer#key resize@window->photo-viewer#realign">
-  <% if (back = back_link_to(t("plants.tasks.back", name: @plant.name), plant_path(@plant, tab: "photos"))) %>
+  <% if (back = back_link_to(t("shared.back_to", name: @plant.name), plant_path(@plant, tab: "photos"))) %>
     <p class="[&_a]:text-white/70 [&_a]:focus-visible:outline-white"><%= back %></p>
   <% end %>
 

@@ -1,6 +1,7 @@
-# Input for a manual task of a subject (fertilizer, pruning…): once on a date, or every N days starting from a
-# date. The repetition type is chosen on creation and never changes afterwards. "À ne pas rater" makes it critical
-# (Task#importance): first in the list, in red, no tolerance.
+# Input for a manual task, of a plant (fertilizer, pruning…) or of the house itself (no subject): once on a date, or
+# every N days starting from a date. The repetition type is chosen on creation and never changes afterwards. "À ne
+# pas rater" makes it critical (Task#importance): first in the list, in red, no tolerance. "Comment faire"
+# (instructions) is optional, read when doing the task.
 class TaskForm
   include ActiveModel::Model
   include ActiveModel::Attributes
@@ -12,10 +13,12 @@ class TaskForm
   attribute :due_on, :date
   attribute :interval_days, :integer
   attribute :critical, :boolean, default: false
+  attribute :instructions, :string
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :recurrence_type, inclusion: { in: KINDS }
   validates :due_on, presence: true
+  validates :instructions, length: { maximum: Task::INSTRUCTIONS_MAX }
   validates :interval_days,
     numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS },
     if: :sliding?
@@ -31,7 +34,8 @@ class TaskForm
       recurrence_type: task.recurrence_type,
       due_on: task.once? ? recurrence.due_on : (task.pending_occurrence&.due_at&.to_date || recurrence.start_on),
       interval_days: (recurrence.interval_days if task.sliding?),
-      critical: task.critical?
+      critical: task.critical?,
+      instructions: task.instructions
     )
   end
 
@@ -40,7 +44,13 @@ class TaskForm
   end
 
   def task_attributes
-    { title: title.strip, recurrence_type:, recurrence_config:, importance: critical ? "critical" : "flexible" }
+    {
+      title: title.strip,
+      recurrence_type:,
+      recurrence_config:,
+      importance: critical ? "critical" : "flexible",
+      instructions: instructions.to_s.strip.presence
+    }
   end
 
   private

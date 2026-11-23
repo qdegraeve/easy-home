@@ -14,11 +14,14 @@ Rails.application.routes.draw do
   resources :address_suggestions, only: :index
   # The three sections of the app (UX review): Aujourd'hui (root), Maison, Journal; and the settings.
   get "house", to: "house#show", as: :house
+  # "Que voulez-vous ajouter ?" (the + of Maison), and the tasks of the house itself (bins…).
+  get "house/new", to: "house#new", as: :new_house_item
+  get "house/tasks", to: "house_tasks#index", as: :house_tasks
   resource :journal, only: :show, controller: "journal"
   resource :settings, only: :show
   resources :plants do
     resource :archive, only: [ :create, :destroy ], module: :plants
-    resources :tasks, only: [ :new, :create, :edit, :update, :destroy ], module: :plants
+    resources :tasks, only: [ :new, :create ]
     resources :photos, only: [ :create, :show, :edit, :update, :destroy ], module: :plants do
       # This photo becomes the face of the plant.
       resource :cover, only: :create, controller: "/plants/covers"
@@ -34,6 +37,8 @@ Rails.application.routes.draw do
       end
     end
   end
+  # A task without subject is created here (the house); show is the task sheet.
+  resources :tasks, only: [ :new, :create, :show, :edit, :update, :destroy ]
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences
     resource :postponement, only: [ :create, :destroy ], module: :task_occurrences

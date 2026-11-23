@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_090100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -207,8 +207,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "importance", default: "flexible", null: false
+    t.text "instructions"
     t.index ["household_id"], name: "index_tasks_on_household_id"
     t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject"
+    t.check_constraint "(subject_type IS NULL) = (subject_id IS NULL)", name: "tasks_subject_whole_or_none"
   end
 
   create_table "users", force: :cascade do |t|

@@ -1,0 +1,71 @@
+<%# The task sheet (a modal in the Android app): what to do, for what, when, and how ("Comment faire"), with "Fait"
+    and "Reporter" at hand. The instructions are user text: escaped, line breaks kept. %>
+<% editable = policy(@task).edit? %>
+<% done_today = @last_done_at && @last_done_at.to_date == Time.zone.today %>
+<div class="mx-auto max-w-md">
+  <%= task_back_link(@task.subject) %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title @task.title %></h1>
+  <p class="text-sm text-muted">
+    <% if @task.subject %>
+      <%= link_to @task.subject.name, @task.subject, class: "underline" %>
+    <% else %>
+      <%= t(".house") %>
+    <% end %>
+  </p>
+
+  <section class="mt-6 space-y-3 rounded-2xl bg-surface p-4" aria-labelledby="task-when">
+    <h2 id="task-when" class="sr-only"><%= t(".when") %></h2>
+    <% if done_today %>
+      <p class="inline-flex items-center gap-1 text-muted"><%= icon(:check, size: 16) %><%= t(".done_today") %></p>
+    <% end %>
+    <% if @occurrence && !done_today %>
+      <p>
+        <%= t(".next") %>
+        <%= render DueLabelComponent.new(due_at: @occurrence.due_at, critical: @task.critical?) %>
+      </p>
+      <div class="flex flex-wrap items-center gap-2">
+        <%= button_to task_occurrence_completion_path(@occurrence),
+              aria: { label: t(".done_label", title: @task.title) },
+              params: { from: "sheet" },
+              class: button_class(@occurrence.due_by? ? :primary : :secondary) do %>
+          <%= icon(:check) %><%= t(".done") %>
+        <% end %>
+        <% if @occurrence.due_by? %>
+          <%= button_to task_occurrence_postponement_path(@occurrence), params: { from: "sheet" },
+                aria: { label: t("task_row_component.postpone", title: @task.title) }, class: chip_class do %>
+            <span class="<%= chip_inner_class %>">
+              <%= icon(:redo_2, size: 16) %><%= t("task_row_component.postpone_button") %>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+    <% elsif @occurrence %>
+      <p class="text-sm text-muted">
+        <%= t(".next") %> <%= render DueLabelComponent.new(due_at: @occurrence.due_at) %>
+      </p>
+    <% elsif !done_today %>
+      <p class="text-muted"><%= t(".none") %></p>
+    <% end %>
+    <% if @last_done_at %>
+      <p class="text-sm text-muted"><%= t(".last_done", date: l(@last_done_at.to_date, format: :day)) %></p>
+    <% end %>
+  </section>
+
+  <section class="mt-6" aria-labelledby="task-how">
+    <h2 id="task-how" class="text-[13px] font-semibold text-muted"><%= t(".instructions") %></h2>
+    <% if @task.instructions.present? %>
+      <div class="mt-2 space-y-2 rounded-2xl bg-surface p-4"><%= simple_format(h(@task.instructions)) %></div>
+    <% else %>
+      <p class="mt-2 text-sm text-muted">
+        <%= t(".no_instructions") %>
+        <% if editable %>
+          <%= link_to t(".add_instructions"), edit_task_path(@task), class: "font-semibold text-action underline" %>
+        <% end %>
+      </p>
+    <% end %>
+  </section>
+
+  <% if editable %>
+    <%= link_to t(".edit"), edit_task_path(@task), class: "mt-6 #{button_class(:secondary, block: true)}" %>
+  <% end %>
+</div>

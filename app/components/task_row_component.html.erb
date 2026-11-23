@@ -10,9 +10,16 @@
       href:,
       class: class_names("block min-h-11", "-mx-1 rounded-xl px-1 active:bg-subtle": href)
     ) do %>
-      <span class="block font-medium"><%= title %></span>
+      <span class="block font-medium">
+        <%= title %>
+        <% if task.instructions.present? %>
+          <%= helpers.icon(:book_open, size: 16, label: t(".has_instructions"), class: "ml-1 text-muted") %>
+        <% end %>
+      </span>
       <span class="block text-sm text-muted">
-        <%= detail %> · <%= render DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?) %>
+        <%= safe_join([ detail.presence,
+                        render(DueLabelComponent.new(due_at: occurrence.due_at, critical: task.critical?)) ].compact,
+                      " · ") %>
       </span>
     <% end %>
     <%# Under the text, not beside the round button: on a narrow phone the title keeps its width. %>

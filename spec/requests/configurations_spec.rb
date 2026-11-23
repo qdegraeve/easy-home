@@ -34,6 +34,8 @@ RSpec.describe "Configurations", type: :request do
 
     expect(properties_for("/plants/12")).to include("context" => "default")
     expect(properties_for("/plants/12/edit")).to include("context" => "modal")
+    expect(properties_for("/tasks/12")).to include("context" => "modal") # the task sheet
+    expect(properties_for("/house/tasks")).to include("context" => "default")
     expect(properties_for("/households")).to include("context" => "modal")
     expect(properties_for("/households/new")).to include("context" => "modal")
     expect(properties_for("/households/3/edit")).to include("context" => "modal")

@@ -1,0 +1,9 @@
+<div class="mx-auto max-w-md">
+  <%= task_back_link(@subject) %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+
+  <div class="mt-6">
+    <%= render "form", form: @form, url: @subject ? polymorphic_path([ @subject, :tasks ]) : tasks_path,
+          method: :post, adding: true, house: @subject.nil?, submit: t(".submit") %>
+  </div>
+</div>

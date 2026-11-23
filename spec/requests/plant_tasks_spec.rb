@@ -47,13 +47,13 @@ RSpec.describe "Plant tasks", type: :request do
     expect(response).to have_http_status(:forbidden)
     post plant_tasks_path(plant), params: once_params
     expect(response).to have_http_status(:forbidden)
-    get edit_plant_task_path(plant, task)
+    get edit_task_path(task)
     expect(response).to have_http_status(:forbidden)
-    patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } }
+    patch task_path(task), params: { task: { title: "X", due_on: "2026-12-01" } }
     expect(response).to have_http_status(:forbidden)
     expect(plant.tasks.count).to eq(2)
 
-    delete plant_task_path(plant, task)
+    delete task_path(task)
     expect(response).to redirect_to(plant_path(plant))
     expect(plant.tasks.count).to eq(1)
   end
@@ -62,11 +62,11 @@ RSpec.describe "Plant tasks", type: :request do
     task = add_task(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
     sign_in(user)
 
-    get edit_plant_task_path(plant, task)
+    get edit_task_path(task)
     expect(response.body).to include("Prochaine fois", 'value="2026-11-20"', 'value="14"')
     expect(response.body).not_to include("Une seule fois")
 
-    patch plant_task_path(plant, task),
+    patch task_path(task),
       params: { task: { title: "Engrais", due_on: "2026-11-22", interval_days: "21" } }
 
     expect(task.reload.recurrence.interval_days).to eq(21)
@@ -77,12 +77,12 @@ RSpec.describe "Plant tasks", type: :request do
     task = add_task
     sign_in(user)
 
-    patch plant_task_path(plant, task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "1" } }
+    patch task_path(task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "1" } }
     expect(task.reload).to be_critical
-    get edit_plant_task_path(plant, task)
+    get edit_task_path(task)
     expect(response.parsed_body.at_css("input[type=checkbox][name='task[critical]']")["checked"]).to eq("checked")
 
-    patch plant_task_path(plant, task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "0" } }
+    patch task_path(task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "0" } }
     expect(task.reload).to be_flexible
   end
 
@@ -90,11 +90,11 @@ RSpec.describe "Plant tasks", type: :request do
     task = add_task
     sign_in(user)
 
-    patch plant_task_path(plant, task), params: { task: { title: "Tailler court", due_on: "2026-12-01" } }
-    expect(response).to redirect_to(plant_path(plant))
+    patch task_path(task), params: { task: { title: "Tailler court", due_on: "2026-12-01" } }
+    expect(response).to redirect_to(task_path(task))
     expect(task.reload.pending_occurrence.due_at).to eq(Time.zone.parse("2026-12-01 00:00"))
 
-    delete plant_task_path(plant, task)
+    delete task_path(task)
     expect(response).to redirect_to(plant_path(plant))
     expect(Task.exists?(task.id)).to be(false)
   end
@@ -102,33 +102,33 @@ RSpec.describe "Plant tasks", type: :request do
   it "lets neither edit nor delete the watering task from here" do
     sign_in(user)
 
-    get edit_plant_task_path(plant, plant.watering_task)
+    get edit_task_path(plant.watering_task)
     expect(response).to have_http_status(:forbidden)
-    delete plant_task_path(plant, plant.watering_task)
+    delete task_path(plant.watering_task)
     expect(response).to have_http_status(:forbidden)
     expect(plant.reload.watering_task).to be_present
   end
 
-  it "does not find the task of another plant through this plant's URL" do
-    other_plant = create(:plant, :watered, household:)
-    task = add_task
+  it "keeps the task form on the plant: no plant of another household through the URL" do
+    other_plant = create(:plant, :watered, household: create(:household))
     sign_in(user)
 
-    delete plant_task_path(other_plant, task)
+    post plant_tasks_path(other_plant), params: once_params
 
     expect(response).to have_http_status(:not_found)
-    expect(Task.exists?(task.id)).to be(true)
+    expect(other_plant.tasks.count).to eq(1)
   end
 
   describe "access denied" do
     let(:task) { add_task }
     let(:requests) do
       {
+        "sheet" => -> { get task_path(task) },
         "new form" => -> { get new_plant_task_path(plant) },
         "create" => -> { post plant_tasks_path(plant), params: once_params },
-        "edit form" => -> { get edit_plant_task_path(plant, task) },
-        "update" => -> { patch plant_task_path(plant, task), params: { task: { title: "X", due_on: "2026-12-01" } } },
-        "destroy" => -> { delete plant_task_path(plant, task) }
+        "edit form" => -> { get edit_task_path(task) },
+        "update" => -> { patch task_path(task), params: { task: { title: "X", due_on: "2026-12-01" } } },
+        "destroy" => -> { delete task_path(task) }
       }
     end
 
@@ -136,7 +136,7 @@ RSpec.describe "Plant tasks", type: :request do
       "a guest of the household" => -> { create(:household_member, household:, role: :guest).user },
       "a user of another household" => -> { create(:user, :with_household) }
     }.each do |intruder_label, intruder|
-      [ "new form", "create", "edit form", "update", "destroy" ].each do |action|
+      [ "sheet", "new form", "create", "edit form", "update", "destroy" ].each do |action|
         it "answers 404 to #{intruder_label} on #{action}, without changing anything" do
           task
           sign_in(instance_exec(&intruder))
