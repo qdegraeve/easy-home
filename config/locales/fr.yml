@@ -542,7 +542,9 @@ fr:
       critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
       instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."
       no_reminder: "Aucun : le résumé du matin suffit"
-      reminder_help: "Une notification ce jour-là à cette heure, relancée toutes les heures jusqu'à 22 h pour une tâche à ne pas rater."
+      reminder_help: >-
+        Une notification ce jour-là à cette heure, relancée toutes les heures jusqu'à 22 h pour une tâche à ne pas
+        rater.
       instructions_placeholder: "Ex. Sortir le bac jaune devant le portail, couvercle fermé."
       suggestions: "Suggestions"
       fixed_every: "Toutes les"
