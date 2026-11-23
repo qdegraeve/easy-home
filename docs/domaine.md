@@ -198,8 +198,10 @@ pending ──(Fait)──────────▶ done
 Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 
 - `Recurrence::Once` : une seule échéance (`due_on`), aucune suivante après réalisation ;
-- `Recurrence::Sliding` : `interval_days` après la dernière réalisation (`start_on` facultatif, date de la première
-  échéance) ; à venir (PR 4) : unités semaines, mois, ans ;
+- `Recurrence::Sliding` : `interval` jours (1 à 60), semaines (1 à 52), mois (1 à 24) ou ans (1 à 10) après la
+  dernière réalisation (`unit`, `start_on` facultatif, date de la première échéance) ; un 31 tombe le dernier jour
+  d'un mois plus court. Config `{ "interval", "unit", "start_on" }` (migration depuis `interval_days`, 23 novembre
+  2026) ; `#interval_days` reste un lecteur pour l'arrosage, compté en jours ;
 - `Recurrence::Fixed` : une ancre (`anchor_on`, « prochaine fois le ») et un pas de N semaines (1 à 52) ou N ans
   (1 à 10) ; le jour de la semaine ou la date de l'année se déduit de l'ancre (un 29 février tombe le 28 les autres
   années). Une ancre passée s'ouvre à sa prochaine date, qui devient l'ancre ; modifier « Prochaine fois le » déplace

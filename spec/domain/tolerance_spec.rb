@@ -6,7 +6,7 @@ RSpec.describe Tolerance do
   end
 
   def every(days)
-    Recurrence::Sliding.new(interval_days: days)
+    Recurrence::Sliding.new(interval: days)
   end
 
   it "gives a flexible repeating task a quarter of its interval, from 0 to 3 days" do
@@ -39,6 +39,11 @@ RSpec.describe Tolerance do
         .to eq(Time.zone.parse("2026-10-01 00:00"))
       expect(described_class.earliest(nil, grace_days: 0, today:)).to be_nil
     end
+  end
+
+  it "counts the period of a rule in weeks or months" do
+    expect(grace(:flexible, Recurrence::Sliding.new(interval: 1, unit: "weeks"))).to eq(2)
+    expect(grace(:flexible, Recurrence::Sliding.new(interval: 1, unit: "months"))).to eq(3)
   end
 
   describe "fixed dates" do

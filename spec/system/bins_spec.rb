@@ -62,7 +62,7 @@ RSpec.describe "Bins", type: :system do
     fill_in "Tâche", with: "Préparer la saison cyclonique"
     choose "À jour fixe : toutes les N semaines ou chaque année"
     fill_in "Prochaine fois le", with: Date.new(2026, 12, 3)
-    fill_in "Nombre de semaines ou d'années", with: "1"
+    fill_in "Répétition", with: "1"
     select "ans", from: "Unité"
     click_on "Ajouter la tâche"
     expect(page).to have_content("Chaque année, le 3 décembre · dans 2 j")
@@ -75,7 +75,7 @@ RSpec.describe "Bins", type: :system do
     expect(page).to have_content("Préparer la saison cyclonique noté.")
     go_to_tab("Maison")
     click_on "Tâches de la maison"
-    expect(page).to have_content("Chaque année, le 3 décembre · dans 360 j")
+    expect(page).to have_content("Chaque année, le 3 décembre · dans 12 mois")
     go_to_tab("Journal")
     expect(page).to have_content("Non fait, prévu le jeu 3 déc.")
   end

@@ -22,7 +22,7 @@ module Plants
     def update_watering(task, interval_days)
       ActiveRecord::Base.transaction do
         task.lock!
-        task.update!(recurrence_config: task.recurrence_config.merge("interval_days" => interval_days))
+        task.update!(recurrence_config: task.recurrence_config.merge("interval" => interval_days, "unit" => "days"))
         Tasks::Reschedule.new.call(task:)
       end
       Success(task)
