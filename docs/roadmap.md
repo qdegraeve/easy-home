@@ -11,7 +11,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [x] Premier commit de l'app générée
 - [x] Passage à PostgreSQL (ADR 0004) : Gemfile, `database.yml`, Dockerfile, accessory Kamal, CI
 - [x] RSpec, FactoryBot, shoulda-matchers, pundit-matchers ; Capybara + Cuprite ; Vitest + happy-dom
-- [x] Gems d'architecture : `dry-monads`, `view_component`, `pundit`, `ice_cube`
+- [x] Gems d'architecture : `dry-monads`, `view_component`, `pundit` (`ice_cube`, jamais utilisée, retirée en PR 2, ADR 0016)
 - [x] Authentification Rails 8
 - [x] Fuseau `Indian/Reunion`, locale `fr`, `rails-i18n`
 - [x] Socle de tests et CI GitHub (garde-fous des specs, audits, budget de temps)
@@ -22,7 +22,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
   (arrosage, photos, analyses), ajout d'une plante, résultat d'une analyse, ma maison (adresse, emplacements)
 - [ ] Validation sur téléphone, corrections
 - [x] Revue UX et maquettes v2 de la refonte (`docs/ux/revue-ux.md`, `docs/maquettes/v2/`), logo et icône
-- [ ] Refonte en 11 PR, dans l'ordre du découpage de `docs/ux/revue-ux.md`
+- [x] Refonte en 17 PR, dans l'ordre du découpage de `docs/ux/revue-ux.md` (mise en pause le 23 novembre 2026 ; restent
+  4 questions ouvertes : rouge réservé aux confirmations, interrupteurs, écran des emplacements, report groupé)
 
 ## Étape 2 : première version, les plantes
 
@@ -61,8 +62,13 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 
 ## Étape 5 : le reste du MVP
 
-- [ ] Tâches manuelles, récurrences fixes et basées sur l'usage
-- [ ] Catalogue : poubelles, lave-vaisselle, piscine, un animal
+- [x] Conception des autres domaines : `docs/conception/equipements-et-taches.md`, ADR 0016 et 0017
+- [ ] Tâches de la maison, Comment faire et feuille de la tâche (PR 1)
+- [ ] Récurrence à jour fixe et suggestion poubelles (PR 2)
+- [ ] Rappels à une heure et relances (PR 3)
+- [ ] Unités semaines, mois, ans (PR 4) ; photos polymorphes (PR 5)
+- [ ] Équipements, photos d'une tâche (PR 6) ; « quand il le faut » (PR 7) ; suggestions par type (PR 8)
+- [ ] Un animal
 - [ ] Tableau de bord : en retard, aujourd'hui, à venir ; job des échéances manquées
 - [ ] Notifications avec relance, action « Fait » native (`Device`, API `api/v1`)
 - [ ] Membres et invités (`TaskAccess`, invitation par lien)

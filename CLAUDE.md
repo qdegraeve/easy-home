@@ -22,6 +22,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 | `docs/hotwire-native.md` | App Android, notifications push, authentification native, déploiement |
 | `docs/android-coque.md` | Explication pas à pas de la coque Android et de Hotwire Native |
 | `docs/roadmap.md` | Étapes de construction et setup restant |
+| `docs/conception/` | Conceptions validées avant une série de PR (équipements, tâches de la maison, rappels) |
 | `docs/decisions/` | ADR : décisions structurantes et leur justification |
 
 ## Stack
@@ -86,10 +87,10 @@ Détails et exemples dans `docs/architecture.md`. Principe directeur : **une str
 
 ## État actuel
 
-Setup terminé (RSpec, gems d'architecture, authentification, i18n, CI), aucun code métier. Priorité : la première
-version centrée sur les **plantes** (inventaire, arrosage, photos, analyse par IA via `claude -p`, ADR 0008), précédée
-de maquettes. Voir `docs/produit.md` et `docs/roadmap.md`. **Vérifier le `Gemfile` avant de supposer qu'une gem citée
-ici est installée.**
+Les **plantes** sont faites (inventaire, arrosage, pluie, photos, analyse par IA, ADR 0008), avec l'app Android et la
+refonte UX. En cours : les **autres domaines** (tâches de la maison et poubelles, rappels, équipements), en 10 PR
+suivant `docs/conception/equipements-et-taches.md` (ADR 0016, 0017). Voir `docs/roadmap.md`. **Vérifier le `Gemfile`
+avant de supposer qu'une gem citée ici est installée.**
 
 ## Façon de travailler
 

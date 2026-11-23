@@ -1,6 +1,6 @@
 # 0010. Un modèle par type d'élément, tâches rattachées par un sujet polymorphe
 
-- Statut : acceptée
+- Statut : acceptée, amendée par 0016 (équipements)
 - Date : 2026-11-19
 
 ## Contexte
