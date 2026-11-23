@@ -21,7 +21,7 @@ app/
   policies/        # Pundit
   components/      # ViewComponent (+ template .html.erb à côté)
   domain/          # Ruby pur, sans ActiveRecord
-    recurrence/                 → Recurrence::Fixed, ::Sliding, ::UsageBased
+    recurrence/                 → Recurrence::Once, ::Sliding (à venir : ::Fixed, ::OnDemand)
   adapters/        # services externes (HTTP, IA), remplaçables par un faux en test
     geo/                        → Geo::IgnGeocoder, Geo::OpenMeteoElevation
   jobs/            # minces, délèguent à un service
@@ -179,7 +179,7 @@ class DueOccurrencesQuery
   def call(at: Time.current)
     @relation.pending
              .joins(:task).merge(Task.active)
-             .where(notify_at: ..at)
+             .where(due_at: ..at.end_of_day)
   end
 end
 ```

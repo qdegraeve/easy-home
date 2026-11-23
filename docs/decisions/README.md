@@ -12,12 +12,14 @@ Une décision structurante = un fichier court : contexte, décision, alternative
 | [0006](0006-couches-applicatives.md) | Couches : services, formulaires, queries, policies, composants | Acceptée |
 | [0008](0008-modele-ia-plantes.md) | Modèle d'IA pour les plantes : forfait Claude via `claude -p`, puis API | Acceptée |
 | [0009](0009-adresse-et-altitude.md) | Adresse de la maison : géocodage IGN et altitude Open-Meteo | Acceptée |
-| [0010](0010-modele-par-type-et-taches-polymorphes.md) | Un modèle par type d'élément, tâches rattachées par un sujet polymorphe | Acceptée |
+| [0010](0010-modele-par-type-et-taches-polymorphes.md) | Un modèle par type d'élément, tâches rattachées par un sujet polymorphe | Acceptée, amendée par 0016 |
 | [0011](0011-stockage-des-photos.md) | Stockage des photos : Active Storage sur disque, images normalisées sans métadonnées | Acceptée |
 | [0012](0012-notifications-push.md) | Notifications push : résumé du matin par action_push_native et Firebase | Acceptée |
 | [0013](0013-identite-visuelle-et-icones.md) | Identité visuelle : palette en jetons Tailwind et icônes Lucide copiées | Acceptée |
 | [0014](0014-bridge-components.md) | Bridge components : boutons et menus natifs pilotés par les pages | Acceptée |
 | [0015](0015-arrosage-par-la-pluie.md) | La pluie compte comme un arrosage | Acceptée |
+| [0016](0016-equipement-generique-et-domaines.md) | Un modèle par domaine qui calcule, un équipement générique pour le reste | Acceptée |
+| [0017](0017-rappels-a-heure-fixe.md) | Rappels à heure fixe | Acceptée |
 
 Le numéro 0007 est réservé au flux de livraison (branche `chore/flux-de-livraison`, gelée).
 
