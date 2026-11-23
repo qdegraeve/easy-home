@@ -40,6 +40,12 @@
           <% end %>
         <% end %>
       </div>
+    <% elsif @task.on_demand? && !done_today %>
+      <%# Done when needed: no due date, "Fait" records it. %>
+      <%= button_to task_completion_path(@task), params: { from: "sheet" },
+            aria: { label: t(".done_label", title: @task.title) }, class: button_class(:primary) do %>
+        <%= icon(:check) %><%= t(".done") %>
+      <% end %>
     <% elsif @occurrence %>
       <p class="text-sm text-muted">
         <%= t(".next") %> <%= render DueLabelComponent.new(due_at: @occurrence.due_at) %>

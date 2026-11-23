@@ -14,7 +14,10 @@
         ) %>
       <% end %>
     <% end %>
-    <%= render EmptyStateComponent.new(text: t(".empty")) if @tasks.empty? %>
+    <% @on_demand_tasks.each do |task| %>
+      <% group.with_row { render(OnDemandTaskRowComponent.new(task:, last_done_at: @last_done_at[task.id])) } %>
+    <% end %>
+    <%= render EmptyStateComponent.new(text: t(".empty")) if @tasks.empty? && @on_demand_tasks.empty? %>
   <% end %>
 
   <% if policy(Task.new(household: @household)).create? %>

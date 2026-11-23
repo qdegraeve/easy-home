@@ -9,7 +9,7 @@ class Task < ApplicationRecord
   # Authorization goes through the task's household: it must never diverge from the subject's (see ADR 0010).
   attr_readonly :household_id
 
-  enum :recurrence_type, { sliding: "sliding", once: "once", fixed: "fixed" }, validate: true
+  enum :recurrence_type, { sliding: "sliding", once: "once", fixed: "fixed", on_demand: "on_demand" }, validate: true
   # Flexible (watering, upkeep: a tolerance before missed) or critical ("à ne pas rater": first, in red, no tolerance).
   enum :importance, { flexible: "flexible", critical: "critical" }, validate: true
 
@@ -19,12 +19,18 @@ class Task < ApplicationRecord
   # Still to do: active with an open occurrence (a one-off task once done has none, it stays in the journal).
   scope :to_do, -> { active.joins(:pending_occurrence) }
 
+  # The last completion of each task, by id (for the tasks done when needed, which show it).
+  def self.last_done_at_by_id(tasks)
+    TaskOccurrence.done.where(task: tasks).group(:task_id).maximum(:completed_at)
+  end
+
   INSTRUCTIONS_MAX = 5_000
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :instructions, length: { maximum: INSTRUCTIONS_MAX }
   # Reminder on the due day, at this minute of the day (ADR 0017); nil: the morning digest only.
   validates :reminder_minute, inclusion: { in: User::DIGEST_MINUTES }, allow_nil: true
+  validates :reminder_minute, absence: true, if: :on_demand? # no due date to be reminded of
   validate :subject_must_belong_to_household
   validate :recurrence_must_be_valid
 

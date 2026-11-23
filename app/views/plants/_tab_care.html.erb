@@ -48,6 +48,9 @@
         ) %>
       <% end %>
     <% end %>
+    <% @on_demand_tasks.each do |task| %>
+      <% group.with_row { render(OnDemandTaskRowComponent.new(task:, last_done_at: @last_done_at[task.id])) } %>
+    <% end %>
     <%= render EmptyStateComponent.new(text: t("plants.show.no_tasks")) %>
   <% end %>
   <% unless @plant.archived? %>

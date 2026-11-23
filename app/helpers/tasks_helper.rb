@@ -6,6 +6,7 @@ module TasksHelper
     rule = task.recurrence
     case rule
     when Recurrence::Once then t("tasks.rhythm.once")
+    when Recurrence::OnDemand then t("tasks.rhythm.on_demand")
     when Recurrence::Sliding then t("tasks.rhythm.sliding.#{rule.unit}", count: rule.interval)
     when Recurrence::Fixed
       if rule.weeks?

@@ -6,7 +6,8 @@ module Tasks
   # - every N days: a task already done keeps its start date (cancelling all its completions brings it back to its
   #   original date); never done, the typed date becomes its start date;
   # - fixed dates: the typed date becomes the anchor, the whole series moves.
-  # A repeating task without an open occurrence (a one-off just turned into a repeating one) gets one.
+  # A repeating task without an open occurrence (a one-off, or a task done when needed, turned into a repeating one)
+  # gets one; a task turned into "quand il le faut" loses its open occurrence.
   class Update
     include Dry::Monads[:result]
 
@@ -49,6 +50,8 @@ module Tasks
     # A new due date can be missed again, once (Tasks::MarkMissed); its reminders start again (RemindersDueQuery
     # counts those of the due day only).
     def move_open_occurrence(task, pending, due_on)
+      return pending&.destroy! unless task.recurrence.dated? # now done when needed: no due date left
+
       if pending
         pending.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false)
       elsif task.active? && !task.once?

@@ -7,7 +7,7 @@
 #   last_completed_at: the last "done" (nil if never done); last_due_on: due date of the last done or missed
 #   occurrence; not_before: earliest acceptable day (only Fixed uses it, to skip the past dates of its rule).
 # - #period_days: approximate length of a period (tolerance), nil without one.
-# - #dated?: whether the task has due dates (always, until "quand il le faut").
+# - #dated?: whether the task has due dates (not "quand il le faut", Recurrence::OnDemand).
 # What happens after a miss depends on the rule and the importance: Tolerance.after_miss.
 module Recurrence
   class InvalidConfig < ArgumentError; end
@@ -23,6 +23,7 @@ module Recurrence
       interval = config.fetch("interval") { config["interval_days"] }
       Sliding.new(interval:, unit: config.fetch("unit", "days"), start_on: date(config["start_on"]))
     when "once" then Once.new(due_on: date(config["due_on"]))
+    when "on_demand" then OnDemand.new
     when "fixed"
       Fixed.new(anchor_on: date(config["anchor_on"]), interval: config["interval"], unit: config["unit"])
     else raise InvalidConfig, "Unknown recurrence type: #{type.inspect}"

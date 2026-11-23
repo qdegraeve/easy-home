@@ -1,0 +1,20 @@
+<div class="flex items-center gap-3 px-3 py-2">
+  <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
+    <%= helpers.icon(task.subject.try(:icon) || :list_todo) %>
+  </span>
+  <%= link_to helpers.task_path(task),
+        class: "-mx-1 block min-h-11 min-w-0 flex-1 rounded-xl px-1 active:bg-subtle" do %>
+    <span class="block font-medium"><%= task.title %></span>
+    <span class="block text-sm text-muted"><%= t(".when_needed") %> · <%= last_done_label %></span>
+  <% end %>
+  <% if done_today? %>
+    <span class="inline-flex shrink-0 items-center gap-1 text-sm text-muted">
+      <%= helpers.icon(:check, size: 16) %><%= t(".done_today") %>
+    </span>
+  <% else %>
+    <%= button_to helpers.task_completion_path(task), aria: { label: t(".done_label", title: task.title) },
+          class: helpers.done_button_class do %>
+      <%= helpers.icon(:check, size: 22) %>
+    <% end %>
+  <% end %>
+</div>

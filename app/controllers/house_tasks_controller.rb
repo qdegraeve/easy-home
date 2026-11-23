@@ -8,5 +8,8 @@ class HouseTasksController < ApplicationController
     authorize @household, :update?
     @tasks = policy_scope(Task).where(household: @household).without_subject.to_do
       .includes(:pending_occurrence).order("task_occurrences.due_at", :id)
+    @on_demand_tasks = policy_scope(Task).where(household: @household).without_subject.active.on_demand
+      .order(:title).to_a
+    @last_done_at = Task.last_done_at_by_id(@on_demand_tasks)
   end
 end

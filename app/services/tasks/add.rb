@@ -1,6 +1,7 @@
 module Tasks
-  # Adds a manual task with its first occurrence on the chosen date: to a subject (a plant…), or to the house itself
-  # when there is none (bins…). The household is the subject's, or the given one for a house task.
+  # Adds a manual task with its first occurrence on the chosen date (none for a task done when needed): to a subject
+  # (a plant, an equipment), or to the house itself when there is none (bins…). The household is the subject's, or the
+  # given one for a house task.
   class Add
     include Dry::Monads[:result]
 
@@ -13,7 +14,7 @@ module Tasks
 
       task = ActiveRecord::Base.transaction do
         task = Task.create!(household: subject&.household || household, subject:, **form.task_attributes)
-        task.occurrences.create!(due_at: task.first_due_at!(form.due_on))
+        task.occurrences.create!(due_at: task.first_due_at!(form.due_on)) if task.recurrence.dated?
         task
       end
 

@@ -7,6 +7,11 @@ class TaskPolicy < ApplicationPolicy
     manage?
   end
 
+  # "Fait" on a task done when needed.
+  def record_done?
+    manage? && record.on_demand? && record.active?
+  end
+
   def create?
     manage? && !subject_archived?
   end

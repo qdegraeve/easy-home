@@ -102,7 +102,7 @@ Task
   template_key (ex. "plant.watering")   # tâche gérée par son sujet (réglée depuis la plante)
   suggestion_key                 # suggestion d'origine (ex. "bins.yellow"), sans comportement
   importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
-  recurrence_type (once | sliding | fixed ; à venir : on_demand)   # modifiable
+  recurrence_type (once | sliding | fixed | on_demand)   # modifiable
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_minute                # rappel le jour de l'échéance, minutes après minuit, 5 h à 22 h au quart d'heure
                                  # (ADR 0017) ; nul : le résumé du matin seulement
@@ -178,8 +178,8 @@ pending ──(Fait)──────────▶ done
   `TaskOccurrence` suivante.
 - Une récurrence **glissante** part de la date de réalisation. Une récurrence **à jour fixe** se cale sur sa règle :
   faite en avance, à l'heure, en retard ou reportée, la suivante est la première date de la règle après la dernière
-  échéance (après un oubli, selon l'importance, voir « Moteur de récurrence »). À venir : une tâche **quand il le
-  faut** n'a jamais d'échéance ouverte.
+  échéance (après un oubli, selon l'importance, voir « Moteur de récurrence »). Une tâche **quand il le faut** n'a
+  jamais d'échéance ouverte.
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
   échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). Groupé comme
   l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
@@ -209,8 +209,10 @@ Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
   reportée reste un mardi). Un « Fait » tapé sur une page affichée avant qu'un oubli ait ouvert la collecte suivante
   est refusé (« Trop tard »). Annuler un « Fait » rejoue la règle : la date reportée revient après un report ; une
   date passée revient et le job la note manquée comme tout oubli ;
-- à venir (PR 7) `Recurrence::OnDemand` : « quand il le faut », jamais d'échéance ouverte ; « Fait » enregistre
-  directement une échéance faite (`Tasks::RecordDone`).
+- `Recurrence::OnDemand` : « quand il le faut », jamais d'échéance ouverte (jamais dans Aujourd'hui, jamais manquée
+  ni rappelée) ; « Fait », sur la fiche de l'équipement ou de la plante, dans les tâches de la maison ou dans la
+  feuille, enregistre directement une échéance faite (`Tasks::RecordDone`, une fois par jour), annulable depuis le
+  journal ; la ligne montre la dernière fois. Le rythme se change en un rythme daté en modifiant la tâche.
 
 Interface commune : `#next_due_at(last_completed_at:, last_due_on:, not_before:)`, `#period_days` (tolérance : un
 quart de la période, de 0 à 3 jours) et `#dated?`, construits depuis `recurrence_type` + `recurrence_config` par

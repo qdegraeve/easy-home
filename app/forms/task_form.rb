@@ -1,14 +1,14 @@
-# Input for a manual task, of a plant (fertilizer, pruning…) or of the house itself (no subject): once on a date,
-# every N days, weeks, months or years after the last time, or on fixed dates (every N weeks on the weekday of
-# "Prochaine fois le", or every N years on that day). The rhythm can be changed when editing. "À ne pas rater" makes it
-# critical (Task#importance): first in the list, in red, no tolerance. "Comment faire" (instructions) is optional, read
-# when doing the task. A suggestion of the catalogue (suggestion_key) prefills the form and is kept as the origin of
-# the task.
+# Input for a manual task, of a plant (fertilizer, pruning…), an equipment or the house itself (no subject): once on
+# a date, every N days, weeks, months or years after the last time, on fixed dates (every N weeks on the weekday of
+# "Prochaine fois le", or every N years on that day), or when needed (no date: the salt of the dishwasher). The rhythm
+# can be changed when editing. "À ne pas rater" makes it critical (Task#importance): first in the list, in red, no
+# tolerance. "Comment faire" (instructions) is optional, read when doing the task. A suggestion of the catalogue
+# (suggestion_key) prefills the form and is kept as the origin of the task.
 class TaskForm
   include ActiveModel::Model
   include ActiveModel::Attributes
 
-  KINDS = %w[once sliding fixed].freeze
+  KINDS = %w[once sliding fixed on_demand].freeze
   UNITS = { "sliding" => Recurrence::Sliding::UNITS, "fixed" => Recurrence::Fixed::UNITS }.freeze
   ALL_UNITS = Recurrence::Sliding::UNITS.keys.freeze
 
@@ -25,7 +25,7 @@ class TaskForm
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :recurrence_type, inclusion: { in: KINDS }
-  validates :due_on, presence: true
+  validates :due_on, presence: true, unless: :on_demand?
   validates :instructions, length: { maximum: Task::INSTRUCTIONS_MAX }
   validate :interval_must_fit_unit, if: :repeating?
   validates :reminder_time, inclusion: { in: ->(_form) { reminder_times } }, allow_blank: true
@@ -48,7 +48,7 @@ class TaskForm
       instructions: task.instructions,
       reminder_time: ReminderTime.to_field(task.reminder_minute)
     }
-    attributes.merge!(interval: recurrence.interval, unit: recurrence.unit) unless task.once?
+    attributes.merge!(interval: recurrence.interval, unit: recurrence.unit) if task.sliding? || task.fixed?
     new(**attributes)
   end
 
@@ -72,7 +72,7 @@ class TaskForm
     case recurrence
     when Recurrence::Once then recurrence.due_on
     when Recurrence::Fixed then recurrence.anchor_on
-    else recurrence.start_on
+    when Recurrence::Sliding then recurrence.start_on
     end
   end
 
@@ -82,6 +82,10 @@ class TaskForm
 
   def fixed?
     recurrence_type == "fixed"
+  end
+
+  def on_demand?
+    recurrence_type == "on_demand"
   end
 
   def repeating?
@@ -95,7 +99,7 @@ class TaskForm
       recurrence_config:,
       importance: critical ? "critical" : "flexible",
       instructions: instructions.to_s.strip.presence,
-      reminder_minute: ReminderTime.from_field(reminder_time),
+      reminder_minute: (ReminderTime.from_field(reminder_time) unless on_demand?),
       suggestion_key: (suggestion_key if Catalogue.suggestion(suggestion_key))
     }
   end
@@ -107,6 +111,8 @@ class TaskForm
       { "interval" => interval, "unit" => unit, "start_on" => due_on.iso8601 }
     elsif fixed?
       { "anchor_on" => due_on.iso8601, "interval" => interval, "unit" => unit }
+    elsif on_demand?
+      {}
     else
       { "due_on" => due_on.iso8601 }
     end

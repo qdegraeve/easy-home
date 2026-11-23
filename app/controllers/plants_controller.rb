@@ -22,6 +22,8 @@ class PlantsController < ApplicationController
       .limit(10)
     @other_tasks = @plant.tasks.active.where.not(id: @watering_task)
       .includes(:pending_occurrence).select(&:pending_occurrence).sort_by { |task| task.pending_occurrence.due_at }
+    @on_demand_tasks = @plant.tasks.active.on_demand.order(:title).to_a
+    @last_done_at = Task.last_done_at_by_id(@on_demand_tasks)
     occurrences = TaskOccurrence.done.where(task: @plant.tasks)
     # What was done, postponed (Tasks::Postpone) or missed (Tasks::MarkMissed).
     @journal = SubjectHistoryQuery.new.call(subject: @plant)
