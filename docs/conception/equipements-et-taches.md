@@ -540,7 +540,7 @@ Vues et composants :
 | 1 | `AddInstructionsToTasks` : `instructions text` | — |
 | 2 | `AddSuggestionKeyToTasks` : `suggestion_key string` | — |
 | 3 | `AddReminderMinuteToTasks` : `reminder_minute integer` + CHECK 300..1320 ; `AddRemindersToTaskOccurrences` : `reminders_sent integer default 0 not null`, `last_reminded_at datetime` | — |
-| 4 | `ConvertSlidingIntervalsToUnits` | **transformation** : `UPDATE tasks SET recurrence_config = (recurrence_config - 'interval_days') \|\| jsonb_build_object('interval', recurrence_config->'interval_days', 'unit', 'days') WHERE recurrence_type = 'sliding' AND recurrence_config ? 'interval_days'` ; `down` inverse (unité jours seulement, refus s'il existe une autre unité). Spec de la migration. |
+| 4 | `MoveSlidingIntervalToUnit` | **transformation** : `UPDATE tasks SET recurrence_config = (recurrence_config - 'interval_days') \|\| jsonb_build_object('interval', recurrence_config->'interval_days', 'unit', 'days') WHERE recurrence_type = 'sliding' AND recurrence_config ? 'interval_days'` ; `down` inverse (unité jours seulement, refus s'il existe une autre unité). Spec de la migration. |
 | 5 | `MakePhotosPolymorphic` | **transformation** : ajout `subject_type`/`subject_id` nullables, `UPDATE photos SET subject_type = 'Plant', subject_id = plant_id`, `not null`, index, `plant_id` rendu nullable. Spec. |
 | 6 | `CreateEquipment` | — |
 | 9 | `RemovePlantIdFromPhotos` (FK et colonne), une fois la PR 5 en production | — |

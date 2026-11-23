@@ -40,16 +40,16 @@ class TaskForm
 
   def self.from(task)
     recurrence = task.recurrence
-    new(
+    attributes = {
       title: task.title,
       recurrence_type: task.recurrence_type,
       due_on: task.pending_occurrence&.due_at&.to_date || first_day(recurrence),
-      interval: (task.once? ? 1 : recurrence.interval),
-      unit: (task.once? ? "weeks" : recurrence.unit),
       critical: task.critical?,
       instructions: task.instructions,
       reminder_time: ReminderTime.to_field(task.reminder_minute)
-    )
+    }
+    attributes.merge!(interval: recurrence.interval, unit: recurrence.unit) unless task.once?
+    new(**attributes)
   end
 
   # A suggestion of the catalogue, copied into the form (everything stays editable); its first date when it has one.

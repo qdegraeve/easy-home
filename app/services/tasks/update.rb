@@ -11,9 +11,9 @@ module Tasks
     include Dry::Monads[:result]
 
     def call(task:, params:)
-      input = params.to_h.with_indifferent_access.except(:suggestion_key)
-      input[:recurrence_type] ||= task.recurrence_type # the rhythm is kept unless chosen again
-      form = TaskForm.new(input)
+      # From the task as it is, the params on top: what is not given is kept (the rhythm, its interval…).
+      form = TaskForm.from(task)
+      form.assign_attributes(params.to_h.with_indifferent_access.except(:suggestion_key))
       return Failure[:invalid, form] unless form.valid?
 
       ActiveRecord::Base.transaction do

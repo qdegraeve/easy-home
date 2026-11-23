@@ -281,6 +281,12 @@ fr:
     later:
       one: "dans %{count} j"
       other: "dans %{count} j"
+    later_months:
+      one: "dans %{count} mois"
+      other: "dans %{count} mois"
+    later_years:
+      one: "dans %{count} an"
+      other: "dans %{count} ans"
   plants:
     back: "← Plantes"
     tabs:
@@ -546,8 +552,6 @@ fr:
       title_placeholder: "Ex. Engrais, tailler, rempoter"
       title_placeholder_house: "Ex. Sortir la poubelle jaune, aérer la cave"
       repeat: "Quand ?"
-      every: "Tous les"
-      days: "jours"
       critical: "À ne pas rater"
       critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
       instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."

@@ -57,6 +57,8 @@ RSpec.describe "Tasks", type: :request do
                                        due_on: "2026-11-16", interval: "3", unit: "months" } }
     follow_redirect!
     expect(response.parsed_body.text.squish).to include("Tous les 3 mois · aujourd'hui")
+    get edit_task_path(household.tasks.sole)
+    expect(response.parsed_body.at_css("select[name='task[unit]'] option[selected]")["value"]).to eq("months")
 
     post tasks_path, params: { task: { title: "Saison", recurrence_type: "fixed", due_on: "2026-11-16", interval: "3",
                                        unit: "months" } }

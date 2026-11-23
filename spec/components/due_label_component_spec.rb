@@ -37,4 +37,12 @@ RSpec.describe DueLabelComponent, type: :component do
     render_inline(described_class.new(due_at: Time.zone.parse("2026-11-17 00:00"), critical: true))
     expect(page).to have_no_css("span.text-alert")
   end
+
+  it "counts in months from two months on, then in years" do
+    { "2027-01-14" => "dans 59 j", "2027-01-15" => "dans 2 mois", "2027-02-16" => "dans 3 mois",
+      "2027-11-10" => "dans 12 mois", "2027-11-16" => "dans 1 an", "2028-11-16" => "dans 2 ans" }.each do |on, label|
+      render_inline(described_class.new(due_at: Time.zone.parse("#{on} 00:00")))
+      expect(page).to have_text(label), on
+    end
+  end
 end

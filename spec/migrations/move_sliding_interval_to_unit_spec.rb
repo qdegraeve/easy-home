@@ -16,20 +16,25 @@ RSpec.describe MoveSlidingIntervalToUnit do
     pruning = create(:task, subject: nil, template_key: nil)
     one_off = create(:task, subject: nil, template_key: nil, recurrence_type: :once,
                             recurrence_config: { "due_on" => "2026-11-20" })
+    bins = create(:task, subject: nil, template_key: nil, recurrence_type: :fixed,
+                         recurrence_config: { "anchor_on" => "2026-12-01", "interval" => 2, "unit" => "weeks" })
     write(watering, { "interval_days" => 3 })
     write(pruning, { "interval_days" => 14, "start_on" => "2026-11-20" })
 
     migration = described_class.new
     migration.verbose = false
     migration.up
+    migration.up # a second run changes nothing
 
     expect(config_of(watering)).to eq("interval" => 3, "unit" => "days")
     expect(config_of(pruning)).to eq("interval" => 14, "unit" => "days", "start_on" => "2026-11-20")
     expect(config_of(one_off)).to eq("due_on" => "2026-11-20")
+    expect(config_of(bins)).to eq("anchor_on" => "2026-12-01", "interval" => 2, "unit" => "weeks")
     expect(pruning.reload.recurrence).to have_attributes(interval_days: 14, start_on: Date.new(2026, 11, 20))
 
-    migration.down
+    migration.down # fixed dates in weeks do not stop it
     expect(config_of(pruning)).to eq("interval_days" => 14, "start_on" => "2026-11-20")
+    expect(config_of(bins)).to eq("anchor_on" => "2026-12-01", "interval" => 2, "unit" => "weeks")
   end
 
   it "refuses to go back once a rule counts in months" do

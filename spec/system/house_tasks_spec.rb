@@ -41,4 +41,28 @@ RSpec.describe "House tasks", type: :system do
     go_to_tab("Journal")
     expect(page).to have_content(/Sortir la poubelle jaune\s+par vous · 10 h 00/)
   end
+
+  it "repeats a task every 3 months after the last time: done today, back in 3 months" do
+    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+
+    visit new_task_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    visit new_task_path
+    fill_in "Tâche", with: "Manœuvrer le groupe de sécurité"
+    choose "Tous les N jours, semaines, mois ou ans après la dernière fois"
+    fill_in "Prochaine fois le", with: Date.new(2026, 11, 16)
+    fill_in "Répétition", with: "3"
+    select "mois", from: "Unité"
+    click_on "Ajouter la tâche"
+    expect(page).to have_content("Tous les 3 mois · aujourd'hui")
+
+    go_to_tab("Aujourd'hui")
+    click_on "Marquer comme fait : Manœuvrer le groupe de sécurité"
+    expect(page).to have_content("Manœuvrer le groupe de sécurité noté.")
+    go_to_tab("Maison")
+    click_on "Tâches de la maison"
+    expect(page).to have_content("Tous les 3 mois · dans 3 mois")
+  end
 end

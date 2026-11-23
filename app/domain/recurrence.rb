@@ -18,7 +18,10 @@ module Recurrence
 
     case type.to_s
     when "sliding"
-      Sliding.new(interval: config["interval"], unit: config.fetch("unit", "days"), start_on: date(config["start_on"]))
+      # interval_days: the config before 2026-11-23, still read so that a deploy (old and new code side by side) or a
+      # rollback after the migration keeps working. To remove once the migration is past.
+      interval = config.fetch("interval") { config["interval_days"] }
+      Sliding.new(interval:, unit: config.fetch("unit", "days"), start_on: date(config["start_on"]))
     when "once" then Once.new(due_on: date(config["due_on"]))
     when "fixed"
       Fixed.new(anchor_on: date(config["anchor_on"]), interval: config["interval"], unit: config["unit"])

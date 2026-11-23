@@ -75,7 +75,7 @@ RSpec.describe "Bins", type: :system do
     expect(page).to have_content("Préparer la saison cyclonique noté.")
     go_to_tab("Maison")
     click_on "Tâches de la maison"
-    expect(page).to have_content("Chaque année, le 3 décembre · dans 360 j")
+    expect(page).to have_content("Chaque année, le 3 décembre · dans 12 mois")
     go_to_tab("Journal")
     expect(page).to have_content("Non fait, prévu le jeu 3 déc.")
   end

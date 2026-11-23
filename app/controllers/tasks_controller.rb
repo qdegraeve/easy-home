@@ -16,7 +16,12 @@ class TasksController < ApplicationController
   # plant, it is ignored.
   def new
     suggestion = Catalogue.suggestion(params[:suggestion]) unless @subject
-    @form = suggestion ? TaskForm.from_suggestion(suggestion) : TaskForm.new(due_on: Time.zone.today)
+    # Every N days for a plant (fertilizer every 14 days), weeks for the house (the bins).
+    @form = if suggestion
+      TaskForm.from_suggestion(suggestion)
+    else
+      TaskForm.new(due_on: Time.zone.today, unit: @subject ? "days" : "weeks")
+    end
     @suggestions = suggestions
   end
 

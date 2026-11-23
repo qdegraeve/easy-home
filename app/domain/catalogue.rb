@@ -29,7 +29,7 @@ module Catalogue
       case recurrence["type"]
       when "once" then today
       when "sliding"
-        Recurrence::Sliding.new(interval: recurrence["interval"], unit: recurrence["unit"])
+        Recurrence::Sliding.new(interval: recurrence.fetch("interval"), unit: recurrence.fetch("unit"))
           .next_due_at(last_completed_at: today.in_time_zone).to_date
       when "fixed" then next_yearly_date(today) if recurrence["unit"] == "years" && recurrence["month"]
       end

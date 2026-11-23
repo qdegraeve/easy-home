@@ -87,10 +87,14 @@ RSpec.describe Tasks::Update do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-25 00:00"))
   end
 
-  it "rejects an update without a date instead of using today" do
+  it "keeps what is not given, the date included, and rejects a date emptied instead of using today" do
     task = add(title: "Tailler", recurrence_type: "once", due_on: "2026-11-30")
 
-    expect(described_class.new.call(task:, params: { title: "Tailler" }).failure.first).to eq(:invalid)
+    expect(described_class.new.call(task:, params: { title: "Tailler court" })).to be_success
+    expect(task.reload.title).to eq("Tailler court")
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
+
+    expect(described_class.new.call(task:, params: { title: "Tailler", due_on: "" }).failure.first).to eq(:invalid)
     expect(task.pending_occurrence.reload.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
   end
 

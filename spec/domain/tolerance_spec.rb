@@ -41,6 +41,11 @@ RSpec.describe Tolerance do
     end
   end
 
+  it "counts the period of a rule in weeks or months" do
+    expect(grace(:flexible, Recurrence::Sliding.new(interval: 1, unit: "weeks"))).to eq(2)
+    expect(grace(:flexible, Recurrence::Sliding.new(interval: 1, unit: "months"))).to eq(3)
+  end
+
   describe "fixed dates" do
     def fixed(interval, unit)
       Recurrence::Fixed.new(anchor_on: Date.new(2026, 12, 1), interval:, unit:)
