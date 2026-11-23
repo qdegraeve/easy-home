@@ -1,14 +1,12 @@
-# "Tâches de la maison": the tasks of the house itself (bins…), attached to neither a plant nor an equipment, with
-# their next due date, soonest first; a one-off task already done is gone (it stays in the journal). Each opens its
-# sheet.
+# "Tâches de la maison": the tasks of the house itself (bins…), attached to neither a plant nor an equipment, still to
+# do, soonest first (a one-off task once done is gone, it stays in the journal). Each opens its sheet.
 class HouseTasksController < ApplicationController
   def index
     @household = current_household
     return redirect_to(new_household_path) unless @household
 
-    authorize Task.new(household: @household), :show?
-    @tasks = policy_scope(Task).where(household: @household).without_subject.active
-      .includes(:pending_occurrence).select(&:pending_occurrence)
-      .sort_by { |task| [ task.pending_occurrence.due_at, task.id ] }
+    authorize @household, :update?
+    @tasks = policy_scope(Task).where(household: @household).without_subject.to_do
+      .includes(:pending_occurrence).order("task_occurrences.due_at", :id)
   end
 end

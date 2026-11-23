@@ -55,7 +55,11 @@
           </p>
         <% end %>
         <%# What was done is in "Fait aujourd'hui" just below: not counted again here. %>
-        <%= link_to t(".see_plants"), plants_path, class: "mt-4 #{button_class(:secondary)}" %>
+        <% if @has_plants %>
+          <%= link_to t(".see_plants"), plants_path, class: "mt-4 #{button_class(:secondary)}" %>
+        <% else %>
+          <%= link_to t(".see_house_tasks"), house_tasks_path, class: "mt-4 #{button_class(:secondary)}" %>
+        <% end %>
       </section>
     <% end %>
 
@@ -81,7 +85,7 @@
         <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
           <% @upcoming.each do |occurrence| %>
             <% task = occurrence.task %>
-            <li class="flex min-h-12 items-center justify-between gap-3 px-3 py-2 text-sm">
+            <li>
               <%
                 label = if task.watering?
                   t(".water_plant", name: task.subject.name)
@@ -91,8 +95,12 @@
                   task.title
                 end
               %>
-              <span><%= label %></span>
-              <span class="shrink-0 text-muted"><%= render DueLabelComponent.new(due_at: occurrence.due_at) %></span>
+              <%# A task opens its sheet (how to do it can be read ahead); a watering, its plant. %>
+              <%= link_to task.watering? ? polymorphic_path(task.subject) : task_path(task),
+                    class: "flex min-h-12 items-center justify-between gap-3 px-3 py-2 text-sm active:bg-subtle" do %>
+                <span><%= label %></span>
+                <span class="shrink-0 text-muted"><%= render DueLabelComponent.new(due_at: occurrence.due_at) %></span>
+              <% end %>
             </li>
           <% end %>
         </ul>

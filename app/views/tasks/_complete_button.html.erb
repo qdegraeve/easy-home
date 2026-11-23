@@ -1,7 +1,7 @@
 <%# "J'ai arrosé" button of the open watering of a plant (lists use TaskRowComponent's round button). The main action
     when due or late; before, watering early stays possible, as a secondary button. The accessible name starts with
     the visible text (voice control). %>
-<% variant = occurrence.due_at.to_date <= Time.zone.today ? :primary : :secondary %>
+<% variant = occurrence.due_by? ? :primary : :secondary %>
 <%= button_to(
   task_occurrence_completion_path(occurrence),
   aria: { label: t("task_row_component.done_watering", name: occurrence.task.subject.name) },

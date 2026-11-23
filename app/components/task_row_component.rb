@@ -23,7 +23,7 @@ class TaskRowComponent < ViewComponent::Base
   attr_reader :occurrence, :task, :title, :detail, :href, :done_today
 
   def postpone?
-    @postpone && !done_today && occurrence.due_at.to_date <= Time.zone.today
+    @postpone && !done_today && occurrence.due_by?
   end
 
   # "Reporter à demain : Tailler (Citronnier)".

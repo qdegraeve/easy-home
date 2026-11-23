@@ -73,9 +73,8 @@ RSpec.describe "Plant tasks", type: :system do
     fill_in "Date", with: Date.new(2026, 11, 25)
     click_on "Enregistrer"
     expect(page).to have_content("Tâche « Tailler les gourmands » enregistrée.")
-    expect(page).to have_content("Une fois · dans 9 j")
+    expect(page).to have_content("Prochaine fois : dans 9 j") # back on the sheet, with the changes
 
-    click_link "Tailler les gourmands"
     click_on "Modifier"
     click_on "Supprimer la tâche"
     within("dialog", text: "Son historique part aussi.") { click_on "Supprimer la tâche" }

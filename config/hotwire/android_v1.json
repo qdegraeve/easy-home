@@ -26,7 +26,7 @@
       }
     },
     {
-      "patterns": ["/tasks/\\d+($|\\?)"],
+      "patterns": ["^/tasks/\\d+($|\\?)"],
       "properties": {
         "context": "modal",
         "uri": "hotwire://fragment/web",

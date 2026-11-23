@@ -14,6 +14,8 @@ class Task < ApplicationRecord
   scope :active, -> { where(active: true) }
   # Tasks of the house itself (bins…), attached to neither a plant nor an equipment.
   scope :without_subject, -> { where(subject_type: nil) }
+  # Still to do: active with an open occurrence (a one-off task once done has none, it stays in the journal).
+  scope :to_do, -> { active.joins(:pending_occurrence) }
 
   INSTRUCTIONS_MAX = 5_000
 

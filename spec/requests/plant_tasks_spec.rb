@@ -91,7 +91,7 @@ RSpec.describe "Plant tasks", type: :request do
     sign_in(user)
 
     patch task_path(task), params: { task: { title: "Tailler court", due_on: "2026-12-01" } }
-    expect(response).to redirect_to(plant_path(plant))
+    expect(response).to redirect_to(task_path(task))
     expect(task.reload.pending_occurrence.due_at).to eq(Time.zone.parse("2026-12-01 00:00"))
 
     delete task_path(task)

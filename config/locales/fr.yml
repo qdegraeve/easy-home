@@ -129,6 +129,7 @@ fr:
       all_good: "Tout est à jour dans la maison."
       next_task: "Prochaine tâche : %{what},"
       see_plants: "Voir les plantes"
+      see_house_tasks: "Voir les tâches de la maison"
       upcoming: "Bientôt · %{count}"
       water_plant: "Arroser %{name}"
       task_of: "%{title} (%{name})"
@@ -496,8 +497,6 @@ fr:
         success: "Date de la photo enregistrée."
       destroy:
         success: "Photo supprimée."
-    tasks:
-      back: "← %{name}"
     archives:
       create:
         success: "Plante « %{name} » archivée."
@@ -511,6 +510,8 @@ fr:
       title_placeholder: "Ex. Engrais, tailler, rempoter"
       title_placeholder_house: "Ex. Sortir la poubelle jaune, aérer la cave"
       repeat: "Quand ?"
+      every: "Tous les"
+      days: "jours"
       critical: "À ne pas rater"
       critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
       instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."
@@ -538,6 +539,8 @@ fr:
       success: "Tâche « %{title} » supprimée."
     show:
       house: "Tâche de la maison"
+      when: "Échéance"
+      done_today: "Fait aujourd'hui"
       next: "Prochaine fois :"
       none: "Plus d'échéance."
       instructions: "Comment faire"
@@ -657,6 +660,7 @@ fr:
       partial_shade: "Mi-ombre"
       shade: "Ombre"
   shared:
+    back_to: "← %{name}"
     account_nav:
       label: "Compte"
       notifications: "Notifications"

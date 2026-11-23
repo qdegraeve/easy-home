@@ -85,17 +85,89 @@ RSpec.describe "Tasks", type: :request do
     expect(response.parsed_body.text.squish).to include("Une plante", "Une tâche de la maison")
   end
 
-  it "edits then deletes a house task, back to the house tasks" do
+  it "edits a house task back to its sheet, then deletes it back to the house tasks" do
     task = bins
     sign_in(user)
 
     patch task_path(task), params: { task: { title: "Sortir le bac jaune", due_on: "2026-11-18", instructions: "" } }
-    expect(response).to redirect_to(house_tasks_path)
+    expect(response).to redirect_to(task_path(task))
     expect(task.reload).to have_attributes(title: "Sortir le bac jaune", instructions: nil)
 
     delete task_path(task)
     expect(response).to redirect_to(house_tasks_path)
     expect(Task.exists?(task.id)).to be(false)
+  end
+
+  it "never takes the subject from the body: a task posted to /tasks belongs to the house" do
+    other_plant = create(:plant, :watered, household: create(:household))
+    sign_in(user)
+
+    post tasks_path, params: bins_params.merge(plant_id: other_plant.id)
+
+    expect(household.tasks.sole.subject).to be_nil
+    expect(other_plant.tasks.count).to eq(1)
+  end
+
+  it "hides the house tasks from Maison and the list once the only one, a one-off, is done" do
+    task = bins
+    Tasks::Complete.new.call(occurrence: task.pending_occurrence, user:)
+    sign_in(user)
+
+    get house_path
+    expect(response.body).not_to include("Tâches de la maison")
+    get house_tasks_path
+    expect(response.parsed_body.text.squish).to include("Aucune tâche de la maison pour l'instant.")
+  end
+
+  describe "the sheet" do
+    it "does the task from the sheet and shows it done, in a browser" do
+      task = Tasks::Add.new.call(household:, params: { title: "Aérer", recurrence_type: "sliding", due_on: "2026-11-16",
+                                                       interval_days: "7" }).value!
+      sign_in(user)
+
+      post task_occurrence_completion_path(task.pending_occurrence), params: { from: "sheet" }
+
+      expect(response).to redirect_to(task_path(task))
+      follow_redirect!
+      text = response.parsed_body.text.squish
+      expect(text).to include("Aérer noté.", "Fait aujourd'hui", "Prochaine fois : dans 7 j")
+      expect(response.body).not_to include("Marquer comme fait : Aérer")
+    end
+
+    it "is closed after Fait in the Android app, the screen under it showing the toast" do
+      task = bins
+      sign_in(user)
+      app = { "User-Agent" => "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android" }
+
+      post task_occurrence_completion_path(task.pending_occurrence), params: { from: "sheet" }, headers: app
+
+      expect(response).to redirect_to(%r{/recede_historical_location})
+      expect(flash[:notice]).to eq("Sortir la poubelle jaune noté.")
+    end
+
+    it "postpones from the sheet, back to it" do
+      task = Tasks::Add.new.call(household:, params: { title: "Aérer", due_on: "2026-11-16" }).value!
+      sign_in(user)
+
+      post task_occurrence_postponement_path(task.pending_occurrence), params: { from: "sheet" }
+
+      expect(response).to redirect_to(task_path(task))
+      expect(task.reload.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 11, 17))
+    end
+
+    it "shows a watering without edit, and the task of an archived plant without due date nor edit" do
+      plant = create(:plant, :watered, household:, name: "Citronnier")
+      pruning = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-20" }).value!
+      sign_in(user)
+
+      get task_path(plant.watering_task)
+      expect(response.body).not_to include("Modifier", "Ajouter le comment faire")
+
+      Plants::Archive.new.call(plant:)
+      get task_path(pruning)
+      expect(response.parsed_body.text.squish).to include("Plus d'échéance.")
+      expect(response.body).not_to include("Modifier")
+    end
   end
 
   describe "access denied" do
@@ -120,6 +192,8 @@ RSpec.describe "Tasks", type: :request do
 
       get task_path(task)
       expect(response).to have_http_status(:not_found)
+      get new_task_path
+      expect(response).to have_http_status(:forbidden)
       post tasks_path, params: bins_params
       expect(response).to have_http_status(:forbidden)
       get house_tasks_path

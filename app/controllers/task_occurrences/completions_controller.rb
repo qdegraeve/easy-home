@@ -1,5 +1,7 @@
 module TaskOccurrences
   class CompletionsController < ApplicationController
+    include TaskSheetReturn
+
     def create
       occurrence = find_occurrence
       result = Tasks::Complete.new.call(occurrence:, user: Current.user)
@@ -10,7 +12,7 @@ module TaskOccurrences
       else
         t(".#{result.failure.first}")
       end
-      redirect_back_or_to root_path, notice:, status: :see_other
+      redirect_after_occurrence_change(occurrence.task, notice)
     end
 
     def destroy

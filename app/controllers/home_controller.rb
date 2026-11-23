@@ -8,8 +8,8 @@ class HomeController < ApplicationController
 
     authorize @household
     # Something to follow: a plant, or a task of any kind (the house's own, without plants).
-    @has_content = policy_scope(Plant).where(household: @household).active.exists? ||
-      policy_scope(Task).where(household: @household).active.exists?
+    @has_plants = policy_scope(Plant).where(household: @household).active.exists?
+    @has_content = @has_plants || policy_scope(Task).where(household: @household).to_do.exists?
     occurrences = DueOccurrencesQuery.new(policy_scope(TaskOccurrence))
       .call(household_ids: @household.id, days_ahead: UPCOMING_DAYS)
       .includes(task: { subject: :location }).order(:due_at, :id).to_a

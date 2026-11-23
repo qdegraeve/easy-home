@@ -44,10 +44,10 @@
     <div class="<%= "hidden group-has-[[value=sliding]:checked]:block" if adding %>">
       <%= f.label :interval_days, class: "block text-sm font-semibold" %>
       <div class="mt-1 flex items-center gap-2">
-        <span class="text-sm"><%= t("plants.form.every") %></span>
+        <span class="text-sm"><%= t("tasks.form.every") %></span>
         <%= f.number_field :interval_days, min: 1, max: 60,
               class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
-        <span class="text-sm"><%= t("plants.form.days") %></span>
+        <span class="text-sm"><%= t("tasks.form.days") %></span>
       </div>
     </div>
   <% end %>

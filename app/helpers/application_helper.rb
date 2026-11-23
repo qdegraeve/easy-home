@@ -136,6 +136,13 @@ module ApplicationHelper
 
   # "← …" link at the top of a page, for the browser only: in the Android app, the native top bar and the system
   # back already go back, and a web link would push a new screen instead of going back.
+  # "← Citronnier" to the subject of a task, or "← Tâches de la maison" for a task of the house (web only).
+  def task_back_link(subject)
+    return back_link_to(t("shared.back_to", name: subject.name), subject) if subject
+
+    back_link_to(t("tasks.back_house"), house_tasks_path)
+  end
+
   def back_link_to(text, url)
     link_to(text, url, class: "text-sm text-muted underline") unless hotwire_native_app?
   end

@@ -1,6 +1,8 @@
 module TaskOccurrences
   # "Reporter" on a task of the day: postponed to tomorrow (Tasks::Postpone), undone from the toast.
   class PostponementsController < ApplicationController
+    include TaskSheetReturn
+
     def create
       occurrence = find_occurrence
       result = Tasks::Postpone.new.call(occurrence:, user: Current.user)
@@ -12,7 +14,7 @@ module TaskOccurrences
       else
         t(".#{result.failure.first}")
       end
-      redirect_back_or_to root_path, notice:, status: :see_other
+      redirect_after_occurrence_change(occurrence.task, notice)
     end
 
     def destroy

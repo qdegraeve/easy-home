@@ -11,6 +11,11 @@ class TaskOccurrence < ApplicationRecord
   validates :due_at, presence: true
   validates :completed_at, presence: true, unless: :pending?
 
+  # Due today or late: "Fait" is the main action and "Reporter" is offered.
+  def due_by?(date = Time.zone.today)
+    due_at.to_date <= date
+  end
+
   def self.done_on?(date)
     done.where(completed_at: date.in_time_zone.all_day).exists?
   end
