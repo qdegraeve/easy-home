@@ -15,7 +15,8 @@ RSpec.describe "Equipment", type: :request do
   it "adds an equipment named after its kind, then shows it with its notes as plain text" do
     sign_in(user)
 
-    post equipment_index_path, params: { equipment: { kind: "dishwasher", name: "", notes: "<b>Filtre</b> réf. 42\nSel" } }
+    post equipment_index_path,
+      params: { equipment: { kind: "dishwasher", name: "", notes: "<b>Filtre</b> réf. 42\nSel" } }
 
     equipment = household.equipment.sole
     expect(equipment).to have_attributes(kind: "dishwasher", name: "Lave-vaisselle")

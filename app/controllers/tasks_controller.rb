@@ -1,6 +1,7 @@
-# Manual tasks, of a plant (fertilizer, pruning…) or of the house itself (bins…), and the task sheet: what to do,
-# how ("Comment faire"), when, with "Fait" and "Reporter". The subject comes from the URL only
-# (plants/:plant_id/tasks, equipment/:equipment_id/tasks), through policy_scope; a task without one belongs to the current household.
+# Manual tasks, of a plant (fertilizer, pruning…), of an equipment or of the house itself (bins…), and the task
+# sheet: what to do, how ("Comment faire"), when, with "Fait" and "Reporter". The subject comes from the URL only
+# (plants/:plant_id/tasks, equipment/:equipment_id/tasks), through policy_scope; a task without one belongs to the
+# current household.
 class TasksController < ApplicationController
   SUBJECTS = { plant_id: Plant, equipment_id: Equipment }.freeze
 

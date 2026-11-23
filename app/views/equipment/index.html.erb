@@ -6,7 +6,8 @@
     <% @equipment.each do |equipment| %>
       <% group.with_row do %>
         <% next_occurrence = equipment.tasks.select(&:active?).filter_map(&:pending_occurrence).min_by(&:due_at) %>
-        <%= link_to equipment_path(equipment), class: "flex min-h-14 items-center gap-3 px-3 py-2 active:bg-subtle" do %>
+        <%= link_to equipment_path(equipment),
+              class: "flex min-h-14 items-center gap-3 px-3 py-2 active:bg-subtle" do %>
           <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-gear">
             <%= icon(equipment.kind_info.icon) %>
           </span>
