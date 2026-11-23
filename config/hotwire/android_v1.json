@@ -10,7 +10,7 @@
       }
     },
     {
-      "patterns": ["/plants/\\d+/photos/\\d+$"],
+      "patterns": ["/plants/\\d+/photos/\\d+$", "/(equipment|tasks)/\\d+/photos/\\d+$"],
       "properties": {
         "context": "default",
         "uri": "hotwire://fragment/web",

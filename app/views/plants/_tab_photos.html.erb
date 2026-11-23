@@ -7,33 +7,11 @@
     <% end %>
   </div>
   <% if @photos.any? %>
-    <%= render PhotoGridComponent.new(plant: @plant, photos: @photos) %>
+    <%= render PhotoGridComponent.new(subject: @plant, photos: @photos) %>
   <% else %>
     <div class="mt-2"><%= render EmptyStateComponent.new(text: t("plants.show.no_photos"), icon: :camera) %></div>
   <% end %>
   <% if policy(Photo.new(subject: @plant)).create? %>
-    <%# One gesture: the button opens the camera or the gallery, the photo is sent once chosen. In the Android app, the
-        button floats at the bottom right like the native "+" of the other pages, but stays in the page: the web view
-        opens a file chooser only on a tap of the user in the page, never on a click asked by the app. %>
-    <%= form_with model: PhotoUpload.new, url: plant_photos_path(@plant), class: "mt-3",
-                  data: { controller: "photo-picker" } do |f| %>
-      <%= f.label :file, t("plants.show.new_photo"), class: "sr-only" %>
-      <%# Hidden from screen readers too: the button below is the way to choose. %>
-      <%= f.file_field :file, accept: "image/*", required: true, class: "sr-only", tabindex: -1, aria: { hidden: true },
-            data: { photo_picker_target: "input", action: "photo-picker#chosen" } %>
-      <% if hotwire_native_app? %>
-        <%= button_tag type: "button", aria: { label: t("plants.show.add_photo") }, data: { floating_action: true,
-                       action: "photo-picker#choose", photo_picker_target: "button" },
-              class: "fixed bottom-4 right-4 z-20 inline-flex h-14 items-center gap-2 rounded-2xl bg-action px-5 " \
-                     "font-semibold text-white shadow-lg" do %>
-          <%= icon(:plus, size: 22) %><%= t("plants.show.add_photo_label") %>
-        <% end %>
-      <% else %>
-        <%= button_tag type: "button", class: button_class(:secondary, block: true),
-              data: { action: "photo-picker#choose", photo_picker_target: "button" } do %>
-          <%= icon(:camera) %><%= t("plants.show.add_photo") %>
-        <% end %>
-      <% end %>
-    <% end %>
+    <%= render "photos/picker", url: plant_photos_path(@plant), floating: true %>
   <% end %>
 </section>

@@ -3,6 +3,8 @@ class Task < ApplicationRecord
   belongs_to :subject, polymorphic: true, optional: true
   has_many :occurrences, class_name: "TaskOccurrence", dependent: :destroy
   has_one :pending_occurrence, -> { pending }, class_name: "TaskOccurrence"
+  # Photos of the task, shown in its sheet with how to do it ("the filter to unscrew").
+  has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy, inverse_of: :subject
 
   # Authorization goes through the task's household: it must never diverge from the subject's (see ADR 0010).
   attr_readonly :household_id
@@ -38,6 +40,11 @@ class Task < ApplicationRecord
     return false unless last_closed&.postponed? && last_closed.by_rain? && pending_occurrence
 
     pending_occurrence.due_at.to_date == [ last_closed.due_at.to_date, last_closed.completed_at.to_date ].max + 1
+  end
+
+  # A stopped task (its plant archived) takes no new photo (contract of a photo subject).
+  def archived?
+    !active?
   end
 
   # Task added by hand (fertilizer, pruning, bins…), as opposed to a task created with its subject (watering).

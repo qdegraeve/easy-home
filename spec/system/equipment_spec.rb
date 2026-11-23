@@ -1,8 +1,9 @@
 require "rails_helper"
 
 # Critical journey: an equipment and its upkeep (see docs/tests.md and docs/conception/equipements-et-taches.md).
-# Added from the "+" of Maison with what is good to know, a task added from its page with how to do it, done from
-# "Aujourd'hui" where it shows the equipment's name, then the equipment deleted with its tasks.
+# Added from the "+" of Maison with what is good to know, a task added from its page with how to do it and a photo,
+# done from "Aujourd'hui" where it shows the equipment's name, a photo of the equipment, then the equipment deleted
+# with its tasks.
 RSpec.describe "Equipment", type: :system do
   include ActiveSupport::Testing::TimeHelpers
 
@@ -38,17 +39,34 @@ RSpec.describe "Equipment", type: :system do
     expect(page).to have_content(/Nettoyer le filtre\s+Clim de la chambre · aujourd'hui/)
     click_link "Nettoyer le filtre"
     expect(page).to have_content("Ouvrir le capot, rincer le filtre.")
+    attach_file "Nouvelle photo", file_fixture("plant.png").expand_path.to_s # sent once chosen
+    expect(page).to have_content("Photo ajoutée.")
+    expect(page).to have_css("section[aria-labelledby=task-photos] img")
+    find("section[aria-labelledby=task-photos] a").click
+    click_on "Supprimer la photo"
+    within("dialog", text: "Supprimer cette photo ?") { click_on "Supprimer la photo" }
+    expect(page).to have_content("Photo supprimée.")
+    expect(page).to have_css("h1", text: "Nettoyer le filtre") # back on the sheet
+    expect(page).to have_no_css("section[aria-labelledby=task-photos] img")
+    attach_file "Nouvelle photo", file_fixture("plant.png").expand_path.to_s
+    expect(page).to have_content("Photo ajoutée.")
     click_on "Marquer comme fait : Nettoyer le filtre"
     expect(page).to have_content("Nettoyer le filtre noté pour « Clim de la chambre ».")
 
     go_to_tab("Maison")
     click_on "Équipements"
     click_on "Clim de la chambre"
+    click_on "Photos"
+    attach_file "Nouvelle photo", file_fixture("plant.png").expand_path.to_s
+    expect(page).to have_content("Photo ajoutée.")
+    expect(page).to have_css("img[alt='Photo de Clim de la chambre']") # its face
     click_on "Historique"
     expect(page).to have_content("par vous")
     click_on "Modifier"
     click_on "Supprimer l'équipement"
-    within("dialog", text: "Ses tâches et leur historique partent aussi.") { click_on "Supprimer l'équipement" }
+    within("dialog", text: "Ses tâches, leur historique et ses photos partent aussi.") do
+      click_on "Supprimer l'équipement"
+    end
     expect(page).to have_content("Équipement « Clim de la chambre » supprimé.")
     expect(page).to have_content("Aucun équipement pour l'instant")
   end

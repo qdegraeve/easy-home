@@ -40,9 +40,12 @@ Rails.application.routes.draw do
   # What the household maintains (ADR 0016): "equipment" is uncountable, its list is equipment_index_path.
   resources :equipment do
     resources :tasks, only: [ :new, :create ]
+    resources :photos, only: [ :create, :show, :destroy ], controller: "subject_photos"
   end
   # A task without subject is created here (the house); show is the task sheet.
-  resources :tasks, only: [ :new, :create, :show, :edit, :update, :destroy ]
+  resources :tasks, only: [ :new, :create, :show, :edit, :update, :destroy ] do
+    resources :photos, only: [ :create, :show, :destroy ], controller: "subject_photos"
+  end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences
     resource :postponement, only: [ :create, :destroy ], module: :task_occurrences

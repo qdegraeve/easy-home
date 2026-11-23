@@ -14,6 +14,7 @@ class TasksController < ApplicationController
     @task = find_task
     @occurrence = @task.pending_occurrence
     @last_done_at = @task.occurrences.done.maximum(:completed_at)
+    @photos = @task.photos.with_attached_image.to_a
   end
 
   # A suggestion of the catalogue (?suggestion=bins.yellow) prefills the form of a task of the house; unknown, or for a

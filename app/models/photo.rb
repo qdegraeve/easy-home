@@ -1,6 +1,6 @@
 # A dated photo of a subject: a plant, an equipment, or a task (shown in its sheet with how to do it), ADR 0016.
 class Photo < ApplicationRecord
-  SUBJECT_TYPES = %w[Plant].freeze
+  SUBJECT_TYPES = %w[Plant Equipment Task].freeze
 
   belongs_to :subject, polymorphic: true
   # The former column, still written for the photos of a plant until it is removed (see the migration).
