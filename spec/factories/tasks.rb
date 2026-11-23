@@ -5,7 +5,7 @@ FactoryBot.define do
     template_key { Plant::WATERING_TEMPLATE_KEY }
     recurrence_type { :sliding }
     transient { interval_days { 3 } }
-    recurrence_config { { "interval_days" => interval_days } }
+    recurrence_config { { "interval" => interval_days, "unit" => "days" } }
   end
 
   factory :task_occurrence do

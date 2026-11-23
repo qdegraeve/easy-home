@@ -62,7 +62,7 @@ RSpec.describe "Bins", type: :system do
     fill_in "Tâche", with: "Préparer la saison cyclonique"
     choose "À jour fixe : toutes les N semaines ou chaque année"
     fill_in "Prochaine fois le", with: Date.new(2026, 12, 3)
-    fill_in "Nombre de semaines ou d'années", with: "1"
+    fill_in "Répétition", with: "1"
     select "ans", from: "Unité"
     click_on "Ajouter la tâche"
     expect(page).to have_content("Chaque année, le 3 décembre · dans 2 j")

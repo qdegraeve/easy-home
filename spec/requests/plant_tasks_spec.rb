@@ -59,7 +59,7 @@ RSpec.describe "Plant tasks", type: :request do
   end
 
   it "edits a repeating task: next date and interval" do
-    task = add_task(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
+    task = add_task(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval: "14", unit: "days")
     sign_in(user)
 
     get edit_task_path(task)
@@ -68,7 +68,7 @@ RSpec.describe "Plant tasks", type: :request do
     expect(rhythm["checked"]).to eq("checked")
 
     patch task_path(task),
-      params: { task: { title: "Engrais", due_on: "2026-11-22", interval_days: "21" } }
+      params: { task: { title: "Engrais", due_on: "2026-11-22", interval: "21", unit: "days" } }
 
     expect(task.reload.recurrence.interval_days).to eq(21)
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))

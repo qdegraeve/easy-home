@@ -44,7 +44,7 @@ RSpec.describe "Plant archiving" do
     it "resumes other tasks too: the repeating one restarts, the done one-off stays finished" do
       engrais = Tasks::Add.new.call(
         subject: plant,
-        params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
+        params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval: "14", unit: "days" }
       ).value!
       taille = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-16" }).value!
       Tasks::Complete.new.call(occurrence: taille.pending_occurrence, user: create(:user))

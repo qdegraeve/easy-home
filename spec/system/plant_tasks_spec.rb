@@ -22,9 +22,10 @@ RSpec.describe "Plant tasks", type: :system do
     click_on "Ajouter une tâche"
     fill_in "Tâche", with: "Engrais"
     expect(page).to have_no_field("Répétition")
-    choose "Tous les N jours après la dernière fois"
+    choose "Tous les N jours, semaines, mois ou ans après la dernière fois"
     fill_in "Prochaine fois le", with: Date.new(2026, 11, 16)
     fill_in "Répétition", with: "14"
+    select "jours", from: "Unité"
     click_on "Ajouter la tâche"
     expect(page).to have_content("Tâche « Engrais » ajoutée.")
     expect(page).to have_content("Tous les 14 jours · aujourd'hui")

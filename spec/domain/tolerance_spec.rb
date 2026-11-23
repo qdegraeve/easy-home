@@ -6,7 +6,7 @@ RSpec.describe Tolerance do
   end
 
   def every(days)
-    Recurrence::Sliding.new(interval_days: days)
+    Recurrence::Sliding.new(interval: days)
   end
 
   it "gives a flexible repeating task a quarter of its interval, from 0 to 3 days" do

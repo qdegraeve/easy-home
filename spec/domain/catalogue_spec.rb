@@ -37,4 +37,13 @@ RSpec.describe Catalogue do
     expect(described_class.suggestion("bins.unknown")).to be_nil
     expect(described_class.suggestion(nil)).to be_nil
   end
+
+  it "offers a rule after the last time one period from today, as if just done" do
+    suggestion = described_class::Suggestion.new(
+      key: "dishwasher.filter", importance: "flexible", reminder_minute: nil,
+      recurrence: { "type" => "sliding", "interval" => 1, "unit" => "months" }
+    )
+
+    expect(suggestion.first_due_on(today:)).to eq(Date.new(2026, 12, 23))
+  end
 end

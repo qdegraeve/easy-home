@@ -23,11 +23,14 @@ module Catalogue
       importance == "critical"
     end
 
-    # The first date offered: a yearly date on its next day; a one-off today; none for weekly fixed dates (the user
-    # gives the next collection) nor anything else for now.
+    # The first date offered: one period from today after the last time (as if just done); a yearly date on its next
+    # day; a one-off today; none for weekly fixed dates (the user gives the next collection).
     def first_due_on(today:)
       case recurrence["type"]
       when "once" then today
+      when "sliding"
+        Recurrence::Sliding.new(interval: recurrence["interval"], unit: recurrence["unit"])
+          .next_due_at(last_completed_at: today.in_time_zone).to_date
       when "fixed" then next_yearly_date(today) if recurrence["unit"] == "years" && recurrence["month"]
       end
     end

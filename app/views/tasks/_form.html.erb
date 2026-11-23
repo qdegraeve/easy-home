@@ -52,24 +52,15 @@
     </p>
   </div>
 
-  <div class="hidden group-has-[[value=sliding]:checked]:block">
-    <%= f.label :interval_days, class: "block text-sm font-semibold" %>
-    <div class="mt-1 flex items-center gap-2">
-      <span class="text-sm"><%= t("tasks.form.every") %></span>
-      <%= f.number_field :interval_days, min: 1, max: 60,
-            class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
-      <span class="text-sm"><%= t("tasks.form.days") %></span>
-    </div>
-  </div>
-
-  <fieldset class="hidden group-has-[[value=fixed]:checked]:block">
-    <legend class="text-sm font-semibold"><%= t("tasks.form.fixed_every") %></legend>
+  <%# One "every N units" for both repeating rhythms; fixed dates accept weeks or years (checked by the form). %>
+  <fieldset class="hidden group-has-[[value=sliding]:checked]:block group-has-[[value=fixed]:checked]:block">
+    <legend class="text-sm font-semibold"><%= t("tasks.form.every_n") %></legend>
     <div class="mt-1 flex items-center gap-2">
       <%= f.label :interval, class: "sr-only" %>
-      <%= f.number_field :interval, min: 1, max: 52,
+      <%= f.number_field :interval, min: 1, max: 60,
             class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
       <%= f.label :unit, class: "sr-only" %>
-      <%= f.select :unit, TaskForm::FIXED_UNITS.map { |unit| [ t("tasks.form.units.#{unit}"), unit ] }, {},
+      <%= f.select :unit, TaskForm::ALL_UNITS.map { |unit| [ t("tasks.form.units.#{unit}"), unit ] }, {},
             class: "rounded-xl border border-field bg-surface px-3 py-3" %>
     </div>
   </fieldset>

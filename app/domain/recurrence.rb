@@ -17,7 +17,8 @@ module Recurrence
     config = config.to_h.transform_keys(&:to_s)
 
     case type.to_s
-    when "sliding" then Sliding.new(interval_days: config["interval_days"], start_on: date(config["start_on"]))
+    when "sliding"
+      Sliding.new(interval: config["interval"], unit: config.fetch("unit", "days"), start_on: date(config["start_on"]))
     when "once" then Once.new(due_on: date(config["due_on"]))
     when "fixed"
       Fixed.new(anchor_on: date(config["anchor_on"]), interval: config["interval"], unit: config["unit"])

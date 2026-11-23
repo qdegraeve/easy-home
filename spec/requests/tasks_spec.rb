@@ -50,6 +50,20 @@ RSpec.describe "Tasks", type: :request do
     expect(task.reload.reminder_minute).to be_nil
   end
 
+  it "repeats a task every N months after the last time, and refuses months on fixed dates" do
+    sign_in(user)
+
+    post tasks_path, params: { task: { title: "Manœuvrer le groupe de sécurité", recurrence_type: "sliding",
+                                       due_on: "2026-11-16", interval: "3", unit: "months" } }
+    follow_redirect!
+    expect(response.parsed_body.text.squish).to include("Tous les 3 mois · aujourd'hui")
+
+    post tasks_path, params: { task: { title: "Saison", recurrence_type: "fixed", due_on: "2026-11-16", interval: "3",
+                                       unit: "months" } }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("pour un jour fixe")
+  end
+
   it "refuses a reminder off the quarter hours" do
     sign_in(user)
 
@@ -147,7 +161,7 @@ RSpec.describe "Tasks", type: :request do
   describe "the sheet" do
     it "does the task from the sheet and shows it done, in a browser" do
       task = Tasks::Add.new.call(household:, params: { title: "Aérer", recurrence_type: "sliding", due_on: "2026-11-16",
-                                                       interval_days: "7" }).value!
+                                                       interval: "7", unit: "days" }).value!
       sign_in(user)
 
       post task_occurrence_completion_path(task.pending_occurrence), params: { from: "sheet" }

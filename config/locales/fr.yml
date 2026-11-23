@@ -12,7 +12,8 @@ fr:
         task:
           attributes:
             interval:
-              fixed_range: "doit être de 1 à 52 semaines, ou de 1 à 10 ans"
+              fixed_range: "doit être de 1 à 52 semaines, ou de 1 à 10 ans, pour un jour fixe"
+              sliding_range: "doit être de 1 à 60 jours, 1 à 52 semaines, 1 à 24 mois ou 1 à 10 ans"
         plant:
           attributes:
             new_location_exposure:
@@ -55,11 +56,10 @@ fr:
         title: "Tâche"
         instructions: "Comment faire"
         reminder_time: "Rappel le jour même"
-        interval: "Nombre de semaines ou d'années"
+        interval: "Répétition"
         unit: "Unité"
         recurrence_type: "Répétition"
         due_on: "Date"
-        interval_days: "Répétition"
   activerecord:
     errors:
       models:
@@ -523,8 +523,18 @@ fr:
     rhythm:
       once: "Une fois"
       sliding:
-        one: "Tous les jours"
-        other: "Tous les %{count} jours"
+        days:
+          one: "Tous les jours"
+          other: "Tous les %{count} jours"
+        weeks:
+          one: "Toutes les semaines"
+          other: "Toutes les %{count} semaines"
+        months:
+          one: "Tous les mois"
+          other: "Tous les %{count} mois"
+        years:
+          one: "Tous les ans"
+          other: "Tous les %{count} ans"
       weeks:
         one: "Chaque semaine, le %{day}"
         other: "Toutes les %{count} semaines, le %{day}"
@@ -547,13 +557,15 @@ fr:
         d'écart, jamais après 22 h.
       instructions_placeholder: "Ex. Sortir le bac jaune devant le portail, couvercle fermé."
       suggestions: "Suggestions"
-      fixed_every: "Toutes les"
+      every_n: "Tous les"
       units:
+        days: "jours"
         weeks: "semaines"
+        months: "mois"
         years: "ans"
       kinds:
         once: "Une seule fois"
-        sliding: "Tous les N jours après la dernière fois"
+        sliding: "Tous les N jours, semaines, mois ou ans après la dernière fois"
         fixed: "À jour fixe : toutes les N semaines ou chaque année"
       due_on:
         once: "Date"

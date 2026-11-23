@@ -20,7 +20,7 @@ RSpec.describe Plants::Add do
     expect(plant).to have_attributes(name: "Hibiscus", species: "Hibiscus rosa-sinensis", location:)
     expect(plant).to be_species_from_user
     task = plant.watering_task
-    expect(task).to have_attributes(household:, recurrence_type: "sliding", recurrence_config: { "interval_days" => 3 })
+    expect(task).to have_attributes(household:, recurrence_type: "sliding", recurrence_config: { "interval" => 3, "unit" => "days" })
     expect(task.occurrences.done.sole).to have_attributes(
       completed_at: Time.zone.parse("2026-11-14"),
       completed_by: user
@@ -49,7 +49,7 @@ RSpec.describe Plants::Add do
     "without a name" => { name: " " },
     "with a 0 interval" => { watering_interval_days: "0" },
     "with an interval over 60" => { watering_interval_days: "61" },
-    "with a non numeric interval" => { watering_interval_days: "abc" },
+    "with a non numeric interval" => { watering_interval: "abc" },
     "with a last watering in the future" => { last_watered_on: "2026-11-17" }
   }.each do |label, override|
     it "rejects an input #{label}, without creating anything" do
