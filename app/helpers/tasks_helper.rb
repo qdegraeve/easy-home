@@ -1,0 +1,26 @@
+# Labels of tasks shared by the lists, the sheet and the forms.
+module TasksHelper
+  # The rhythm of a task, in words: "Une fois", "Tous les 14 jours", "Toutes les 2 semaines, le mardi", "Chaque année,
+  # le 1er novembre". The weekday and the day of the year come from the anchor of fixed dates.
+  def rhythm_label(task)
+    rule = task.recurrence
+    case rule
+    when Recurrence::Once then t("tasks.rhythm.once")
+    when Recurrence::Sliding then t("tasks.rhythm.sliding", count: rule.interval_days)
+    when Recurrence::Fixed
+      if rule.weeks?
+        t("tasks.rhythm.weeks", count: rule.interval, day: I18n.t("date.day_names")[rule.anchor_on.wday])
+      else
+        t("tasks.rhythm.years", count: rule.interval, date: day_of_year(rule.anchor_on))
+      end
+    end
+  end
+
+  private
+
+  # "1er novembre", "15 mai".
+  def day_of_year(date)
+    day = date.day == 1 ? t("tasks.rhythm.first_day") : date.day.to_s
+    "#{day} #{I18n.t('date.month_names')[date.month]}"
+  end
+end

@@ -13,7 +13,7 @@ module Tasks
 
       task = ActiveRecord::Base.transaction do
         task = Task.create!(household: subject&.household || household, subject:, **form.task_attributes)
-        task.occurrences.create!(due_at: task.due_within_tolerance(form.due_on.in_time_zone))
+        task.occurrences.create!(due_at: task.first_due_at!(form.due_on))
         task
       end
 

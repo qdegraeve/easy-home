@@ -43,7 +43,7 @@
           occurrence: task.pending_occurrence,
           title: task.title,
           href: task_path(task),
-          detail: task.once? ? t("plants.show.once") : t("plants.show.every", count: task.recurrence.interval_days),
+          detail: rhythm_label(task),
           done_today: @done_today_task_ids.include?(task.id)
         ) %>
       <% end %>

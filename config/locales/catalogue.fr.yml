@@ -1,0 +1,18 @@
+fr:
+  catalogue:
+    suggestions:
+      bins:
+        yellow:
+          title: "Sortir la poubelle jaune"
+          hint: "La veille de la collecte, une semaine sur deux."
+          instructions: "Le soir, bac jaune devant le portail, couvercle fermé."
+        grey:
+          title: "Sortir la poubelle grise"
+          hint: "La veille de la collecte, chaque semaine."
+          instructions: "Le soir, bac gris devant le portail, couvercle fermé."
+        yellow_back:
+          title: "Rentrer la poubelle jaune"
+          hint: "Le lendemain de la collecte."
+        bulky:
+          title: "Sortir les encombrants"
+          hint: "Une fois, à la date donnée par la commune."

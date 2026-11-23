@@ -7,7 +7,7 @@ class Task < ApplicationRecord
   # Authorization goes through the task's household: it must never diverge from the subject's (see ADR 0010).
   attr_readonly :household_id
 
-  enum :recurrence_type, { sliding: "sliding", once: "once" }, validate: true
+  enum :recurrence_type, { sliding: "sliding", once: "once", fixed: "fixed" }, validate: true
   # Flexible (watering, upkeep: a tolerance before missed) or critical ("à ne pas rater": first, in red, no tolerance).
   enum :importance, { flexible: "flexible", critical: "critical" }, validate: true
 
@@ -52,17 +52,39 @@ class Task < ApplicationRecord
     Tolerance.grace_days(importance:, recurrence:)
   end
 
-  # The occurrence to act on when a page showed one closed since (missed, postponed): the one still open of the task,
-  # if any. A pending or done occurrence stays itself.
+  # The occurrence to act on when a page showed one closed since: the one still open of the task, if any, after a
+  # postponement (the same task, moved) or a miss that reopened it on the same date. A miss that moved the task to
+  # the next date of its rule (fixed dates, Tolerance.after_miss) is not caught up: the occurrence stays missed and
+  # the stale tap fails, rather than doing the next collection. A pending or done occurrence stays itself.
   def still_open(occurrence)
     return occurrence unless occurrence.missed? || occurrence.postponed?
 
-    occurrences.pending.first || occurrence
+    pending = occurrences.pending.first
+    return occurrence unless pending
+    return pending if occurrence.postponed? || pending.due_at == occurrence.due_at
+
+    occurrence
   end
 
   # due_at moved forward when it would start past the tolerance (see Tolerance.earliest).
   def due_within_tolerance(due_at)
     Tolerance.earliest(due_at, grace_days:, today: Time.zone.today)
+  end
+
+  # The first due date of a task added or edited with "Prochaine fois le" (on): that day, never past the tolerance; for
+  # fixed dates, the first date of the rule from there (a past anchor jumps to its next date, like a collection), which
+  # then becomes the anchor, so that the series never starts before it (Tasks::Reschedule replays from the anchor).
+  def first_due_at!(on)
+    return due_within_tolerance(on.in_time_zone) unless fixed?
+
+    due_at = recurrence.next_due_at(last_completed_at: nil, not_before: Time.zone.today - grace_days.to_i)
+    self.recurrence_config = recurrence_config.merge("anchor_on" => due_at.to_date.iso8601)
+    save! if persisted? && changed?
+    due_at
+  end
+
+  def after_miss
+    Tolerance.after_miss(importance:, recurrence:)
   end
 
   private

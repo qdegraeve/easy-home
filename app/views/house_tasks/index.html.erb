@@ -9,6 +9,7 @@
         <%= render TaskRowComponent.new(
           occurrence: task.pending_occurrence,
           title: task.title,
+          detail: rhythm_label(task),
           href: task_path(task)
         ) %>
       <% end %>

@@ -15,7 +15,11 @@ module Tasks
 
         completed_at = Time.current
         occurrence.update!(status: :done, completed_at:, completed_by: user, source:)
-        next_due_at = task.recurrence.next_due_at(last_completed_at: completed_at)
+        next_due_at = task.recurrence.next_due_at(
+          last_completed_at: completed_at,
+          last_due_on: occurrence.due_at.to_date,
+          not_before: Time.zone.today - task.grace_days.to_i
+        )
         task.occurrences.create!(due_at: next_due_at) if next_due_at
       end
 

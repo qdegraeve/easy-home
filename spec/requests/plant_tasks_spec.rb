@@ -63,8 +63,9 @@ RSpec.describe "Plant tasks", type: :request do
     sign_in(user)
 
     get edit_task_path(task)
-    expect(response.body).to include("Prochaine fois", 'value="2026-11-20"', 'value="14"')
-    expect(response.body).not_to include("Une seule fois")
+    expect(response.body).to include("Prochaine fois le", 'value="2026-11-20"', 'value="14"')
+    rhythm = response.parsed_body.at_css("input[name='task[recurrence_type]'][value=sliding]")
+    expect(rhythm["checked"]).to eq("checked")
 
     patch task_path(task),
       params: { task: { title: "Engrais", due_on: "2026-11-22", interval_days: "21" } }

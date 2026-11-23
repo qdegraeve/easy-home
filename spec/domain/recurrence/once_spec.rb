@@ -27,10 +27,4 @@ RSpec.describe Recurrence::Once do
       expect { described_class.new(due_on: value) }.to raise_error(Recurrence::InvalidConfig)
     end
   end
-
-  describe "#closed_by_miss?" do
-    it "is: its day has passed" do
-      expect(described_class.new(due_on: Date.new(2026, 11, 20))).to be_closed_by_miss
-    end
-  end
 end

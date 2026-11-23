@@ -12,7 +12,7 @@
 | Domaine qui calcule | `Plant`, plus tard `Pet` | Ce dont l'app exploite les attributs : un modèle et une table par domaine (ADR 0010, 0016). |
 | Équipement | `Equipment` (à venir) | Ce qu'on entretient et dont l'app rappelle les tâches (piscine, lave-vaisselle, chauffe-eau…) : nom, type, « À savoir », photos. Générique (ADR 0016). |
 | Sujet d'une tâche | `Task#subject` | La plante ou l'équipement auquel une tâche se rattache (polymorphe) ; nul pour une **tâche de la maison** (poubelles). |
-| Suggestion | `config/catalogue.yml` (à venir) | Tâche toute prête d'un type d'équipement ou de la maison, copiée dans la tâche à sa création (pas en base). |
+| Suggestion | `config/catalogue.yml`, `Catalogue` | Tâche toute prête d'un type d'équipement ou de la maison, copiée dans la tâche à sa création (pas en base). |
 | Tâche | `Task` | Une chose à faire, une fois ou de façon répétée. |
 | Comment faire | `Task#instructions` | Le mode opératoire d'une tâche, lu au moment de la faire, dans sa feuille. |
 | À savoir | `Equipment#notes` (à venir) | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
@@ -100,9 +100,9 @@ Task
   title
   instructions : text            # « Comment faire » (5 000 caractères au plus), lu dans la feuille de la tâche
   template_key (ex. "plant.watering")   # tâche gérée par son sujet (réglée depuis la plante)
-  suggestion_key                 # à venir (PR 2) : suggestion d'origine (ex. "house.bins.yellow"), sans comportement
+  suggestion_key                 # suggestion d'origine (ex. "bins.yellow"), sans comportement
   importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
-  recurrence_type (once | sliding ; à venir : fixed, on_demand)
+  recurrence_type (once | sliding | fixed ; à venir : on_demand)   # modifiable
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_minute                # à venir (PR 3) : rappel le jour de l'échéance, minutes après minuit (ADR 0017)
   active : boolean
@@ -175,9 +175,10 @@ pending ──(Fait)──────────▶ done
 
 - À chaque passage en `done`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la
   `TaskOccurrence` suivante.
-- Une récurrence **glissante** part de la date de réalisation. À venir : une récurrence **à jour fixe** se cale sur
-  sa règle (après un oubli, selon l'importance, voir « Moteur de récurrence ») ; une tâche **quand il le faut** n'a
-  jamais d'échéance ouverte.
+- Une récurrence **glissante** part de la date de réalisation. Une récurrence **à jour fixe** se cale sur sa règle :
+  faite en avance, à l'heure, en retard ou reportée, la suivante est la première date de la règle après la dernière
+  échéance (après un oubli, selon l'importance, voir « Moteur de récurrence »). À venir : une tâche **quand il le
+  faut** n'a jamais d'échéance ouverte.
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
   échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). Groupé comme
   l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
@@ -191,16 +192,22 @@ Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 - `Recurrence::Once` : une seule échéance (`due_on`), aucune suivante après réalisation ;
 - `Recurrence::Sliding` : `interval_days` après la dernière réalisation (`start_on` facultatif, date de la première
   échéance) ; à venir (PR 4) : unités semaines, mois, ans ;
-- à venir (PR 2) `Recurrence::Fixed` : une ancre (« prochaine fois le ») et un pas de N semaines ou N ans ; le jour de
-  la semaine ou la date de l'année se déduit de l'ancre ;
+- `Recurrence::Fixed` : une ancre (`anchor_on`, « prochaine fois le ») et un pas de N semaines (1 à 52) ou N ans
+  (1 à 10) ; le jour de la semaine ou la date de l'année se déduit de l'ancre (un 29 février tombe le 28 les autres
+  années). Une ancre passée s'ouvre à sa prochaine date, qui devient l'ancre ; modifier « Prochaine fois le » déplace
+  toute la série, modifier le reste (titre, Comment faire) ne touche ni l'ancre ni l'échéance ouverte (une poubelle
+  reportée reste un mardi). Un « Fait » tapé sur une page affichée avant qu'un oubli ait ouvert la collecte suivante
+  est refusé (« Trop tard »). Annuler un « Fait » rejoue la règle : la date reportée revient après un report ; une
+  date passée revient et le job la note manquée comme tout oubli ;
 - à venir (PR 7) `Recurrence::OnDemand` : « quand il le faut », jamais d'échéance ouverte ; « Fait » enregistre
   directement une échéance faite (`Tasks::RecordDone`).
 
-Interface commune aujourd'hui : `#next_due_at(last_completed_at:)`, construit depuis `recurrence_type` +
-`recurrence_config` par `Recurrence.build(type:, config:)` ; `nil` en retour signifie qu'il n'y a plus d'échéance.
-Elle devient (PR 2) `#next_due_at(last_completed_at:, last_due_on:, not_before:)` avec `#period_days`.
+Interface commune : `#next_due_at(last_completed_at:, last_due_on:, not_before:)`, `#period_days` (tolérance : un
+quart de la période, de 0 à 3 jours) et `#dated?`, construits depuis `recurrence_type` + `recurrence_config` par
+`Recurrence.build(type:, config:)` ; `nil` en retour signifie qu'il n'y a plus d'échéance. Le rythme d'une tâche se
+change en la modifiant (`Tasks::Update`).
 
-Après un oubli, la règle dépend du rythme et de l'importance (`Tolerance.after_miss`, PR 2) :
+Après un oubli, la règle dépend du rythme et de l'importance (`Tolerance.after_miss`) :
 
 | | à ne pas rater | souple |
 |---|---|---|
@@ -211,9 +218,10 @@ Après un oubli, la règle dépend du rythme et de l'importance (`Tolerance.afte
 
 L'usage (cycles, kilomètres) est hors v1 (`docs/conception/equipements-et-taches.md`).
 
-## Catalogue des suggestions (à venir, PR 2 et 8)
+## Catalogue des suggestions
 
-Les types d'équipements (avec leur icône) et les tâches suggérées (de la maison, comme les poubelles, et par type
+Les suggestions de la maison (poubelles jaune et grise, rentrer la jaune, encombrants) sont faites ; les types
+d'équipements arrivent avec la PR 8. Les types d'équipements (avec leur icône) et les tâches suggérées (de la maison, comme les poubelles, et par type
 d'équipement) sont décrits dans `config/catalogue.yml`, leurs textes dans `config/locales/catalogue.fr.yml` ; pas de
 table (ADR 0016). Une suggestion est **copiée** dans la tâche à sa création (titre, rythme, importance, rappel,
 Comment faire) : tout reste modifiable, y compris le type de rythme. Un équipement de type « Autre » n'a pas de

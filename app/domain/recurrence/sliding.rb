@@ -19,15 +19,18 @@ module Recurrence
       @start_on = start_on
     end
 
-    def next_due_at(last_completed_at:)
+    def next_due_at(last_completed_at:, last_due_on: nil, not_before: nil) # rubocop:disable Lint/UnusedMethodArgument
       return (start_on || Time.zone.today + interval_days).in_time_zone if last_completed_at.nil?
 
       (last_completed_at.to_date + interval_days).in_time_zone(last_completed_at.time_zone)
     end
 
-    # Missed, it is still to do (the plant still needs water).
-    def closed_by_miss?
-      false
+    def period_days
+      interval_days
+    end
+
+    def dated?
+      true
     end
   end
 end

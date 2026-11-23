@@ -12,8 +12,12 @@ class TasksController < ApplicationController
     @last_done_at = @task.occurrences.done.maximum(:completed_at)
   end
 
+  # A suggestion of the catalogue (?suggestion=bins.yellow) prefills the form of a task of the house; unknown, or for a
+  # plant, it is ignored.
   def new
-    @form = TaskForm.new(due_on: Time.zone.today)
+    suggestion = Catalogue.suggestion(params[:suggestion]) unless @subject
+    @form = suggestion ? TaskForm.from_suggestion(suggestion) : TaskForm.new(due_on: Time.zone.today)
+    @suggestions = suggestions
   end
 
   def create
@@ -25,6 +29,7 @@ class TasksController < ApplicationController
       code, @form = result.failure
       return forbidden if code == :subject_archived # the subject was archived meanwhile
 
+      @suggestions = suggestions
       render :new, status: :unprocessable_content
     end
   end
@@ -65,6 +70,14 @@ class TasksController < ApplicationController
     authorize Task.new(household: @household, subject: @subject), :create?
   end
 
+  # The suggestions of a task of the house, but for those already added (none for a plant).
+  def suggestions
+    return [] if @subject
+
+    used = @household.tasks.without_subject.active.where.not(suggestion_key: nil).pluck(:suggestion_key)
+    Catalogue.household_suggestions(existing_keys: used)
+  end
+
   def find_task(query = :show?)
     policy_scope(Task).find(params[:id]).tap { |task| authorize task, query }
   end
@@ -75,6 +88,9 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.expect(task: [ :title, :recurrence_type, :due_on, :interval_days, :critical, :instructions ])
+    params.expect(
+      task: [ :title, :recurrence_type, :due_on, :interval_days, :interval, :unit, :critical, :instructions,
+              :suggestion_key ]
+    )
   end
 end
