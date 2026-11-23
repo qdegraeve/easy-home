@@ -371,7 +371,7 @@ il y a 4 j » ; faite le 10 → suivante le 1er nov. de l'année suivante.
 
 | Service | Comportement |
 |---|---|
-| `Tasks::Complete` | `next_due_at(last_completed_at: now, last_due_on: occurrence.due_at.to_date, not_before: today - grace)`. Refuse une tâche `on_demand` (aucune échéance ouverte : passer par `RecordDone`). |
+| `Tasks::Complete` | `next_due_at(last_completed_at: now, last_due_on: occurrence.due_at.to_date, not_before: today - grace)`. Une tâche `on_demand` n'a jamais d'échéance ouverte : elle passe par `RecordDone`. |
 | `Tasks::MarkMissed` | `case Tolerance.after_miss` : `:reopen` → même échéance, `reopened_after_miss: true` ; `:advance` → `next_due_at(last_due_on: missed.due_at, not_before: today)` ; `:close` → rien. |
 | `Tasks::Reschedule` | rejoue la règle depuis la dernière échéance close (`done` ou `missed`) : si c'est une `missed` et que `after_miss` vaut `:reopen` → rouverte à sa date (`reopened_after_miss: true`) ; si `:close` → aucune ; sinon `next_due_at`. Puis la règle existante « jamais avant le lendemain d'un report postérieur ». `Tolerance.earliest` n'est appliquée qu'aux règles **non fixes** (pour `Fixed`, `not_before` saute aux dates de la règle). |
 | `Tasks::Postpone`, `CancelPostponement`, `CancelCompletion` | inchangés (`CancelCompletion` appelle `Reschedule`). |
@@ -469,14 +469,14 @@ les tâches, leurs échéances et les photos), supprimer une tâche.
 - `RemindersDueQuery` : nouvelle.
 - `SubjectHistoryQuery.new(scope).call(subject:)` : échéances closes des tâches d'un sujet (onglet Historique de la
   plante et de l'équipement).
-- Scopes : `Task.without_subject`, `Task.dated` (`recurrence_type != on_demand`).
+- Scopes : `Task.without_subject`, `Task.to_do` (active avec une échéance ouverte).
 
 #### 5.4 Policies
 
 - `HouseholdRecordPolicy` (nouvelle classe parente) : `manage?` = `HouseholdPolicy#update?` ; `Scope` par
   `managed_household_ids`. `PlantPolicy` et `EquipmentPolicy` en héritent.
 - `EquipmentPolicy` : `show? create? new? update? edit? destroy?` = `manage?`.
-- `TaskPolicy` : ajoute `show?` (la feuille) et `record_done?` (`manage? && record.on_demand? && record.active?`) ;
+- `TaskPolicy` : ajoute `show?` (la feuille) et `record_done?` (`manage?` : une page périmée, tâche datée ou arrêtée depuis, reçoit le message du service) ;
   `update?`/`destroy?` sur `!record.managed?`.
 - `PhotoPolicy` : délègue au sujet : voir une photo = voir le sujet (`show?`) ; ajouter, changer la date = modifier le
   sujet (`update?`), refusé si le sujet est archivé pour l'ajout ; supprimer = pouvoir supprimer le sujet

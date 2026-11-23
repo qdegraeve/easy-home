@@ -8,6 +8,7 @@ module Tolerance
 
   # Grace days, or nil when never missed.
   def self.grace_days(importance:, recurrence:)
+    return nil unless recurrence.dated? # "quand il le faut": nothing to miss
     return 0 if importance.to_s == "critical"
 
     period = recurrence.period_days

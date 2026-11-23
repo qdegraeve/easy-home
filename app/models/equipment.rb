@@ -5,7 +5,7 @@ class Equipment < ApplicationRecord
   NOTES_MAX = 10_000
 
   belongs_to :household
-  has_many :tasks, as: :subject, dependent: :destroy
+  has_many :tasks, as: :subject, dependent: :destroy, inverse_of: :subject
   has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy, inverse_of: :subject
 
   # Authorization goes through the household: it never changes (ADR 0010).

@@ -59,4 +59,19 @@ RSpec.describe Task, type: :model do
 
     expect { create(:task_occurrence, task:) }.to raise_error(ActiveRecord::RecordNotUnique)
   end
+
+  it "has no reminder when done when needed" do
+    task = build(:task, recurrence_type: :on_demand, recurrence_config: {}, reminder_minute: 19 * 60)
+
+    expect(task).not_to be_valid
+  end
+
+  it "gives the last completion of each task, done ones only" do
+    salt, rinse, never = Array.new(3) { create(:task, recurrence_type: :on_demand, recurrence_config: {}) }
+    salt.occurrences.create!(status: :done, due_at: 2.days.ago, completed_at: 2.days.ago)
+    last = salt.occurrences.create!(status: :done, due_at: 1.day.ago, completed_at: 1.day.ago)
+    rinse.occurrences.create!(status: :missed, due_at: 1.day.ago, completed_at: 1.day.ago)
+
+    expect(described_class.last_done_at_by_id([ salt, rinse, never ])).to eq(salt.id => last.completed_at)
+  end
 end

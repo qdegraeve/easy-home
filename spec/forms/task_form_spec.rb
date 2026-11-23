@@ -27,4 +27,25 @@ RSpec.describe TaskForm do
   it "ignores the interval of a one-off task" do
     expect(form("once", nil, nil)).to be_valid
   end
+
+  it "needs no date for a task done when needed, and keeps neither reminder nor importance for it" do
+    form = described_class.new(title: "Sel", recurrence_type: "on_demand", reminder_time: "19:00", critical: true)
+
+    expect(form).to be_valid
+    expect(form.task_attributes).to include(recurrence_config: {}, reminder_minute: nil, importance: "flexible")
+  end
+
+  it "reads back each rhythm of a task" do
+    household = create(:household)
+    { "once" => {}, "sliding" => { interval: "3", unit: "months" }, "fixed" => { interval: "2", unit: "weeks" },
+      "on_demand" => {} }.each do |rhythm, extra|
+      params = { title: rhythm, recurrence_type: rhythm, due_on: ("2026-12-01" unless rhythm == "on_demand"), **extra }
+      task = Tasks::Add.new.call(household:, params:).value!
+
+      form = described_class.from(task)
+
+      expect(form).to be_valid, rhythm
+      expect(form.recurrence_type).to eq(rhythm)
+    end
+  end
 end

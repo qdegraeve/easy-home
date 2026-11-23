@@ -337,6 +337,11 @@ fr:
   photo_grid_component:
     alt: "Photo du %{date}"
     cover_badge: "Couverture"
+  on_demand_task_row_component:
+    when_needed: "Quand il le faut"
+    never: "jamais fait"
+    last_done: "dernière fois : %{date}"
+    done_today: "Fait aujourd'hui"
   task_row_component:
     done_watering: "J'ai arrosé : %{name}"
     done_with_subject: "Marquer comme fait : %{title} (%{subject})"
@@ -595,9 +600,15 @@ fr:
         success: "Plante « %{name} » restaurée."
         already: "« %{name} » n'était pas archivée."
   tasks:
+    completions:
+      create:
+        not_on_demand: "Cette tâche a une date : faites-la depuis sa ligne."
+        inactive: "Cette tâche est arrêtée."
+        already_done_today: "Déjà fait aujourd'hui."
     back_house: "← Tâches de la maison"
     rhythm:
       once: "Une fois"
+      on_demand: "Quand il le faut"
       sliding:
         days:
           one: "Tous les jours"
@@ -641,6 +652,7 @@ fr:
         once: "Une seule fois"
         sliding: "Tous les N jours, semaines, mois ou ans après la dernière fois"
         fixed: "À jour fixe : toutes les N semaines ou chaque année"
+        on_demand: "Quand il le faut : pas de date, je note quand je le fais"
       due_on:
         once: "Date"
         next: "Prochaine fois le"

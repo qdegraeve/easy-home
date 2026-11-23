@@ -45,7 +45,10 @@
                                           href: task_path(task), detail: rhythm_label(task)) %>
         <% end %>
       <% end %>
-      <%= render EmptyStateComponent.new(text: t(".no_tasks")) if @tasks.empty? %>
+      <% @on_demand_tasks.each do |task| %>
+        <% group.with_row { render(OnDemandTaskRowComponent.new(task:, last_done_at: @last_done_at[task.id])) } %>
+      <% end %>
+      <%= render EmptyStateComponent.new(text: t(".no_tasks")) if @tasks.empty? && @on_demand_tasks.empty? %>
     <% end %>
     <%# In the Android app, the floating "+" (bridge--button). %>
     <%= link_to t(".add_task"), new_equipment_task_path(@equipment), class: button_class(:secondary, block: true),

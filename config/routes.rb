@@ -45,6 +45,8 @@ Rails.application.routes.draw do
   # A task without subject is created here (the house); show is the task sheet.
   resources :tasks, only: [ :new, :create, :show, :edit, :update, :destroy ] do
     resources :photos, only: [ :create, :show, :destroy ], controller: "subject_photos"
+    # "Fait" on a task done when needed (no open occurrence).
+    resource :completion, only: :create, module: :tasks
   end
   resources :task_occurrences, only: [] do
     resource :completion, only: [ :create, :destroy ], module: :task_occurrences

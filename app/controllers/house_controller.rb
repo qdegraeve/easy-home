@@ -11,7 +11,8 @@ class HouseController < ApplicationController
     @analyses_to_review = plants.count(&:place_change_since_analysis)
     @locations_count = @household.locations.count
     @equipment_count = policy_scope(Equipment).where(household: @household).count
-    @house_tasks_count = policy_scope(Task).where(household: @household).without_subject.to_do.count
+    house_tasks = policy_scope(Task).where(household: @household).without_subject
+    @house_tasks_count = house_tasks.to_do.count + house_tasks.active.on_demand.count
   end
 
   def new
