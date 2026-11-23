@@ -186,6 +186,24 @@ RSpec.describe "Tasks", type: :request do
       expect(flash[:notice]).to eq("Sortir la poubelle jaune noté.")
     end
 
+    it "deletes the task from its sheet: back to the house tasks, closed in the Android app" do
+      task = bins
+      other = Tasks::Add.new.call(household:, params: { title: "Aérer", due_on: "2026-11-16" }).value!
+      sign_in(user)
+
+      get task_path(task)
+      expect(response.parsed_body.at_css("form[action='#{task_path(task, from: "sheet")}'] button").text)
+        .to eq("Supprimer la tâche")
+      delete task_path(task, from: "sheet")
+      expect(response).to redirect_to(house_tasks_path)
+      expect(Task.exists?(task.id)).to be(false)
+
+      app = { "User-Agent" => "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android" }
+      delete task_path(other, from: "sheet"), headers: app
+      expect(response).to redirect_to(%r{/recede_historical_location})
+      expect(flash[:notice]).to eq("Tâche « Aérer » supprimée.")
+    end
+
     it "postpones from the sheet, back to it" do
       task = Tasks::Add.new.call(household:, params: { title: "Aérer", due_on: "2026-11-16" }).value!
       sign_in(user)
