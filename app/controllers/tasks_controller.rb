@@ -12,9 +12,10 @@ class TasksController < ApplicationController
     @last_done_at = @task.occurrences.done.maximum(:completed_at)
   end
 
-  # A suggestion of the catalogue (?suggestion=bins.yellow) prefills the form; unknown, it is ignored.
+  # A suggestion of the catalogue (?suggestion=bins.yellow) prefills the form of a task of the house; unknown, or for a
+  # plant, it is ignored.
   def new
-    suggestion = Catalogue.suggestion(params[:suggestion])
+    suggestion = Catalogue.suggestion(params[:suggestion]) unless @subject
     @form = suggestion ? TaskForm.from_suggestion(suggestion) : TaskForm.new(due_on: Time.zone.today)
     @suggestions = suggestions
   end

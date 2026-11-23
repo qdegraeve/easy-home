@@ -194,7 +194,11 @@ Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
   échéance) ; à venir (PR 4) : unités semaines, mois, ans ;
 - `Recurrence::Fixed` : une ancre (`anchor_on`, « prochaine fois le ») et un pas de N semaines (1 à 52) ou N ans
   (1 à 10) ; le jour de la semaine ou la date de l'année se déduit de l'ancre (un 29 février tombe le 28 les autres
-  années). Une ancre passée s'ouvre à sa prochaine date ; modifier « Prochaine fois le » déplace toute la série ;
+  années). Une ancre passée s'ouvre à sa prochaine date, qui devient l'ancre ; modifier « Prochaine fois le » déplace
+  toute la série, modifier le reste (titre, Comment faire) ne touche ni l'ancre ni l'échéance ouverte (une poubelle
+  reportée reste un mardi). Un « Fait » tapé sur une page affichée avant qu'un oubli ait ouvert la collecte suivante
+  est refusé (« Trop tard »). Annuler un « Fait » rejoue la règle : la date reportée revient après un report ; une
+  date passée revient et le job la note manquée comme tout oubli ;
 - à venir (PR 7) `Recurrence::OnDemand` : « quand il le faut », jamais d'échéance ouverte ; « Fait » enregistre
   directement une échéance faite (`Tasks::RecordDone`).
 

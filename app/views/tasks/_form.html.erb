@@ -23,7 +23,10 @@
       </div>
     </div>
   <% end %>
-  <%= f.hidden_field :suggestion_key if adding && form.suggestion_key %>
+  <% if adding && (suggestion = Catalogue.suggestion(form.suggestion_key)) %>
+    <%= f.hidden_field :suggestion_key %>
+    <p class="rounded-xl bg-subtle px-3 py-2 text-sm"><%= suggestion.hint %></p>
+  <% end %>
 
   <fieldset>
     <legend class="text-sm font-semibold"><%= t("tasks.form.repeat") %></legend>

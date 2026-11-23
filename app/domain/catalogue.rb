@@ -35,8 +35,14 @@ module Catalogue
     private
 
     def next_yearly_date(today)
-      date = Date.new(today.year, recurrence["month"], recurrence["day"])
-      date < today ? date >> 12 : date
+      date = yearly_date(today.year)
+      date < today ? yearly_date(today.year + 1) : date
+    end
+
+    # February 29 falls on the 28th the years without one (as Recurrence::Fixed does).
+    def yearly_date(year)
+      month, day = recurrence.values_at("month", "day")
+      Date.valid_date?(year, month, day) ? Date.new(year, month, day) : Date.new(year, month, -1)
     end
   end
 
@@ -51,17 +57,19 @@ module Catalogue
         .reject { |suggestion| existing_keys.include?(suggestion.key) }
     end
 
+    # Loaded once and deeply frozen: shared safely by the threads of Puma.
     def suggestions
-      @suggestions ||= data.fetch("suggestions").to_h do |key, entry|
-        recurrence = entry.fetch("recurrence").freeze
-        [ key, Suggestion.new(key:, importance: entry.fetch("importance"), recurrence:) ]
-      end.freeze
+      @suggestions ||= Ractor.make_shareable(
+        data.fetch("suggestions").to_h do |key, entry|
+          [ key, Suggestion.new(key:, importance: entry.fetch("importance"), recurrence: entry.fetch("recurrence")) ]
+        end
+      )
     end
 
     private
 
     def data
-      @data ||= YAML.safe_load_file(FILE).freeze
+      @data ||= Ractor.make_shareable(YAML.safe_load_file(FILE))
     end
   end
 end

@@ -100,4 +100,24 @@ RSpec.describe Tasks::Update do
     expect(result.failure.first).to eq(:invalid)
     expect(task.reload.title).to eq("Tailler")
   end
+
+  it "turns fixed dates into a one-off or every N days, and a sliding task already done into a one-off" do
+    task = add(title: "Engrais", recurrence_type: "fixed", due_on: "2026-11-24", interval: "2", unit: "weeks")
+
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-25",
+                                              interval_days: "10" })
+    expect(task.reload).to be_sliding
+    expect(task.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 11, 25))
+
+    Tasks::Complete.new.call(occurrence: task.pending_occurrence, user: nil)
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "once", due_on: "2026-11-30" })
+    expect(task.reload.recurrence.due_on).to eq(Date.new(2026, 11, 30))
+    expect(task.occurrences.pending.sole.due_at.to_date).to eq(Date.new(2026, 11, 30))
+
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "fixed", due_on: "2026-12-01",
+                                              interval: "1", unit: "weeks" })
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "once", due_on: "2026-12-03" })
+    expect(task.reload).to be_once
+    expect(task.occurrences.pending.sole.due_at.to_date).to eq(Date.new(2026, 12, 3))
+  end
 end

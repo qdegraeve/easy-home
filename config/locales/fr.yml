@@ -9,6 +9,10 @@ fr:
   activemodel:
     errors:
       models:
+        task:
+          attributes:
+            interval:
+              fixed_range: "doit être de 1 à 52 semaines, ou de 1 à 10 ans"
         plant:
           attributes:
             new_location_exposure:
@@ -50,7 +54,7 @@ fr:
       task:
         title: "Tâche"
         instructions: "Comment faire"
-        interval: "Nombre"
+        interval: "Nombre de semaines ou d'années"
         unit: "Unité"
         recurrence_type: "Répétition"
         due_on: "Date"

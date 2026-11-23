@@ -5,9 +5,12 @@ module Tasks
   # journal says it was moved.
   # - Sliding and one-off: from the last completion, never past the tolerance (Tolerance.earliest): restored, edited
   #   or cancelled, a task is not missed at once.
-  # - Fixed dates: the rule replayed from the last done or missed occurrence, as Tasks::Complete and
-  #   Tasks::MarkMissed did (Tolerance.after_miss): a flexible task missed last is reopened on its date, one that must
-  #   not be missed goes on with the next date of its rule.
+  # - Fixed dates: the rule replayed from the last closed occurrence, as Tasks::Complete, Tasks::MarkMissed and
+  #   Tasks::Postpone did. Postponed last: the day it was moved to. Missed last: a flexible task is reopened on its
+  #   date, one that must not be missed goes on with the next date of its rule (Tolerance.after_miss). Otherwise the
+  #   first date of the rule after the last done one, or its anchor when never done, even past: a completion
+  #   cancelled late brings back its date, which Tasks::MarkMissed then notes as missed like any forgotten one (the
+  #   anchor is the first date the task was given, Task#first_due_at!).
   # Call inside a transaction, with the task locked (task.lock!).
   class Reschedule
     include Dry::Monads[:result]
@@ -46,15 +49,17 @@ module Tasks
 
     # [due_at, reopened after a miss]
     def fixed_due(task, last_completed_at)
-      last_closed = task.occurrences.where(status: %i[done missed]).order(completed_at: :desc, id: :desc).first
+      last_closed = task.occurrences.where(status: %i[done missed postponed])
+        .order(completed_at: :desc, id: :desc).first
+      return [ postponed_to(last_closed), false ] if last_closed&.postponed?
       return [ last_closed.due_at, true ] if last_closed&.missed? && task.after_miss == :reopen
 
-      due_at = task.recurrence.next_due_at(
-        last_completed_at:,
-        last_due_on: last_closed&.due_at&.to_date,
-        not_before: Time.zone.today - task.grace_days.to_i
-      )
-      [ due_at, false ]
+      [ task.recurrence.next_due_at(last_completed_at:, last_due_on: last_closed&.due_at&.to_date), false ]
+    end
+
+    # The day a postponement moved the task to (Tasks::Postpone: the day after its due date, or after today if late).
+    def postponed_to(postponed)
+      [ postponed.due_at.to_date, postponed.completed_at.to_date ].max.next_day.in_time_zone
     end
 
     def after_last_postponement(task, due_at, last_completed_at)

@@ -6,7 +6,7 @@ require "rails_helper"
 RSpec.describe "Bins", type: :system do
   include ActiveSupport::Testing::TimeHelpers
 
-  around { |example| travel_to(Time.zone.parse("2026-11-30 18:00")) { example.run } }
+  around { |example| travel_to(Time.zone.parse("2026-12-01 18:00")) { example.run } }
 
   it "adds the yellow bin from its suggestion, does it, then misses the next one" do
     create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
@@ -23,9 +23,10 @@ RSpec.describe "Bins", type: :system do
     expect(page).to have_field("Tâche", with: "Sortir la poubelle jaune")
     expect(page).to have_checked_field("À jour fixe : toutes les N semaines ou chaque année")
     expect(page).to have_checked_field("À ne pas rater")
-    fill_in "Prochaine fois le", with: Date.new(2026, 11, 30)
+    expect(page).to have_content("La veille de la collecte, une semaine sur deux.")
+    fill_in "Prochaine fois le", with: Date.new(2026, 12, 1)
     click_on "Ajouter la tâche"
-    expect(page).to have_content("Toutes les 2 semaines, le lundi · aujourd'hui")
+    expect(page).to have_content("Toutes les 2 semaines, le mardi · aujourd'hui")
 
     # Done on its evening: the next one two weeks later, the suggestion no longer offered.
     go_to_tab("Aujourd'hui")
@@ -33,18 +34,47 @@ RSpec.describe "Bins", type: :system do
     expect(page).to have_content("Sortir la poubelle jaune noté.")
     go_to_tab("Maison")
     click_on "Tâches de la maison"
-    expect(page).to have_content("Toutes les 2 semaines, le lundi · dans 14 j")
+    expect(page).to have_content("Toutes les 2 semaines, le mardi · dans 14 j")
     click_on "Ajouter une tâche"
     expect(page).to have_link("Sortir la poubelle grise")
     expect(page).to have_no_link("Sortir la poubelle jaune")
 
     # Forgotten two weeks later: missed in the journal, the next collection open.
-    travel_to(Time.zone.parse("2026-12-15 02:00"))
+    travel_to(Time.zone.parse("2026-12-16 02:00"))
     Tasks::MarkMissed.new.call
     go_to_tab("Journal")
-    expect(page).to have_content("Non fait, prévu le lun 14 déc.")
+    expect(page).to have_content("Non fait, prévu le mar 15 déc.")
     go_to_tab("Maison")
     click_on "Tâches de la maison"
-    expect(page).to have_content("Toutes les 2 semaines, le lundi · dans 13 j")
+    expect(page).to have_content("Toutes les 2 semaines, le mardi · dans 13 j")
+  end
+
+  it "keeps a forgotten flexible yearly task to do, then brings it back on its day the next year" do
+    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+
+    visit new_task_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    visit new_task_path
+    fill_in "Tâche", with: "Préparer la saison cyclonique"
+    choose "À jour fixe : toutes les N semaines ou chaque année"
+    fill_in "Prochaine fois le", with: Date.new(2026, 12, 3)
+    fill_in "Nombre de semaines ou d'années", with: "1"
+    select "ans", from: "Unité"
+    click_on "Ajouter la tâche"
+    expect(page).to have_content("Chaque année, le 3 décembre · dans 2 j")
+
+    # Forgotten past its 3 days of tolerance: missed once, still to do; done, back on December 3rd.
+    travel_to(Time.zone.parse("2026-12-08 02:00"))
+    Tasks::MarkMissed.new.call
+    go_to_tab("Aujourd'hui")
+    click_on "Marquer comme fait : Préparer la saison cyclonique"
+    expect(page).to have_content("Préparer la saison cyclonique noté.")
+    go_to_tab("Maison")
+    click_on "Tâches de la maison"
+    expect(page).to have_content("Chaque année, le 3 décembre · dans 360 j")
+    go_to_tab("Journal")
+    expect(page).to have_content("Non fait, prévu le jeu 3 déc.")
   end
 end

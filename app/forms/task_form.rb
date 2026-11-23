@@ -104,6 +104,8 @@ class TaskForm
 
   def interval_must_fit_unit
     range = Recurrence::Fixed::UNITS[unit]
-    errors.add(:interval, :inclusion) unless range && interval.is_a?(Integer) && range.cover?(interval)
+    return if range && interval.is_a?(Integer) && range.cover?(interval)
+
+    errors.add(:interval, :fixed_range)
   end
 end

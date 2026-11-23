@@ -18,6 +18,7 @@ module Tasks
     # Late ones past their tolerance, never reopened ones; checked again under the task lock.
     def candidates(today)
       TaskOccurrence.pending.where(reopened_after_miss: false).joins(:task).where(tasks: { active: true })
+        .where.not(tasks: { importance: "flexible", recurrence_type: "once" }) # never missed
         .where(due_at: ...today.beginning_of_day).includes(:task)
         .select { |occurrence| past_tolerance?(occurrence, occurrence.task, today) }
     end
@@ -39,7 +40,7 @@ module Tasks
       case task.after_miss
       when :reopen then task.occurrences.create!(due_at: missed.due_at, reopened_after_miss: true)
       when :advance
-        last_completed_at = task.occurrences.done.maximum(:completed_at)
+        last_completed_at = task.occurrences.done.maximum(:completed_at)&.in_time_zone
         next_due_at = task.recurrence.next_due_at(last_completed_at:, last_due_on: missed.due_at.to_date,
                                                   not_before: today)
         task.occurrences.create!(due_at: next_due_at) if next_due_at
