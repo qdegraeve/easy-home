@@ -168,7 +168,7 @@ Les PR 1 à 3 livrent la poubelle qui marche avant tout équipement.
 |---|---|---|---|
 | `instructions` | text | null ; ≤ 5 000 (validation) | « Comment faire » |
 | `suggestion_key` | string | null | suggestion d'origine (`bins.yellow`) ; aucun comportement n'en dépend |
-| `reminder_minute` | integer | null ; CHECK `reminder_minute BETWEEN 300 AND 1320` ; validation au quart d'heure | rappel le jour de l'échéance, en minutes après minuit, fuseau du foyer ; null = résumé du matin seulement |
+| `reminder_minute` | integer | null ; CHECK `reminder_minute BETWEEN 300 AND 1320` ; validation au quart d'heure | rappel le jour de l'échéance, en minutes après minuit, fuseau de l'application (sans heure d'été, ADR 0017) ; null = résumé du matin seulement |
 
 - `recurrence_type` : `once`, `sliding`, `fixed`, `on_demand` (enum Rails, chaîne).
 - `template_key` reste réservé aux tâches **gérées par leur sujet** (`plant.watering`). `Task#managed?` remplace
@@ -397,7 +397,7 @@ fins de mois, 29 février, changement d'année, ancre passée.
 - `SendRemindersJob`, récurrent **toutes les 5 minutes** (`config/recurring.yml`), appelle
   `Notifications::SendReminders`.
 - `RemindersDueQuery.new.call(now:)` : échéances `pending`, `reopened_after_miss = false`, de tâches actives avec
-  `reminder_minute`, dont le **jour d'échéance est aujourd'hui** dans le fuseau du foyer et où, en SQL :
+  `reminder_minute`, dont le **jour d'échéance est aujourd'hui** dans le fuseau de l'application et où, en SQL :
   - `now >= due_at + reminder_minute minutes + reminders_sent heures` (k-ième envoi à l'heure + k h) ;
   - `now < due_at + 22 h` ;
   - `reminders_sent = 0`, ou `reminders_sent < 3`, tâche `critical` et `last_reminded_at <= now - 55 min` (marge pour le

@@ -34,6 +34,31 @@ RSpec.describe "Tasks", type: :request do
     expect(response.parsed_body.text.squish).to include("Sortir la poubelle jaune Une fois · demain")
   end
 
+  it "sets a reminder on the due day, said on the row of the house task and on its sheet" do
+    sign_in(user)
+
+    post tasks_path, params: { task: bins_params[:task].merge(due_on: "2026-11-16", reminder_time: "19:00") }
+
+    task = household.tasks.sole
+    expect(task.reminder_minute).to eq(19 * 60)
+    get root_path
+    expect(response.parsed_body.text.squish).to include("Sortir la poubelle jaune ce soir 19 h · aujourd'hui")
+    get task_path(task)
+    expect(response.parsed_body.text.squish).to include("Rappel le jour même à 19 h")
+
+    patch task_path(task), params: { task: { title: task.title, due_on: "2026-11-16", reminder_time: "" } }
+    expect(task.reload.reminder_minute).to be_nil
+  end
+
+  it "refuses a reminder off the quarter hours" do
+    sign_in(user)
+
+    post tasks_path, params: { task: bins_params[:task].merge(reminder_time: "19:07") }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(Task.count).to eq(0)
+  end
+
   it "keeps the typed values when the title is missing" do
     sign_in(user)
 

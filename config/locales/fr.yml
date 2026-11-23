@@ -54,6 +54,7 @@ fr:
       task:
         title: "Tâche"
         instructions: "Comment faire"
+        reminder_time: "Rappel le jour même"
         interval: "Nombre de semaines ou d'années"
         unit: "Unité"
         recurrence_type: "Répétition"
@@ -90,6 +91,15 @@ fr:
       watering: "arroser %{name}"
       waterings: "arroser %{count} plantes"
       task: "%{title} (%{name})"
+      at_time: "%{when} : %{what}"
+    reminder:
+      with_subject: "%{title} · %{name}"
+      follow_up: "Toujours à faire : %{what}"
+  reminder_time:
+    evening: "ce soir %{time}"
+    day: "à %{time}"
+    hours: "%{hours} h"
+    hours_minutes: "%{hours} h %{minutes}"
   notification_settings:
     edit:
       back: "← Réglages"
@@ -98,7 +108,7 @@ fr:
       digest_enabled: "Recevoir le résumé du matin"
       critical_only: "Seulement ce qui ne doit pas être raté"
       critical_only_help: "Le résumé ne cite que les tâches « à ne pas rater » ; rien n'est envoyé les autres jours."
-      households: "Foyers à inclure"
+      households: "Foyers suivis : résumé du matin et rappels"
       submit: "Enregistrer"
       devices: "Téléphones"
       devices_count:
@@ -531,6 +541,10 @@ fr:
       critical: "À ne pas rater"
       critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
       instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."
+      no_reminder: "Aucun : le résumé du matin suffit"
+      reminder_help: >-
+        Une notification ce jour-là à cette heure. Pour une tâche à ne pas rater, jusqu'à 2 relances à une heure
+        d'écart, jamais après 22 h.
       instructions_placeholder: "Ex. Sortir le bac jaune devant le portail, couvercle fermé."
       suggestions: "Suggestions"
       fixed_every: "Toutes les"
@@ -569,6 +583,7 @@ fr:
       no_instructions: "Pas encore de « Comment faire »."
       add_instructions: "Ajouter le comment faire"
       last_done: "Dernière fois : %{date}"
+      reminder: "Rappel le jour même à %{time}"
       edit: "Modifier"
       done: "Fait"
       done_label: "Marquer comme fait : %{title}"

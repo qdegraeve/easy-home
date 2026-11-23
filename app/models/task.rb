@@ -21,6 +21,8 @@ class Task < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :instructions, length: { maximum: INSTRUCTIONS_MAX }
+  # Reminder on the due day, at this minute of the day (ADR 0017); nil: the morning digest only.
+  validates :reminder_minute, inclusion: { in: User::DIGEST_MINUTES }, allow_nil: true
   validate :subject_must_belong_to_household
   validate :recurrence_must_be_valid
 

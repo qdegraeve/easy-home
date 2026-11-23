@@ -75,6 +75,14 @@
   </fieldset>
 
   <div>
+    <%= f.label :reminder_time, class: "block text-sm font-semibold" %>
+    <%= f.select :reminder_time, TaskForm.reminder_times, { include_blank: t("tasks.form.no_reminder") },
+          aria: { describedby: "reminder-help" },
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    <p id="reminder-help" class="mt-1 text-[13px] text-muted"><%= t("tasks.form.reminder_help") %></p>
+  </div>
+
+  <div>
     <label class="flex items-start gap-3 rounded-xl border border-field bg-surface px-3 py-3">
       <%= f.check_box :critical, class: "mt-1" %>
       <span>
