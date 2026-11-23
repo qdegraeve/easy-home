@@ -6,7 +6,11 @@
   <%= render ListGroupComponent.new(title: t(".tasks", count: @tasks.size), id: "house-tasks") do |group| %>
     <% @tasks.each do |task| %>
       <% group.with_row do %>
-        <%= render TaskRowComponent.new(occurrence: task.pending_occurrence, title: task.title, href: task_path(task)) %>
+        <%= render TaskRowComponent.new(
+          occurrence: task.pending_occurrence,
+          title: task.title,
+          href: task_path(task)
+        ) %>
       <% end %>
     <% end %>
     <%= render EmptyStateComponent.new(text: t(".empty")) if @tasks.empty? %>

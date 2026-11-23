@@ -5,7 +5,8 @@
 
   <div>
     <%= f.label :title, class: "block text-sm font-semibold" %>
-    <%= f.text_field :title, required: true, maxlength: 100, placeholder: t(house ? "tasks.form.title_placeholder_house" : "tasks.form.title_placeholder"),
+    <% placeholder = house ? "tasks.form.title_placeholder_house" : "tasks.form.title_placeholder" %>
+    <%= f.text_field :title, required: true, maxlength: 100, placeholder: t(placeholder),
           class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
   </div>
 

@@ -113,7 +113,9 @@ module ApplicationHelper
 
   SECTIONS = {
     today: %w[home today/waterings],
-    house: %w[house house_tasks tasks plants plants/photos plants/analyses plants/analysis_questions households locations],
+    house: %w[
+      house house_tasks tasks plants plants/photos plants/analyses plants/analysis_questions households locations
+    ],
     journal: %w[journal]
   }.freeze
 
