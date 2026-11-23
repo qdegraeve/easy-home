@@ -18,7 +18,8 @@ RSpec.describe Photos::Add do
   it "stores the photo as a JPEG without any metadata (no EXIF GPS)" do
     expect(Vips::Image.new_from_file(file_fixture("plant_with_gps.jpg").to_s).get_fields).to include(/GPS/)
 
-    photo = described_class.new.call(plant:, file: upload("plant_with_gps.jpg")).value!
+    photo = described_class.new.call(subject: plant, file: upload("plant_with_gps.jpg")).value!
+    expect(photo).to have_attributes(subject: plant, plant:) # plant_id still written for the code before
 
     expect(photo).to have_attributes(plant:, taken_at: Time.zone.parse("2026-11-10 08:15"))
     expect(photo.image.blob.content_type).to eq("image/jpeg")
@@ -27,13 +28,13 @@ RSpec.describe Photos::Add do
 
   describe "shooting date" do
     it "reads the EXIF date in the app time zone when it has no offset" do
-      photo = described_class.new.call(plant:, file: jpeg_shot_at("2026:11:12 18:30:00")).value!
+      photo = described_class.new.call(subject: plant, file: jpeg_shot_at("2026:11:12 18:30:00")).value!
 
       expect(photo.taken_at).to eq(Time.zone.parse("2026-11-12 18:30"))
     end
 
     it "honours the EXIF offset of a photo taken elsewhere" do
-      photo = described_class.new.call(plant:, file: jpeg_shot_at("2026:11:12 18:30:00", offset: "+02:00")).value!
+      photo = described_class.new.call(subject: plant, file: jpeg_shot_at("2026:11:12 18:30:00", offset: "+02:00")).value!
 
       expect(photo.taken_at).to eq(Time.zone.parse("2026-11-12 20:30"))
     end
@@ -41,21 +42,21 @@ RSpec.describe Photos::Add do
     it "dates the photo now when the EXIF date is missing, in the future or implausible" do
       [ upload("plant.png"), jpeg_shot_at("2027:01:01 10:00:00"), jpeg_shot_at("1999:12:31 10:00:00"),
         jpeg_shot_at("garbage") ].each do |file|
-        expect(described_class.new.call(plant:, file:).value!.taken_at).to eq(Time.current)
+        expect(described_class.new.call(subject: plant, file:).value!.taken_at).to eq(Time.current)
       end
     end
   end
 
   it "accepts PNG and WebP, and shrinks large pictures to 2048 px" do
-    expect(described_class.new.call(plant:, file: upload("plant.png"))).to be_success
+    expect(described_class.new.call(subject: plant, file: upload("plant.png"))).to be_success
 
-    photo = described_class.new.call(plant:, file: upload("plant_wide.webp")).value!
+    photo = described_class.new.call(subject: plant, file: upload("plant_wide.webp")).value!
 
     expect(stored_image(photo)).to have_attributes(width: 2048, height: 683)
   end
 
   it "rejects a file that is not a picture, whatever its name" do
-    result = described_class.new.call(plant:, file: upload("not_an_image.jpg"))
+    result = described_class.new.call(subject: plant, file: upload("not_an_image.jpg"))
 
     expect(result.failure.first).to eq(:invalid)
     expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
@@ -66,13 +67,13 @@ RSpec.describe Photos::Add do
     file = upload("plant.png")
     allow(file).to receive(:size).and_return(15.megabytes + 1)
 
-    result = described_class.new.call(plant:, file:)
+    result = described_class.new.call(subject: plant, file:)
 
     expect(result.failure.last.errors.full_messages).to eq([ "Photo dépasse 15 Mo" ])
   end
 
   it "rejects a picture over 100 megapixels before processing it (decompression bomb)" do
-    result = described_class.new.call(plant:, file: png_bomb(30_000, 30_000))
+    result = described_class.new.call(subject: plant, file: png_bomb(30_000, 30_000))
 
     expect(result.failure.last.errors.full_messages).to eq([ "Photo dépasse 100 mégapixels" ])
   end
@@ -84,26 +85,26 @@ RSpec.describe Photos::Add do
   it "rejects a picture with a readable header but truncated pixel data" do
     expect(PhotoUpload.new(file: truncated_jpeg)).to be_valid
 
-    result = described_class.new.call(plant:, file: truncated_jpeg)
+    result = described_class.new.call(subject: plant, file: truncated_jpeg)
 
     expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
     expect(plant.photos).to be_empty
   end
 
   it "rejects something that is not an uploaded file" do
-    result = described_class.new.call(plant:, file: "not a file")
+    result = described_class.new.call(subject: plant, file: "not a file")
 
     expect(result.failure.last.errors.full_messages).to eq([ "Photo n'est pas une image JPEG, PNG ou WebP lisible" ])
   end
 
   it "rejects a missing file" do
-    expect(described_class.new.call(plant:, file: nil).failure.first).to eq(:invalid)
+    expect(described_class.new.call(subject: plant, file: nil).failure.first).to eq(:invalid)
   end
 
   it "rejects an archived plant" do
     plant.update!(archived_at: Time.current)
 
-    expect(described_class.new.call(plant:, file: upload("plant.png")).failure.first).to eq(:subject_archived)
+    expect(described_class.new.call(subject: plant, file: upload("plant.png")).failure.first).to eq(:subject_archived)
     expect(plant.photos).to be_empty
   end
 end

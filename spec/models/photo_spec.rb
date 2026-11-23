@@ -23,4 +23,13 @@ RSpec.describe Photo, type: :model do
   it "requires a date" do
     expect(build(:photo, taken_at: "")).not_to be_valid
   end
+
+  it "belongs to a subject of a known type, and says whose it is" do
+    photo = create(:photo)
+
+    expect(photo.of?(photo.plant)).to be(true)
+    expect(photo.of?(create(:plant))).to be(false)
+    photo.subject = create(:household)
+    expect(photo).not_to be_valid
+  end
 end

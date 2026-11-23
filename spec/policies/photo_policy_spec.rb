@@ -4,7 +4,7 @@ RSpec.describe PhotoPolicy do
   subject { described_class.new(user, photo) }
 
   let(:plant) { create(:plant) }
-  let(:photo) { Photo.new(plant:) }
+  let(:photo) { Photo.new(subject: plant) }
 
   context "for a member of the household" do
     let(:user) { create(:household_member, household: plant.household, role: :member).user }

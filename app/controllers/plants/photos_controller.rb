@@ -3,8 +3,8 @@ module Plants
   class PhotosController < ApplicationController
     def create
       plant = find_plant
-      authorize Photo.new(plant:)
-      result = Photos::Add.new.call(plant:, file: params.expect(photo: [ :file ])[:file])
+      authorize Photo.new(subject: plant)
+      result = Photos::Add.new.call(subject: plant, file: params.expect(photo: [ :file ])[:file])
 
       if result.success?
         redirect_to plant_path(plant, tab: "photos"), notice: t(".success")

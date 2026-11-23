@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,11 +88,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_130000) do
   end
 
   create_table "photos", force: :cascade do |t|
-    t.bigint "plant_id", null: false
+    t.bigint "plant_id"
     t.datetime "taken_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "subject_type"
+    t.bigint "subject_id"
     t.index ["plant_id", "taken_at"], name: "index_photos_on_plant_id_and_taken_at"
+    t.index ["subject_type", "subject_id", "taken_at"], name: "index_photos_on_subject_type_and_subject_id_and_taken_at"
   end
 
   create_table "plant_analyses", force: :cascade do |t|
