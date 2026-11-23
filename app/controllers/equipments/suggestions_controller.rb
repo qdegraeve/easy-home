@@ -16,6 +16,8 @@ module Equipments
         redirect_to @equipment, notice: t(".success", count: result.value!.size)
       else
         @suggestions = available_suggestions
+        return redirect_to(@equipment) if @suggestions.empty? # all added meanwhile, by another member
+
         flash.now[:alert] = t(".#{result.failure.first}")
         render :new, status: :unprocessable_content
       end
@@ -24,7 +26,10 @@ module Equipments
     private
 
     def find_equipment
-      policy_scope(Equipment).find(params[:equipment_id]).tap { |equipment| authorize equipment, :update? }
+      # The same right as "Ajouter une tâche" on its page (TasksController).
+      policy_scope(Equipment).find(params[:equipment_id]).tap do |equipment|
+        authorize Task.new(household: equipment.household, subject: equipment), :create?
+      end
     end
 
     def available_suggestions

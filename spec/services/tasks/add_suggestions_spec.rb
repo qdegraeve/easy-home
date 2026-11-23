@@ -28,6 +28,18 @@ RSpec.describe Tasks::AddSuggestions do
     expect(cyclone.recurrence).to have_attributes(anchor_on: Date.new(2027, 11, 1), unit: "years")
   end
 
+  it "adds none when one cannot be added" do
+    allow_any_instance_of(Tasks::Add).to receive(:call).and_wrap_original do |original, **args|
+      salt = args[:params].with_indifferent_access[:suggestion_key] == "dishwasher.salt"
+      salt ? Dry::Monads::Failure[:invalid, nil] : original.call(**args)
+    end
+
+    result = described_class.new.call(subject: dishwasher, keys: %w[dishwasher.filter dishwasher.salt])
+
+    expect(result.failure.first).to eq(:invalid)
+    expect(dishwasher.tasks.count).to eq(0)
+  end
+
   it "ignores the suggestions of another kind, unknown or already added ones, and says when none is left" do
     described_class.new.call(subject: dishwasher, keys: %w[dishwasher.filter])
 

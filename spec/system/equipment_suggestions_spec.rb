@@ -33,6 +33,9 @@ RSpec.describe "Equipment suggestions", type: :system do
     expect(page).to have_css("h1", text: "Lave-vaisselle")
     expect(page).to have_content(/Nettoyer le filtre\s+Tous les mois/)
     expect(page).to have_no_content("liquide de rinçage")
+    click_link "Nettoyer le filtre"
+    expect(page).to have_content("dévisser le filtre d'un quart de tour")
+    page.go_back
     click_link "Remettre du sel"
     expect(page).to have_content("Quand le voyant sel s'allume")
 

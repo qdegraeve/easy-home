@@ -25,7 +25,9 @@
   <% end %>
   <% if adding && (suggestion = Catalogue.suggestion(form.suggestion_key)) %>
     <%= f.hidden_field :suggestion_key %>
-    <p class="rounded-xl bg-subtle px-3 py-2 text-sm"><%= suggestion.hint %></p>
+    <% if suggestion.hint %>
+      <p class="rounded-xl bg-subtle px-3 py-2 text-sm"><%= suggestion.hint %></p>
+    <% end %>
   <% end %>
 
   <fieldset>

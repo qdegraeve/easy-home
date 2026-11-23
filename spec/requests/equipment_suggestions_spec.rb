@@ -49,6 +49,8 @@ RSpec.describe "Equipment suggestions", type: :request do
     Tasks::AddSuggestions.new.call(subject: heater, keys: %w[water_heater.safety_valve water_heater.anode])
     get new_equipment_suggestions_path(heater)
     expect(response).to redirect_to(equipment_path(heater))
+    post equipment_suggestions_path(heater), params: { keys: %w[water_heater.anode] } # added meanwhile by another
+    expect(response).to redirect_to(equipment_path(heater))
   end
 
   it "offers the suggestions of its kind in the task form of an equipment, prefilled on a tap, none for a plant" do
@@ -60,6 +62,7 @@ RSpec.describe "Equipment suggestions", type: :request do
     expect(response.parsed_body.text).to include("Mesurer le pH et le chlore")
     get new_equipment_task_path(pool, suggestion: "pool.ph")
     expect(response.body).to include('value="Mesurer le pH et le chlore"', 'value="pool.ph"')
+    expect(response.parsed_body.css("p.bg-subtle")).to be_empty # no hint to show
     get new_equipment_task_path(pool, suggestion: "bins.yellow")
     expect(response.body).not_to include('value="bins.yellow"')
 
