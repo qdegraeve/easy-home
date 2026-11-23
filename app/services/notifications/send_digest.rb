@@ -58,7 +58,15 @@ module Notifications
       [ I18n.t("notifications.digest.waterings", count: waterings.size) ]
     end
 
+    # "Pailler le pied (Citronnier)"; a task with a reminder says when: "ce soir 19 h : sortir la poubelle jaune".
     def label(task)
+      what = what(task)
+      return what unless task.reminder_minute
+
+      I18n.t("notifications.digest.at_time", when: ReminderTime.label(task.reminder_minute), what: what.downcase_first)
+    end
+
+    def what(task)
       return task.title unless task.subject
       return I18n.t("notifications.digest.watering", name: task.subject.name) if task.watering?
 

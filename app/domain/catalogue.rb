@@ -4,9 +4,9 @@
 module Catalogue
   FILE = Rails.root.join("config/catalogue.yml")
 
-  # An immutable suggestion: its key ("bins.yellow"), importance, and recurrence ({ "type", "interval", "unit",
-  # "month", "day" }); its texts come from I18n.
-  Suggestion = Data.define(:key, :importance, :recurrence) do
+  # An immutable suggestion: its key ("bins.yellow"), importance, recurrence ({ "type", "interval", "unit", "month",
+  # "day" }) and reminder time (minutes after midnight, or nil); its texts come from I18n.
+  Suggestion = Data.define(:key, :importance, :recurrence, :reminder_minute) do
     def title
       I18n.t("catalogue.suggestions.#{key}.title")
     end
@@ -61,7 +61,8 @@ module Catalogue
     def suggestions
       @suggestions ||= Ractor.make_shareable(
         data.fetch("suggestions").to_h do |key, entry|
-          [ key, Suggestion.new(key:, importance: entry.fetch("importance"), recurrence: entry.fetch("recurrence")) ]
+          [ key, Suggestion.new(key:, importance: entry.fetch("importance"), recurrence: entry.fetch("recurrence"),
+                                reminder_minute: entry["reminder_minute"]) ]
         end
       )
     end

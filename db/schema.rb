@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -190,6 +190,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_100000) do
     t.datetime "updated_at", null: false
     t.boolean "reopened_after_miss", default: false, null: false
     t.string "source", default: "manual", null: false
+    t.integer "reminders_sent", default: 0, null: false
+    t.datetime "last_reminded_at"
     t.index ["completed_by_id"], name: "index_task_occurrences_on_completed_by_id"
     t.index ["task_id", "due_at"], name: "index_task_occurrences_on_task_id_and_due_at"
     t.index ["task_id"], name: "index_task_occurrences_one_pending", unique: true, where: "((status)::text = 'pending'::text)"
@@ -209,9 +211,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_100000) do
     t.string "importance", default: "flexible", null: false
     t.text "instructions"
     t.string "suggestion_key"
+    t.integer "reminder_minute"
     t.index ["household_id"], name: "index_tasks_on_household_id"
     t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject"
     t.check_constraint "(subject_type IS NULL) = (subject_id IS NULL)", name: "tasks_subject_whole_or_none"
+    t.check_constraint "reminder_minute IS NULL OR reminder_minute >= 300 AND reminder_minute <= 1320 AND (reminder_minute % 15) = 0", name: "tasks_reminder_minute_quarter_hours"
   end
 
   create_table "users", force: :cascade do |t|

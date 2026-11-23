@@ -23,6 +23,7 @@ RSpec.describe "Bins", type: :system do
     expect(page).to have_field("Tâche", with: "Sortir la poubelle jaune")
     expect(page).to have_checked_field("À jour fixe : toutes les N semaines ou chaque année")
     expect(page).to have_checked_field("À ne pas rater")
+    expect(page).to have_select("Rappel le jour même", selected: "19:00")
     expect(page).to have_content("La veille de la collecte, une semaine sur deux.")
     fill_in "Prochaine fois le", with: Date.new(2026, 12, 1)
     click_on "Ajouter la tâche"
@@ -30,6 +31,7 @@ RSpec.describe "Bins", type: :system do
 
     # Done on its evening: the next one two weeks later, the suggestion no longer offered.
     go_to_tab("Aujourd'hui")
+    expect(page).to have_content("ce soir 19 h · aujourd'hui")
     click_on "Marquer comme fait : Sortir la poubelle jaune"
     expect(page).to have_content("Sortir la poubelle jaune noté.")
     go_to_tab("Maison")

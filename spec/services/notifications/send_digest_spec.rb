@@ -114,4 +114,17 @@ RSpec.describe Notifications::SendDigest do
     expect(body).to end_with("...")
     expect(body.length).to eq(described_class::MAX_BODY_LENGTH)
   end
+
+  it "says when a task with a reminder will be recalled: this evening, or at its time" do
+    { "Sortir la poubelle jaune" => 19 * 60, "Aérer la cave" => 14 * 60 + 30 }.each do |title, reminder_minute|
+      create(:task, household:, subject: nil, title:, template_key: nil, importance: :critical, reminder_minute:,
+                    recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+        .occurrences.create!(due_at: today.in_time_zone)
+    end
+
+    described_class.new.call(user:, today:)
+
+    expect(enqueued_jobs.sole[:args].second["body"])
+      .to eq("Ce soir 19 h : sortir la poubelle jaune, à 14 h 30 : aérer la cave")
+  end
 end

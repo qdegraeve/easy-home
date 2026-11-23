@@ -19,6 +19,8 @@ class TaskForm
   attribute :critical, :boolean, default: false
   attribute :instructions, :string
   attribute :suggestion_key, :string
+  # "19:00", or blank for no reminder (the morning digest only); a reminder on the due day (ADR 0017).
+  attribute :reminder_time, :string
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :recurrence_type, inclusion: { in: KINDS }
@@ -29,6 +31,11 @@ class TaskForm
     if: :sliding?
   validates :unit, inclusion: { in: FIXED_UNITS }, if: :fixed?
   validate :interval_must_fit_unit, if: :fixed?
+  validates :reminder_time, inclusion: { in: ->(_form) { reminder_times } }, allow_blank: true
+
+  def self.reminder_times
+    User::DIGEST_MINUTES.map { |minute| ReminderTime.to_field(minute) }
+  end
 
   def self.model_name
     ActiveModel::Name.new(self, nil, "Task")
@@ -44,7 +51,8 @@ class TaskForm
       interval: (task.fixed? ? recurrence.interval : 1),
       unit: (task.fixed? ? recurrence.unit : "weeks"),
       critical: task.critical?,
-      instructions: task.instructions
+      instructions: task.instructions,
+      reminder_time: ReminderTime.to_field(task.reminder_minute)
     )
   end
 
@@ -59,6 +67,7 @@ class TaskForm
       unit: rule.fetch("unit", "weeks"),
       critical: suggestion.critical?,
       instructions: suggestion.instructions,
+      reminder_time: ReminderTime.to_field(suggestion.reminder_minute),
       suggestion_key: suggestion.key
     )
   end
@@ -86,6 +95,7 @@ class TaskForm
       recurrence_config:,
       importance: critical ? "critical" : "flexible",
       instructions: instructions.to_s.strip.presence,
+      reminder_minute: ReminderTime.from_field(reminder_time),
       suggestion_key: (suggestion_key if Catalogue.suggestion(suggestion_key))
     }
   end

@@ -89,8 +89,8 @@ class TasksController < ApplicationController
 
   def task_params
     params.expect(
-      task: [ :title, :recurrence_type, :due_on, :interval_days, :interval, :unit, :critical, :instructions,
-              :suggestion_key ]
+      task: [ :title, :recurrence_type, :due_on, :interval_days, :interval, :unit, :critical, :reminder_time,
+              :instructions, :suggestion_key ]
     )
   end
 end

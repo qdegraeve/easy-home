@@ -104,7 +104,8 @@ Task
   importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
   recurrence_type (once | sliding | fixed ; à venir : on_demand)   # modifiable
   recurrence_config : jsonb      # paramètres du type de récurrence
-  reminder_minute                # à venir (PR 3) : rappel le jour de l'échéance, minutes après minuit (ADR 0017)
+  reminder_minute                # rappel le jour de l'échéance, minutes après minuit, 5 h à 22 h au quart d'heure
+                                 # (ADR 0017) ; nul : le résumé du matin seulement
   active : boolean
 
 TaskOccurrence                   # = une ligne du journal
@@ -113,7 +114,7 @@ TaskOccurrence                   # = une ligne du journal
   completed_by (User, optionnel), completed_at
   source (manual | rain)         # fermée par une personne ou par la pluie (sans auteur, ADR 0015)
   reopened_after_miss : boolean  # rouverte après un oubli : plus jamais manquée
-  reminders_sent, last_reminded_at   # à venir (PR 3) : rappels envoyés pour cette échéance (ADR 0017)
+  reminders_sent, last_reminded_at   # rappels envoyés pour cette échéance et le dernier (ADR 0017)
 
 TaskAccess
   household_member (guest), task
@@ -182,8 +183,15 @@ pending ──(Fait)──────────▶ done
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
   échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). Groupé comme
   l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
-  reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. À venir (ADR 0017) : rappels à l'heure
-  choisie sur une tâche, le jour de son échéance, et relances des tâches « à ne pas rater ».
+  reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. Une tâche avec un rappel y dit quand :
+  « ce soir 19 h : sortir la poubelle jaune ».
+- **Rappels** (ADR 0017, `SendRemindersJob` toutes les 5 minutes, `RemindersDueQuery`, `Notifications::SendReminder`) :
+  une tâche peut avoir un rappel à une heure le jour de son échéance (les poubelles : 19 h). Une notification aux
+  membres qui suivent le foyer, même avec le résumé coupé ; relancée toutes les heures, 3 au plus, rien après 22 h,
+  pour une tâche à ne pas rater. Chaque envoi est réservé de façon atomique (jamais deux fois). « Fait » ou
+  « Reporter » arrêtent les relances ; une échéance reportée est rappelée le lendemain ; changer la date remet les
+  compteurs à zéro. La notification nomme la tâche (et sa plante), jamais son Comment faire, et ouvre sa feuille.
+  L'app Android ne les reçoit pas encore (Firebase à venir).
 
 ## Moteur de récurrence
 

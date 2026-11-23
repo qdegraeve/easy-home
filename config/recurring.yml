@@ -13,6 +13,9 @@ production:
   send_digests:
     class: SendDigestsJob
     schedule: every 5 minutes
+  send_reminders:
+    class: SendRemindersJob
+    schedule: every 5 minutes
   mark_missed:
     class: MarkMissedJob
     schedule: every hour at minute 5

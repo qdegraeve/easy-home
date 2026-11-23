@@ -43,7 +43,8 @@ module Tasks
     # A new due date can be missed again, once (Tasks::MarkMissed).
     def move_open_occurrence(task, pending, due_on)
       if pending
-        pending.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false)
+        pending.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false, reminders_sent: 0,
+                        last_reminded_at: nil)
       elsif task.active? && !task.once?
         task.occurrences.create!(due_at: task.first_due_at!(due_on))
       end

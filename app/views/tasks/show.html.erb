@@ -47,6 +47,11 @@
     <% elsif !done_today %>
       <p class="text-muted"><%= t(".none") %></p>
     <% end %>
+    <% if @task.reminder_minute %>
+      <p class="text-sm text-muted">
+        <%= heading_with_icon(:bell, t(".reminder", time: ReminderTime.clock(@task.reminder_minute))) %>
+      </p>
+    <% end %>
     <% if @last_done_at %>
       <p class="text-sm text-muted"><%= t(".last_done", date: l(@last_done_at.to_date, format: :day)) %></p>
     <% end %>

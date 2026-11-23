@@ -18,7 +18,7 @@ class TaskListComponent < ViewComponent::Base
 
   # The gesture first (UX review, "une ligne par geste"): "Traiter au savon noir" over "Citronnier". A watering keeps
   # the plant as its title, the drop says the gesture, and leads to the plant; any other task opens its sheet (what
-  # to do and how). A task of the house has no detail.
+  # to do and how).
   def row(occurrence)
     task = occurrence.task
     TaskRowComponent.new(
@@ -30,10 +30,12 @@ class TaskListComponent < ViewComponent::Base
     )
   end
 
+  # The plant or equipment; for a task of the house, the time of its reminder ("ce soir 19 h"), if any.
   def row_detail(task)
     return t(".watering") if task.watering?
+    return task.subject.name if task.subject
 
-    task.subject&.name
+    ReminderTime.label(task.reminder_minute) if task.reminder_minute
   end
 
   # "Terrasse 3 · salon 1": where the plants to water are, by location (plants without location last).

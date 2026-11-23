@@ -7,9 +7,11 @@ household_suggestions: [bins.yellow, bins.grey, bins.yellow_back, bins.bulky]
 suggestions:
   bins.yellow:
     importance: critical
+    reminder_minute: 1140 # 19:00, the evening before the collection
     recurrence: { type: fixed, interval: 2, unit: weeks }
   bins.grey:
     importance: critical
+    reminder_minute: 1140
     recurrence: { type: fixed, interval: 1, unit: weeks }
   bins.yellow_back:
     importance: flexible
