@@ -1,8 +1,9 @@
 # Input for a manual task, of a plant (fertilizer, pruning…) or of the house itself (no subject): once on a date,
 # every N days, weeks, months or years after the last time, or on fixed dates (every N weeks on the weekday of
-# "Prochaine fois le", or every N years on that day). The rhythm can be changed when editing. "À ne pas rater" makes it critical (Task#importance):
-# first in the list, in red, no tolerance. "Comment faire" (instructions) is optional, read when doing the task. A
-# suggestion of the catalogue (suggestion_key) prefills the form and is kept as the origin of the task.
+# "Prochaine fois le", or every N years on that day). The rhythm can be changed when editing. "À ne pas rater" makes it
+# critical (Task#importance): first in the list, in red, no tolerance. "Comment faire" (instructions) is optional, read
+# when doing the task. A suggestion of the catalogue (suggestion_key) prefills the form and is kept as the origin of
+# the task.
 class TaskForm
   include ActiveModel::Model
   include ActiveModel::Attributes

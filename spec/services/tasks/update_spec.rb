@@ -37,7 +37,8 @@ RSpec.describe Tasks::Update do
     task = add(title: "Engrais", recurrence_type: "once", due_on: "2026-11-20")
 
     described_class.new.call(
-      task:, params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-21", interval: "30", unit: "days" }
+      task:,
+      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-21", interval: "30", unit: "days" }
     )
     expect(task.reload.recurrence).to have_attributes(interval_days: 30, start_on: Date.new(2026, 11, 21))
     expect(task.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 11, 21))
@@ -54,7 +55,8 @@ RSpec.describe Tasks::Update do
     Tasks::Complete.new.call(occurrence: task.pending_occurrence, user: nil)
 
     described_class.new.call(
-      task:, params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-12-16", interval: "30", unit: "days" }
+      task:,
+      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-12-16", interval: "30", unit: "days" }
     )
 
     expect(task.reload.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 12, 16))
