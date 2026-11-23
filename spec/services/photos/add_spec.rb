@@ -21,7 +21,7 @@ RSpec.describe Photos::Add do
     photo = described_class.new.call(subject: plant, file: upload("plant_with_gps.jpg")).value!
     expect(photo).to have_attributes(subject: plant, plant:) # plant_id still written for the code before
 
-    expect(photo).to have_attributes(plant:, taken_at: Time.zone.parse("2026-11-10 08:15"))
+    expect(photo).to have_attributes(taken_at: Time.zone.parse("2026-11-10 08:15"))
     expect(photo.image.blob.content_type).to eq("image/jpeg")
     expect(stored_image(photo).get_fields.grep(/exif|gps|xmp|iptc/i)).to be_empty
   end

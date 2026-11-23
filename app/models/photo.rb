@@ -12,11 +12,15 @@ class Photo < ApplicationRecord
     attachable.variant :large, resize_to_limit: [ 1600, 1600 ]
   end
 
+  # The former plant_id follows the subject while the column exists (see the migration), whatever creates the photo:
+  # an attribute copied, nothing else.
+  before_validation { self.plant_id = subject_id if subject_type == "Plant" }
+
   validates :subject_type, inclusion: { in: SUBJECT_TYPES }
   validates :taken_at, presence: true, comparison: { less_than_or_equal_to: -> { Time.current }, message: :in_future }
   validates :image, presence: true
 
   def of?(record)
-    subject_type == record.class.name && subject_id == record.id
+    subject_type == record.class.polymorphic_name && subject_id == record.id
   end
 end

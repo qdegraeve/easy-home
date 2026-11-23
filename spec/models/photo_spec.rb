@@ -29,6 +29,7 @@ RSpec.describe Photo, type: :model do
 
     expect(photo.of?(photo.plant)).to be(true)
     expect(photo.of?(create(:plant))).to be(false)
+    expect(photo.of?(Household.new(id: photo.subject_id))).to be(false) # same id, another type
     photo.subject = create(:household)
     expect(photo).not_to be_valid
   end

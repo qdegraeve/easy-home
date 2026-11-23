@@ -189,7 +189,7 @@ Inchangés : `due_at not null`, l'index unique partiel « une seule `pending` pa
 | Colonne | Avant | Après |
 |---|---|---|
 | `plant_id` | not null, FK | supprimée (PR 9) |
-| `subject_type`, `subject_id` | — | string + bigint, not null ; index `[subject_type, subject_id, taken_at]` ; sujet : `Plant`, `Equipment` ou `Task` (photos d'une tâche, montrées dans sa feuille) |
+| `subject_type`, `subject_id` | — | string + bigint, nullables en base en PR 5 (déploiement sans coupure), requis par le modèle, not null en PR 9 ; index `[subject_type, subject_id, taken_at]` ; sujet : `Plant`, `Equipment` ou `Task` (photos d'une tâche, montrées dans sa feuille) |
 
 Gardé : FK `plants.cover_photo_id → photos` (couverture des plantes seulement). Les validations remplacent la FK
 perdue : `PlantAnalysisPhoto` vérifie que la photo est une photo de **cette** plante, `Plant` que sa couverture est
@@ -478,8 +478,9 @@ les tâches, leurs échéances et les photos), supprimer une tâche.
 - `EquipmentPolicy` : `show? create? new? update? edit? destroy?` = `manage?`.
 - `TaskPolicy` : ajoute `show?` (la feuille) et `record_done?` (`manage? && record.on_demand? && record.active?`) ;
   `update?`/`destroy?` sur `!record.managed?`.
-- `PhotoPolicy` : délègue au sujet (`Pundit.policy!(user, record.subject).show?`), `create?` refusé si le sujet est
-  archivé.
+- `PhotoPolicy` : délègue au sujet : voir une photo = voir le sujet (`show?`) ; ajouter, changer la date, supprimer =
+  modifier le sujet (`update?`), refusé si le sujet est archivé pour l'ajout. Un `Scope` arrive avec le contrôleur
+  générique des photos (PR 6).
 - `TaskOccurrencePolicy` : inchangée.
 
 ### 6. Routes, contrôleurs, vues
@@ -541,9 +542,9 @@ Vues et composants :
 | 2 | `AddSuggestionKeyToTasks` : `suggestion_key string` | — |
 | 3 | `AddReminderMinuteToTasks` : `reminder_minute integer` + CHECK 300..1320 ; `AddRemindersToTaskOccurrences` : `reminders_sent integer default 0 not null`, `last_reminded_at datetime` | — |
 | 4 | `MoveSlidingIntervalToUnit` | **transformation** : `UPDATE tasks SET recurrence_config = (recurrence_config - 'interval_days') \|\| jsonb_build_object('interval', recurrence_config->'interval_days', 'unit', 'days') WHERE recurrence_type = 'sliding' AND recurrence_config ? 'interval_days'` ; `down` inverse (unité jours seulement, refus s'il existe une autre unité). Spec de la migration. |
-| 5 | `MakePhotosPolymorphic` | **transformation** : ajout `subject_type`/`subject_id` nullables, `UPDATE photos SET subject_type = 'Plant', subject_id = plant_id`, `not null`, index, `plant_id` rendu nullable. Spec. |
+| 5 | `AddSubjectToPhotos` | **transformation** : ajout `subject_type`/`subject_id` nullables, `UPDATE photos SET subject_type = 'Plant', subject_id = plant_id`, index, `plant_id` rendu nullable (encore écrit pour une plante). Spec. |
 | 6 | `CreateEquipment` | — |
-| 9 | `RemovePlantIdFromPhotos` (FK et colonne), une fois la PR 5 en production | — |
+| 9 | `RemovePlantIdFromPhotos`, une fois la PR 5 en production | **transformation** : d'abord rattraper les photos ajoutées par l'ancien code pendant le déploiement (`UPDATE photos SET subject_type = 'Plant', subject_id = plant_id WHERE subject_id IS NULL AND plant_id IS NOT NULL`), puis `not null` sur le sujet, enfin suppression de la FK, de l'index et de la colonne `plant_id`. Spec. |
 
 Pas de `db:rollback` à l'aveugle (base de dev réelle) : `db:migrate:down VERSION=…` pour vérifier chaque `down`.
 

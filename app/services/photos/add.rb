@@ -15,10 +15,8 @@ module Photos
       upload = yield validate_upload(file)
       normalized = yield normalize(upload)
       image = upload_image(subject, normalized)
-      # plant_id: the former column, written for a plant until it is removed.
-      plant = subject if subject.is_a?(Plant)
 
-      Success(subject.photos.create!(taken_at: shooting_time(file), image:, plant:))
+      Success(subject.photos.create!(taken_at: shooting_time(file), image:))
     ensure
       normalized&.close!
     end
