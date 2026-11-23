@@ -34,7 +34,8 @@ RSpec.describe Photos::Add do
     end
 
     it "honours the EXIF offset of a photo taken elsewhere" do
-      photo = described_class.new.call(subject: plant, file: jpeg_shot_at("2026:11:12 18:30:00", offset: "+02:00")).value!
+      file = jpeg_shot_at("2026:11:12 18:30:00", offset: "+02:00")
+      photo = described_class.new.call(subject: plant, file:).value!
 
       expect(photo.taken_at).to eq(Time.zone.parse("2026-11-12 20:30"))
     end

@@ -68,8 +68,7 @@ Equipment                        # à venir (PR 6) ; générique, pas de champ p
 
 Photo
   subject (polymorphe : Plant ; à venir Equipment, Task)   # plant_id encore écrit pour une plante, retiré en PR 9
-  taken_at
-                                                # date de prise de vue (EXIF, sinon envoi), modifiable
+  taken_at                       # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
 

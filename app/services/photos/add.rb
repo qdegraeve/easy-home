@@ -1,7 +1,7 @@
 module Photos
-  # Adds a photo to a subject (a plant…). The upload is normalized before being stored: rotated upright, at most 2048 px, saved
-  # as JPEG without any metadata (EXIF GPS would reveal where the house is). The shooting date is read from the
-  # EXIF data first; without a plausible one, the photo is dated now.
+  # Adds a photo to a subject (a plant…). The upload is normalized before being stored: rotated upright, at most
+  # 2048 px, saved as JPEG without any metadata (EXIF GPS would reveal where the house is). The shooting date is read
+  # from the EXIF data first; without a plausible one, the photo is dated now.
   class Add
     include Dry::Monads[:result, :do]
 
