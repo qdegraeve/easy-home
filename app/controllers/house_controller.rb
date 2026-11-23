@@ -10,6 +10,7 @@ class HouseController < ApplicationController
     @plants_count = plants.size
     @analyses_to_review = plants.count(&:place_change_since_analysis)
     @locations_count = @household.locations.count
+    @equipment_count = policy_scope(Equipment).where(household: @household).count
     @house_tasks_count = policy_scope(Task).where(household: @household).without_subject.to_do.count
   end
 

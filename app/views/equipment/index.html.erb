@@ -1,0 +1,35 @@
+<%= back_link_to t(".back"), house_path %>
+<h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+
+<div class="mt-6 space-y-6 lg:max-w-2xl">
+  <%= render ListGroupComponent.new(id: "equipment") do |group| %>
+    <% @equipment.each do |equipment| %>
+      <% group.with_row do %>
+        <% next_occurrence = equipment.tasks.select(&:active?).filter_map(&:pending_occurrence).min_by(&:due_at) %>
+        <%= link_to equipment_path(equipment), class: "flex min-h-14 items-center gap-3 px-3 py-2 active:bg-subtle" do %>
+          <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-gear">
+            <%= icon(equipment.kind_info.icon) %>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-medium"><%= equipment.name %></span>
+            <span class="text-sm text-muted">
+              <%= equipment.kind_info.name %>
+              <% if next_occurrence %>
+                · <%= render DueLabelComponent.new(due_at: next_occurrence.due_at) %>
+              <% end %>
+            </span>
+          </span>
+          <%= icon(:chevron_right, class: "text-muted") %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= render EmptyStateComponent.new(text: t(".empty")) if @equipment.empty? %>
+  <% end %>
+
+  <% if policy(Equipment.new(household: @household)).create? %>
+    <%# In the Android app, a "+" button of the native top bar (bridge--button). %>
+    <%= link_to t(".add"), new_equipment_path, class: button_class(:primary, block: true),
+          data: { controller: "bridge--button", bridge_title: t(".add"), bridge_label: t(".add_label"),
+                  bridge_icon: "plus" } %>
+  <% end %>
+</div>

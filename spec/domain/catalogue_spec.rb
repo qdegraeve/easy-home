@@ -46,4 +46,13 @@ RSpec.describe Catalogue do
 
     expect(suggestion.first_due_on(today:)).to eq(Date.new(2026, 12, 23))
   end
+
+  it "gives every kind of equipment a name and a known icon, and refers only to existing suggestions" do
+    described_class.equipment_kinds.each do |kind|
+      expect(kind.name).not_to include("translation missing"), kind.key
+      expect(IconComponent::SHAPES).to have_key(kind.icon.to_s.tr("_", "-")), kind.key
+      expect(kind.suggestion_keys - described_class.suggestions.keys).to be_empty, kind.key
+    end
+    expect(described_class.equipment_kind_keys).to include("other")
+  end
 end

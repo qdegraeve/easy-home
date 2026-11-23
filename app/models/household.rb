@@ -3,6 +3,7 @@ class Household < ApplicationRecord
   has_many :users, through: :members
   has_many :locations, dependent: :destroy
   has_many :plants, dependent: :destroy
+  has_many :equipment, dependent: :destroy
   has_many :tasks, dependent: :destroy
   has_many :rainfalls, dependent: :delete_all
 

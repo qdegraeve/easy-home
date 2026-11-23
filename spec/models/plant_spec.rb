@@ -7,6 +7,10 @@ RSpec.describe Plant, type: :model do
     subject { create(:plant) }
   end
 
+  it_behaves_like "a task subject" do
+    subject { create(:plant) }
+  end
+
   it "is deleted with its photos, its cover, its analyses and the photo of a question" do
     plant = create(:plant)
     cover = create(:photo, plant:)

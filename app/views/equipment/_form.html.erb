@@ -1,0 +1,41 @@
+<%# The kind first, as big pills (its icon, its name prefilled when the name is left empty), then the details, folded
+    on creation: the name and what is good to know. %>
+<%= form_with model: equipment, url:, method:, class: "space-y-4" do |f| %>
+  <%= render "shared/errors", record: equipment %>
+
+  <fieldset>
+    <legend class="text-sm font-semibold"><%= Equipment.human_attribute_name(:kind) %></legend>
+    <div class="mt-1 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+      <% Catalogue.equipment_kinds.each do |kind| %>
+        <label
+          class="flex min-h-14 items-center gap-2 rounded-xl border border-field bg-surface px-3 py-2
+                 has-[:checked]:border-action has-[:checked]:bg-action-soft
+                 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-action"
+        >
+          <%= f.radio_button :kind, kind.key, class: "sr-only", required: true %>
+          <%= icon(kind.icon) %><span><%= kind.name %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div>
+    <%= f.label :name, class: "block text-sm font-semibold" %>
+    <%= f.text_field :name, maxlength: 100, placeholder: t("equipment.form.name_placeholder"),
+          aria: { describedby: "equipment-name-help" },
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    <p id="equipment-name-help" class="mt-1 text-[13px] text-muted"><%= t("equipment.form.name_help") %></p>
+  </div>
+
+  <details class="group/fold" <%= "open" if equipment.notes.present? || equipment.errors.include?(:notes) %>>
+    <summary class="<%= summary_class %> text-sm"><%= t("equipment.form.more") %><%= summary_chevron %></summary>
+    <div class="mt-2">
+      <%= f.label :notes, class: "block text-sm font-semibold" %>
+      <%= f.text_area :notes, rows: 5, maxlength: Equipment::NOTES_MAX,
+            placeholder: t("equipment.form.notes_placeholder"),
+            class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    </div>
+  </details>
+
+  <%= f.submit submit, class: button_class(:primary, block: true) %>
+<% end %>

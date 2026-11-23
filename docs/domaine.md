@@ -10,12 +10,12 @@
 | Membre | `HouseholdMember` | Lien entre un utilisateur et un foyer, avec un rôle. |
 | Rôle | `HouseholdMember#role` | `owner` (gère le foyer), `member` (voit et fait tout), `guest` (voit uniquement les tâches qui lui sont ouvertes). |
 | Domaine qui calcule | `Plant`, plus tard `Pet` | Ce dont l'app exploite les attributs : un modèle et une table par domaine (ADR 0010, 0016). |
-| Équipement | `Equipment` (à venir) | Ce qu'on entretient et dont l'app rappelle les tâches (piscine, lave-vaisselle, chauffe-eau…) : nom, type, « À savoir », photos. Générique (ADR 0016). |
+| Équipement | `Equipment` | Ce qu'on entretient et dont l'app rappelle les tâches (piscine, lave-vaisselle, chauffe-eau…) : nom, type, « À savoir », photos. Générique (ADR 0016). |
 | Sujet d'une tâche | `Task#subject` | La plante ou l'équipement auquel une tâche se rattache (polymorphe) ; nul pour une **tâche de la maison** (poubelles). |
 | Suggestion | `config/catalogue.yml`, `Catalogue` | Tâche toute prête d'un type d'équipement ou de la maison, copiée dans la tâche à sa création (pas en base). |
 | Tâche | `Task` | Une chose à faire, une fois ou de façon répétée. |
 | Comment faire | `Task#instructions` | Le mode opératoire d'une tâche, lu au moment de la faire, dans sa feuille. |
-| À savoir | `Equipment#notes` (à venir) | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
+| À savoir | `Equipment#notes` | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
 | Appareil | `ApplicationPushDevice` | Téléphone qui reçoit les notifications : jeton Firebase, rattaché à une session (ADR 0012). |
@@ -61,8 +61,8 @@ Plant                            # un modèle par type d'élément (ADR 0010)
   has_many :tasks, as: :subject
   has_many :photos
 
-Equipment                        # à venir (PR 6) ; générique, pas de champ propre à un type (ADR 0016)
-  household (lecture seule), kind (liste du catalogue, « other » = personnalisé), name
+Equipment                        # générique, pas de champ propre à un type (ADR 0016)
+  household (lecture seule), kind (liste du catalogue, « other » = personnalisé), name (le type si vide)
   notes : text                   # « À savoir »
   has_many :tasks, as: :subject ; has_many :photos, as: :subject   # suppression : tâches et journal effacés
 
@@ -236,6 +236,17 @@ d'équipement) sont décrits dans `config/catalogue.yml`, leurs textes dans `con
 table (ADR 0016). Une suggestion est **copiée** dans la tâche à sa création (titre, rythme, importance, rappel,
 Comment faire) : tout reste modifiable, y compris le type de rythme. Un équipement de type « Autre » n'a pas de
 suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.md`.
+
+## Équipements
+
+- Maison → « Ajouter » → « Un équipement » : le type en pastilles (icône et nom du catalogue), le nom (celui du type
+  si vide), et « À savoir » replié. La fiche (`equipment#show`) a deux onglets, Entretien (ses tâches avec leur
+  rythme, « Ajouter une tâche », puis « À savoir », texte de l'utilisateur échappé) et Historique (le journal de ses
+  tâches). Maison montre la section « Équipements » dès qu'il y en a un.
+- Ses tâches se créent depuis sa fiche (`/equipment/:id/tasks/new`) et vivent comme les autres : Aujourd'hui les
+  sous-titre du nom de l'équipement, avec l'icône de son type ; la feuille, le journal et les rappels le nomment.
+- Pas d'archivage : supprimer un équipement (depuis sa modification, avec confirmation) supprime ses tâches et leur
+  historique. Les photos de l'équipement et d'une tâche arrivent avec la PR 6b.
 
 ## Tâches de la maison
 

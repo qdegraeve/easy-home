@@ -1,5 +1,16 @@
-# Catalogue of suggestions (ADR 0016, docs/conception/equipements-et-taches.md): ready-made tasks, copied into a task
-# when chosen, then editable. Texts in config/locales/catalogue.fr.yml. Equipment kinds come with the equipment.
+# Catalogue (ADR 0016, docs/conception/equipements-et-taches.md): the kinds of equipment, and ready-made tasks copied
+# into a task when chosen, then editable. Texts in config/locales/catalogue.fr.yml.
+
+# Kinds of equipment, in the order of the pills, with their icon (app/assets/images/icons) and their suggestions.
+# "other": an equipment of one's own, named freely, without suggestion.
+equipment_kinds:
+  pool: { icon: waves, suggestions: [] }
+  dishwasher: { icon: utensils, suggestions: [] }
+  water_heater: { icon: flame, suggestions: [] }
+  air_conditioner: { icon: air_vent, suggestions: [] }
+  washing_machine: { icon: washing_machine, suggestions: [] }
+  car: { icon: car, suggestions: [] }
+  other: { icon: wrench, suggestions: [] }
 
 # Offered by the task form opened from Maison (a task of the house, no subject), in this order.
 household_suggestions: [bins.yellow, bins.grey, bins.yellow_back, bins.bulky]

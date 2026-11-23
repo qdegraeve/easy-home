@@ -36,6 +36,7 @@ class TaskRowComponent < ViewComponent::Base
   def mark_icon
     return :droplet if task.watering?
     return :triangle_alert if task.critical?
+    return task.subject.kind_info.icon if task.subject.is_a?(Equipment)
 
     task.subject ? :list_todo : :house
   end

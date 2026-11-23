@@ -1,5 +1,13 @@
 fr:
   catalogue:
+    equipment_kinds:
+      pool: "Piscine"
+      dishwasher: "Lave-vaisselle"
+      water_heater: "Chauffe-eau"
+      air_conditioner: "Climatisation"
+      washing_machine: "Lave-linge"
+      car: "Voiture"
+      other: "Autre"
     suggestions:
       bins:
         yellow:
