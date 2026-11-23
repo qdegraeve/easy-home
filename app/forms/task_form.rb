@@ -97,7 +97,7 @@ class TaskForm
       title: title.strip,
       recurrence_type:,
       recurrence_config:,
-      importance: critical ? "critical" : "flexible",
+      importance: critical && !on_demand? ? "critical" : "flexible", # nothing to miss when done when needed
       instructions: instructions.to_s.strip.presence,
       reminder_minute: (ReminderTime.from_field(reminder_time) unless on_demand?),
       suggestion_key: (suggestion_key if Catalogue.suggestion(suggestion_key))

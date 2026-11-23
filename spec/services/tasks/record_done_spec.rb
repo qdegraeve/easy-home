@@ -42,12 +42,45 @@ RSpec.describe Tasks::RecordDone do
   end
 
   it "turns into a monthly task with a due date, and back to when needed without one" do
-    Tasks::Update.new.call(task: salt, params: { title: "Remettre du sel", recurrence_type: "sliding",
-                                                 due_on: "2026-12-01", interval: "1", unit: "months" })
+    Tasks::Update.new.call(
+      task: salt,
+      params: {
+        title: "Remettre du sel",
+        recurrence_type: "sliding",
+        due_on: "2026-12-01",
+        interval: "1",
+        unit: "months"
+      }
+    )
     expect(salt.reload.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 12, 1))
 
     Tasks::Update.new.call(task: salt, params: { title: "Remettre du sel", recurrence_type: "on_demand" })
     expect(salt.reload.occurrences.pending).to be_empty
     expect(salt).to be_on_demand
+  end
+
+  it "gets a due date when turned into any dated rhythm, a one-off included" do
+    { "once" => {}, "fixed" => { interval: "2", unit: "weeks" }, "sliding" => { interval: "1", unit: "months" } }
+      .each do |rhythm, extra|
+        task = Tasks::Add.new.call(subject: equipment, params: { title: rhythm, recurrence_type: "on_demand" }).value!
+
+        Tasks::Update.new.call(task:, params: { title: rhythm, recurrence_type: rhythm, due_on: "2026-12-01", **extra })
+
+        expect(task.reload.pending_occurrence&.due_at&.to_date).to eq(Date.new(2026, 12, 1)), rhythm
+      end
+  end
+
+  it "turns a task with a reminder and that must not be missed into one done when needed, without either" do
+    task = Tasks::Add.new.call(
+      subject: equipment,
+      params: { title: "Filtre", recurrence_type: "sliding", due_on: "2026-11-16", interval: "1", unit: "months",
+                reminder_time: "19:00", critical: "1" }
+    ).value!
+
+    result = Tasks::Update.new.call(task:, params: { title: "Filtre", recurrence_type: "on_demand" })
+
+    expect(result).to be_success
+    expect(task.reload).to have_attributes(recurrence_type: "on_demand", reminder_minute: nil, importance: "flexible")
+    expect(task.occurrences.pending).to be_empty
   end
 end

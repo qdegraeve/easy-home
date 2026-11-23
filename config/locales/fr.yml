@@ -342,7 +342,6 @@ fr:
     never: "jamais fait"
     last_done: "dernière fois : %{date}"
     done_today: "Fait aujourd'hui"
-    done_label: "Marquer comme fait : %{title}"
   task_row_component:
     done_watering: "J'ai arrosé : %{name}"
     done_with_subject: "Marquer comme fait : %{title} (%{subject})"

@@ -7,9 +7,9 @@ class TaskPolicy < ApplicationPolicy
     manage?
   end
 
-  # "Fait" on a task done when needed.
+  # "Fait" on a task done when needed: the service says why it cannot be (a stale page: dated or stopped since).
   def record_done?
-    manage? && record.on_demand? && record.active?
+    manage?
   end
 
   def create?

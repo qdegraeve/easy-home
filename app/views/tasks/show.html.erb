@@ -40,7 +40,7 @@
           <% end %>
         <% end %>
       </div>
-    <% elsif @task.on_demand? && !done_today %>
+    <% elsif @task.on_demand? && @task.active? && !done_today %>
       <%# Done when needed: no due date, "Fait" records it. %>
       <%= button_to task_completion_path(@task), params: { from: "sheet" },
             aria: { label: t(".done_label", title: @task.title) }, class: button_class(:primary) do %>

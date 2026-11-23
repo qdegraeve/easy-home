@@ -47,11 +47,14 @@ RSpec.describe "Task completions", type: :request do
       .to include("Quand il le faut", "Fait aujourd'hui", "Dernière fois : lun 16 nov.")
   end
 
-  it "refuses a dated task, and answers 404 to a guest or another household" do
+  it "says why on a stale page (dated or stopped since), and answers 404 to a guest or another household" do
     dated = Tasks::Add.new.call(subject: equipment, params: { title: "Filtre", due_on: "2026-11-16" }).value!
     sign_in(user)
     post task_completion_path(dated)
-    expect(response).to have_http_status(:forbidden)
+    expect(flash[:notice]).to eq("Cette tâche a une date : faites-la depuis sa ligne.")
+    salt.update!(active: false)
+    post task_completion_path(salt)
+    expect(flash[:notice]).to eq("Cette tâche est arrêtée.")
 
     sign_in(create(:household_member, household:, role: :guest).user)
     post task_completion_path(salt)
@@ -63,14 +66,40 @@ RSpec.describe "Task completions", type: :request do
     expect(salt.occurrences).to be_empty
   end
 
-  it "creates a task done when needed without a date, and refuses a reminder for it" do
+  it "creates a task done when needed without a date, ignoring a reminder and the importance sent for it" do
     sign_in(user)
 
-    post equipment_tasks_path(equipment), params: { task: { title: "Liquide de rinçage", recurrence_type: "on_demand",
-                                                            due_on: "", reminder_time: "19:00" } }
+    post equipment_tasks_path(equipment), params: {
+      task: {
+        title: "Liquide de rinçage",
+        recurrence_type: "on_demand",
+        due_on: "",
+        reminder_time: "19:00",
+        critical: "1"
+      }
+    }
 
     task = equipment.tasks.sole
-    expect(task).to have_attributes(recurrence_type: "on_demand", reminder_minute: nil)
+    expect(task).to have_attributes(recurrence_type: "on_demand", reminder_minute: nil, importance: "flexible")
     expect(task.occurrences).to be_empty
+  end
+
+  it "undoes a completion from its toast without opening a due date" do
+    sign_in(user)
+    post task_completion_path(salt)
+    done = salt.occurrences.done.sole
+
+    delete task_occurrences_batch_completion_path, params: { occurrence_ids: [ done.id ] }
+
+    expect(salt.occurrences).to be_empty
+  end
+
+  it "offers no Fait on the sheet of a stopped task done when needed" do
+    salt.update!(active: false)
+    sign_in(user)
+
+    get task_path(salt)
+
+    expect(response.body).not_to include(task_completion_path(salt))
   end
 end

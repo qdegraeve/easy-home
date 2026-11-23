@@ -20,9 +20,10 @@ module Tasks
       ActiveRecord::Base.transaction do
         task.lock!
         pending = task.occurrences.pending.first
+        was_on_demand = task.on_demand?
         date_kept = pending && pending.due_at.to_date == form.due_on && task.recurrence_type == form.recurrence_type
         task.update!(changes_for(task, form, date_kept))
-        move_open_occurrence(task, pending, form.due_on) unless date_kept
+        pending = move_open_occurrence(task, pending, form.due_on, was_on_demand) unless date_kept
         restart_reminders(pending) if pending && task.saved_change_to_reminder_minute?
       end
 
@@ -48,13 +49,17 @@ module Tasks
     end
 
     # A new due date can be missed again, once (Tasks::MarkMissed); its reminders start again (RemindersDueQuery
-    # counts those of the due day only).
-    def move_open_occurrence(task, pending, due_on)
-      return pending&.destroy! unless task.recurrence.dated? # now done when needed: no due date left
+    # counts those of the due day only). Returns the open occurrence left, if any. A task done when needed gets one
+    # whatever its new dated rhythm; a one-off already done is not opened again.
+    def move_open_occurrence(task, pending, due_on, was_on_demand)
+      unless task.recurrence.dated? # now done when needed: no due date left
+        pending&.destroy!
+        return nil
+      end
 
       if pending
-        pending.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false)
-      elsif task.active? && !task.once?
+        pending.tap { _1.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false) }
+      elsif task.active? && (was_on_demand || !task.once?)
         task.occurrences.create!(due_at: task.first_due_at!(due_on))
       end
     end
