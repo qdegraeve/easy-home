@@ -256,6 +256,20 @@ fr:
       destroy_confirm: "Supprimer cette photo ?"
     destroy:
       success: "Photo supprimée."
+  equipments:
+    suggestions:
+      new:
+        title: "Ajouter des tâches d'entretien ?"
+        intro: "Cochez celles qui servent pour « %{name} ». Tout se modifie ensuite."
+        first_time: "1re fois le %{date}"
+        submit: "Ajouter les tâches cochées"
+        later: "Plus tard"
+      create:
+        success:
+          one: "Une tâche d'entretien ajoutée."
+          other: "%{count} tâches d'entretien ajoutées."
+        none_selected: "Aucune tâche cochée."
+        invalid: "Ces tâches n'ont pas pu être ajoutées."
   house_tasks:
     index:
       back: "← Maison"

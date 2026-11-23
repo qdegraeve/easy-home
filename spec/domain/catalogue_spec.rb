@@ -33,6 +33,24 @@ RSpec.describe Catalogue do
     expect(form.instructions).to be_present
   end
 
+  it "offers the suggestions of an equipment's kind, none for a plant or an equipment of its own" do
+    dishwasher = build(:equipment, kind: "dishwasher")
+
+    expect(described_class.suggestions_for(dishwasher, existing_keys: %w[dishwasher.salt]).map(&:key))
+      .to eq(%w[dishwasher.filter dishwasher.rinse_aid])
+    expect(described_class.suggestions_for(nil).map(&:key)).to include("bins.yellow")
+    expect(described_class.suggestions_for(build(:equipment, kind: "other"))).to be_empty
+    expect(described_class.suggestions_for(build(:plant))).to be_empty
+  end
+
+  it "opens a yearly suggestion on its next date, this year or the next" do
+    winter = described_class.suggestion("pool.austral_winter") # 1 May
+
+    expect(winter.first_due_on(today:)).to eq(Date.new(2027, 5, 1))
+    expect(winter.first_due_on(today: Date.new(2027, 3, 1))).to eq(Date.new(2027, 5, 1))
+    expect(winter.first_due_on(today: Date.new(2027, 5, 1))).to eq(Date.new(2027, 5, 1))
+  end
+
   it "ignores an unknown key" do
     expect(described_class.suggestion("bins.unknown")).to be_nil
     expect(described_class.suggestion(nil)).to be_nil

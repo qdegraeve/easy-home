@@ -40,7 +40,9 @@ class EquipmentController < ApplicationController
     @equipment = household.equipment.build(equipment_params)
     authorize @equipment
     if @equipment.save
-      redirect_to @equipment, notice: t(".success", name: @equipment.name)
+      # Next: its suggested upkeep tasks, when its kind has some.
+      next_path = @equipment.kind_info.suggestion_keys.any? ? new_equipment_suggestions_path(@equipment) : @equipment
+      redirect_to next_path, notice: t(".success", name: @equipment.name)
     else
       render :new, status: :unprocessable_content
     end

@@ -39,6 +39,8 @@ Rails.application.routes.draw do
   end
   # What the household maintains (ADR 0016): "equipment" is uncountable, its list is equipment_index_path.
   resources :equipment do
+    # The screen after adding one: its suggested upkeep tasks.
+    resource :suggestions, only: [ :new, :create ], module: :equipments
     resources :tasks, only: [ :new, :create ]
     resources :photos, only: [ :create, :show, :destroy ], controller: "subject_photos"
   end

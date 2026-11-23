@@ -17,6 +17,11 @@ module TasksHelper
     end
   end
 
+  # The form of a new task of a subject (a plant, an equipment), or of the house when nil.
+  def new_task_path_for(subject, **params)
+    subject ? new_polymorphic_path([ subject, :task ], **params) : new_task_path(**params)
+  end
+
   private
 
   # "1er novembre", "15 mai".

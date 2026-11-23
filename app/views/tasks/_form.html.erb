@@ -16,7 +16,7 @@
       <p class="text-sm font-semibold"><%= t("tasks.form.suggestions") %></p>
       <div class="mt-1 flex flex-wrap gap-x-2">
         <% suggestions.each do |suggestion| %>
-          <%= link_to new_task_path(suggestion: suggestion.key), class: chip_class do %>
+          <%= link_to new_task_path_for(subject, suggestion: suggestion.key), class: chip_class do %>
             <span class="<%= chip_inner_class %>"><%= suggestion.title %></span>
           <% end %>
         <% end %>
@@ -25,7 +25,9 @@
   <% end %>
   <% if adding && (suggestion = Catalogue.suggestion(form.suggestion_key)) %>
     <%= f.hidden_field :suggestion_key %>
-    <p class="rounded-xl bg-subtle px-3 py-2 text-sm"><%= suggestion.hint %></p>
+    <% if suggestion.hint %>
+      <p class="rounded-xl bg-subtle px-3 py-2 text-sm"><%= suggestion.hint %></p>
+    <% end %>
   <% end %>
 
   <fieldset>

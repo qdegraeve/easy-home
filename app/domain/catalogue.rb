@@ -80,8 +80,17 @@ module Catalogue
 
     # The suggestions of a task of the house, but for those already used (existing_keys).
     def household_suggestions(existing_keys: [])
-      data.fetch("household_suggestions").map { |key| suggestions.fetch(key) }
-        .reject { |suggestion| existing_keys.include?(suggestion.key) }
+      without(data.fetch("household_suggestions"), existing_keys)
+    end
+
+    # The suggestions for a subject: an equipment's kind, the house when nil; none for a plant (its care comes from
+    # its analysis). But for those already used.
+    def suggestions_for(subject, existing_keys: [])
+      case subject
+      when nil then household_suggestions(existing_keys:)
+      when Equipment then without(subject.kind_info.suggestion_keys, existing_keys)
+      else []
+      end
     end
 
     # Loaded once and deeply frozen: shared safely by the threads of Puma.
@@ -95,6 +104,10 @@ module Catalogue
     end
 
     private
+
+    def without(keys, existing_keys)
+      keys.map { |key| suggestions.fetch(key) }.reject { |suggestion| existing_keys.include?(suggestion.key) }
+    end
 
     def data
       @data ||= Ractor.make_shareable(YAML.safe_load_file(FILE))
