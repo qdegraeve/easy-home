@@ -15,6 +15,7 @@ class RequireSubjectOfPhotos < ActiveRecord::Migration[8.1]
   end
 
   def down
+    execute "UPDATE photos SET plant_id = subject_id WHERE subject_type = 'Plant' AND plant_id IS NULL"
     add_index :photos, [ :plant_id, :taken_at ]
     add_foreign_key :photos, :plants
     change_column_null :photos, :subject_id, true

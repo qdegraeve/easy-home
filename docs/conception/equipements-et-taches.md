@@ -188,7 +188,7 @@ Inchangés : `due_at not null`, l'index unique partiel « une seule `pending` pa
 
 | Colonne | Avant | Après |
 |---|---|---|
-| `plant_id` | not null, FK | ignorée par le modèle, FK et index retirés (PR 9) ; colonne supprimée au déploiement suivant |
+| `plant_id` | not null, FK (nullable depuis la PR 5) | ignorée par le modèle, FK et index retirés (PR 9) ; colonne supprimée au déploiement suivant |
 | `subject_type`, `subject_id` | — | string + bigint, nullables en base en PR 5 (déploiement sans coupure), requis par le modèle, not null en PR 9 ; index `[subject_type, subject_id, taken_at]` ; sujet : `Plant`, `Equipment` ou `Task` (photos d'une tâche, montrées dans sa feuille) |
 
 Gardé : FK `plants.cover_photo_id → photos` (couverture des plantes seulement). Les validations remplacent la FK
@@ -546,7 +546,7 @@ Vues et composants :
 | 4 | `MoveSlidingIntervalToUnit` | **transformation** : `UPDATE tasks SET recurrence_config = (recurrence_config - 'interval_days') \|\| jsonb_build_object('interval', recurrence_config->'interval_days', 'unit', 'days') WHERE recurrence_type = 'sliding' AND recurrence_config ? 'interval_days'` ; `down` inverse (unité jours seulement, refus s'il existe une autre unité). Spec de la migration. |
 | 5 | `AddSubjectToPhotos` | **transformation** : ajout `subject_type`/`subject_id` nullables, `UPDATE photos SET subject_type = 'Plant', subject_id = plant_id`, index, `plant_id` rendu nullable (encore écrit pour une plante). Spec. |
 | 6 | `CreateEquipment` | — |
-| 9 | `RemovePlantIdFromPhotos`, une fois la PR 5 en production | **transformation** : d'abord rattraper les photos ajoutées par l'ancien code pendant le déploiement (`UPDATE photos SET subject_type = 'Plant', subject_id = plant_id WHERE subject_id IS NULL AND plant_id IS NOT NULL`), puis `not null` sur le sujet, enfin suppression de la FK, de l'index et de la colonne `plant_id`. Spec. |
+| 9 | `RequireSubjectOfPhotos` et `ConvertLeftoverIntervalDays`, une fois les PR 1 à 8 en production | **transformation** : rattraper les photos ajoutées par l'ancien code pendant le déploiement (`UPDATE photos SET subject_type = 'Plant', subject_id = plant_id WHERE subject_id IS NULL AND plant_id IS NOT NULL`), `not null` sur le sujet, suppression de la FK et de l'index de `plant_id` (colonne ignorée par le modèle, supprimée au déploiement suivant) ; reconvertir les tâches glissantes restées en `interval_days`, dont l'ancien format n'est plus lu. Specs. |
 
 Pas de `db:rollback` à l'aveugle (base de dev réelle) : `db:migrate:down VERSION=…` pour vérifier chaque `down`.
 
