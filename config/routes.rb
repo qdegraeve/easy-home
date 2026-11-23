@@ -37,6 +37,10 @@ Rails.application.routes.draw do
       end
     end
   end
+  # What the household maintains (ADR 0016): "equipment" is uncountable, its list is equipment_index_path.
+  resources :equipment do
+    resources :tasks, only: [ :new, :create ]
+  end
   # A task without subject is created here (the house); show is the task sheet.
   resources :tasks, only: [ :new, :create, :show, :edit, :update, :destroy ]
   resources :task_occurrences, only: [] do

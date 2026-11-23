@@ -49,7 +49,31 @@ module Catalogue
     end
   end
 
+  # A kind of equipment: its key ("dishwasher"), icon and suggestion keys; its name comes from I18n.
+  Kind = Data.define(:key, :icon, :suggestion_keys) do
+    def name
+      I18n.t("catalogue.equipment_kinds.#{key}")
+    end
+  end
+
   class << self
+    def equipment_kinds
+      @equipment_kinds ||= Ractor.make_shareable(
+        data.fetch("equipment_kinds").map do |key, entry|
+          Kind.new(key:, icon: entry.fetch("icon").to_sym, suggestion_keys: entry.fetch("suggestions"))
+        end
+      )
+    end
+
+    def equipment_kind(key)
+      @equipment_kinds_by_key ||= Ractor.make_shareable(equipment_kinds.index_by(&:key))
+      @equipment_kinds_by_key[key.to_s]
+    end
+
+    def equipment_kind_keys
+      equipment_kinds.map(&:key)
+    end
+
     def suggestion(key)
       suggestions[key.to_s] if key.present?
     end

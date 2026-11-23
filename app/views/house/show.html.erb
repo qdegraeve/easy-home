@@ -21,6 +21,20 @@
       <% end %>
     <% end %>
     <%# Shown once there is one: the "+" below leads to the first. %>
+    <% if @equipment_count.positive? %>
+      <% group.with_row do %>
+        <%= link_to equipment_index_path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
+          <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-gear">
+            <%= icon(:wrench) %>
+          </span>
+          <span class="flex-1">
+            <span class="block font-medium"><%= t(".equipment") %></span>
+            <span class="text-sm text-muted"><%= t(".equipment_count", count: @equipment_count) %></span>
+          </span>
+          <%= icon(:chevron_right, class: "text-muted") %>
+        <% end %>
+      <% end %>
+    <% end %>
     <% if @house_tasks_count.positive? %>
       <% group.with_row do %>
         <%= link_to house_tasks_path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>

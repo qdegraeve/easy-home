@@ -71,7 +71,12 @@ fr:
       household: "Foyer"
       location: "Emplacement"
       plant: "Plante"
+      equipment: "Équipement"
     attributes:
+      equipment:
+        kind: "Type"
+        name: "Nom"
+        notes: "À savoir"
       household:
         name: "Nom du foyer"
         address: "Adresse"
@@ -163,12 +168,16 @@ fr:
       to_review:
         one: "%{count} analyse à revoir"
         other: "%{count} analyses à revoir"
+      equipment: "Équipements"
+      equipment_count:
+        one: "%{count} équipement"
+        other: "%{count} équipements"
       house_tasks: "Tâches de la maison"
       house_tasks_count:
         one: "%{count} tâche"
         other: "%{count} tâches"
       add: "Ajouter"
-      add_label: "Ajouter une plante ou une tâche"
+      add_label: "Ajouter une plante, un équipement ou une tâche"
       places: "Lieux de la maison"
       address_and_locations: "Adresse et emplacements"
       no_address: "Adresse à renseigner"
@@ -182,8 +191,51 @@ fr:
       choose: "Que voulez-vous ajouter ?"
       plant: "Une plante"
       plant_hint: "Son arrosage, ses photos, son analyse"
+      equipment: "Un équipement"
+      equipment_hint: "Piscine, lave-vaisselle, chauffe-eau… et son entretien"
       task: "Une tâche de la maison"
       task_hint: "Les poubelles, aérer la cave…"
+  equipment:
+    back: "← Équipements"
+    form:
+      name_placeholder: "Ex. Clim de la chambre"
+      name_help: "Facultatif : le nom du type si vide."
+      more: "Ajouter ce qui est bon à savoir"
+      notes_placeholder: "Ex. référence du filtre, garantie jusqu'en 2028, réarmer la pompe après une coupure…"
+    index:
+      back: "← Maison"
+      title: "Équipements"
+      empty: "Aucun équipement pour l'instant : piscine, lave-vaisselle, chauffe-eau…"
+      add: "Ajouter un équipement"
+      add_label: "Équipement"
+    show:
+      tabs_label: "Parties de l'équipement"
+      tabs:
+        care: "Entretien"
+        history: "Historique"
+      tasks: "Entretien"
+      no_tasks: "Aucune tâche d'entretien pour l'instant."
+      add_task: "Ajouter une tâche"
+      add_task_label: "Tâche"
+      no_notes: "Rien de noté pour l'instant."
+      add_notes: "Ajouter ce qui est bon à savoir"
+      history: "Historique"
+      no_history: "Rien de fait pour l'instant."
+      edit: "Modifier"
+    new:
+      title: "Ajouter un équipement"
+      submit: "Ajouter l'équipement"
+    create:
+      success: "Équipement « %{name} » ajouté."
+    edit:
+      title: "Modifier « %{name} »"
+      submit: "Enregistrer"
+      destroy: "Supprimer l'équipement"
+      destroy_confirm: "Supprimer « %{name} » ? Ses tâches et leur historique partent aussi."
+    update:
+      success: "Équipement « %{name} » enregistré."
+    destroy:
+      success: "Équipement « %{name} » supprimé."
   house_tasks:
     index:
       back: "← Maison"

@@ -1,0 +1,71 @@
+<%= back_link_to t("equipment.back"), equipment_index_path %>
+
+<%# Who it is: the icon of its kind, its name and its kind. %>
+<div class="mt-2 flex items-center gap-4">
+  <span class="grid size-16 shrink-0 place-items-center rounded-2xl bg-subtle text-gear">
+    <%= icon(@equipment.kind_info.icon, size: 28) %>
+  </span>
+  <div class="min-w-0">
+    <h1 class="text-2xl font-bold"><%= page_title @equipment.name %></h1>
+    <p class="text-muted"><%= @equipment.kind_info.name %></p>
+  </div>
+</div>
+
+<div class="mt-6 space-y-6 lg:max-w-2xl">
+  <%# Entretien / Historique, like the plant page: plain links replacing the page in the history. %>
+  <nav aria-label="<%= t(".tabs_label") %>" class="grid grid-cols-2 gap-1 rounded-2xl bg-subtle p-1 text-sm">
+    <% EquipmentController::TABS.each do |tab| %>
+      <%= link_to equipment_path(@equipment, tab: (tab unless tab == "care")),
+            aria: { current: ("page" if tab == @tab) }, data: { turbo_action: "replace" },
+            class: class_names(
+              "flex min-h-11 items-center justify-center rounded-xl px-2 font-semibold",
+              "bg-surface text-ink shadow-sm": tab == @tab,
+              "text-muted hover:text-ink": tab != @tab
+            ) do %>
+        <%= t(".tabs.#{tab}") %>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <% if @tab == "care" %>
+    <%= render ListGroupComponent.new(title: t(".tasks"), id: "tasks") do |group| %>
+      <% @tasks.each do |task| %>
+        <% group.with_row do %>
+          <%= render TaskRowComponent.new(occurrence: task.pending_occurrence, title: task.title,
+                                          href: task_path(task), detail: rhythm_label(task)) %>
+        <% end %>
+      <% end %>
+      <%= render EmptyStateComponent.new(text: t(".no_tasks")) if @tasks.empty? %>
+    <% end %>
+    <%# In the Android app, the floating "+" (bridge--button). %>
+    <%= link_to t(".add_task"), new_equipment_task_path(@equipment), class: button_class(:secondary, block: true),
+          data: { controller: "bridge--button", bridge_title: t(".add_task"), bridge_icon: "plus",
+                  bridge_label: t(".add_task_label") } %>
+
+    <section aria-labelledby="notes">
+      <h2 id="notes" class="text-[13px] font-semibold text-muted"><%= Equipment.human_attribute_name(:notes) %></h2>
+      <% if @equipment.notes.present? %>
+        <%# Text of the user: escaped, line breaks kept. %>
+        <div class="mt-2 space-y-2 rounded-2xl bg-surface p-4"><%= simple_format(h(@equipment.notes)) %></div>
+      <% else %>
+        <p class="mt-2 text-sm text-muted">
+          <%= t(".no_notes") %>
+          <%= link_to t(".add_notes"), edit_equipment_path(@equipment), class: "font-semibold text-action underline" %>
+        </p>
+      <% end %>
+    </section>
+  <% else %>
+    <%= render ListGroupComponent.new(title: t(".history"), id: "history") do |group| %>
+      <% @history.each do |entry| %>
+        <% group.with_row { render(JournalEntryComponent.new(entry:, user: Current.user)) } %>
+      <% end %>
+      <%= render EmptyStateComponent.new(text: t(".no_history")) if @history.empty? %>
+    <% end %>
+  <% end %>
+
+  <%# In the Android app, this goes to the "⋮" menu of the native top bar (bridge--menu). %>
+  <div class="flex flex-wrap gap-3" data-controller="bridge--menu">
+    <%= link_to t(".edit"), edit_equipment_path(@equipment), class: button_class(:secondary),
+          data: { bridge__menu_target: "item" } %>
+  </div>
+</div>

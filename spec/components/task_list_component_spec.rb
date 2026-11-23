@@ -101,4 +101,15 @@ RSpec.describe TaskListComponent, type: :component do
     expect(page).to have_link(text: /Sortir la poubelle\s+ce soir 19 h · aujourd'hui/)
     expect(page).to have_link(text: /\A\s*Aérer\s+prévu il y a 2 j\s*\z/)
   end
+
+  it "marks a task of an equipment with the icon of its kind" do
+    pool = create(:equipment, household:, kind: "pool", name: "Piscine")
+    task = create(:task, household:, subject: pool, title: "Mesurer le pH", template_key: nil)
+    occurrence = task.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
+
+    render_inline(described_class.new(occurrences: [ occurrence ], title: "Aujourd'hui", id: "today"))
+
+    expect(page).to have_css("svg[data-icon=waves]")
+    expect(page).to have_link(text: /Mesurer le pH\s+Piscine · aujourd'hui/)
+  end
 end

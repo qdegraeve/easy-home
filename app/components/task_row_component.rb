@@ -36,8 +36,9 @@ class TaskRowComponent < ViewComponent::Base
   def mark_icon
     return :droplet if task.watering?
     return :triangle_alert if task.critical?
+    return :house unless task.subject
 
-    task.subject ? :list_todo : :house
+    task.subject.try(:icon) || :list_todo
   end
 
   # Button name for screen readers, an action: "J'ai arrosé : Citronnier", "Marquer comme fait : Tailler
