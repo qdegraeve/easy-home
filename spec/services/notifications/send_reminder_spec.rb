@@ -30,8 +30,8 @@ RSpec.describe Notifications::SendReminder do
 
   it "says a follow-up, and names the plant or equipment of the task, never its instructions" do
     plant = create(:plant, household:, name: "Citronnier")
-    task = create(:task, household:, subject: plant, template_key: nil, title: "Tailler", reminder_minute: 19 * 60,
-                         instructions: "Couper les gourmands.")
+    task = create(:task, household:, subject: plant, template_key: nil, title: "Tailler", reminder_minute: 18 * 60,
+                         importance: :critical, instructions: "Couper les gourmands.")
     occurrence = task.occurrences.create!(due_at: Time.zone.parse("2026-12-01 00:00"), reminders_sent: 1,
                                           last_reminded_at: 1.hour.ago)
 
@@ -62,5 +62,45 @@ RSpec.describe Notifications::SendReminder do
 
     done = bins.reload.tap { _1.update!(status: :done, completed_at: Time.current) }
     expect(described_class.new.call(occurrence: done).failure.first).to eq(:already_sent)
+  end
+
+  describe "through the day" do
+    def run(at)
+      travel_to(Time.zone.parse("2026-12-01 #{at}"))
+      Notifications::SendReminders.new.call.value!
+    end
+
+    it "stops the follow-ups once postponed, and reminds the next day at the same time" do
+      bins
+      expect(run("19:00")).to eq(1)
+      travel_to(Time.zone.parse("2026-12-01 19:30"))
+      Tasks::Postpone.new.call(occurrence: bins, user:)
+      expect(run("20:00")).to eq(0)
+
+      travel_to(Time.zone.parse("2026-12-02 18:59"))
+      expect(Notifications::SendReminders.new.call.value!).to eq(0)
+      travel_to(Time.zone.parse("2026-12-02 19:00"))
+      expect(Notifications::SendReminders.new.call.value!).to eq(1)
+    end
+
+    it "sends a new reminder time as a new reminder, even when the former one was sent today" do
+      bins.task.update!(importance: :flexible, reminder_minute: 8 * 60)
+      expect(run("08:00")).to eq(1)
+
+      travel_to(Time.zone.parse("2026-12-01 09:00"))
+      task = bins.task
+      Tasks::Update.new.call(task:, params: TaskForm.from(task).attributes.merge("reminder_time" => "19:00"))
+
+      expect(run("18:55")).to eq(0)
+      expect(run("19:00")).to eq(1)
+    end
+
+    it "stops the follow-ups of a task that became flexible after its first reminder" do
+      bins
+      expect(run("19:00")).to eq(1)
+      bins.task.update!(importance: :flexible)
+
+      expect(run("20:00")).to eq(0)
+    end
   end
 end

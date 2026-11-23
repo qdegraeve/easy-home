@@ -50,11 +50,26 @@ RSpec.describe RemindersDueQuery do
     expect(due_at("20:30", airing)).to be(false)
   end
 
-  it "sends nothing at 22:00 or after, even late" do
-    late = task(reminder_minute: 21 * 60 + 45)
+  it "sends a reminder set at 22:00, the last one possible, and nothing past the few minutes of that run" do
+    last = task(reminder_minute: 22 * 60)
+    expect(due_at("21:59", last)).to be(false)
+    expect(due_at("22:00", last)).to be(true)
+    expect(due_at("22:14", last)).to be(true)
+    expect(due_at("22:15", last)).to be(false)
+  end
 
-    expect(due_at("21:50", late)).to be(true)
-    expect(due_at("22:00", late)).to be(false)
+  it "plans no follow-up after 22:00" do
+    late = task(reminder_minute: 21 * 60 + 30)
+    sent(late, 1, at: "21:30")
+
+    expect(due_at("22:30", late)).to be(false) # its follow-up would be at 22:30
+  end
+
+  it "counts the reminders of the due day only: an occurrence moved to another day starts again" do
+    bins = task
+    bins.update!(reminders_sent: 3, last_reminded_at: Time.zone.parse("2026-11-30 21:00"))
+
+    expect(due_at("19:00", bins)).to be(true)
   end
 
   it "after an outage, sends the late reminder once, then waits an hour before the follow-up" do

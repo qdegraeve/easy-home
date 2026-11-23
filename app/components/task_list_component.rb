@@ -25,17 +25,19 @@ class TaskListComponent < ViewComponent::Base
       occurrence:,
       title: task.watering? ? task.subject.name : task.title,
       href: task.watering? ? helpers.polymorphic_path(task.subject) : helpers.task_path(task),
-      detail: row_detail(task),
+      detail: row_detail(occurrence),
       postpone: true
     )
   end
 
-  # The plant or equipment; for a task of the house, the time of its reminder ("ce soir 19 h"), if any.
-  def row_detail(task)
+  # The plant or equipment; for a task of the house due today, the time of its reminder ("ce soir 19 h"), if any (a
+  # late one is no longer reminded).
+  def row_detail(occurrence)
+    task = occurrence.task
     return t(".watering") if task.watering?
     return task.subject.name if task.subject
 
-    ReminderTime.label(task.reminder_minute) if task.reminder_minute
+    ReminderTime.label(task.reminder_minute) if task.reminder_minute && occurrence.due_at.to_date == Time.zone.today
   end
 
   # "Terrasse 3 · salon 1": where the plants to water are, by location (plants without location last).

@@ -127,4 +127,17 @@ RSpec.describe Notifications::SendDigest do
     expect(enqueued_jobs.sole[:args].second["body"])
       .to eq("Ce soir 19 h : sortir la poubelle jaune, à 14 h 30 : aérer la cave")
   end
+
+  it "announces no time for a late task, nor for a reminder already past" do
+    create(:task, household:, subject: nil, title: "Sortir la poubelle", template_key: nil, reminder_minute: 19 * 60,
+                  recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-15" })
+      .occurrences.create!(due_at: (today - 1).in_time_zone)
+    create(:task, household:, subject: nil, title: "Aérer", template_key: nil, reminder_minute: 7 * 60,
+                  recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+      .occurrences.create!(due_at: today.in_time_zone)
+
+    described_class.new.call(user:, today:)
+
+    expect(enqueued_jobs.sole[:args].second["body"]).to eq("Sortir la poubelle, Aérer")
+  end
 end

@@ -22,6 +22,7 @@ module Tasks
         date_kept = pending && pending.due_at.to_date == form.due_on && task.recurrence_type == form.recurrence_type
         task.update!(changes_for(task, form, date_kept))
         move_open_occurrence(task, pending, form.due_on) unless date_kept
+        restart_reminders(pending) if pending && task.saved_change_to_reminder_minute?
       end
 
       Success(task)
@@ -40,11 +41,16 @@ module Tasks
       changes
     end
 
-    # A new due date can be missed again, once (Tasks::MarkMissed).
+    # A new reminder time is a new reminder: sent at that time, even when the former one was already sent today.
+    def restart_reminders(pending)
+      pending.update!(reminders_sent: 0, last_reminded_at: nil)
+    end
+
+    # A new due date can be missed again, once (Tasks::MarkMissed); its reminders start again (RemindersDueQuery
+    # counts those of the due day only).
     def move_open_occurrence(task, pending, due_on)
       if pending
-        pending.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false, reminders_sent: 0,
-                        last_reminded_at: nil)
+        pending.update!(due_at: task.first_due_at!(due_on), reopened_after_miss: false)
       elsif task.active? && !task.once?
         task.occurrences.create!(due_at: task.first_due_at!(due_on))
       end

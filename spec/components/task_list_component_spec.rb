@@ -86,4 +86,19 @@ RSpec.describe TaskListComponent, type: :component do
     expect(rows.first).to have_css(".text-alert", text: "aujourd'hui")
     expect(rows.last).to have_text("Arroser")
   end
+
+  it "says the reminder time of a task of the house due today, not of a late one" do
+    today_task = create(:task, household:, subject: nil, title: "Sortir la poubelle", template_key: nil,
+                               reminder_minute: 19 * 60)
+    late_task = create(:task, household:, subject: nil, title: "Aérer", template_key: nil, reminder_minute: 19 * 60)
+    occurrences = [
+      today_task.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone),
+      late_task.occurrences.create!(due_at: Date.new(2026, 11, 14).in_time_zone)
+    ]
+
+    render_inline(described_class.new(occurrences:, title: "Aujourd'hui", id: "today"))
+
+    expect(page).to have_link(text: /Sortir la poubelle\s+ce soir 19 h · aujourd'hui/)
+    expect(page).to have_link(text: /\A\s*Aérer\s+prévu il y a 2 j\s*\z/)
+  end
 end

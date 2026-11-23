@@ -1,32 +1,36 @@
 module Notifications
   # Sends the reminder of an occurrence due (ADR 0017), or its follow-up: one push notification to each phone of the
   # members who follow its household (HouseholdMember#digest), even with their morning digest turned off: the
-  # reminder was set on purpose on the task. The send is claimed first, atomically: two runs at the same moment never
-  # send it twice. A follow-up replaces the previous notification on the phone (thread per task). The notification
-  # names the task (and its plant or equipment), never its instructions, and opens its sheet.
+  # reminder was set on purpose on the task. The send is claimed first, atomically, with the conditions of
+  # RemindersDueQuery checked again at that moment: two runs never send it twice, and a task moved, done or stopped in
+  # between is not reminded. Claimed before delivery: at most one attempt per send, like the morning digest. A
+  # follow-up replaces the previous notification on the phone (thread per task). The notification names the task (and
+  # its plant or equipment), never its instructions, and opens its sheet.
   class SendReminder
     include Dry::Monads[:result, :do]
 
-    def call(occurrence:, now: Time.current)
-      sent_before = occurrence.reminders_sent
-      yield claim(occurrence, sent_before, now)
-      devices = recipients(occurrence.task.household_id)
+    def call(occurrence:, now: Time.current, devices: nil)
+      sent_before = yield claim(occurrence, now)
+      devices ||= self.class.recipients(occurrence.task.household_id)
       notification(occurrence.task, follow_up: sent_before.positive?).deliver_later_to(devices) if devices.any?
 
       Success(devices.size)
     end
 
-    private
-
-    def claim(occurrence, sent_before, now)
-      claimed = TaskOccurrence.pending.where(id: occurrence.id, reminders_sent: sent_before)
-        .update_all(reminders_sent: sent_before + 1, last_reminded_at: now)
-      claimed == 1 ? Success(occurrence) : Failure[:already_sent, occurrence]
+    # The phones of the members who follow the household, guests apart.
+    def self.recipients(household_id)
+      followers = HouseholdMember.where(household_id:, digest: true).where.not(role: :guest).select(:user_id)
+      ApplicationPushDevice.where(owner: Session.where(user_id: followers)).to_a
     end
 
-    def recipients(household_id)
-      followers = HouseholdMember.where(household_id:, digest: true).where.not(role: :guest).select(:user_id)
-      ApplicationPushDevice.where(owner_type: "Session", owner_id: Session.where(user_id: followers).select(:id)).to_a
+    private
+
+    # [reminders sent before this one]
+    def claim(occurrence, now)
+      sent_before = RemindersDueQuery.sent(occurrence.id).to_i
+      claimed = RemindersDueQuery.new(TaskOccurrence.where(id: occurrence.id)).call(now:, sent: sent_before)
+        .update_all(reminders_sent: sent_before + 1, last_reminded_at: now)
+      claimed == 1 ? Success(sent_before) : Failure[:already_sent, occurrence]
     end
 
     def notification(task, follow_up:)
