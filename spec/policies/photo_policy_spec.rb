@@ -4,7 +4,7 @@ RSpec.describe PhotoPolicy do
   subject { described_class.new(user, photo) }
 
   let(:plant) { create(:plant) }
-  let(:photo) { Photo.new(plant:) }
+  let(:photo) { Photo.new(subject: plant) }
 
   context "for a member of the household" do
     let(:user) { create(:household_member, household: plant.household, role: :member).user }
@@ -27,6 +27,13 @@ RSpec.describe PhotoPolicy do
 
   context "for a user of another household" do
     let(:user) { create(:user, :with_household) }
+
+    it { is_expected.to forbid_actions(%i[show create update destroy]) }
+  end
+
+  context "without a known subject" do
+    let(:user) { create(:household_member, household: plant.household, role: :member).user }
+    let(:photo) { Photo.new(subject: nil) }
 
     it { is_expected.to forbid_actions(%i[show create update destroy]) }
   end

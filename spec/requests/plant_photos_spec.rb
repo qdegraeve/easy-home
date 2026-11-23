@@ -18,7 +18,7 @@ RSpec.describe "Plant photos", type: :request do
   end
 
   def add_photo
-    Photos::Add.new.call(plant:, file: picture).value!
+    Photos::Add.new.call(subject: plant, file: picture).value!
   end
 
   it "adds a photo and shows it in the photos of the plant" do
@@ -197,7 +197,7 @@ RSpec.describe "Plant photos", type: :request do
     end
 
     it "does not take the photo of another plant, nor let a guest choose" do
-      other_photo = Photos::Add.new.call(plant: create(:plant, household:), file: picture).value!
+      other_photo = Photos::Add.new.call(subject: create(:plant, household:), file: picture).value!
       sign_in(user)
       post plant_photo_cover_path(plant, other_photo)
       expect(response).to have_http_status(:not_found)

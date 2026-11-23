@@ -67,8 +67,8 @@ Equipment                        # à venir (PR 6) ; générique, pas de champ p
   has_many :tasks, as: :subject ; has_many :photos, as: :subject   # suppression : tâches et journal effacés
 
 Photo
-  plant, taken_at                # à venir (PR 5) : subject polymorphe (Plant, Equipment, Task), plus de plant_id
-                                                # date de prise de vue (EXIF, sinon envoi), modifiable
+  subject (polymorphe : Plant ; à venir Equipment, Task)   # plant_id encore écrit pour une plante, retiré en PR 9
+  taken_at                       # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
 

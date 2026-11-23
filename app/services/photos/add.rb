@@ -1,7 +1,7 @@
 module Photos
-  # Adds a photo to a plant. The upload is normalized before being stored: rotated upright, at most 2048 px, saved
-  # as JPEG without any metadata (EXIF GPS would reveal where the house is). The shooting date is read from the
-  # EXIF data first; without a plausible one, the photo is dated now.
+  # Adds a photo to a subject (a plant…). The upload is normalized before being stored: rotated upright, at most
+  # 2048 px, saved as JPEG without any metadata (EXIF GPS would reveal where the house is). The shooting date is read
+  # from the EXIF data first; without a plausible one, the photo is dated now.
   class Add
     include Dry::Monads[:result, :do]
 
@@ -10,21 +10,22 @@ module Photos
     EXIF_OFFSET = "exif-ifd2-OffsetTimeOriginal".freeze
     OLDEST_PLAUSIBLE = Time.utc(2000)
 
-    def call(plant:, file:)
-      yield check_plant(plant)
+    def call(subject:, file:)
+      yield check_subject(subject)
       upload = yield validate_upload(file)
       normalized = yield normalize(upload)
-      image = upload_image(plant, normalized)
+      image = upload_image(subject, normalized)
 
-      Success(plant.photos.create!(taken_at: shooting_time(file), image:))
+      Success(subject.photos.create!(taken_at: shooting_time(file), image:))
     ensure
       normalized&.close!
     end
 
     private
 
-    def check_plant(plant)
-      plant.archived? ? Failure[:subject_archived, plant] : Success(plant)
+    def check_subject(subject)
+      archived = subject.respond_to?(:archived?) && subject.archived?
+      archived ? Failure[:subject_archived, subject] : Success(subject)
     end
 
     def validate_upload(file)
@@ -49,10 +50,10 @@ module Photos
     end
 
     # Uploaded right away: inside a caller's transaction, a deferred upload would run after the temp file is gone.
-    def upload_image(plant, normalized)
+    def upload_image(subject, normalized)
       ActiveStorage::Blob.create_and_upload!(
         io: normalized,
-        filename: "plant-#{plant.id}.jpg",
+        filename: "#{subject.model_name.element}-#{subject.id}.jpg",
         content_type: "image/jpeg"
       )
     end

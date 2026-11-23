@@ -11,7 +11,7 @@
   <% else %>
     <div class="mt-2"><%= render EmptyStateComponent.new(text: t("plants.show.no_photos"), icon: :camera) %></div>
   <% end %>
-  <% if policy(Photo.new(plant: @plant)).create? %>
+  <% if policy(Photo.new(subject: @plant)).create? %>
     <%# One gesture: the button opens the camera or the gallery, the photo is sent once chosen. In the Android app, the
         button floats at the bottom right like the native "+" of the other pages, but stays in the page: the web view
         opens a file chooser only on a tap of the user in the page, never on a click asked by the app. %>
