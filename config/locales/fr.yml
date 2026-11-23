@@ -235,7 +235,7 @@ fr:
       title: "Modifier « %{name} »"
       submit: "Enregistrer"
       destroy: "Supprimer l'équipement"
-      destroy_confirm: "Supprimer « %{name} » ? Ses tâches et leur historique partent aussi."
+      destroy_confirm: "Supprimer « %{name} » ? Ses tâches, leur historique et ses photos partent aussi."
     update:
       success: "Équipement « %{name} » enregistré."
     destroy:
@@ -251,7 +251,7 @@ fr:
       subject_archived: "Cette tâche est arrêtée : pas de nouvelle photo."
     show:
       title: "Photo du %{date}"
-      alt: "Photo du %{date}"
+      alt: "Photo de %{name} du %{date}"
       destroy: "Supprimer la photo"
       destroy_confirm: "Supprimer cette photo ?"
     destroy:
@@ -334,6 +334,9 @@ fr:
     others:
       one: "%{count} autre"
       other: "%{count} autres"
+  photo_grid_component:
+    alt: "Photo du %{date}"
+    cover_badge: "Couverture"
   task_row_component:
     done_watering: "J'ai arrosé : %{name}"
     done_with_subject: "Marquer comme fait : %{title} (%{subject})"
@@ -436,8 +439,6 @@ fr:
       new_analysis: "Nouvelle analyse"
       new_analysis_label: "Analyse"
       no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
-      photo_alt: "Photo du %{date}"
-      cover_badge: "Couverture"
       photos_count:
         one: "1 photo"
         other: "%{count} photos"
@@ -653,7 +654,7 @@ fr:
       title: "Modifier « %{title} »"
       submit: "Enregistrer"
       destroy: "Supprimer la tâche"
-      destroy_confirm: "Supprimer « %{title} » ? Son historique part aussi."
+      destroy_confirm: "Supprimer « %{title} » ? Son historique et ses photos partent aussi."
     update:
       success: "Tâche « %{title} » enregistrée."
     destroy:

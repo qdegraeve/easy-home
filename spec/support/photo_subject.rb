@@ -1,4 +1,4 @@
-# Contract of a subject of photos (ADR 0016): a plant today, an equipment and a task to come. Its photos are its own,
+# Contract of a subject of photos (ADR 0016): a plant, an equipment, a task. Its photos are its own,
 # the latest first, and go with it when it is deleted, files included.
 RSpec.shared_examples "a photo subject" do
   it "keeps its photos, the latest first, and deletes them with their files when it is deleted" do

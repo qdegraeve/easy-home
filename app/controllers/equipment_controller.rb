@@ -17,8 +17,10 @@ class EquipmentController < ApplicationController
     @equipment = find_equipment
     @tab = params[:tab].presence_in(TABS) || "care"
     @tasks = @equipment.tasks.to_do.includes(:pending_occurrence).order("task_occurrences.due_at", :id)
-    @history = SubjectHistoryQuery.new.call(subject: @equipment)
-    @photos = @equipment.photos.with_attached_image
+    @history = SubjectHistoryQuery.new.call(subject: @equipment) if @tab == "history"
+    @photos = @equipment.photos.with_attached_image.to_a if @tab == "photos"
+    @photos_count = @equipment.photos.count
+    @face = @equipment.face
   end
 
   def new

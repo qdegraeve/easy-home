@@ -27,7 +27,13 @@ class SubjectPhotosController < ApplicationController
     subject = find_subject
     photo = find_photo(subject, :destroy?)
     photo.destroy!
-    redirect_to helpers.photos_home_path(subject), notice: t(".success"), status: :see_other
+    # From a task sheet (a modal in the app), back to it; in the app, the photo screen is dismissed.
+    flash[:notice] = t(".success")
+    if subject.is_a?(Task)
+      recede_or_redirect_to helpers.photos_home_path(subject), status: :see_other
+    else
+      redirect_to helpers.photos_home_path(subject), status: :see_other
+    end
   end
 
   private

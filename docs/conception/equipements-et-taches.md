@@ -478,9 +478,10 @@ les tâches, leurs échéances et les photos), supprimer une tâche.
 - `EquipmentPolicy` : `show? create? new? update? edit? destroy?` = `manage?`.
 - `TaskPolicy` : ajoute `show?` (la feuille) et `record_done?` (`manage? && record.on_demand? && record.active?`) ;
   `update?`/`destroy?` sur `!record.managed?`.
-- `PhotoPolicy` : délègue au sujet : voir une photo = voir le sujet (`show?`) ; ajouter, changer la date, supprimer =
-  modifier le sujet (`update?`), refusé si le sujet est archivé pour l'ajout. Un `Scope` arrive avec le contrôleur
-  générique des photos (PR 6).
+- `PhotoPolicy` : délègue au sujet : voir une photo = voir le sujet (`show?`) ; ajouter, changer la date = modifier le
+  sujet (`update?`), refusé si le sujet est archivé pour l'ajout ; supprimer = pouvoir supprimer le sujet
+  (`destroy?` : les photos d'une plante archivée ou de ses tâches restent supprimables). Pas de `Scope` : une photo est
+  toujours cherchée parmi celles de son sujet, lui-même trouvé par `policy_scope`.
 - `TaskOccurrencePolicy` : inchangée.
 
 ### 6. Routes, contrôleurs, vues
@@ -493,15 +494,15 @@ get "house/tasks", to: "house_tasks#index", as: :house_tasks    # tâches de la 
 resources :plants do
   # archive, analyses: unchanged
   resources :tasks, only: [ :new, :create ], controller: "/tasks"
-  resources :photos, only: [ :create, :show, :edit, :update, :destroy ], controller: "/photos" do
-    resource :cover, only: :create, controller: "/plants/covers"  # plants only
+  resources :photos, only: [ :create, :show, :edit, :update, :destroy ], module: :plants do   # inchangées
+    resource :cover, only: :create, controller: "/plants/covers"
   end
 end
 
 resources :equipment, except: :index do
   resource :suggestions, only: [ :new, :create ], module: :equipments   # écran 2
   resources :tasks, only: [ :new, :create ], controller: "/tasks"
-  resources :photos, only: [ :create, :show, :edit, :update, :destroy ], controller: "/photos"
+  resources :photos, only: [ :create, :show, :destroy ], controller: "subject_photos"
 end
 get "equipment", to: "equipment#index", as: :equipment_index   # Maison → Équipements
 
@@ -514,7 +515,7 @@ end
 |---|---|
 | `TasksController` | sujet trouvé par `plant_id` ou `equipment_id` via `policy_scope` (`SUBJECTS = { plant_id: Plant, equipment_id: Equipment }`), aucun pour la maison ; `show` = feuille (titre, sujet, Comment faire, dernière fois, Fait / Reporter) ; `new?suggestion=…` pré-remplit. Remplace `Plants::TasksController`. |
 | `Tasks::CompletionsController#create` | `Tasks::RecordDone`. |
-| `PhotosController` | sujet par `plant_id` / `equipment_id` ; remplace `Plants::PhotosController`. URLs des photos de plante inchangées. |
+| `SubjectPhotosController` (fait, PR 6b) | photos d'un équipement et d'une tâche (`/equipment/:id/photos`, `/tasks/:id/photos`) : ajouter, voir en grand, supprimer ; sujet par l'URL via `policy_scope`. Les photos de plante gardent `Plants::PhotosController` et sa visionneuse. **Reporté** : corriger la date d'une photo d'équipement ou de tâche (ADR 0011), le défilement entre photos. |
 | `EquipmentController` | `index`, `show` (`?tab=care|photos|history`), `new` (écran 1 : `?kind=` choisit le type), `create` (→ écran 2 si le type a des suggestions), `edit`, `update` (type compris), `destroy`. |
 | `Equipments::SuggestionsController` | `new` (cases décochées, rythme et « 1re fois le … » par ligne), `create` (`Tasks::AddSuggestions`). |
 | `HouseController` | `show` : sections Plantes, Équipements, Tâches de la maison, Lieux (vides masquées) ; `new` : trois choix. |
@@ -532,7 +533,8 @@ Vues et composants :
 - `TaskListComponent#row_detail` : « Arrosage » pour un arrosage ; sinon le nom du sujet ; sinon l'heure du rappel ;
   sinon rien. Icône de domaine : type d'équipement (catalogue), maison pour une tâche sans sujet.
 - Android (`config/hotwire/android_v1.json` et sa copie embarquée) : `/tasks/\d+$` → modale ;
-  `/equipment/\d+/photos/\d+$` → comme les photos de plante (sans pull-to-refresh).
+  `/(equipment|tasks)/\d+/photos/\d+$` → comme les photos de plante (sans pull-to-refresh). Une photo ouverte depuis
+  la feuille d'une tâche (modale) s'empile sur l'écran principal ; supprimée, l'app revient à la feuille.
 
 ### 7. Migrations (dans l'ordre des PR, toutes compatibles avec les données existantes)
 

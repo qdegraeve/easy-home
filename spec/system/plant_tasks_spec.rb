@@ -78,7 +78,7 @@ RSpec.describe "Plant tasks", type: :system do
 
     click_on "Modifier"
     click_on "Supprimer la tâche"
-    within("dialog", text: "Son historique part aussi.") { click_on "Supprimer la tâche" }
+    within("dialog", text: "Son historique et ses photos partent aussi.") { click_on "Supprimer la tâche" }
     expect(page).to have_content("Tâche « Tailler les gourmands » supprimée.")
     expect(page).to have_no_link("Tailler les gourmands")
   end

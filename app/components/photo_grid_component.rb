@@ -23,6 +23,6 @@ class PhotoGridComponent < ViewComponent::Base
   end
 
   def alt(photo)
-    t("plants.show.photo_alt", date: l(photo.taken_at.to_date, format: :day))
+    t(".alt", date: l(photo.taken_at.to_date, format: :day))
   end
 end

@@ -1,6 +1,7 @@
-# Photos of a subject (a plant for now; an equipment and a task to come): seeing a photo is seeing its subject;
-# adding one, changing its date or deleting it is changing the subject (a guest who may see a task will not touch its
-# photos). An archived subject gets no new photo. A photo without a known subject is refused.
+# Photos of a subject (a plant, an equipment, a task): seeing a photo is seeing its subject; adding one or changing
+# its date is changing the subject (a guest who may see a task will not touch its photos); deleting one is allowed to
+# whoever may delete the subject (photos of an archived plant or of its tasks can still go). An archived subject gets
+# no new photo. A photo without a known subject is refused.
 class PhotoPolicy < ApplicationPolicy
   def show?
     subject_allows?(:show?)
@@ -19,7 +20,7 @@ class PhotoPolicy < ApplicationPolicy
   end
 
   def destroy?
-    update?
+    subject_allows?(:destroy?)
   end
 
   private

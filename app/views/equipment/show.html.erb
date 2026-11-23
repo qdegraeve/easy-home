@@ -2,7 +2,7 @@
 
 <%# Who it is: the icon of its kind, its name and its kind. %>
 <div class="mt-2 flex items-center gap-4">
-  <% if (face = @photos.first) %>
+  <% if (face = @face) %>
     <%= link_to equipment_photo_path(@equipment, face), class: "shrink-0" do %>
       <%= image_tag face.image.variant(:thumb), alt: t(".face_alt", name: @equipment.name),
             class: "size-16 rounded-2xl object-cover" %>
@@ -30,8 +30,8 @@
               "text-muted hover:text-ink": tab != @tab
             ) do %>
         <%= t(".tabs.#{tab}") %>
-        <% if tab == "photos" && @photos.any? %>
-          <span class="text-[13px] font-normal text-muted"><%= @photos.size %></span>
+        <% if tab == "photos" && @photos_count.positive? %>
+          <span class="text-[13px] font-normal text-muted"><%= @photos_count %></span>
         <% end %>
       <% end %>
     <% end %>
