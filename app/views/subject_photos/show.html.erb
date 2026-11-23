@@ -1,0 +1,16 @@
+<%# A photo of an equipment or a task, in large, with its date; deleted behind a confirmation. %>
+<div class="mx-auto max-w-3xl">
+  <%= back_link_to t("shared.back_to", name: photo_subject_name(@subject)), photos_home_path(@subject) %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title>
+    <%= page_title t(".title", date: l(@photo.taken_at.to_date, format: :long)) %>
+  </h1>
+
+  <%= image_tag @photo.image.variant(:large), alt: t(".alt", date: l(@photo.taken_at.to_date, format: :day)),
+        class: "mt-4 max-h-[70vh] w-full rounded-2xl bg-subtle object-contain" %>
+
+  <% if policy(@photo).destroy? %>
+    <%= button_to t(".destroy"), polymorphic_path([ @subject, @photo ]), method: :delete,
+          form: { class: "mt-6", data: confirm_data(t(".destroy_confirm"), button: t(".destroy"), danger: true) },
+          class: button_class(:danger, block: true) %>
+  <% end %>
+</div>

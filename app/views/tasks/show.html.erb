@@ -71,6 +71,20 @@
     <% end %>
   </section>
 
+  <%# Its photos (the filter to unscrew), with how to do it. %>
+  <% photo_allowed = policy(Photo.new(subject: @task)).create? %>
+  <% if @photos.any? || photo_allowed %>
+    <section class="mt-6" aria-labelledby="task-photos">
+      <h2 id="task-photos" class="text-[13px] font-semibold text-muted"><%= t(".photos") %></h2>
+      <% if @photos.any? %>
+        <%= render PhotoGridComponent.new(subject: @task, photos: @photos) %>
+      <% end %>
+      <% if photo_allowed %>
+        <%= render "photos/picker", url: task_photos_path(@task), floating: false %>
+      <% end %>
+    </section>
+  <% end %>
+
   <% if editable %>
     <%= link_to t(".edit"), edit_task_path(@task), class: "mt-6 #{button_class(:secondary, block: true)}" %>
   <% end %>

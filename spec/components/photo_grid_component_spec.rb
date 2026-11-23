@@ -7,7 +7,7 @@ RSpec.describe PhotoGridComponent, type: :component do
     november = create(:photo, plant:, taken_at: Time.zone.parse("2026-11-02 09:00"))
     plant.update!(cover_photo: october)
 
-    render_inline(described_class.new(plant:, photos: plant.photos.with_attached_image))
+    render_inline(described_class.new(subject: plant, photos: plant.photos.with_attached_image))
 
     expect(page.all("h3").map(&:text)).to eq([ "novembre 2026", "octobre 2026" ])
     expect(page).to have_css("a[href='/plants/#{plant.id}/photos/#{november.id}'] img[alt='Photo du lun 2 nov.']")

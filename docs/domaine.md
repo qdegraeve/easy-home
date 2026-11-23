@@ -67,7 +67,7 @@ Equipment                        # générique, pas de champ propre à un type (
   has_many :tasks, as: :subject ; has_many :photos, as: :subject   # suppression : tâches et journal effacés
 
 Photo
-  subject (polymorphe : Plant ; à venir Equipment, Task)   # plant_id encore écrit pour une plante, retiré en PR 9
+  subject (polymorphe : Plant, Equipment, Task)   # plant_id encore écrit pour une plante, retiré en PR 9
   taken_at                       # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
@@ -247,7 +247,11 @@ suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.
   sous-titre du nom de l'équipement, avec l'icône de son type ; la feuille, le journal et les rappels le nomment.
 - Un type retiré du catalogue se lit « Autre » : l'équipement reste affiché et modifiable.
 - Pas d'archivage : supprimer un équipement (depuis sa modification, avec confirmation) supprime ses tâches et leur
-  historique. Les photos de l'équipement et d'une tâche arrivent avec la PR 6b.
+  historique.
+- Photos (`SubjectPhotosController`) : un onglet Photos sur la fiche de l'équipement (la plus récente lui sert de
+  visage), et des photos dans la feuille d'une tâche, avec son Comment faire (le filtre à dévisser). Ajoutées en un
+  geste, vues en grand, supprimées après confirmation ; pas de nouvelle photo pour une tâche arrêtée. Les photos d'une
+  plante gardent leur visionneuse.
 
 ## Tâches de la maison
 

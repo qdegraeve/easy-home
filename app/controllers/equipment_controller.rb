@@ -1,7 +1,7 @@
 # What the household maintains (ADR 0016): the list (Maison → Équipements), the page of one (its tasks and what is
 # good to know, its history), and its plain CRUD. Deleting one deletes its tasks and their history.
 class EquipmentController < ApplicationController
-  TABS = %w[care history].freeze
+  TABS = %w[care photos history].freeze
 
   def index
     @household = current_household
@@ -18,6 +18,7 @@ class EquipmentController < ApplicationController
     @tab = params[:tab].presence_in(TABS) || "care"
     @tasks = @equipment.tasks.to_do.includes(:pending_occurrence).order("task_occurrences.due_at", :id)
     @history = SubjectHistoryQuery.new.call(subject: @equipment)
+    @photos = @equipment.photos.with_attached_image
   end
 
   def new

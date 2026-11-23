@@ -25,6 +25,11 @@ class Equipment < ApplicationRecord
     Catalogue.equipment_kind(kind) || Catalogue.equipment_kind("other")
   end
 
+  # Its face: the latest photo, if any.
+  def face
+    photos.first
+  end
+
   # The mark of its tasks in the lists (contract of a subject: a subject may give its own).
   def icon
     kind_info.icon

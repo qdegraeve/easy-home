@@ -3,7 +3,7 @@
   <ul class="-mx-4 grid grid-cols-3 gap-0.5 sm:mx-0 sm:grid-cols-4 sm:gap-1 lg:grid-cols-6">
     <% month_photos.each do |photo| %>
       <li class="relative">
-        <%= link_to helpers.plant_photo_path(plant, photo),
+        <%= link_to helpers.polymorphic_path([ subject, photo ]),
               class: "block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action" do %>
           <%= image_tag photo.image.variant(:thumb), alt: alt(photo), loading: "lazy", decoding: "async",
                 width: 320, height: 320, class: "aspect-square w-full bg-subtle object-cover sm:rounded-xl" %>

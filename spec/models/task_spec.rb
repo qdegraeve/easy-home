@@ -1,6 +1,17 @@
 require "rails_helper"
 
 RSpec.describe Task, type: :model do
+  include ActiveJob::TestHelper
+
+  it_behaves_like "a photo subject" do
+    subject { create(:task, subject: nil, template_key: nil) }
+  end
+
+  it "takes no new photo once stopped" do
+    expect(build(:task, active: false)).to be_archived
+    expect(build(:task)).not_to be_archived
+  end
+
   it { is_expected.to validate_presence_of(:title) }
 
   it "rejects a subject of another household" do

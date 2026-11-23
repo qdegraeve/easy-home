@@ -212,7 +212,11 @@ fr:
       tabs_label: "Parties de l'équipement"
       tabs:
         care: "Entretien"
+        photos: "Photos"
         history: "Historique"
+      photos: "Photos"
+      no_photos: "Pas encore de photo : la plaque signalétique, le filtre…"
+      face_alt: "Photo de %{name}"
       tasks: "Entretien"
       no_tasks: "Aucune tâche d'entretien pour l'instant."
       add_task: "Ajouter une tâche"
@@ -236,6 +240,22 @@ fr:
       success: "Équipement « %{name} » enregistré."
     destroy:
       success: "Équipement « %{name} » supprimé."
+  photos:
+    picker:
+      new_photo: "Nouvelle photo"
+      add_photo: "Ajouter une photo"
+      add_photo_label: "Photo"
+  subject_photos:
+    create:
+      success: "Photo ajoutée."
+      subject_archived: "Cette tâche est arrêtée : pas de nouvelle photo."
+    show:
+      title: "Photo du %{date}"
+      alt: "Photo du %{date}"
+      destroy: "Supprimer la photo"
+      destroy_confirm: "Supprimer cette photo ?"
+    destroy:
+      success: "Photo supprimée."
   house_tasks:
     index:
       back: "← Maison"
@@ -417,9 +437,6 @@ fr:
       new_analysis_label: "Analyse"
       no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
       photo_alt: "Photo du %{date}"
-      new_photo: "Nouvelle photo"
-      add_photo: "Ajouter une photo"
-      add_photo_label: "Photo"
       cover_badge: "Couverture"
       photos_count:
         one: "1 photo"
@@ -652,6 +669,7 @@ fr:
       add_instructions: "Ajouter le comment faire"
       last_done: "Dernière fois : %{date}"
       reminder: "Rappel le jour même à %{time}"
+      photos: "Photos"
       edit: "Modifier"
       done: "Fait"
       done_label: "Marquer comme fait : %{title}"
