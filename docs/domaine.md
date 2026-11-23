@@ -232,12 +232,20 @@ L'usage (cycles, kilomètres) est hors v1 (`docs/conception/equipements-et-tache
 
 ## Catalogue des suggestions
 
-Les suggestions de la maison (poubelles jaune et grise, rentrer la jaune, encombrants) sont faites ; les types
-d'équipements arrivent avec la PR 8. Les types d'équipements (avec leur icône) et les tâches suggérées (de la maison, comme les poubelles, et par type
-d'équipement) sont décrits dans `config/catalogue.yml`, leurs textes dans `config/locales/catalogue.fr.yml` ; pas de
+Les types d'équipements (avec leur icône) et les tâches suggérées (de la maison, comme les poubelles, et par type
+d'équipement : piscine, lave-vaisselle, chauffe-eau) sont décrits dans `config/catalogue.yml`, leurs textes dans `config/locales/catalogue.fr.yml` ; pas de
 table (ADR 0016). Une suggestion est **copiée** dans la tâche à sa création (titre, rythme, importance, rappel,
 Comment faire) : tout reste modifiable, y compris le type de rythme. Un équipement de type « Autre » n'a pas de
 suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.md`.
+
+- `Catalogue.suggestions_for(sujet)` : celles de la maison (sans sujet), celles du type d'un équipement, aucune pour
+  une plante ; moins celles déjà ajoutées (`Task.used_suggestion_keys`, tâches actives).
+- Après l'ajout d'un équipement dont le type a des suggestions, un écran « Ajouter des tâches d'entretien ? »
+  (`Equipments::SuggestionsController`) les propose **décochées**, chacune avec son rythme et sa première date (une
+  période après aujourd'hui, comme si elle venait d'être faite ; la prochaine date d'un rythme annuel) : rien
+  n'arrive dans Aujourd'hui le jour de l'ajout. Les cochées sont ajoutées ensemble (`Tasks::AddSuggestions`, une
+  transaction) ; « Plus tard » mène à la fiche. Les mêmes suggestions restent en puces dans « Ajouter une tâche » de
+  la fiche.
 
 ## Équipements
 

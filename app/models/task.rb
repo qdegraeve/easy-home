@@ -19,6 +19,11 @@ class Task < ApplicationRecord
   # Still to do: active with an open occurrence (a one-off task once done has none, it stays in the journal).
   scope :to_do, -> { active.joins(:pending_occurrence) }
 
+  # The catalogue suggestions already added (active tasks only: a stopped one can be suggested again).
+  def self.used_suggestion_keys
+    active.where.not(suggestion_key: nil).distinct.pluck(:suggestion_key)
+  end
+
   # The last completion of each task, by id (for the tasks done when needed, which show it).
   def self.last_done_at_by_id(tasks)
     TaskOccurrence.done.where(task: tasks).group(:task_id).maximum(:completed_at)

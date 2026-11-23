@@ -20,8 +20,8 @@ RSpec.describe "Equipment", type: :request do
 
     equipment = household.equipment.sole
     expect(equipment).to have_attributes(kind: "dishwasher", name: "Lave-vaisselle")
-    expect(response).to redirect_to(equipment_path(equipment))
-    follow_redirect!
+    expect(response).to redirect_to(new_equipment_suggestions_path(equipment)) # its suggested upkeep first
+    get equipment_path(equipment)
     expect(response.body).to include("&lt;b&gt;Filtre&lt;/b&gt; réf. 42\n<br />Sel")
     expect(response.parsed_body.text.squish).to include("Lave-vaisselle", "Aucune tâche d'entretien")
   end

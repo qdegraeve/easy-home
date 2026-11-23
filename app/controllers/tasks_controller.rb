@@ -20,13 +20,13 @@ class TasksController < ApplicationController
   # A suggestion of the catalogue (?suggestion=bins.yellow) prefills the form of a task of the house; unknown, or for a
   # plant, it is ignored.
   def new
-    suggestion = Catalogue.suggestion(params[:suggestion]) unless @subject
+    suggestion = suggestions.find { |offered| offered.key == params[:suggestion] }
     @form = if suggestion
       TaskForm.from_suggestion(suggestion)
     else
       TaskForm.new(due_on: Time.zone.today, unit: DEFAULT_UNITS.fetch(@subject&.class&.name))
     end
-    @suggestions = suggestions
+    @suggestions = suggestions.reject { |offered| offered == suggestion }
   end
 
   def create
@@ -79,12 +79,12 @@ class TasksController < ApplicationController
     authorize Task.new(household: @household, subject: @subject), :create?
   end
 
-  # The suggestions of a task of the house, but for those already added (none for a plant).
+  # The suggestions for the subject (an equipment's kind, the house; none for a plant), but for those already added.
   def suggestions
-    return [] if @subject
-
-    used = @household.tasks.without_subject.active.where.not(suggestion_key: nil).pluck(:suggestion_key)
-    Catalogue.household_suggestions(existing_keys: used)
+    @available_suggestions ||= begin
+      tasks = @subject ? @subject.tasks : @household.tasks.without_subject
+      Catalogue.suggestions_for(@subject, existing_keys: tasks.used_suggestion_keys)
+    end
   end
 
   def find_task(query = :show?)
