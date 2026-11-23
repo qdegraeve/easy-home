@@ -2,6 +2,7 @@
 #
 # Common interface: #next_due_at(last_completed_at:) returns the next due date (TimeWithZone, at the start of the
 # local day), or nil when there is none left. last_completed_at is nil when the task was never done.
+# #closed_by_miss? tells whether a missed occurrence ends the task (a one-off task) or leaves it to do (see Tolerance).
 module Recurrence
   class InvalidConfig < ArgumentError; end
 

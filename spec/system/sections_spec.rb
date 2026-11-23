@@ -23,7 +23,7 @@ RSpec.describe "Sections", type: :system do
     fill_in "Votre mot de passe", with: "secret-password"
     click_on "Se connecter"
     expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Aujourd'hui")
-    click_on "Arrosée : Basilic"
+    click_on "J'ai arrosé : Basilic"
     expect(page).to have_content("Rien à faire aujourd'hui.")
 
     open_plant("Basilic")
@@ -32,16 +32,21 @@ RSpec.describe "Sections", type: :system do
 
     go_to_tab("Journal")
     expect(page).to have_css("h1", text: "Journal")
+    # In a browser the page shows its title (the Android app shows it in its top bar instead).
+    expect(page.evaluate_script("document.querySelector('h1').getBoundingClientRect().width")).to be > 1
     expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Journal")
-    expect(page).to have_content("Arrosage · Basilic")
+    expect(page).to have_content("Arrosé · par vous")
     expect(page).to have_css("h2", text: "16 novembre 2026")
     click_on "Annuler « Arrosage · Basilic » du lun 16 nov."
-    within("dialog") { click_on "Oui, annuler" }
+    within("dialog", text: "du journal ? La prochaine échéance sera recalculée.") do
+      expect(page).to have_button("Garder")
+      click_on "Retirer"
+    end
     expect(page).to have_content("Arrosage annulé, prochaine échéance recalculée.")
     expect(page).to have_no_css("h2", text: "16 novembre 2026")
 
     go_to_tab("Aujourd'hui")
-    expect(page).to have_button("Arrosée : Basilic")
+    expect(page).to have_button("J'ai arrosé : Basilic")
   end
 
   it "deletes a plant in place of its page: going back never shows it again" do

@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-2xl">
   <%= back_link_to t("plants.tasks.back", name: @plant.name), @plant %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
   <p class="mt-1 text-sm text-muted"><%= t(".intro", max: PlantAnalysis::MAX_PHOTOS) %></p>
 
   <%= form_with model: @request, url: plant_analyses_path(@plant), class: "mt-6 space-y-4" do |f| %>
@@ -12,19 +12,20 @@
         <% @plant.photos.with_attached_image.each do |photo| %>
           <% date = l(photo.taken_at.to_date, format: :day) %>
           <li>
-            <%# The whole photo is the target (UX review #40): a tap checks it, the check shows over it. %>
-            <label class="group relative block cursor-pointer">
+            <%# The whole photo is the target (UX review #40): a tap checks it. An empty circle until chosen, a filled
+                one with a check once chosen (a named group: the form itself holds other checked boxes). %>
+            <label class="group/photo relative block cursor-pointer">
               <%= check_box_tag "plant_analysis[photo_ids][]", photo.id, @request.photo_ids.include?(photo.id),
                     id: "photo_#{photo.id}", aria: { label: t(".photo_label", date:) }, class: "peer sr-only" %>
               <%= image_tag photo.image.variant(:thumb), alt: "",
-                    class: "aspect-square w-full rounded-xl object-cover opacity-60 ring-action ring-offset-2 " \
-                           "peer-checked:opacity-100 peer-checked:ring-2 peer-focus-visible:outline-2 " \
+                    class: "aspect-square w-full rounded-xl object-cover ring-action ring-offset-2 " \
+                           "peer-checked:ring-2 peer-focus-visible:outline-2 " \
                            "peer-focus-visible:outline-offset-4 peer-focus-visible:outline-action" %>
               <span class="absolute right-1.5 top-1.5 grid size-7 place-items-center rounded-full border-2 border-white
                            bg-ink/30 text-white peer-checked:bg-action">
-                <%= icon(:check, size: 16, class: "hidden group-has-[:checked]:block") %>
+                <%= icon(:check, size: 16, class: "opacity-0 group-has-[:checked]/photo:opacity-100") %>
               </span>
-              <span class="mt-1 block text-center text-xs text-muted"><%= date %></span>
+              <span class="mt-1 block text-center text-[13px] text-muted"><%= date %></span>
             </label>
           </li>
         <% end %>

@@ -1,7 +1,7 @@
 require "rails_helper"
 
-# Critical journey: in the Android app (Hotwire Native user agent), the web header is hidden; the settings, sign out
-# included, open from the native top bar (see docs/tests.md).
+# Critical journey: in the Android app (Hotwire Native user agent), the web header and the screen title are hidden;
+# the settings, sign out included, open from the native top bar (see docs/tests.md).
 RSpec.describe "In the Android app", type: :system do
   before do
     page.driver.add_headers("User-Agent" => "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android")
@@ -17,6 +17,8 @@ RSpec.describe "In the Android app", type: :system do
 
     expect(page).to have_css("h1", text: "Aujourd'hui")
     expect(page).to have_no_css("header")
+    # The top bar of the app shows the title: the page keeps it for screen readers only (1 px wide).
+    expect(page.evaluate_script("document.querySelector('h1').getBoundingClientRect().width")).to be <= 1
 
     # The settings button is native (top bar of the app): the page it opens.
     visit settings_path

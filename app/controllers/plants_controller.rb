@@ -23,8 +23,10 @@ class PlantsController < ApplicationController
     @other_tasks = @plant.tasks.active.where.not(id: @watering_task)
       .includes(:pending_occurrence).select(&:pending_occurrence).sort_by { |task| task.pending_occurrence.due_at }
     occurrences = TaskOccurrence.done.where(task: @plant.tasks)
-    @journal = occurrences.includes(:task).order(completed_at: :desc).limit(30)
-    @last_watered_at = occurrences.where(task: @watering_task).maximum(:completed_at)
+    # What was done, postponed (Tasks::Postpone) or missed (Tasks::MarkMissed).
+    @journal = TaskOccurrence.where(task: @plant.tasks, status: %i[done missed postponed])
+      .includes(:task).order(completed_at: :desc).limit(30)
+    @last_watering = occurrences.where(task: @watering_task).order(completed_at: :desc, id: :desc).first
     @done_today_task_ids = occurrences.where(completed_at: Time.zone.today.all_day).distinct.pluck(:task_id)
   end
 
@@ -42,7 +44,7 @@ class PlantsController < ApplicationController
     return redirect_to(new_household_path) unless household
 
     authorize Plant.new(household:)
-    result = Plants::Add.new.call(household:, user: Current.user, params: plant_params)
+    result = Plants::Add.new.call(household:, user: Current.user, params: new_plant_params)
 
     if result.success?
       plant = result.value!
@@ -82,7 +84,15 @@ class PlantsController < ApplicationController
     policy_scope(Plant).find(params[:id]).tap { |plant| authorize plant }
   end
 
+  PLANT_PARAMS = [ :name, :species, :location_id, :watering_interval_days, :last_watered_on, :photo ].freeze
+  # Only when adding: the place of a first plant, created with it.
+  NEW_LOCATION_PARAMS = [ :new_location_name, :new_location_exposure, :new_location_rain_exposed ].freeze
+
   def plant_params
-    params.expect(plant: [ :name, :species, :location_id, :watering_interval_days, :last_watered_on, :photo ])
+    params.expect(plant: PLANT_PARAMS)
+  end
+
+  def new_plant_params
+    params.expect(plant: PLANT_PARAMS + NEW_LOCATION_PARAMS)
   end
 end

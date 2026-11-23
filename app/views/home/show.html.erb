@@ -7,12 +7,28 @@
   <div>
     <%= link_to @household.name, households_path,
           class: "text-sm font-semibold text-action underline-offset-2 hover:underline" %>
-    <h1 class="text-2xl font-bold"><%= page_title t(".title") %></h1>
+    <h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
     <p class="text-sm text-muted"><%= l(Time.zone.today, format: :long).upcase_first %></p>
   </div>
 </div>
 
 <div class="mt-6 space-y-6 lg:max-w-2xl">
+  <% if @rain %>
+    <% rainfall = @rain[:rainfall] %>
+    <p class="flex items-center gap-3 rounded-2xl bg-surface px-3 py-3 text-sm" id="rain">
+      <span class="grid size-9 shrink-0 place-items-center rounded-full bg-action-soft text-action">
+        <%= icon(:cloud_rain) %>
+      </span>
+      <span class="min-w-0 flex-1">
+        <%= t(
+          ".rain.#{rainfall.effect}",
+          names: names_sentence(@rain[:names]),
+          when: t(rainfall.fell_on == Time.zone.today ? ".rain.today" : ".rain.yesterday")
+        ) %>
+        <%= link_to t(".rain.see_journal"), journal_path, class: "font-semibold text-action underline" %>
+      </span>
+    </p>
+  <% end %>
   <% if @has_plants %>
     <% if @due_today.any? %>
       <%= render TaskListComponent.new(
@@ -29,7 +45,7 @@
         </span>
         <h2 id="due-today" class="mt-3 text-lg font-semibold"><%= t(".nothing_due") %></h2>
         <p class="mt-1 text-sm text-muted">
-          <%= @done_today_count.positive? ? t(".done_today", count: @done_today_count) : t(".all_good") %>
+          <%= t(".all_good") %>
         </p>
         <% if @upcoming.empty? && @next_occurrence %>
           <% task = @next_occurrence.task %>
@@ -38,15 +54,30 @@
             <%= render DueLabelComponent.new(due_at: @next_occurrence.due_at) %>
           </p>
         <% end %>
-        <%= link_to t(@done_today_count.positive? ? ".see_journal" : ".see_plants"),
-              @done_today_count.positive? ? journal_path : plants_path,
-              class: "mt-4 #{button_class(:secondary)}" %>
+        <%# What was done is in "Fait aujourd'hui" just below: not counted again here. %>
+        <%= link_to t(".see_plants"), plants_path, class: "mt-4 #{button_class(:secondary)}" %>
       </section>
     <% end %>
 
+    <% if @done_today.any? %>
+      <details id="done-today" class="group/fold">
+        <summary class="<%= summary_class %>">
+          <%= t(".done_today_list", count: @done_today.size) %><%= summary_chevron %>
+        </summary>
+        <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
+          <% @done_today.each do |entry| %>
+            <li><%= render JournalEntryComponent.new(entry:, user: Current.user) %></li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
+
+    <%# Ids: a morph refresh keeps each list open or folded as the user left it, even when the other one appears. %>
     <% if @upcoming.any? %>
-      <details>
-        <summary class="cursor-pointer py-3 font-semibold"><%= t(".upcoming", count: @upcoming.size) %></summary>
+      <details id="upcoming" class="group/fold">
+        <summary class="<%= summary_class %>">
+          <%= t(".upcoming", count: @upcoming.size) %><%= summary_chevron %>
+        </summary>
         <ul class="divide-y divide-line overflow-hidden rounded-2xl bg-surface">
           <% @upcoming.each do |occurrence| %>
             <% task = occurrence.task %>

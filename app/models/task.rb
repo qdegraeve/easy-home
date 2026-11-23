@@ -8,6 +8,8 @@ class Task < ApplicationRecord
   attr_readonly :household_id
 
   enum :recurrence_type, { sliding: "sliding", once: "once" }, validate: true
+  # Flexible (watering, upkeep: a tolerance before missed) or critical ("à ne pas rater": first, in red, no tolerance).
+  enum :importance, { flexible: "flexible", critical: "critical" }, validate: true
 
   scope :active, -> { where(active: true) }
 
@@ -20,12 +22,40 @@ class Task < ApplicationRecord
   end
 
   # Task added by hand (fertilizer, pruning…), as opposed to a task created with its subject (watering).
+  # The open occurrence is where the rain put it (Plants::RecordRain postponing it): the last closed occurrence is a
+  # rain postponement and the open one still has the date Tasks::Postpone gave it, not one a missed watering or an edit
+  # of the task set since.
+  def moved_by_rain?
+    last_closed = occurrences.where(status: %i[done missed postponed]).order(completed_at: :desc, id: :desc).first
+    return false unless last_closed&.postponed? && last_closed.by_rain? && pending_occurrence
+
+    pending_occurrence.due_at.to_date == [ last_closed.due_at.to_date, last_closed.completed_at.to_date ].max + 1
+  end
+
   def manual?
     template_key.nil?
   end
 
   def watering?
     template_key == Plant::WATERING_TEMPLATE_KEY
+  end
+
+  # Days a late occurrence stays to do before it is missed, or nil when never missed (see Tolerance).
+  def grace_days
+    Tolerance.grace_days(importance:, recurrence:)
+  end
+
+  # The occurrence to act on when a page showed one closed since (missed, postponed): the one still open of the task,
+  # if any. A pending or done occurrence stays itself.
+  def still_open(occurrence)
+    return occurrence unless occurrence.missed? || occurrence.postponed?
+
+    occurrences.pending.first || occurrence
+  end
+
+  # due_at moved forward when it would start past the tolerance (see Tolerance.earliest).
+  def due_within_tolerance(due_at)
+    Tolerance.earliest(due_at, grace_days:, today: Time.zone.today)
   end
 
   private

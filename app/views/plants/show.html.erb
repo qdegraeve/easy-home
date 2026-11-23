@@ -49,16 +49,23 @@
       <div class="flex items-center justify-between gap-3">
         <p><%= t(".next") %> <%= render DueLabelComponent.new(due_at: occurrence.due_at) %></p>
         <% if @done_today_task_ids.include?(@watering_task.id) %>
-          <span class="shrink-0 rounded-xl bg-action-soft px-3 py-2 text-sm text-action">
-            <%= t(".watered_today") %>
+          <span class="inline-flex shrink-0 items-center gap-1 text-sm text-muted">
+            <%= icon(:check, size: 16) %><%= t(".watered_today") %>
           </span>
         <% else %>
           <%= render "tasks/complete_button", occurrence: %>
         <% end %>
       </div>
     <% end %>
-    <% if @last_watered_at %>
-      <p class="text-sm text-muted"><%= t(".last_watered", date: l(@last_watered_at.to_date, format: :day)) %></p>
+    <%# Said under the date, which would otherwise look wrong. %>
+    <% if @watering_task.moved_by_rain? %>
+      <p class="text-sm text-muted"><%= heading_with_icon(:cloud_rain, t(".postponed_by_rain_note")) %></p>
+    <% end %>
+    <% if @last_watering %>
+      <p class="text-sm text-muted">
+        <%= t(@last_watering.by_rain? ? ".last_watered_by_rain" : ".last_watered",
+              date: l(@last_watering.completed_at.to_date, format: :day)) %>
+      </p>
     <% end %>
   </section>
 

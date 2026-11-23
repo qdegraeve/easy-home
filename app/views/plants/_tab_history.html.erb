@@ -1,9 +1,33 @@
-<%# "Historique" tab: what was done for the plant, then its analyses. %>
+<%# "Historique" tab: what was done or missed for the plant, then its analyses. %>
 <%= render ListGroupComponent.new(title: t("plants.show.journal"), id: "journal", icon: :history) do |group| %>
   <% @journal.each do |entry| %>
     <% date = l(entry.completed_at.to_date, format: :day) %>
+    <% if entry.missed? %>
+      <% group.with_row do %>
+        <div class="flex min-h-12 items-center justify-between gap-3 px-3 text-sm text-muted">
+          <span>
+            <%= heading_with_icon(:x, entry.task.watering? ? t("plants.show.watering_missed")
+                                                           : t("plants.show.task_missed", title: entry.task.title)) %>
+          </span>
+          <span class="shrink-0"><%= t("plants.show.due_on", date: l(entry.due_at.to_date, format: :day)) %></span>
+        </div>
+      <% end %>
+      <% next %>
+    <% end %>
+    <% if entry.postponed? %>
+      <% group.with_row do %>
+        <div class="flex min-h-12 items-center justify-between gap-3 px-3 text-sm text-muted">
+          <span>
+            <% key = entry.by_rain? ? "plants.show.postponed_by_rain" : "plants.show.postponed" %>
+            <%= heading_with_icon(:redo_2, t(key, title: entry.task.title)) %>
+          </span>
+          <span class="shrink-0"><%= date %></span>
+        </div>
+      <% end %>
+      <% next %>
+    <% end %>
     <% if entry.task.watering? %>
-      <% label = t("plants.show.watered") %>
+      <% label = t(entry.by_rain? ? "plants.show.watered_by_rain" : "plants.show.watered") %>
       <% cancel_label, cancel_confirm = t("plants.show.cancel_label", date:), t("plants.show.cancel_confirm", date:) %>
     <% else %>
       <% title = entry.task.title %>
@@ -13,12 +37,15 @@
     <% end %>
     <% group.with_row do %>
       <div class="flex min-h-12 items-center justify-between gap-3 pl-3 text-sm">
-        <span><%= heading_with_icon(entry.task.watering? ? :droplet : :check, label) %></span>
+        <span>
+          <%= heading_with_icon(entry.by_rain? ? :cloud_rain : (entry.task.watering? ? :droplet : :check), label) %>
+        </span>
         <span class="flex items-center gap-1">
           <span class="shrink-0 text-muted"><%= date %></span>
           <%= button_to t("plants.show.cancel"), task_occurrence_completion_path(entry), method: :delete,
                 aria: { label: cancel_label },
-                form: { data: confirm_data(cancel_confirm, button: t("plants.show.cancel_confirm_button")) },
+                form: { data: confirm_data(cancel_confirm, button: t("plants.show.cancel_confirm_button"),
+                                                           cancel: t("plants.show.keep")) },
                 class: small_action_class %>
         </span>
       </div>

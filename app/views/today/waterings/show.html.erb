@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-2xl">
   <%= back_link_to t(".back"), root_path %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title", count: @occurrences.size) %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title", count: @occurrences.size) %></h1>
   <p class="mt-1 text-sm text-muted"><%= t(".hint") %></p>
 
   <%= form_with url: task_occurrences_batch_completion_path, method: :post, class: "mt-4 space-y-4" do %>

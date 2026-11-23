@@ -43,13 +43,26 @@ RSpec.describe TaskListComponent, type: :component do
     expect(page.all("li").size).to eq(2)
     expect(page).to have_text("Terrasse 2 · sans emplacement 1")
     expect(page).to have_button("Tout arroser : 3 plantes")
-    expect(page).to have_button("Fait : Tailler (Basilic)")
+    expect(page).to have_button("Marquer comme fait : Tailler (Basilic)")
+    # The gesture first, then the plant; the whole text leads to the plant.
+    expect(page).to have_link(text: /\A\s*Tailler\s+Basilic · aujourd'hui/, href: "/plants/#{pruning.subject.id}")
+  end
+
+  it "shows a task without subject as text, not as a link" do
+    bins = create(:task, household:, subject: nil, title: "Poubelle jaune", template_key: nil, recurrence_type: :once,
+                         recurrence_config: { "due_on" => "2026-11-16" })
+    occurrence = bins.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
+
+    render_inline(described_class.new(occurrences: [ occurrence ], title: "Aujourd'hui", id: "today"))
+
+    expect(page).to have_text(/Poubelle jaune\s+Tâche · aujourd'hui/)
+    expect(page).to have_no_link
   end
 
   it "keeps a single watering on its own line, with the plant's name" do
     render_inline(described_class.new(occurrences: [ due_watering("Aloe") ], title: "Aujourd'hui", id: "today"))
 
-    expect(page).to have_button("Arrosée : Aloe")
+    expect(page).to have_button("J'ai arrosé : Aloe")
     expect(page).to have_no_text("Tout arroser")
   end
 
@@ -57,5 +70,20 @@ RSpec.describe TaskListComponent, type: :component do
     render_inline(described_class.new(occurrences: [], title: "Aujourd'hui", id: "today", empty: "Rien à faire."))
 
     expect(page).to have_text("Rien à faire.")
+  end
+
+  it "puts the tasks that must not be missed first, marked in red" do
+    occurrences = [ due_watering("Basilic"), due_watering("Menthe") ]
+    plant = occurrences.first.task.subject
+    treatment = create(:task, household:, subject: plant, title: "Traitement", template_key: nil, importance: :critical,
+                              recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+    occurrences << treatment.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
+
+    render_inline(described_class.new(occurrences:, title: "À faire", id: "due"))
+
+    rows = page.all("li")
+    expect(rows.first).to have_text("Traitement")
+    expect(rows.first).to have_css(".text-alert", text: "aujourd'hui")
+    expect(rows.last).to have_text("Arroser")
   end
 end

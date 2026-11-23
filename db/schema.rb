@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -83,6 +83,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
     t.boolean "sheltered", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "rain_exposed", default: false, null: false
     t.index ["household_id", "name"], name: "index_locations_on_household_id_and_name", unique: true
   end
 
@@ -160,6 +161,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
     t.index ["location_id"], name: "index_plants_on_location_id"
   end
 
+  create_table "rainfalls", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.date "fell_on", null: false
+    t.decimal "millimeters", precision: 5, scale: 1, null: false
+    t.datetime "applied_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id", "fell_on"], name: "index_rainfalls_on_household_id_and_fell_on", unique: true
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "ip_address"
@@ -177,6 +188,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "reopened_after_miss", default: false, null: false
+    t.string "source", default: "manual", null: false
     t.index ["completed_by_id"], name: "index_task_occurrences_on_completed_by_id"
     t.index ["task_id", "due_at"], name: "index_task_occurrences_on_task_id_and_due_at"
     t.index ["task_id"], name: "index_task_occurrences_one_pending", unique: true, where: "((status)::text = 'pending'::text)"
@@ -193,6 +206,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "importance", default: "flexible", null: false
     t.index ["household_id"], name: "index_tasks_on_household_id"
     t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject"
   end
@@ -205,6 +219,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
     t.boolean "digest_enabled", default: true, null: false
     t.integer "digest_minute", default: 480, null: false
     t.date "last_digest_on"
+    t.string "digest_scope", default: "all", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -224,6 +239,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120000) do
   add_foreign_key "plants", "households"
   add_foreign_key "plants", "locations"
   add_foreign_key "plants", "photos", column: "cover_photo_id", on_delete: :nullify
+  add_foreign_key "rainfalls", "households"
   add_foreign_key "sessions", "users"
   add_foreign_key "task_occurrences", "tasks"
   add_foreign_key "task_occurrences", "users", column: "completed_by_id"

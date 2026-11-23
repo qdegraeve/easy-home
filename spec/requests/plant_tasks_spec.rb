@@ -26,7 +26,7 @@ RSpec.describe "Plant tasks", type: :request do
     expect(response).to redirect_to(plant_path(plant))
     follow_redirect!
     expect(response.body).to include("Tâche « Tailler » ajoutée.", "Une fois", "dans 14 j")
-    expect(response.body).to include("Fait : Tailler (Citronnier)")
+    expect(response.body).to include("Marquer comme fait : Tailler (Citronnier)")
   end
 
   it "renders the form again without a title" do
@@ -71,6 +71,19 @@ RSpec.describe "Plant tasks", type: :request do
 
     expect(task.reload.recurrence.interval_days).to eq(21)
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-22 00:00"))
+  end
+
+  it "marks a task as one that must not be missed, and back" do
+    task = add_task
+    sign_in(user)
+
+    patch plant_task_path(plant, task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "1" } }
+    expect(task.reload).to be_critical
+    get edit_plant_task_path(plant, task)
+    expect(response.parsed_body.at_css("input[type=checkbox][name='task[critical]']")["checked"]).to eq("checked")
+
+    patch plant_task_path(plant, task), params: { task: { title: "Tailler", due_on: "2026-12-01", critical: "0" } }
+    expect(task.reload).to be_flexible
   end
 
   it "edits then deletes a manual task" do
@@ -160,8 +173,8 @@ RSpec.describe "Plant tasks", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 2", "Arrosée : Citronnier")
-      expect(response.body).to include("Fait : Engrais (Citronnier)")
+      expect(response.body).to include("À faire aujourd&#39;hui · 2", "J&#39;ai arrosé : Citronnier")
+      expect(response.body).to include("Marquer comme fait : Engrais (Citronnier)")
       expect(response.body).to include("prévu hier")
       expect(response.body).not_to include("Rempoter")
     end

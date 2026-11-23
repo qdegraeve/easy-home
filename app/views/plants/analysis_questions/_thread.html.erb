@@ -9,7 +9,7 @@
       <div class="space-y-2 border-l-2 border-line pl-3 text-muted">
         <%= simple_format(h(question.body)) %>
         <% if question.photo %>
-          <%= image_tag question.photo.image.variant(:thumb), class: "h-16 w-16 rounded-lg object-cover",
+          <%= image_tag question.photo.image.variant(:thumb), class: "h-16 w-16 rounded-xl object-cover",
                 alt: t("plants.analysis_questions.thread.photo_alt",
                        date: l(question.photo.taken_at.to_date, format: :day)) %>
         <% end %>
@@ -22,7 +22,7 @@
           <% if policy(question).ask_again? %>
             <%= button_to t("plants.analysis_questions.thread.ask_again"),
                   ask_again_plant_analysis_question_path(analysis.plant, analysis, question),
-                  class: "mt-2 rounded-xl bg-surface px-3 py-2 text-xs font-semibold shadow-sm ring-1 ring-line" %>
+                  class: "mt-2 #{button_class(:secondary)}" %>
           <% end %>
         <% else %>
           <%# Escaped first: AI text is plain text, never HTML. %>
@@ -36,12 +36,12 @@
   <% if questions.any?(&:pending?) %>
     <%# Nothing: the next question waits for this answer. %>
   <% elsif questions.size >= PlantAnalysisQuestion::MAX_PER_ANALYSIS %>
-    <p class="text-xs text-muted">
+    <p class="text-[13px] text-muted">
       <%= t("plants.analysis_questions.thread.limit", count: PlantAnalysisQuestion::MAX_PER_ANALYSIS) %>
     </p>
   <% elsif policy(PlantAnalysisQuestion.new(plant_analysis_id: analysis.id)).create? %>
     <details class="group">
-      <summary class="<%= button_class(:secondary) %> cursor-pointer list-none">
+      <summary class="<%= button_class(:secondary) %> cursor-pointer list-none [&::-webkit-details-marker]:hidden">
         <%= t("plants.analysis_questions.thread.ask") %>
       </summary>
       <div class="mt-3"><%= render "plants/analysis_questions/form", analysis:, form: QuestionForm.new %></div>

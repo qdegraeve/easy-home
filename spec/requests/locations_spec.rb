@@ -31,6 +31,17 @@ RSpec.describe "Locations", type: :request do
     expect(location.reload).to have_attributes(exposure: "full_sun", sheltered: true)
   end
 
+  it "says whether a location gets the rain, off by default" do
+    sign_in(owner)
+    expect(location).not_to be_rain_exposed
+
+    change(location, rain_exposed: "1")
+
+    expect(location.reload).to be_rain_exposed
+    follow_redirect!
+    expect(response.body).to include("reçoit la pluie")
+  end
+
   it "renders the form again on a missing name" do
     sign_in(owner)
 

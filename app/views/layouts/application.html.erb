@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr">
+<%# data-native-app: the Android app shows the screen title in its top bar, the page does not repeat it. %>
+<html lang="fr" <%= "data-native-app" if hotwire_native_app? %>>
   <head>
     <title><%= content_for(:title) || "Easy Home" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">

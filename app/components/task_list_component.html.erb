@@ -1,4 +1,7 @@
 <%= render ListGroupComponent.new(title:, id:) do |group| %>
+  <% critical.each do |occurrence| %>
+    <% group.with_row { render(row(occurrence)) } %>
+  <% end %>
   <% if waterings.any? %>
     <% group.with_row do %>
       <div class="flex items-center gap-3 px-3 py-2">
@@ -16,7 +19,7 @@
           task_occurrences_batch_completion_path,
           params: { occurrence_ids: waterings.map(&:id) },
           aria: { label: t(".water_all", count: waterings.size) },
-          class: "grid size-11 shrink-0 place-items-center rounded-full bg-action text-white hover:bg-action-strong"
+          class: helpers.done_button_class
         ) do %>
           <%= helpers.icon(:check, size: 22) %>
         <% end %>
@@ -24,15 +27,7 @@
     <% end %>
   <% end %>
   <% others.each do |occurrence| %>
-    <% task = occurrence.task %>
-    <% group.with_row do %>
-      <%= render TaskRowComponent.new(
-        occurrence:,
-        title: task.subject&.name || task.title,
-        href: task.subject && polymorphic_path(task.subject),
-        detail: task.watering? ? t(".watering") : (task.subject ? task.title : t(".once"))
-      ) %>
-    <% end %>
+    <% group.with_row { render(row(occurrence)) } %>
   <% end %>
   <% if empty %><%= render EmptyStateComponent.new(text: empty) %><% end %>
 <% end %>

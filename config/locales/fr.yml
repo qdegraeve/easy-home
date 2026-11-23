@@ -9,6 +9,10 @@ fr:
   activemodel:
     errors:
       models:
+        plant:
+          attributes:
+            new_location_exposure:
+              inclusion: "de l'emplacement : choisissez soleil, mi-ombre ou ombre"
         plant_analysis:
           attributes:
             photo_ids:
@@ -38,6 +42,9 @@ fr:
         name: "Nom"
         species: "Espèce"
         location_id: "Emplacement"
+        new_location_name: "Où est-elle ?"
+        new_location_exposure: "Exposition"
+        new_location_rain_exposed: "Dehors, à découvert : reçoit la pluie"
         watering_interval_days: "Arrosage"
         last_watered_on: "Dernier arrosage"
       task:
@@ -67,32 +74,35 @@ fr:
         name: "Nom"
         exposure: "Exposition"
         sheltered: "Abrité du vent"
+        rain_exposed: "Reçoit la pluie"
   notifications:
     digest:
       title:
         one: "1 tâche aujourd'hui"
         other: "%{count} tâches aujourd'hui"
       watering: "arroser %{name}"
+      waterings: "arroser %{count} plantes"
       task: "%{title} (%{name})"
   notification_settings:
     edit:
       back: "← Réglages"
       title: "Notifications"
-      intro: >-
-        Chaque matin, un résumé des tâches du jour et de celles en retard, sur les téléphones où l'app
-        Easy Home est connectée. Rien n'est envoyé les jours sans tâche.
+      intro: "Un résumé chaque matin, seulement les jours où il y a quelque chose à faire."
       digest_enabled: "Recevoir le résumé du matin"
+      critical_only: "Seulement ce qui ne doit pas être raté"
+      critical_only_help: "Le résumé ne cite que les tâches « à ne pas rater » ; rien n'est envoyé les autres jours."
       households: "Foyers à inclure"
       submit: "Enregistrer"
       devices: "Téléphones"
       devices_count:
         one: "1 téléphone reçoit les notifications."
         other: "%{count} téléphones reçoivent les notifications."
-      no_device: >-
-        Aucun téléphone pour l'instant : les notifications s'activent depuis l'app Android, sur cette page.
+      no_device_app: "Ce téléphone ne reçoit pas encore les notifications : elles arrivent avec une prochaine version
+        de l'app."
+      no_device_web: "Les notifications arrivent sur les téléphones où l'app Android est installée."
       test: "M'envoyer une notification de test"
     update:
-      success: "Réglages des notifications enregistrés."
+      success: "Enregistré."
   test_notifications:
     create:
       title: "Notification de test"
@@ -107,13 +117,16 @@ fr:
       empty_title: "Aucune plante pour l'instant"
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
       due_today: "À faire aujourd'hui · %{count}"
+      rain:
+        watered: "Pluie %{when} : elle compte comme un arrosage pour %{names}."
+        postponed: "Petite pluie %{when} : arrosage reporté pour %{names}."
+        today: "aujourd'hui"
+        yesterday: "hier"
+        see_journal: "Voir le journal"
       nothing_due: "Rien à faire aujourd'hui."
-      done_today:
-        one: "Une tâche faite aujourd'hui. Bravo !"
-        other: "%{count} tâches faites aujourd'hui. Bravo !"
+      done_today_list: "Fait aujourd'hui · %{count}"
       all_good: "Tout est à jour dans la maison."
       next_task: "Prochaine tâche : %{what},"
-      see_journal: "Voir le journal"
       see_plants: "Voir les plantes"
       upcoming: "Bientôt · %{count}"
       water_plant: "Arroser %{name}"
@@ -129,7 +142,6 @@ fr:
         zero: "Aucune plante"
         one: "%{count} plante"
         other: "%{count} plantes"
-      more_soon: "Poubelles, piscine, animaux et équipements viendront ici."
       to_review:
         one: "%{count} analyse à revoir"
         other: "%{count} analyses à revoir"
@@ -144,16 +156,27 @@ fr:
     show:
       title: "Journal"
       period:
-        one: "Ce qui a été fait depuis hier."
-        other: "Ce qui a été fait ces %{count} derniers jours."
+        one: "Depuis hier."
+        other: "Les %{count} derniers jours."
       empty: "Rien de fait pour l'instant : les tâches validées apparaîtront ici."
-      watered: "Arrosage · %{name}"
-      task_of: "%{title} · %{name}"
-      by_you: "par vous"
-      cancel: "Annuler"
-      cancel_label: "Annuler « %{what} » du %{date}"
-      cancel_confirm: "Annuler « %{what} » du %{date} ? La prochaine échéance sera recalculée."
-      cancel_confirm_button: "Oui, annuler"
+  journal_entry_component:
+    watered: "Arrosé"
+    watered_by_rain: "Arrosé par la pluie"
+    by_rain: "par la pluie"
+    by_you: "par vous"
+    by: "par %{name}"
+    missed: "Non fait, prévu le %{date}"
+    watering_missed: "Arrosage non fait, prévu le %{date}"
+    postponed: "Échéance reportée"
+    watering_postponed: "Arrosage reporté"
+    what_watering: "Arrosage · %{name}"
+    what_task: "%{title} · %{name}"
+    cancel: "Annuler"
+    cancel_label: "Annuler « %{what} » du %{date}"
+    cancel_confirm: "Retirer « %{what} » (%{date}) du journal ? La prochaine échéance sera recalculée."
+    cancel_confirm_stopped: "Retirer « %{what} » (%{date}) du journal ?"
+    cancel_confirm_button: "Retirer"
+    keep: "Garder"
   settings:
     show:
       title: "Réglages"
@@ -192,12 +215,19 @@ fr:
     watering: "Arrosage"
     once: "Tâche"
     no_location: "sans emplacement"
+  names_sentence:
+    others:
+      one: "%{count} autre"
+      other: "%{count} autres"
   task_row_component:
-    done_watering: "Arrosée : %{name}"
-    done_with_subject: "Fait : %{title} (%{subject})"
-    done: "Fait : %{title}"
+    done_watering: "J'ai arrosé : %{name}"
+    done_with_subject: "Marquer comme fait : %{title} (%{subject})"
+    done: "Marquer comme fait : %{title}"
     watered_today: "Arrosée aujourd'hui"
     done_today: "Fait aujourd'hui"
+    postpone_button: "Reporter"
+    postpone: "Reporter à demain : %{title}"
+    postpone_with_subject: "Reporter à demain : %{title} (%{subject})"
   due_label:
     overdue:
       one: "prévu hier"
@@ -227,13 +257,14 @@ fr:
       add_label: "Plante"
       archived: "Plantes archivées · %{count}"
       to_review: "Analyse à revoir : le lieu a changé"
-    water: "Arrosée"
-    water_label: "Arrosée : %{name}"
+    water: "J'ai arrosé"
     watering_task_title: "Arrosage"
     form:
       name_placeholder: "Ex. Hibiscus de l'entrée"
       species_placeholder: "Facultatif, ex. Hibiscus rosa-sinensis"
       no_location: "Aucun emplacement"
+      new_location_placeholder: "Facultatif, ex. Terrasse, Salon"
+      new_location_hint: "L'emplacement sera créé avec la plante ; les suivantes pourront le choisir."
       every: "Tous les"
       days: "jours"
       last_watered_help: "Point de départ du calcul du prochain arrosage."
@@ -262,8 +293,11 @@ fr:
         other: "Tous les %{count} jours"
       next: "Prochain arrosage :"
       last_watered: "Dernier arrosage : %{date}"
+      last_watered_by_rain: "Dernier arrosage : %{date}, par la pluie"
+      postponed_by_rain_note: "Reporté par la pluie"
       journal: "Journal"
-      watered: "Arrosée"
+      watered: "Arrosé"
+      watered_by_rain: "Arrosé par la pluie"
       watered_today: "Arrosée aujourd'hui"
       done_today: "Fait aujourd'hui"
       tasks: "Autres tâches"
@@ -298,12 +332,18 @@ fr:
       destroy_task_label: "Supprimer « %{title} »"
       destroy_task_confirm: "Supprimer la tâche « %{title} » et son historique ?"
       done_entry: "%{title}"
+      watering_missed: "Arrosage manqué"
+      task_missed: "%{title} : manquée"
+      due_on: "prévu le %{date}"
+      postponed: "%{title} : échéance reportée"
+      postponed_by_rain: "%{title} : échéance reportée par la pluie"
       cancel_task_label: "Annuler « %{title} » du %{date}"
       cancel_task_confirm: "Annuler « %{title} » du %{date} ? La prochaine échéance sera recalculée."
       cancel: "Annuler"
       cancel_label: "Annuler l'arrosage du %{date}"
       cancel_confirm: "Annuler l'arrosage du %{date} ? Le prochain arrosage sera recalculé."
-      cancel_confirm_button: "Oui, annuler"
+      cancel_confirm_button: "Retirer"
+      keep: "Garder"
       archived_on: "Archivée le %{date} : plus de rappel, l'historique reste consultable."
       edit: "Modifier"
       archive: "Archiver"
@@ -438,6 +478,8 @@ fr:
       form:
         title_placeholder: "Ex. Engrais, tailler, rempoter"
         repeat: "Quand ?"
+        critical: "À ne pas rater"
+        critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
         kinds:
           once: "Une seule fois"
           sliding: "Tous les N jours après la dernière fois"
@@ -465,19 +507,30 @@ fr:
         success: "Plante « %{name} » restaurée."
         already: "« %{name} » n'était pas archivée."
   tasks:
-    done: "Fait"
-    done_label: "Fait : %{title} (%{subject})"
   task_occurrences:
     completions:
       create:
         success: "%{title} noté pour « %{subject} »."
         not_pending: "C'était déjà fait."
+        missed: "Trop tard : cette tâche a été notée manquée."
         inactive: "Cette tâche est arrêtée."
         already_done_today: "Déjà fait aujourd'hui."
       destroy:
         success: "%{title} annulé, prochaine échéance recalculée."
         success_stopped: "%{title} annulé."
         not_done: "Rien à annuler."
+    postponements:
+      create:
+        success: "Reporté à demain : %{title} (%{subject})."
+        success_without_subject: "Reporté à demain : %{title}."
+        not_pending: "C'était déjà fait ou décalé."
+        inactive: "Cette tâche est arrêtée."
+        not_due: "Cette tâche n'est pas encore due."
+        missed: "Trop tard : cette tâche a été notée manquée."
+      destroy:
+        success: "Décalage annulé."
+        not_postponed: "Rien à annuler."
+        too_late: "Trop tard : la tâche a déjà été faite."
     batch_completions:
       create:
         waterings:
@@ -513,6 +566,7 @@ fr:
       no_locations: "Aucun emplacement pour l'instant : ajoutez la terrasse, le jardin devant…"
       sheltered: "abrité du vent"
       exposed: "exposé au vent"
+      rain_exposed: "reçoit la pluie"
       delete: "Supprimer"
       delete_label: "Supprimer l'emplacement « %{name} »"
       edit_label: "Modifier l'emplacement « %{name} »"
@@ -554,6 +608,9 @@ fr:
       submit: "Enregistrer"
     fields:
       placeholder: "Ex. bord de piscine"
+      rain_hint: >-
+        À cocher seulement pour un emplacement à ciel ouvert : une forte pluie (10 mm ou plus) compte alors comme un
+        arrosage de ses plantes, une averse (de 3 à 10 mm) le décale d'un jour.
     exposures:
       full_sun: "Plein soleil"
       partial_shade: "Mi-ombre"

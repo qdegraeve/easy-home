@@ -33,12 +33,16 @@ Household
   address (optionnel)            # libellé choisi dans l'autocomplétion
   latitude, longitude            # issus du géocodage
   altitude_m                     # calculée depuis la position (ADR 0009)
-  has_many :members (HouseholdMember), :locations, :plants, :tasks
+  has_many :members (HouseholdMember), :locations, :plants, :tasks, :rainfalls
+
+Rainfall                         # pluie du jour au foyer, relevée le soir (ADR 0015)
+  household, on (date, unique par foyer), millimeters
 
 Location
   household, name
   exposure (full_sun | partial_shade | shade)
   sheltered : boolean            # abrité du vent
+  rain_exposed : boolean         # reçoit la pluie (décoché par défaut) : la pluie y arrose les plantes (ADR 0015)
   has_many :plants               # nullify à la suppression de l'emplacement
 
 HouseholdMember
@@ -88,6 +92,7 @@ Task
   subject (polymorphe, optionnel)  # Plant… ; même foyer que la tâche ; null pour une tâche manuelle
   title, description
   template_key (ex. "plant.watering")
+  importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
   recurrence_type (once | fixed | sliding | usage_based)
   recurrence_config : jsonb      # paramètres du type de récurrence
   reminder_offset                # quand notifier avant l'échéance (ex. la veille à 19h)
@@ -97,8 +102,9 @@ Task
 TaskOccurrence                   # = une ligne du journal
   task, due_at                   # une seule échéance pending par tâche (index unique partiel)
   notify_at                      # due_at - reminder_offset, indexé pour le planificateur
-  status (pending | done | skipped | missed)
+  status (pending | done | skipped | missed | postponed)
   completed_by (User, optionnel), completed_at
+  source (manual | rain)         # fermée par une personne ou par la pluie (sans auteur, ADR 0015)
   note
   feedback : jsonb               # données de recalibrage (ex. { indicator_on: true })
   notified_at, reminder_count
@@ -114,6 +120,7 @@ ApplicationPushDevice            # gem action_push_native (ADR 0012)
 
 User (réglages des notifications)
   digest_enabled, digest_minute  # résumé du matin : activé, heure en minutes après minuit (quarts d'heure, 5 h-22 h)
+  digest_scope (all | critical)  # tout, ou seulement les tâches « à ne pas rater »
   last_digest_on                 # jour du dernier résumé : un seul par jour
 
 HouseholdMember
@@ -132,16 +139,43 @@ HouseholdMember
 
 ```
 pending ──(Fait)──────────▶ done
-   │  └──(Sauter)─────────▶ skipped
+   │  ├──(Sauter)─────────▶ skipped
+   │  └──(Demain)─────────▶ postponed   (+ la même tâche ouverte le lendemain)
    └──(délai de grâce dépassé)──▶ missed
 ```
+
+- **Tolérance** (`Tolerance`, `app/domain`) : une tâche « à ne pas rater » n'en a aucune, elle est manquée le
+  lendemain de son jour. Une tâche souple répétée a une marge d'un quart de son intervalle, de 0 à 3 jours (1 jour : 0,
+  3 jours : 1, 7 jours : 2, 14 jours : 3). Une tâche unique souple n'est jamais manquée : elle reste à faire jusqu'à
+  ce qu'elle soit faite ou supprimée.
+- `Tasks::MarkMissed` (job toutes les heures) ferme en `missed` les échéances au-delà de leur marge : une ligne du
+  journal, **une seule par échéance**, `completed_at` étant le moment de la fermeture. Une tâche glissante reste à faire
+  : elle est rouverte avec la même échéance (« prévu il y a 5 j »), marquée `reopened_after_miss`, et n'est plus jamais
+  manquée jusqu'à ce qu'elle soit faite. Une tâche unique manquée est terminée, comme une fois faite.
+- Une date calculée par l'app (recalcul, plante restaurée, ajout avec un vieil arrosage, date saisie dans le passé)
+  ne part jamais au-delà de la marge (`Tolerance.earliest`) : rien n'est manqué d'emblée. Une échéance déplacée perd
+  `reopened_after_miss` et peut de nouveau être manquée, une fois.
+- « Fait » appuyé sur une page affichée avant le passage du job valide la tâche rouverte.
+- **Décaler** (`Tasks::Postpone`, bouton « Reporter » d'une ligne d'« Aujourd'hui ») : une échéance due ou en retard
+  est fermée en `postponed` (une ligne discrète du journal, « Échéance reportée », ni faite ni manquée) et la même
+  tâche est ouverte le lendemain. La récurrence n'est pas touchée : elle part toujours de la dernière réalisation.
+  « Annuler » dans le toast défait le décalage (`Tasks::CancelPostponement`) tant que la tâche n'a pas été faite. Un
+  recalcul ne revient jamais avant le lendemain d'un décalage postérieur à la dernière réalisation. Décaler une tâche
+  rouverte après un oubli en fait une nouvelle échéance, qui peut de nouveau être manquée, une fois. Pas de « Reporter »
+  sur la ligne groupée « Arroser · N » pour l'instant (question ouverte).
+- **Pluie** (`Plants::RecordRain`, job chaque soir à 22 h, ADR 0015) : pour les plantes d'un emplacement qui reçoit
+  la pluie, les arrosages dus au plus tard le lendemain sont notés faits par la pluie à partir de 10 mm sur la journée
+  (le suivant repart de ce jour), décalés d'un jour de 3 à 10 mm, inchangés en dessous. Mêmes services et même verrou
+  que les gestes de l'utilisateur (`source: :rain`) ; une validation par la pluie s'annule comme une autre.
 
 - À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
 - Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
 - Une récurrence **glissante** ou **basée sur l'usage** part de la date de réalisation.
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
-  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). À venir : relances,
-  et un job qui marque les échéances `missed`.
+  échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). Groupé comme
+  l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
+  reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. À venir : relances
+  des tâches « à ne pas rater ».
 
 ## Moteur de récurrence
 
@@ -196,7 +230,7 @@ modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ;
   unique faite disparaît de la fiche et reste au journal.
 - L'accueil liste **« À faire aujourd'hui »** : toutes les échéances ouvertes dues aujourd'hui ou en retard, arrosages
   et autres tâches.
-- Une tâche ne se fait qu'une fois par jour (`Tasks::Complete`) : un second « Arrosée » le même jour est refusé.
+- Une tâche ne se fait qu'une fois par jour (`Tasks::Complete`) : un second « J'ai arrosé » le même jour est refusé.
 - Une réalisation enregistrée par erreur s'annule depuis le journal (`Tasks::CancelCompletion`) : elle disparaît et
   l'échéance ouverte est recalculée depuis la réalisation précédente.
 - Archiver une plante désactive sa tâche et supprime l'échéance ouverte ; restaurer la recalcule depuis le dernier

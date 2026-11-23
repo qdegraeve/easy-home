@@ -342,7 +342,7 @@ le nom « easy » promet d'éviter.
 8. **Résumé du matin groupé** avec la même règle que l'écran, et rien pour les tâches souples encore dans leur marge
    si l'utilisateur le choisit (« Notifier seulement ce qui ne doit pas être raté »).
 
-### Arrosage et météo (décidé, à concevoir en ADR)
+### Arrosage et météo (décidé, fait en PR 11 : ADR 0015)
 
 La pluie arrose les plantes dehors : une tâche « arroser » le lendemain d'une grosse pluie est du bruit, et c'est
 exactement ce qui fait décrocher d'une app de rappels.
@@ -404,7 +404,7 @@ faite.
 - **7** : `task_occurrences.postponed_from` (date d'origine) et l'auteur du report, pour afficher la trace sans
   confondre avec `skipped`.
 - **Météo** : voir la section suivante.
-- **8** : Réglage utilisateur `digest_scope` (`all` / `critical_only`).
+- **8** : Réglage utilisateur `digest_scope` (`all` / `critical`).
 - **Regroupement par domaine** : Méthode `domain` sur chaque type de sujet (`Plant` → `:plants`) pour l'icône et la
   couleur ; le contrat implicite d'un sujet (ADR 0010) passe de `household_id` + `name` à `+ domain`.
 
@@ -666,10 +666,49 @@ Chaque PR est livrable seule, testée (system specs sur les parcours touchés) e
 9. **PR 9 · Fiche plante allégée** (#33, #34, #35, #37, #38, #41, fait en 9a : onglets Soins, Photos, Historique,
    analyse résumée avec sa page, photo en un geste, photo de couverture) et **ajout rapide** (#36, #39, #40, #42,
    fait en 9b : photo d'abord, champs repliés, vignettes cliquables, navigation entre photos).
-10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24) : marge proportionnelle, report tracé, catalogue,
+10. **PR 10 · Importance et tolérance** (#19, #20, #21, #22, #24 ; #18, #19 et #20 faits en 10a, sans attendre les
+    poubelles, choix du propriétaire ; #21 et #22 faits en 10b, #24 en 10c) : marge proportionnelle, report tracé,
+    catalogue,
     résumé groupé. À faire avec le deuxième domaine (poubelles), où la différence souple / à ne pas rater devient
     concrète.
 11. **PR 11 · Arrosage et météo** (#23) : ADR, adaptateur Open-Meteo, job du soir, arrosage noté par la pluie.
+    Fait : ADR 0015. Écart décidé par le propriétaire : une case « Reçoit la pluie » par emplacement, décochée par
+    défaut, au lieu de « non abrité » (qui veut dire « exposé au vent »). Le journal garde une ligne par plante
+    (« par la pluie »), annulable une par une, plutôt qu'une ligne groupée.
+12. **PR 12 · Action ou état** (revue des designers du 22 novembre 2026, lot 1) : un bouton ne doit pas ressembler à
+    un état. Le rond « fait » est vide (contour vert) et se remplit à l'appui ; « Demain » devient une pastille
+    « ↷ Reporter » sur la ligne ; sur la fiche, « Arrosée » devient « J'ai arrosé », bouton principal le jour dû
+    ou en retard, secondaire avant ; « Arrosée aujourd'hui » est un état neutre (gris, sans fond) ; noms des boutons
+    pour les lecteurs d'écran à l'impératif (« J'ai arrosé : … », « Marquer comme fait : … ») ; toast « Reporté à demain : … ».
+13. **PR 13 · La pluie visible** (revue des designers, lot 2) : le bandeau nomme les plantes et ne parle plus de
+    millimètres (« Pluie hier : elle compte comme un arrosage pour Basilic et Citronnier. ») ; la fiche dit « Reporté
+    par la pluie » sous la prochaine échéance et « Dernier arrosage : …, par la pluie » ; le journal écrit
+    l'effet d'un report (« Échéance reportée ») plutôt que « Décalé d'un jour », qui semblait contredire un
+    arrosage fait le même jour.
+14. **PR 14 · Journal lisible** (revue des designers, lot 3) : une ligne de journal commence par ce qui change (la
+    plante, la tâche), puis l'effet, l'auteur et l'heure (« Basilic · Arrosé · par Sam · 18 h 00 », « par vous »,
+    « Arrosé par la pluie ») ; sous-titre « Les 60 derniers jours. » ; icône de report ↷ au lieu du sablier ; le
+    dialogue d'annulation dit « Garder » / « Retirer » au lieu de « Revenir » / « Oui, annuler » (journal et
+    historique) ; sur Aujourd'hui, « Fait aujourd'hui · N », replié, avec l'auteur et « Annuler »
+    (`JournalEntryComponent`, partagé avec le journal).
+15. **PR 15 · Lignes et finition de l'app** (revue des designers, lot 4) : une ligne de tâche commence par le geste
+    (« Traiter au savon noir », méta « Citronnier · aujourd'hui » ; l'arrosage garde le nom de la plante) et le titre
+    et la méta forment une seule zone de 44 px, d'où des lignes plus courtes ; dans l'app, le titre d'écran n'est
+    plus répété sous la barre native (gardé pour les lecteurs d'écran, `data-screen-title`) ; cases, boutons radio,
+    anneau de focus, barre de chargement Turbo et textes d'exemple aux couleurs de l'app ; retour au toucher
+    (`active:`) sur les boutons et les lignes, sans le flash gris d'Android.
+16. **PR 16 · Première plante et notifications** (revue des designers, lot 5) : un foyer sans emplacement crée celui
+    de sa première plante dans le même formulaire (« Où est-elle ? », exposition, « reçoit la pluie »), au lieu
+    d'une liste dont le seul choix était « Aucun emplacement » ; les réglages de notifications s'enregistrent à
+    chaque changement (toast « Enregistré. », plus de bouton), la sous-option est rangée sous l'option principale,
+    et le texte sans téléphone diffère dans l'app et dans le navigateur.
+17. **PR 17 · Finitions de style** (revue des designers, lot 6) : plus d'ombre dans le flux (sauf le segment actif,
+    le toast et les dialogues) ; trois rayons (`rounded-xl`, `rounded-2xl`, `rounded-full`) ; plus de texte en 12 px
+    (aides en 13 px) ; propositions de l'analyse toutes en pastille, acceptées en pastille pleine avec une coche ;
+    sélection des photos : coche seulement sur les photos choisies (défaut corrigé), vignettes à pleine opacité ;
+    listes repliables avec un chevron qui tourne au lieu du triangle du navigateur ; vert réservé à ce qui se
+    touche (« Foyer actif », « N propositions à valider » en encre) ; phrase « Poubelles, piscine… viendront ici »
+    retirée.
 
 La mise en page large (#56) se fait avec la PR 6 (la colonne latérale remplace la barre d'onglets web sur ordinateur).
 Les invités sont hors de ce lot : ils auront leur propre lot, avec leurs onglets.

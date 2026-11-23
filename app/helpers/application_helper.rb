@@ -37,10 +37,10 @@ module ApplicationHelper
   end
 
   BUTTON_VARIANTS = {
-    primary: "bg-action font-semibold text-white hover:bg-action-strong",
-    secondary: "bg-action-soft font-semibold text-action hover:bg-subtle",
-    tertiary: "font-semibold text-action hover:bg-subtle",
-    danger: "font-semibold text-alert hover:bg-alert-soft",
+    primary: "bg-action font-semibold text-white hover:bg-action-strong active:bg-action-strong",
+    secondary: "bg-action-soft font-semibold text-action hover:bg-subtle active:bg-subtle",
+    tertiary: "font-semibold text-action hover:bg-subtle active:bg-subtle",
+    danger: "font-semibold text-alert hover:bg-alert-soft active:bg-alert-soft",
     # On the dark photo viewer: white text, the danger tone is carried by the confirmation.
     on_dark: "font-semibold text-white/90 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 " \
              "focus-visible:outline-white"
@@ -58,8 +58,57 @@ module ApplicationHelper
 
   # Small secondary action next to a row (edit, delete, cancel): small text, but a 44 px touch target.
   def small_action_class(tone = :muted)
-    color = tone == :danger ? "text-alert hover:bg-alert-soft" : "text-muted hover:bg-subtle"
-    "inline-flex min-h-11 items-center rounded-lg px-2 text-xs #{color}"
+    color = if tone == :danger
+      "text-alert hover:bg-alert-soft active:bg-alert-soft"
+    else
+      "text-muted hover:bg-subtle active:bg-subtle"
+    end
+    "inline-flex min-h-11 items-center rounded-xl px-2 text-sm #{color}"
+  end
+
+  # "Basilic, Citronnier et Menthe", or "Basilic, Citronnier et 2 autres" past three names: a sentence stays short.
+  def names_sentence(names)
+    shown = names.size > 3 ? names.first(2) + [ t("names_sentence.others", count: names.size - 2) ] : names
+    shown.to_sentence(words_connector: ", ", two_words_connector: " et ", last_word_connector: " et ")
+  end
+
+  # Round "done" button of a list row (design review): an empty circle, an action still to do, that fills on press
+  # and while the request is sent (Turbo disables the button), never filled at rest, which would read as "done".
+  def done_button_class
+    "grid size-11 shrink-0 place-items-center rounded-full border-2 border-action bg-surface text-action " \
+      "hover:bg-action-soft active:bg-action active:text-white disabled:bg-action disabled:text-white"
+  end
+
+  # A <summary> that folds a list (design review): no browser triangle, a chevron that turns when open (the parent
+  # <details> carries `group/fold`, a named group, so that other groups do not mix). Used with `summary_chevron`.
+  def summary_class
+    "-mx-1 flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-xl px-1 py-2 font-semibold " \
+      "[&::-webkit-details-marker]:hidden"
+  end
+
+  def summary_chevron
+    icon(
+      :chevron_down,
+      size: 16,
+      class: "text-muted transition-transform group-open/fold:rotate-180 motion-reduce:transition-none"
+    )
+  end
+
+  # Small action of a row, like "Reporter" or a proposal of an analysis: a bordered pill, so it reads as a button and
+  # not as a date, inside a 44 px touch target (the inner span carries the pill; a named group, so that an outer
+  # group never lights it up). Accepted, the same pill filled, with a check.
+  def chip_class
+    "group/chip inline-flex min-h-11 shrink-0 items-center"
+  end
+
+  def chip_inner_class
+    "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full border border-field px-3 text-sm font-medium " \
+      "text-ink group-hover/chip:bg-subtle group-active/chip:bg-subtle"
+  end
+
+  def accepted_chip_class
+    "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full bg-action-soft px-3 text-sm font-medium " \
+      "text-action"
   end
 
   SECTIONS = {
@@ -91,7 +140,12 @@ module ApplicationHelper
 
   # Form data for a confirmed action: the message, the label of the confirm button (the action itself, not
   # "confirm"), and the danger tone for destructive actions. Read by app/javascript/lib/confirm_dialog.js.
-  def confirm_data(message, button:, danger: false)
-    { turbo_confirm: message, confirm_button: button, confirm_tone: ("danger" if danger) }.compact
+  def confirm_data(message, button:, cancel: nil, danger: false)
+    {
+      turbo_confirm: message,
+      confirm_button: button,
+      confirm_cancel: cancel,
+      confirm_tone: ("danger" if danger)
+    }.compact
   end
 end

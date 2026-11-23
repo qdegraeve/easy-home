@@ -1,6 +1,6 @@
 <div class="mx-auto max-w-md">
   <%= back_link_to t("plants.photos.edit.back"), plant_photo_path(@plant, @photo) %>
-  <h1 class="mt-2 text-2xl font-bold"><%= page_title t(".title") %></h1>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
 
   <%= form_with model: @photo, url: plant_photo_path(@plant, @photo), method: :patch, class: "mt-6 space-y-4" do |f| %>
     <%= render "shared/errors", record: @photo %>

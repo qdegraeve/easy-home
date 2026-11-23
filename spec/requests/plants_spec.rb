@@ -13,6 +13,10 @@ RSpec.describe "Plants", type: :request do
     post session_path, params: { email: user.email, password: "password" }
   end
 
+  def watering_button
+    Nokogiri::HTML(response.body).at_css(%(button[aria-label="J'ai arrosé : Basilic"]))
+  end
+
   describe "GET / and GET /plants" do
     it "lists what to do today on the home page, and the plants by location, archived ones apart, in Plantes" do
       terrasse = create(:location, household:, name: "Terrasse", exposure: :partial_shade)
@@ -24,8 +28,8 @@ RSpec.describe "Plants", type: :request do
 
       get root_path
 
-      expect(response.body).to include("À faire aujourd&#39;hui · 1", "Arrosée : Basilic")
-      expect(response.body).not_to include("Arrosée : Aloe")
+      expect(response.body).to include("À faire aujourd&#39;hui · 1", "J&#39;ai arrosé : Basilic")
+      expect(response.body).not_to include("J&#39;ai arrosé : Aloe")
 
       get plants_path
 
@@ -48,6 +52,7 @@ RSpec.describe "Plants", type: :request do
 
   describe "GET /plants/new" do
     it "asks for the photo first and a few fields, the watering prefilled, the rest folded" do
+      create(:location, household:)
       sign_in(user)
 
       get new_plant_path
@@ -95,6 +100,81 @@ RSpec.describe "Plants", type: :request do
       expect(plant.watering_task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-18 00:00"))
     end
 
+    it "creates the place of the first plant with it, when the household has none" do
+      sign_in(user)
+
+      get new_plant_path
+      expect(response.body).to include("Où est-elle ?")
+      expect(response.body).not_to include("Aucun emplacement")
+
+      post plants_path, params: {
+        plant: {
+          name: "Basilic",
+          watering_interval_days: "2",
+          new_location_name: " Terrasse ",
+          new_location_exposure: "full_sun",
+          new_location_rain_exposed: "1"
+        }
+      }
+
+      location = household.locations.sole
+      expect(location).to have_attributes(name: "Terrasse", exposure: "full_sun", rain_exposed: true)
+      expect(household.plants.sole.location).to eq(location)
+
+      get new_plant_path
+      expect(response.body).not_to include("Où est-elle ?")
+      expect(response.body).to include("Aucun emplacement", "Terrasse")
+    end
+
+    it "asks for the exposure of the new place, and creates nothing without it" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "Salon" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Exposition de l&#39;emplacement : choisissez soleil, mi-ombre ou ombre")
+      expect(response.body).to include('value="Salon"')
+      expect(Location.count + Plant.count).to eq(0)
+    end
+
+    it "keeps the place someone created meanwhile, whatever its case, rather than failing" do
+      terrace = create(:location, household:, name: "Terrasse")
+      sign_in(user)
+
+      post plants_path, params: {
+        plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "terrasse",
+                 new_location_exposure: "shade" }
+      }
+
+      expect(household.locations.sole).to eq(terrace)
+      expect(household.plants.sole.location).to eq(terrace)
+    end
+
+    it "creates no place when the photo of the plant is refused" do
+      upload = PhotoUpload.new(file: nil)
+      upload.errors.add(:file, :not_a_picture)
+      refused = instance_double(Photos::Add, call: Dry::Monads::Failure[:invalid, upload])
+      allow(Photos::Add).to receive(:new).and_return(refused)
+      sign_in(user)
+
+      post plants_path, params: {
+        plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "Terrasse",
+                 new_location_exposure: "shade", photo: fixture_file_upload("plant.png", "image/png") }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(Location.count + Plant.count).to eq(0)
+    end
+
+    it "leaves the plant without place when none is typed" do
+      sign_in(user)
+
+      post plants_path, params: { plant: { name: "Basilic", watering_interval_days: "2", new_location_name: "" } }
+
+      expect(household.plants.sole.location).to be_nil
+      expect(household.locations).to be_empty
+    end
+
     it "renders the form again on an invalid interval" do
       sign_in(user)
 
@@ -125,6 +205,82 @@ RSpec.describe "Plants", type: :request do
 
       expect(response.body).to include("Tous les 2 jours", "Prochain arrosage :", "demain")
       expect(response.body).to include("Dernier arrosage : dim 15 nov.")
+    end
+
+    it "offers \"J'ai arrosé\" as the main button when due or late, as a secondary one before" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-15 08:00"))
+      sign_in(user)
+
+      get plant_path(plant)
+      expect(watering_button["class"]).to include("bg-action-soft")
+
+      plant.watering_task.pending_occurrence.update!(due_at: Time.zone.parse("2026-11-16 00:00"))
+      get plant_path(plant)
+      expect(watering_button["class"]).not_to include("bg-action-soft")
+      expect(watering_button.text).to include("J'ai arrosé")
+
+      plant.watering_task.pending_occurrence.update!(due_at: Time.zone.parse("2026-11-15 00:00"))
+      get plant_path(plant)
+      expect(watering_button["class"]).not_to include("bg-action-soft")
+    end
+
+    it "tells in the history what the rain did: a watering, then a watering moved by a day" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-14 08:00"))
+      Tasks::Complete.new.call(occurrence: plant.watering_task.pending_occurrence, user: nil, source: :rain)
+      travel 2.days
+      Tasks::Postpone.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user: nil, source: :rain)
+      sign_in(user)
+
+      get plant_path(plant, tab: "history")
+
+      text = response.parsed_body.text.squish
+      expect(text).to include(
+        "Arrosé par la pluie lun 16 nov.",
+        "Arrosage : échéance reportée par la pluie mer 18 nov."
+      )
+      # The rain cloud icon on the watering by the rain, in the history.
+      expect(response.parsed_body.at_css("section[aria-labelledby=journal]").to_html.scan("M4 14.899").size).to eq(1)
+    end
+
+    it "says on the watering card why the date moved, and that the last watering was the rain's" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-14 08:00"))
+      Tasks::Complete.new.call(occurrence: plant.watering_task.pending_occurrence, user: nil, source: :rain)
+      sign_in(user)
+
+      get plant_path(plant)
+      text = response.parsed_body.text.squish
+      expect(text).to include("Dernier arrosage : lun 16 nov., par la pluie")
+      expect(text).not_to include("Reporté par la pluie")
+
+      travel 2.days
+      Tasks::Postpone.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user: nil, source: :rain)
+      get plant_path(plant)
+      card = response.parsed_body.at_css("section[aria-labelledby=watering]").text.squish
+      expect(card).to include("Prochain arrosage : demain", "Reporté par la pluie")
+
+      Tasks::Complete.new.call(occurrence: plant.watering_task.reload.pending_occurrence, user:)
+      get plant_path(plant)
+      card = response.parsed_body.at_css("section[aria-labelledby=watering]").text.squish
+      expect(card).to include("Dernier arrosage : mer 18 nov.")
+      expect(card).not_to include("par la pluie")
+    end
+
+    it "no longer says the rain moved the watering once it was missed since" do
+      plant = create(:plant, :watered, household:, name: "Basilic", interval_days: 2,
+                                       last_watered_at: Time.zone.parse("2026-11-14 08:00"))
+      Tasks::Postpone.new.call(occurrence: plant.watering_task.pending_occurrence, user: nil, source: :rain)
+      expect(plant.watering_task.reload).to be_moved_by_rain
+
+      travel 10.days
+      Tasks::MarkMissed.new.call
+      sign_in(user)
+      get plant_path(plant)
+
+      expect(plant.watering_task.reload).not_to be_moved_by_rain
+      expect(response.parsed_body.text.squish).not_to include("Reporté par la pluie")
     end
 
     it "falls back to the care tab on an unknown tab" do
@@ -305,6 +461,70 @@ RSpec.describe "Plants", type: :request do
       delete plant_archive_path(plant)
       delete plant_archive_path(plant)
       expect(flash[:notice]).to eq("« Basilic » n'était pas archivée.")
+    end
+  end
+
+  describe "POST /task_occurrences/:id/postponement" do
+    let(:plant) { create(:plant, :watered, household:, name: "Basilic", interval_days: 2) }
+    let(:occurrence) { plant.watering_task.pending_occurrence }
+
+    before { occurrence.update!(due_at: Time.zone.today.in_time_zone) }
+
+    it "postpones the task to tomorrow and goes back to the previous page" do
+      sign_in(user)
+
+      post task_occurrence_postponement_path(occurrence), headers: { "HTTP_REFERER" => root_url }
+
+      expect(response).to redirect_to(root_url)
+      expect(flash[:notice]).to eq("Reporté à demain : Arrosage (Basilic).")
+      expect(occurrence.reload).to be_postponed
+      expect(TaskOccurrence.pending.find_by(task: occurrence.task).due_at.to_date).to eq(Time.zone.tomorrow)
+    end
+
+    it "names only the task in the toast when it has no subject (bins, to come)" do
+      task = create(:task, household:, subject: nil, title: "Sortir la poubelle jaune", template_key: nil,
+                           recurrence_type: :once, recurrence_config: { "due_on" => "2026-11-16" })
+      bins = task.occurrences.create!(due_at: Time.zone.today.in_time_zone)
+      sign_in(user)
+
+      post task_occurrence_postponement_path(bins)
+
+      expect(flash[:notice]).to eq("Reporté à demain : Sortir la poubelle jaune.")
+    end
+
+    it "is undone from the toast" do
+      sign_in(user)
+
+      post task_occurrence_postponement_path(occurrence)
+      expect(flash[:undo_postponement_id]).to eq(occurrence.id)
+
+      delete task_occurrence_postponement_path(occurrence)
+      expect(flash[:notice]).to eq("Décalage annulé.")
+      expect(occurrence.reload).to be_pending
+      expect(plant.watering_task.occurrences.pending.sole).to eq(occurrence)
+    end
+
+    it "lets the toast of a stale \"Fait\" undo the task actually done" do
+      sign_in(user)
+      post task_occurrence_postponement_path(occurrence)
+      tomorrow = TaskOccurrence.pending.find_by(task: occurrence.task)
+
+      post task_occurrence_completion_path(occurrence) # the postponed one, from a page shown before
+
+      expect(flash[:undo_ids]).to eq([ tomorrow.id ])
+      expect(tomorrow.reload).to be_done
+    end
+
+    it "rejects the occurrence of another household, and a guest" do
+      other = create(:plant, :watered).watering_task.pending_occurrence
+      sign_in(user)
+      post task_occurrence_postponement_path(other)
+      expect(response).to have_http_status(:not_found)
+
+      sign_in(guest)
+      post task_occurrence_postponement_path(occurrence)
+      expect(response).to have_http_status(:not_found)
+      expect([ other.reload, occurrence.reload ]).to all(be_pending)
     end
   end
 

@@ -1,18 +1,25 @@
 # Due date relative to today: "due yesterday", "today", "tomorrow", "in 4 days" (French labels from I18n).
-# Calm by design (UX review): a late task is not shown in red, it is still in the list of today. Red will be kept for
-# the tasks that must not be missed (bins), with the task importance (UX review, PR 10).
+# Calm by design (UX review): a late task is not shown in red, it is still in the list of today. Red is kept for the
+# tasks that must not be missed (critical), on their day and once late.
 class DueLabelComponent < ViewComponent::Base
-  def initialize(due_at:)
+  def initialize(due_at:, critical: false)
     @days = (due_at.to_date - Time.zone.today).to_i
+    @critical = critical
   end
 
   def call
-    content_tag(:span, label, class: days.zero? ? "font-semibold text-ink" : nil)
+    content_tag(:span, label, class: tone)
   end
 
   private
 
-  attr_reader :days
+  attr_reader :days, :critical
+
+  def tone
+    return "font-semibold text-alert" if critical && days <= 0
+
+    "font-semibold text-ink" if days.zero?
+  end
 
   def label
     case days

@@ -14,7 +14,7 @@
 <div class="mx-auto max-w-3xl" data-controller="photo-viewer" data-photo-viewer-index-value="<%= @index %>"
      data-action="keydown@window->photo-viewer#key resize@window->photo-viewer#realign">
   <% if (back = back_link_to(t("plants.tasks.back", name: @plant.name), plant_path(@plant, tab: "photos"))) %>
-    <p class="[&_a]:text-white/70"><%= back %></p>
+    <p class="[&_a]:text-white/70 [&_a]:focus-visible:outline-white"><%= back %></p>
   <% end %>
 
   <div class="relative mt-3">
@@ -31,7 +31,7 @@
             data-cover="<%= photo.id == @plant.cover_photo_id %>">
           <%= image_tag photo.image.variant(:large), alt: t(".alt", name: @plant.name, date:), draggable: false,
                 loading: ((index - @index).abs <= 1 ? "eager" : "lazy"), decoding: "async",
-                class: "max-h-full max-w-full select-none object-contain sm:rounded-lg" %>
+                class: "max-h-full max-w-full select-none object-contain sm:rounded-xl" %>
           <template data-photo-viewer-target="actions">
             <%= render "actions", plant: @plant, photo:, can_update: %>
           </template>
