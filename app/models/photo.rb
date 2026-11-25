@@ -2,19 +2,16 @@
 class Photo < ApplicationRecord
   SUBJECT_TYPES = %w[Plant Equipment Task].freeze
 
+  # The former plant_id, replaced by the subject; dropped later (RequireSubjectOfPhotos).
+  self.ignored_columns += [ "plant_id" ]
+
   belongs_to :subject, polymorphic: true
-  # The former column, still written for the photos of a plant until it is removed (see the migration).
-  belongs_to :plant, optional: true
   has_many :analysis_photos, class_name: "PlantAnalysisPhoto", dependent: :destroy
   has_many :analysis_questions, class_name: "PlantAnalysisQuestion", dependent: :nullify
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_fill: [ 320, 320 ]
     attachable.variant :large, resize_to_limit: [ 1600, 1600 ]
   end
-
-  # The former plant_id follows the subject while the column exists (see the migration), whatever creates the photo:
-  # an attribute copied, nothing else.
-  before_validation { self.plant_id = subject_id if subject_type == "Plant" }
 
   validates :subject_type, inclusion: { in: SUBJECT_TYPES }
   validates :taken_at, presence: true, comparison: { less_than_or_equal_to: -> { Time.current }, message: :in_future }
