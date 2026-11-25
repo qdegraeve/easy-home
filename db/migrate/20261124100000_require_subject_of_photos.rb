@@ -1,7 +1,6 @@
-# Second step of the polymorphic photos (ADR 0016, after AddSubjectToPhotos): once the code that wrote and read
-# photos.plant_id is no longer in production, the subject becomes required in the database. Any photo left without
-# one (none expected) gets its plant back as its subject first. The former column is ignored by the model; it is
-# dropped in a later deploy, so that the code before this one keeps working while it is deployed.
+# Second step of the polymorphic photos (ADR 0016, after AddSubjectToPhotos): the subject becomes required in the
+# database. Any photo left without one gets its plant back as its subject first. The former column is ignored by the
+# model, and dropped later.
 class RequireSubjectOfPhotos < ActiveRecord::Migration[8.1]
   def up
     execute <<~SQL

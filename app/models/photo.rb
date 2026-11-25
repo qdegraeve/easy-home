@@ -2,7 +2,7 @@
 class Photo < ApplicationRecord
   SUBJECT_TYPES = %w[Plant Equipment Task].freeze
 
-  # The former plant_id, replaced by the subject; dropped in a later deploy (RequireSubjectOfPhotos).
+  # The former plant_id, replaced by the subject; dropped later (RequireSubjectOfPhotos).
   self.ignored_columns += [ "plant_id" ]
 
   belongs_to :subject, polymorphic: true
