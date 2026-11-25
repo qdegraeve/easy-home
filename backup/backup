@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Database first: a photo added in between is then an extra file, never a missing one.
+restic backup --host easy-home --tag db --stdin-filename easy_home.dump   --stdin-from-command -- pg_dump --format=custom --compress=0 easy_home_production
+restic backup --host easy-home --tag photos /storage
+
+restic forget --group-by host,tags --keep-daily 7 --keep-weekly 5 --keep-monthly 12 --prune
+restic check
+
+curl -fsS -m 10 --retry 3 -o /dev/null "$HEALTHCHECK_URL"
