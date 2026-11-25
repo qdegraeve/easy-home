@@ -55,6 +55,7 @@ gem "action_push_native", "~> 0.3"
 # Locale data for Rails (fr) [https://github.com/svenfuchs/rails-i18n]
 gem "rails-i18n", "~> 8.1"
 
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
