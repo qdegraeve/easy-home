@@ -22,7 +22,7 @@ RSpec.describe Tasks::Reschedule do
   end
 
   it "starts from the start date of a repeating task never done" do
-    task = create(:task, recurrence_config: { "interval_days" => 14, "start_on" => "2026-11-25" })
+    task = create(:task, recurrence_config: { "interval" => 14, "unit" => "days", "start_on" => "2026-11-25" })
 
     expect(described_class.new.call(task:).value!.due_at).to eq(Time.zone.parse("2026-11-25 00:00"))
   end
@@ -34,7 +34,7 @@ RSpec.describe Tasks::Reschedule do
   end
 
   it "never puts a task past its tolerance: a cancelled completion after an old miss is not missed again at once" do
-    task = create(:task, recurrence_config: { "interval_days" => 7 }) # 2 days of tolerance
+    task = create(:task, recurrence_config: { "interval" => 7, "unit" => "days" }) # 2 days of tolerance
     create(:task_occurrence, :done, task:, completed_at: Time.zone.parse("2026-11-01 08:00"))
     create(:task_occurrence, task:, status: :missed, due_at: Time.zone.parse("2026-11-08 00:00"),
                              completed_at: Time.zone.parse("2026-11-11 01:05"))
@@ -53,7 +53,7 @@ RSpec.describe Tasks::Reschedule do
   end
 
   it "makes a moved reopened occurrence a new due date, that can be missed again" do
-    task = create(:task, recurrence_config: { "interval_days" => 7 })
+    task = create(:task, recurrence_config: { "interval" => 7, "unit" => "days" })
     create(:task_occurrence, :done, task:, completed_at: Time.zone.parse("2026-11-12 08:00"))
     reopened = create(:task_occurrence, task:, due_at: Time.zone.parse("2026-11-15 00:00"), reopened_after_miss: true)
 

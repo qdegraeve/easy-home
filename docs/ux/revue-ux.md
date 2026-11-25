@@ -531,7 +531,7 @@ Effort : S (moins d'une demi-journée), M (une à deux journées), L (plus). Pri
   Transitions et pile cohérentes. Effort S, priorité P1.
 - **6. Contrôleurs de formulaires** : ~~`refresh_or_redirect_to` / `recede_or_redirect_to` après envoi~~. Vérifié dans
   le code de Hotwire Native Android 1.4.1 : une redirection vers l'écran d'en dessous ferme déjà la modal et recharge
-  cet écran (`docs/android-coque.md`, 4.2). Rien à changer côté contrôleurs.
+  cet écran (`docs/android-coque.md`, 4.2). Rien à changer côté contrôleurs, sauf la feuille d'une tâche (`resume`).
 - **7. `MainActivity` + layout** : Barre d'onglets native : Aujourd'hui, Maison, Journal. Pourquoi : Navigation
   principale absente. Effort M, priorité P1.
 - **8. Routes + contrôleurs** : Routes racines `/` (Aujourd'hui), `/maison`, `/journal`. Pourquoi : Une racine par

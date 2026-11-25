@@ -52,9 +52,6 @@ gem "pundit", "~> 2.5"
 # Push notifications to the Android app through Firebase Cloud Messaging (ADR 0012)
 gem "action_push_native", "~> 0.3"
 
-# Recurring date library for the recurrence engine [https://github.com/ice-cube-ruby/ice_cube]
-gem "ice_cube", "~> 0.17"
-
 # Locale data for Rails (fr) [https://github.com/svenfuchs/rails-i18n]
 gem "rails-i18n", "~> 8.1"
 

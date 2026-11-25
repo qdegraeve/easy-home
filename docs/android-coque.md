@@ -211,6 +211,11 @@ Une simple redirection Rails suffit donc. Les helpers `recede_or_redirect_to` / 
 turbo-rails ne sont pas nécessaires ici, et `recede` ferait même revenir d'un écran de trop : la modal fermée, la coque
 rejoue « revenir » sur l'écran d'en dessous.
 
+Une exception, la **feuille d'une tâche** : elle s'ouvre par-dessus n'importe quel écran (Aujourd'hui, une liste, une
+plante), que Rails ne connaît pas. « Fait », « Reporter » et « Supprimer » y répondent par `resume_or_redirect_to`
+(`TaskSheetReturn`) : la modal se ferme, rien de plus, et l'écran d'en dessous se recharge avec le message. `recede`
+reste juste pour un écran **empilé**, comme une photo qu'on supprime (`SubjectPhotosController`).
+
 Dans l'app, l'en-tête web et les liens « ← … » sont masqués (`hotwire_native_app?`, helper `back_link_to`) : la barre
 native et le retour du téléphone font ce travail, et un lien web empilerait un écran au lieu de revenir. Les réglages
 (notifications, foyers, déconnexion) s'ouvrent depuis l'icône de la barre native du haut, sur chaque écran
@@ -254,6 +259,7 @@ Un fichier JSON qui dit, pour chaque motif d'URL, comment afficher l'écran. Les
 | `.*` (tout) | Écran normal empilé ; tirer vers le bas pour rafraîchir |
 | `/new($\|\?)`, `/edit($\|\?)` | Formulaire en **modal** plein écran, sans tirer pour rafraîchir |
 | `/households($\|\?)` | Choix du foyer en **modal** ; le choix redirige vers l'accueil, qui remplace la pile |
+| `^/tasks/\d+($\|\?)` | Feuille d'une tâche en **modal**, par-dessus n'importe quel écran |
 | `/today/watering($\|\?)` | Détail de l'arrosage du jour en **modal** ; la validation ramène à l'accueil |
 | `^/($\|\?)`, `/session/new…`, `/passwords/new…` | Écran normal qui **remplace toute la pile** |
 

@@ -9,12 +9,15 @@ module Recurrence
       @due_on = due_on
     end
 
-    def next_due_at(last_completed_at:)
+    def next_due_at(last_completed_at:, last_due_on: nil, not_before: nil) # rubocop:disable Lint/UnusedMethodArgument
       due_on.in_time_zone if last_completed_at.nil?
     end
 
-    # Missed (a one-off task that must not be missed): its day has passed, it is over, like once done.
-    def closed_by_miss?
+    def period_days
+      nil
+    end
+
+    def dated?
       true
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,6 +54,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "equipment", force: :cascade do |t|
+    t.bigint "household_id", null: false
+    t.string "kind", null: false
+    t.string "name", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_id"], name: "index_equipment_on_household_id"
+  end
+
   create_table "household_members", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "household_id", null: false
@@ -88,11 +98,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
   end
 
   create_table "photos", force: :cascade do |t|
-    t.bigint "plant_id", null: false
+    t.bigint "plant_id"
     t.datetime "taken_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["plant_id", "taken_at"], name: "index_photos_on_plant_id_and_taken_at"
+    t.string "subject_type", null: false
+    t.bigint "subject_id", null: false
+    t.index ["subject_type", "subject_id", "taken_at"], name: "index_photos_on_subject_type_and_subject_id_and_taken_at"
   end
 
   create_table "plant_analyses", force: :cascade do |t|
@@ -190,7 +202,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
     t.datetime "updated_at", null: false
     t.boolean "reopened_after_miss", default: false, null: false
     t.string "source", default: "manual", null: false
+    t.integer "reminders_sent", default: 0, null: false
+    t.datetime "last_reminded_at"
     t.index ["completed_by_id"], name: "index_task_occurrences_on_completed_by_id"
+    t.index ["due_at"], name: "index_task_occurrences_pending_due_at", where: "((status)::text = 'pending'::text)"
     t.index ["task_id", "due_at"], name: "index_task_occurrences_on_task_id_and_due_at"
     t.index ["task_id"], name: "index_task_occurrences_one_pending", unique: true, where: "((status)::text = 'pending'::text)"
   end
@@ -207,8 +222,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "importance", default: "flexible", null: false
+    t.text "instructions"
+    t.string "suggestion_key"
+    t.integer "reminder_minute"
     t.index ["household_id"], name: "index_tasks_on_household_id"
     t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject"
+    t.check_constraint "(subject_type IS NULL) = (subject_id IS NULL)", name: "tasks_subject_whole_or_none"
+    t.check_constraint "reminder_minute IS NULL OR reminder_minute >= 300 AND reminder_minute <= 1320 AND (reminder_minute % 15) = 0", name: "tasks_reminder_minute_quarter_hours"
   end
 
   create_table "users", force: :cascade do |t|
@@ -225,10 +245,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_120300) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "equipment", "households"
   add_foreign_key "household_members", "households"
   add_foreign_key "household_members", "users"
   add_foreign_key "locations", "households"
-  add_foreign_key "photos", "plants"
   add_foreign_key "plant_analyses", "plants"
   add_foreign_key "plant_analyses", "users", column: "requested_by_id"
   add_foreign_key "plant_analysis_photos", "photos"

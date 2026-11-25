@@ -23,14 +23,19 @@ Les plantes cumulent tous ces problèmes : l'arrosage dépend de chaque espèce 
 
 ## Concepts clés
 
-- **Élément** : ce que possède le foyer (lave-vaisselle, piscine, chat, clim…), avec des attributs propres (fréquence d'usage, volume…).
-- **Modèle de tâche** : défini dans un catalogue et rattaché à un type d'élément. Il calcule la récurrence à partir des attributs de l'élément.
-  - Exemple : lave-vaisselle à 5 cycles par semaine et réservoir de sel d'environ 40 cycles, soit une tâche « remettre du sel » environ toutes les 8 semaines.
-- **Tâche** : créée depuis un modèle ou manuellement. Les deux passent par le même modèle de données, seule l'origine diffère.
-- **Types de récurrence** :
-  - **fixe** : toutes les 2 semaines le mardi, le 1er du mois… ;
-  - **glissante** : X jours après la dernière réalisation ;
-  - **basée sur l'usage** : l'intervalle est calculé depuis la capacité et le rythme d'usage, puis recalibré. Exemple : à la validation, « le voyant était-il allumé ? » ; si oui, l'intervalle raccourcit.
+Conception détaillée, validée le 23 novembre 2026 : `docs/conception/equipements-et-taches.md`.
+
+- **Plante** : un domaine dont l'app exploite les attributs (espèce, arrosage, analyse, pluie).
+- **Équipement** : ce qu'on entretient (piscine, lave-vaisselle, chauffe-eau, clim, voiture, « Autre »), avec un nom,
+  un type, des notes « À savoir » et des photos. L'app en rappelle les tâches, sans champ propre à un type.
+- **Tâche** : rattachée à une plante, à un équipement, ou à rien (**tâche de la maison** : les poubelles). Elle porte
+  son **Comment faire**, lu au moment de la faire, et peut avoir ses photos.
+- **Suggestion** : une tâche toute prête du catalogue (poubelles, filtre du lave-vaisselle…), copiée puis modifiable.
+- **Rythmes** : une fois ; tous les N jours, semaines, mois ou ans **après la dernière fois** ; **à jour fixe** (un
+  mardi sur deux, chaque année le 1er novembre) ; **quand il le faut** (le sel : sans échéance, avec la dernière
+  fois). Chaque rythme se change en modifiant la tâche. La récurrence basée sur l'usage (cycles, km) est pour plus
+  tard.
+- **Rappel** : à une heure le jour de l'échéance, relancé pour les tâches « à ne pas rater ».
 
 ## Première version : les plantes
 
@@ -54,16 +59,18 @@ modèle d'IA est dans l'ADR 0008.
 
 ## Ensuite (MVP complet)
 
-- Éléments et modèles de tâches. Catalogue minimal : poubelles, lave-vaisselle, piscine, un animal
-- Tâches manuelles
-- Récurrences fixes et basées sur l'usage (la glissante arrive avec les plantes)
-- Notifications push avec validation depuis la notification et relance
-- Journal des tâches (faites, sautées, manquées)
+- Tâches de la maison et poubelles, récurrence à jour fixe, rappels à une heure et relances
+- Équipements, « quand il le faut », suggestions : piscine, lave-vaisselle, chauffe-eau
+- Notifications push sur Android, avec validation depuis la notification
+- Un animal (domaine qui calcule, comme les plantes)
+- Journal des tâches (faites, reportées, manquées)
 - Foyer partagé (membres) et invités limités à certaines tâches
 
 ## Hors MVP (idées pour plus tard)
 
-- **Tournantes** et attribution automatique des tâches. La colonne `assignee` est prévue dès le MVP, optionnelle.
+- **Tournantes** et attribution automatique des tâches.
+- **Récurrence basée sur l'usage** (cycles, kilomètres), proposée depuis l'historique des « Fait ».
+- **Modèles de tâches personnels**, enregistrés depuis l'app.
 - **Plantes, au-delà de la première version** : fiche d'entretien complète, rempotage et engrais, arrosage ajusté par la
   météo (pluie).
 - **Stocks de consommables** (croquettes, chlore, filtres), avec rappel d'achat.

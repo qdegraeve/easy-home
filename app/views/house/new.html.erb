@@ -1,0 +1,25 @@
+<div class="mx-auto max-w-md">
+  <%= back_link_to t(".back"), house_path %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+
+  <div class="mt-6">
+    <%= render ListGroupComponent.new(title: t(".choose"), id: "add") do |group| %>
+      <% [ [ :sprout, ".plant", ".plant_hint", new_plant_path ],
+           [ :wrench, ".equipment", ".equipment_hint", new_equipment_path ],
+           [ :house, ".task", ".task_hint", new_task_path ] ].each do |icon_name, label, hint, path| %>
+        <% group.with_row do %>
+          <%= link_to path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
+              <%= icon(icon_name) %>
+            </span>
+            <span class="flex-1">
+              <span class="block font-medium"><%= t(label) %></span>
+              <span class="text-sm text-muted"><%= t(hint) %></span>
+            </span>
+            <%= icon(:chevron_right, class: "text-muted") %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

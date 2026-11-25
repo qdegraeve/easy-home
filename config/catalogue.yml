@@ -1,0 +1,62 @@
+# Catalogue (ADR 0016, docs/conception/equipements-et-taches.md): the kinds of equipment, and ready-made tasks copied
+# into a task when chosen, then editable. Texts in config/locales/catalogue.fr.yml.
+
+# Kinds of equipment, in the order of the pills, with their icon (app/assets/images/icons) and their suggestions.
+# "other": an equipment of one's own, named freely, without suggestion.
+equipment_kinds:
+  pool: { icon: waves, suggestions: [pool.ph, pool.skimmer, pool.backwash, pool.austral_winter, pool.cyclone_season] }
+  dishwasher: { icon: utensils, suggestions: [dishwasher.filter, dishwasher.salt, dishwasher.rinse_aid] }
+  water_heater: { icon: flame, suggestions: [water_heater.safety_valve, water_heater.anode] }
+  air_conditioner: { icon: air_vent, suggestions: [] }
+  washing_machine: { icon: washing_machine, suggestions: [] }
+  car: { icon: car, suggestions: [] }
+  other: { icon: wrench, suggestions: [] }
+
+# Offered by the task form opened from Maison (a task of the house, no subject), in this order.
+household_suggestions: [bins.yellow, bins.grey, bins.yellow_back, bins.bulky]
+
+suggestions:
+  bins.yellow:
+    importance: critical
+    reminder_minute: 1140 # 19:00, the evening before the collection
+    recurrence: { type: fixed, interval: 2, unit: weeks }
+  bins.grey:
+    importance: critical
+    reminder_minute: 1140
+    recurrence: { type: fixed, interval: 1, unit: weeks }
+  bins.yellow_back:
+    importance: flexible
+    recurrence: { type: fixed, interval: 2, unit: weeks }
+  bins.bulky:
+    importance: flexible
+    recurrence: { type: once }
+  pool.ph:
+    importance: flexible
+    recurrence: { type: sliding, interval: 1, unit: weeks }
+  pool.skimmer:
+    importance: flexible
+    recurrence: { type: sliding, interval: 1, unit: weeks }
+  pool.backwash:
+    importance: flexible
+    recurrence: { type: sliding, interval: 2, unit: weeks }
+  pool.austral_winter:
+    importance: flexible
+    recurrence: { type: fixed, interval: 1, unit: years, month: 5, day: 1 } # first date: the next May 1st
+  pool.cyclone_season:
+    importance: flexible
+    recurrence: { type: fixed, interval: 1, unit: years, month: 11, day: 1 }
+  dishwasher.filter:
+    importance: flexible
+    recurrence: { type: sliding, interval: 1, unit: months }
+  dishwasher.salt:
+    importance: flexible
+    recurrence: { type: on_demand }
+  dishwasher.rinse_aid:
+    importance: flexible
+    recurrence: { type: on_demand }
+  water_heater.safety_valve:
+    importance: flexible
+    recurrence: { type: sliding, interval: 1, unit: months }
+  water_heater.anode:
+    importance: flexible
+    recurrence: { type: sliding, interval: 2, unit: years }

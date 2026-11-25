@@ -8,7 +8,7 @@
 class TaskRowComponent < ViewComponent::Base
   renders_one :actions
 
-  def initialize(occurrence:, title:, detail:, href: nil, done_today: false, postpone: false)
+  def initialize(occurrence:, title:, detail: nil, href: nil, done_today: false, postpone: false)
     @occurrence = occurrence
     @task = occurrence.task
     @title = title
@@ -23,7 +23,7 @@ class TaskRowComponent < ViewComponent::Base
   attr_reader :occurrence, :task, :title, :detail, :href, :done_today
 
   def postpone?
-    @postpone && !done_today && occurrence.due_at.to_date <= Time.zone.today
+    @postpone && !done_today && occurrence.due_by?
   end
 
   # "Reporter à demain : Tailler (Citronnier)".
@@ -35,8 +35,10 @@ class TaskRowComponent < ViewComponent::Base
 
   def mark_icon
     return :droplet if task.watering?
+    return :triangle_alert if task.critical?
+    return :house unless task.subject
 
-    task.critical? ? :triangle_alert : :list_todo
+    task.subject.try(:icon) || :list_todo
   end
 
   # Button name for screen readers, an action: "J'ai arrosé : Citronnier", "Marquer comme fait : Tailler

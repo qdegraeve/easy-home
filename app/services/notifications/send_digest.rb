@@ -48,17 +48,33 @@ module Notifications
     def items(occurrences)
       waterings, others = occurrences.partition { |occurrence| occurrence.task.watering? }
       critical, others = others.partition { |occurrence| occurrence.task.critical? }
-      critical.map { |occurrence| label(occurrence.task) } + watering_items(waterings) +
-        others.map { |occurrence| label(occurrence.task) }
+      critical.map { |occurrence| label(occurrence) } + watering_items(waterings) +
+        others.map { |occurrence| label(occurrence) }
     end
 
     def watering_items(waterings)
-      return waterings.map { |occurrence| label(occurrence.task) } if waterings.size < 2
+      return waterings.map { |occurrence| label(occurrence) } if waterings.size < 2
 
       [ I18n.t("notifications.digest.waterings", count: waterings.size) ]
     end
 
-    def label(task)
+    # "Pailler le pied (Citronnier)"; a task due today with a reminder still to come says when: "ce soir 19 h :
+    # sortir la poubelle jaune" (a late one, or one whose time has passed, is not announced).
+    def label(occurrence)
+      task = occurrence.task
+      what = what(task)
+      return what unless reminder_to_come?(occurrence)
+
+      I18n.t("notifications.digest.at_time", when: ReminderTime.label(task.reminder_minute), what: what.downcase_first)
+    end
+
+    def reminder_to_come?(occurrence)
+      minute = occurrence.task.reminder_minute
+      now = Time.current
+      minute && occurrence.due_at.to_date == now.to_date && minute > (now.hour * 60) + now.min
+    end
+
+    def what(task)
       return task.title unless task.subject
       return I18n.t("notifications.digest.watering", name: task.subject.name) if task.watering?
 

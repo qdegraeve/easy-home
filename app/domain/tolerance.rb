@@ -8,10 +8,25 @@ module Tolerance
 
   # Grace days, or nil when never missed.
   def self.grace_days(importance:, recurrence:)
+    return nil unless recurrence.dated? # "quand il le faut": nothing to miss
     return 0 if importance.to_s == "critical"
 
+    period = recurrence.period_days
+    (period * SHARE).round.clamp(0, MAX_DAYS) if period
+  end
+
+  # What a miss does to the task, once noted in the journal:
+  # - :close, it is over, like once done (a one-off task that must not be missed: its day has passed);
+  # - :reopen, still to do with the same due date, never missed again until done (a plant still needs water; a
+  #   flexible task on fixed dates: a yearly one forgotten three days must not vanish for a year);
+  # - :advance, the next date of its rule opens (the bins that must not be missed: a collection is never caught up).
+  def self.after_miss(importance:, recurrence:)
+    critical = importance.to_s == "critical"
+
     case recurrence
-    when Recurrence::Sliding then (recurrence.interval_days * SHARE).round.clamp(0, MAX_DAYS)
+    when Recurrence::Once then :close
+    when Recurrence::Fixed then critical ? :advance : :reopen
+    else :reopen
     end
   end
 

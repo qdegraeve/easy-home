@@ -23,25 +23,52 @@ RSpec.describe Tasks::Update do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-12-05 00:00"))
   end
 
-  it "changes the interval and next date of a repeating task, without changing its type" do
-    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
+  it "changes the interval and next date of a repeating task, keeping its rhythm when none is given" do
+    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval: "14", unit: "days")
 
-    described_class.new.call(
-      task:, params: { title: "Engrais", recurrence_type: "once", due_on: "2026-11-25", interval_days: "21" }
-    )
+    described_class.new.call(task:, params: { title: "Engrais", due_on: "2026-11-25", interval: "21", unit: "days" })
 
     expect(task.reload).to be_sliding
     expect(task.recurrence.interval_days).to eq(21)
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-25 00:00"))
   end
 
+  it "changes the rhythm of a task: a one-off becomes every N days, then fixed dates" do
+    task = add(title: "Engrais", recurrence_type: "once", due_on: "2026-11-20")
+
+    described_class.new.call(
+      task:,
+      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-21", interval: "30", unit: "days" }
+    )
+    expect(task.reload.recurrence).to have_attributes(interval_days: 30, start_on: Date.new(2026, 11, 21))
+    expect(task.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 11, 21))
+
+    described_class.new.call(
+      task:, params: { title: "Engrais", recurrence_type: "fixed", due_on: "2026-12-01", interval: "4", unit: "weeks" }
+    )
+    expect(task.reload.recurrence).to have_attributes(anchor_on: Date.new(2026, 12, 1), interval: 4, unit: "weeks")
+    expect(task.occurrences.pending.sole.due_at.to_date).to eq(Date.new(2026, 12, 1))
+  end
+
+  it "opens a due date when a one-off already done becomes a repeating task" do
+    task = add(title: "Engrais", recurrence_type: "once", due_on: "2026-11-16")
+    Tasks::Complete.new.call(occurrence: task.pending_occurrence, user: nil)
+
+    described_class.new.call(
+      task:,
+      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-12-16", interval: "30", unit: "days" }
+    )
+
+    expect(task.reload.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 12, 16))
+  end
+
   it "keeps the start date of a repeating task: cancelling all its completions goes back to it" do
-    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-16", interval_days: "14")
+    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-16", interval: "14", unit: "days")
     Tasks::Complete.new.call(occurrence: task.pending_occurrence, user: create(:user))
 
     described_class.new.call(
       task: task.reload,
-      params: { title: "Engrais bio", due_on: "2026-11-30", interval_days: "14" }
+      params: { title: "Engrais bio", due_on: "2026-11-30", interval: "14", unit: "days" }
     )
     Tasks::CancelCompletion.new.call(occurrence: task.occurrences.done.sole)
 
@@ -50,9 +77,9 @@ RSpec.describe Tasks::Update do
   end
 
   it "makes the typed date the start date of a repeating task never done (kept after restore)" do
-    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14")
+    task = add(title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval: "14", unit: "days")
 
-    described_class.new.call(task:, params: { title: "Engrais", due_on: "2026-11-25", interval_days: "14" })
+    described_class.new.call(task:, params: { title: "Engrais", due_on: "2026-11-25", interval: "14", unit: "days" })
     Plants::Archive.new.call(plant:)
     Plants::Restore.new.call(plant: plant.reload)
 
@@ -60,10 +87,14 @@ RSpec.describe Tasks::Update do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-25 00:00"))
   end
 
-  it "rejects an update without a date instead of using today" do
+  it "keeps what is not given, the date included, and rejects a date emptied instead of using today" do
     task = add(title: "Tailler", recurrence_type: "once", due_on: "2026-11-30")
 
-    expect(described_class.new.call(task:, params: { title: "Tailler" }).failure.first).to eq(:invalid)
+    expect(described_class.new.call(task:, params: { title: "Tailler court" })).to be_success
+    expect(task.reload.title).to eq("Tailler court")
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
+
+    expect(described_class.new.call(task:, params: { title: "Tailler", due_on: "" }).failure.first).to eq(:invalid)
     expect(task.pending_occurrence.reload.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
   end
 
@@ -74,5 +105,25 @@ RSpec.describe Tasks::Update do
 
     expect(result.failure.first).to eq(:invalid)
     expect(task.reload.title).to eq("Tailler")
+  end
+
+  it "turns fixed dates into a one-off or every N days, and a sliding task already done into a one-off" do
+    task = add(title: "Engrais", recurrence_type: "fixed", due_on: "2026-11-24", interval: "2", unit: "weeks")
+
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-25",
+                                              interval: "10", unit: "days" })
+    expect(task.reload).to be_sliding
+    expect(task.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 11, 25))
+
+    Tasks::Complete.new.call(occurrence: task.pending_occurrence, user: nil)
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "once", due_on: "2026-11-30" })
+    expect(task.reload.recurrence.due_on).to eq(Date.new(2026, 11, 30))
+    expect(task.occurrences.pending.sole.due_at.to_date).to eq(Date.new(2026, 11, 30))
+
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "fixed", due_on: "2026-12-01",
+                                              interval: "1", unit: "weeks" })
+    described_class.new.call(task:, params: { title: "Engrais", recurrence_type: "once", due_on: "2026-12-03" })
+    expect(task.reload).to be_once
+    expect(task.occurrences.pending.sole.due_at.to_date).to eq(Date.new(2026, 12, 3))
   end
 end

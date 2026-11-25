@@ -20,7 +20,7 @@ class PlantForm
 
   validates :name, presence: true, length: { maximum: 100 }
   validates :species, length: { maximum: 100 }
-  validates :watering_interval_days, numericality: { only_integer: true, in: Recurrence::Sliding::INTERVAL_DAYS }
+  validates :watering_interval_days, numericality: { only_integer: true, in: Recurrence::Sliding::UNITS.fetch("days") }
   validates :last_watered_on,
     comparison: { less_than_or_equal_to: -> { Time.zone.today } },
     allow_nil: true,
@@ -40,7 +40,7 @@ class PlantForm
       name: plant.name,
       species: plant.species,
       location_id: plant.location_id,
-      watering_interval_days: plant.watering_task&.recurrence_config&.dig("interval_days")
+      watering_interval_days: plant.watering_task&.recurrence&.interval_days
     )
   end
 
@@ -57,7 +57,7 @@ class PlantForm
   end
 
   def watering_recurrence_config
-    { "interval_days" => watering_interval_days }
+    { "interval" => watering_interval_days, "unit" => "days" }
   end
 
   private

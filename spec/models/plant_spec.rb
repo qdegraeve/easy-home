@@ -1,6 +1,30 @@
 require "rails_helper"
 
 RSpec.describe Plant, type: :model do
+  include ActiveJob::TestHelper
+
+  it_behaves_like "a photo subject" do
+    subject { create(:plant) }
+  end
+
+  it_behaves_like "a task subject" do
+    subject { create(:plant) }
+  end
+
+  it "is deleted with its photos, its cover, its analyses and the photo of a question" do
+    plant = create(:plant)
+    cover = create(:photo, plant:)
+    question_photo = create(:photo, plant:)
+    plant.update!(cover_photo: cover)
+    analysis = create(:plant_analysis, plant:, photos: [ cover ])
+    analysis.questions.create!(body: "Et la tache ?", photo: question_photo, asked_by: create(:user))
+
+    plant.destroy!
+
+    counts = [ Photo, PlantAnalysis, PlantAnalysisPhoto, PlantAnalysisQuestion ].map(&:count)
+    expect(counts).to eq([ 0, 0, 0, 0 ])
+  end
+
   it { is_expected.to validate_presence_of(:name) }
   it { is_expected.to validate_length_of(:name).is_at_most(100) }
 

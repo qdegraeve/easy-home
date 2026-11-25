@@ -1,0 +1,74 @@
+fr:
+  catalogue:
+    equipment_kinds:
+      pool: "Piscine"
+      dishwasher: "Lave-vaisselle"
+      water_heater: "Chauffe-eau"
+      air_conditioner: "Climatisation"
+      washing_machine: "Lave-linge"
+      car: "Voiture"
+      other: "Autre"
+    suggestions:
+      bins:
+        yellow:
+          title: "Sortir la poubelle jaune"
+          hint: "La veille de la collecte, une semaine sur deux."
+          instructions: "Le soir, bac jaune devant le portail, couvercle fermé."
+        grey:
+          title: "Sortir la poubelle grise"
+          hint: "La veille de la collecte, chaque semaine."
+          instructions: "Le soir, bac gris devant le portail, couvercle fermé."
+        yellow_back:
+          title: "Rentrer la poubelle jaune"
+          hint: "Le lendemain de la collecte."
+        bulky:
+          title: "Sortir les encombrants"
+          hint: "Une fois, à la date donnée par la commune."
+      pool:
+        ph:
+          title: "Mesurer le pH et le chlore"
+          instructions: |-
+            Prélever l'eau à 30 cm sous la surface, loin des buses.
+            pH visé : entre 7,0 et 7,4 ; chlore libre : entre 1 et 3 mg/L.
+            Corriger le pH d'abord, puis le chlore.
+        skimmer:
+          title: "Vider les paniers des skimmers"
+          instructions: |-
+            Arrêter la filtration, retirer le couvercle et le panier.
+            Vider, rincer, remettre en place, relancer la filtration.
+        backwash:
+          title: "Faire un contre-lavage du filtre"
+          instructions: |-
+            Filtration arrêtée, vanne sur « contre-lavage » ; relancer jusqu'à ce que l'eau du voyant soit claire.
+            Arrêter, passer sur « rinçage » quelques secondes, puis revenir sur « filtration ».
+        austral_winter:
+          title: "Passer la piscine en mode hiver austral"
+          instructions: "Réduire le temps de filtration avec la température de l'eau (température / 2 en heures)."
+        cyclone_season:
+          title: "Préparer la piscine à la saison cyclonique"
+          instructions: |-
+            Ranger ce qui peut s'envoler autour du bassin.
+            En alerte rouge : couper l'électricité de la filtration, ne pas vider le bassin.
+      dishwasher:
+        filter:
+          title: "Nettoyer le filtre"
+          instructions: |-
+            Retirer le panier du bas, dévisser le filtre d'un quart de tour.
+            Rincer à l'eau chaude, brosse souple si besoin, remonter jusqu'au clic.
+        salt:
+          title: "Remettre du sel"
+          instructions: |-
+            Quand le voyant sel s'allume : bac au fond de la cuve, entonnoir, remplir jusqu'au bord.
+            Lancer un rinçage court pour évacuer le sel renversé.
+        rinse_aid:
+          title: "Remettre du liquide de rinçage"
+          instructions: "Quand le voyant s'allume : ouvrir le réservoir sur la porte, remplir sans dépasser le repère."
+      water_heater:
+        safety_valve:
+          title: "Manœuvrer le groupe de sécurité"
+          instructions: |-
+            Ouvrir la vanne de vidange du groupe de sécurité quelques secondes : l'eau doit couler dans l'évacuation.
+            Refermer. Une goutte pendant la chauffe est normale, un écoulement permanent ne l'est pas.
+        anode:
+          title: "Faire contrôler l'anode"
+          instructions: "Par un professionnel : contrôle de l'anode et détartrage de la cuve, plus souvent si l'eau est calcaire."

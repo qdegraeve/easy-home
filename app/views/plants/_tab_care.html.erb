@@ -38,29 +38,18 @@
   <%= render ListGroupComponent.new(title: t("plants.show.tasks"), id: "tasks", icon: :list_todo) do |group| %>
     <% @other_tasks.each do |task| %>
       <% group.with_row do %>
+        <%# The row opens the task sheet (how to do it), which leads to its edit screen. %>
         <%= render TaskRowComponent.new(
           occurrence: task.pending_occurrence,
           title: task.title,
-          detail: task.once? ? t("plants.show.once") : t("plants.show.every", count: task.recurrence.interval_days),
+          href: task_path(task),
+          detail: rhythm_label(task),
           done_today: @done_today_task_ids.include?(task.id)
-        ) do |row| %>
-          <% row.with_actions do %>
-            <%= link_to t("plants.show.edit_task"), edit_plant_task_path(@plant, task),
-                  aria: { label: t("plants.show.edit_task_label", title: task.title) },
-                  class: "-ml-2 #{small_action_class}" %>
-            <%= button_to t("plants.show.destroy_task"), plant_task_path(@plant, task), method: :delete,
-                  aria: { label: t("plants.show.destroy_task_label", title: task.title) },
-                  form: {
-                    data: confirm_data(
-                      t("plants.show.destroy_task_confirm", title: task.title),
-                      button: t("plants.show.destroy"),
-                      danger: true
-                    )
-                  },
-                  class: small_action_class(:danger) %>
-          <% end %>
-        <% end %>
+        ) %>
       <% end %>
+    <% end %>
+    <% @on_demand_tasks.each do |task| %>
+      <% group.with_row { render(OnDemandTaskRowComponent.new(task:, last_done_at: @last_done_at[task.id])) } %>
     <% end %>
     <%= render EmptyStateComponent.new(text: t("plants.show.no_tasks")) %>
   <% end %>

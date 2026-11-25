@@ -1,0 +1,16 @@
+<div class="mx-auto max-w-md">
+  <%= back_link_to t("shared.back_to", name: @equipment.name_in_database), @equipment %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title>
+    <%= page_title t(".title", name: @equipment.name_in_database) %>
+  </h1>
+
+  <div class="mt-6">
+    <%= render "form", equipment: @equipment, url: equipment_path(@equipment), method: :patch, submit: t(".submit") %>
+  </div>
+
+  <%# Deleting is here, behind a confirmation: its tasks and their history go with it. %>
+  <%= button_to t(".destroy"), equipment_path(@equipment), method: :delete,
+        form: { class: "mt-6", data: confirm_data(t(".destroy_confirm", name: @equipment.name_in_database),
+                                                  button: t(".destroy"), danger: true) },
+        class: button_class(:danger, block: true) %>
+</div>

@@ -1,0 +1,33 @@
+<%# "Ajouter des tâches d'entretien ?": the suggestions of the kind, unchecked (offered, not imposed), each with its
+    rhythm and first date, so that nothing floods "Aujourd'hui" the day the equipment is added. %>
+<div class="mx-auto max-w-md">
+  <h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+  <p class="text-sm text-muted"><%= t(".intro", name: @equipment.name) %></p>
+
+  <%= form_with url: equipment_suggestions_path(@equipment), class: "mt-6 space-y-4" do |f| %>
+    <%= render ListGroupComponent.new(id: "suggestions") do |group| %>
+      <% @suggestions.each do |suggestion| %>
+        <% form = TaskForm.from_suggestion(suggestion) %>
+        <% rule = Task.new(form.task_attributes.slice(:recurrence_type, :recurrence_config)) %>
+        <% group.with_row do %>
+          <label class="flex min-h-14 cursor-pointer items-start gap-3 px-3 py-3">
+            <%= check_box_tag "keys[]", suggestion.key, false, id: "suggestion_#{suggestion.key.tr('.', '_')}",
+                  class: "mt-1 h-5 w-5" %>
+            <span class="min-w-0">
+              <span class="block font-medium"><%= suggestion.title %></span>
+              <span class="block text-sm text-muted">
+                <%= rhythm_label(rule) %>
+                <% if form.due_on %>
+                  · <%= t(".first_time", date: l(form.due_on, format: :day)) %>
+                <% end %>
+              </span>
+            </span>
+          </label>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= f.submit t(".submit"), class: button_class(:primary, block: true) %>
+  <% end %>
+  <%= link_to t(".later"), equipment_path(@equipment), class: "mt-3 #{button_class(:tertiary, block: true)}" %>
+</div>

@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-2xl">
-  <%= back_link_to t("plants.tasks.back", name: @plant.name), @plant %>
+  <%= back_link_to t("shared.back_to", name: @plant.name), @plant %>
   <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
   <p class="mt-1 text-sm text-muted"><%= t(".intro", max: PlantAnalysis::MAX_PHOTOS) %></p>
 

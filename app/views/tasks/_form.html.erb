@@ -1,0 +1,99 @@
+<%# A manual task, of a plant or of the house (house: true). The fields of the rhythm and the date label follow the
+    "Quand ?" choice (CSS :has, no JavaScript); the rhythm can be changed when editing too. %>
+<%= form_with model: form, url:, method:, class: "group space-y-4" do |f| %>
+  <%= render "shared/errors", record: form %>
+
+  <div>
+    <%= f.label :title, class: "block text-sm font-semibold" %>
+    <% placeholder = house ? "tasks.form.title_placeholder_house" : "tasks.form.title_placeholder" %>
+    <%= f.text_field :title, required: true, maxlength: 100, placeholder: t(placeholder),
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+  </div>
+
+  <%# Suggestions of the catalogue (a task of the house): a tap prefills the form, everything stays editable. %>
+  <% if adding && local_assigns[:suggestions].present? %>
+    <div>
+      <p class="text-sm font-semibold"><%= t("tasks.form.suggestions") %></p>
+      <div class="mt-1 flex flex-wrap gap-x-2">
+        <% suggestions.each do |suggestion| %>
+          <%= link_to new_task_path_for(subject, suggestion: suggestion.key), class: chip_class do %>
+            <span class="<%= chip_inner_class %>"><%= suggestion.title %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <% if adding && (suggestion = Catalogue.suggestion(form.suggestion_key)) %>
+    <%= f.hidden_field :suggestion_key %>
+    <% if suggestion.hint %>
+      <p class="rounded-xl bg-subtle px-3 py-2 text-sm"><%= suggestion.hint %></p>
+    <% end %>
+  <% end %>
+
+  <fieldset>
+    <legend class="text-sm font-semibold"><%= t("tasks.form.repeat") %></legend>
+    <div class="mt-1 space-y-2">
+      <% TaskForm::KINDS.each do |kind| %>
+        <label class="flex items-center gap-2 rounded-xl border border-field bg-surface px-3 py-3">
+          <%= f.radio_button :recurrence_type, kind %>
+          <span><%= t("tasks.form.kinds.#{kind}") %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div class="group-has-[[value=on_demand]:checked]:hidden">
+    <%= f.label :due_on, class: "block text-sm font-semibold" do %>
+      <span class="hidden group-has-[[value=once]:checked]:inline"><%= t("tasks.form.due_on.once") %></span>
+      <span class="group-has-[[value=once]:checked]:hidden"><%= t("tasks.form.due_on.next") %></span>
+    <% end %>
+    <%# Not required in the browser: hidden for "quand il le faut", the server checks it for the other rhythms. %>
+    <%= f.date_field :due_on, aria: { describedby: "due-on-help" },
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    <p id="due-on-help" class="mt-1 hidden text-[13px] text-muted group-has-[[value=fixed]:checked]:block">
+      <%= t("tasks.form.due_on.fixed_help") %>
+    </p>
+  </div>
+
+  <%# One "every N units" for both repeating rhythms; fixed dates accept weeks or years (checked by the form). %>
+  <fieldset class="hidden group-has-[[value=sliding]:checked]:block group-has-[[value=fixed]:checked]:block">
+    <legend class="text-sm font-semibold"><%= t("tasks.form.every_n") %></legend>
+    <div class="mt-1 flex items-center gap-2">
+      <%= f.label :interval, class: "sr-only" %>
+      <%# No min/max: hidden when "Une fois" is chosen, it must never block the form; the server checks the bounds. %>
+      <%= f.number_field :interval,
+            class: "w-20 rounded-xl border border-field bg-surface px-3 py-3" %>
+      <%= f.label :unit, class: "sr-only" %>
+      <%= f.select :unit, TaskForm::ALL_UNITS.map { |unit| [ t("tasks.form.units.#{unit}"), unit ] }, {},
+            class: "rounded-xl border border-field bg-surface px-3 py-3" %>
+    </div>
+  </fieldset>
+
+  <div class="group-has-[[value=on_demand]:checked]:hidden">
+    <%= f.label :reminder_time, class: "block text-sm font-semibold" %>
+    <%= f.select :reminder_time, TaskForm.reminder_times, { include_blank: t("tasks.form.no_reminder") },
+          aria: { describedby: "reminder-help" },
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    <p id="reminder-help" class="mt-1 text-[13px] text-muted"><%= t("tasks.form.reminder_help") %></p>
+  </div>
+
+  <div class="group-has-[[value=on_demand]:checked]:hidden">
+    <label class="flex items-start gap-3 rounded-xl border border-field bg-surface px-3 py-3">
+      <%= f.check_box :critical, class: "mt-1" %>
+      <span>
+        <span class="block font-semibold"><%= t("tasks.form.critical") %></span>
+        <span class="block text-sm text-muted"><%= t("tasks.form.critical_help") %></span>
+      </span>
+    </label>
+  </div>
+
+  <div>
+    <%= f.label :instructions, class: "block text-sm font-semibold" %>
+    <%= f.text_area :instructions, rows: 4, maxlength: Task::INSTRUCTIONS_MAX,
+          placeholder: t("tasks.form.instructions_placeholder"), aria: { describedby: "instructions-help" },
+          class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3" %>
+    <p id="instructions-help" class="mt-1 text-[13px] text-muted"><%= t("tasks.form.instructions_help") %></p>
+  </div>
+
+  <%= f.submit submit, class: button_class(:primary, block: true) %>
+<% end %>

@@ -42,3 +42,9 @@ l'analyse par l'IA (ADR 0008), qui ne doit recevoir ni l'adresse ni les métadon
 - Une photo stockée pèse quelques centaines de Ko au plus.
 - libvips est nécessaire partout où l'app tourne (déjà dans l'image Docker et la CI).
 - Une photo illisible malgré un type valide est refusée avec le même message qu'un fichier qui n'est pas une image.
+
+## Complément (23 novembre 2026)
+
+Les photos ont un sujet polymorphe (ADR 0016) : plante, équipement ou tâche. La correction de la date à la main
+reste propre aux photos de plante pour l'instant ; pour un équipement ou une tâche, la date est celle de l'EXIF ou de
+l'envoi.

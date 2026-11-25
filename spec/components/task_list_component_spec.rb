@@ -44,19 +44,19 @@ RSpec.describe TaskListComponent, type: :component do
     expect(page).to have_text("Terrasse 2 · sans emplacement 1")
     expect(page).to have_button("Tout arroser : 3 plantes")
     expect(page).to have_button("Marquer comme fait : Tailler (Basilic)")
-    # The gesture first, then the plant; the whole text leads to the plant.
-    expect(page).to have_link(text: /\A\s*Tailler\s+Basilic · aujourd'hui/, href: "/plants/#{pruning.subject.id}")
+    # The gesture first, then the plant; the whole text opens the task sheet, a watering leads to its plant.
+    expect(page).to have_link(text: /\A\s*Tailler\s+Basilic · aujourd'hui/, href: "/tasks/#{pruning.id}")
   end
 
-  it "shows a task without subject as text, not as a link" do
+  it "shows a task of the house with no detail, its sheet a tap away, and the book when it says how to do it" do
     bins = create(:task, household:, subject: nil, title: "Poubelle jaune", template_key: nil, recurrence_type: :once,
-                         recurrence_config: { "due_on" => "2026-11-16" })
+                         recurrence_config: { "due_on" => "2026-11-16" }, instructions: "Bac devant le portail.")
     occurrence = bins.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
 
     render_inline(described_class.new(occurrences: [ occurrence ], title: "Aujourd'hui", id: "today"))
 
-    expect(page).to have_text(/Poubelle jaune\s+Tâche · aujourd'hui/)
-    expect(page).to have_no_link
+    expect(page).to have_link(text: /\A\s*Poubelle jaune\s+aujourd'hui\s*\z/, href: "/tasks/#{bins.id}")
+    expect(page).to have_css("svg[aria-label='Comment faire disponible']")
   end
 
   it "keeps a single watering on its own line, with the plant's name" do
@@ -85,5 +85,31 @@ RSpec.describe TaskListComponent, type: :component do
     expect(rows.first).to have_text("Traitement")
     expect(rows.first).to have_css(".text-alert", text: "aujourd'hui")
     expect(rows.last).to have_text("Arroser")
+  end
+
+  it "says the reminder time of a task of the house due today, not of a late one" do
+    today_task = create(:task, household:, subject: nil, title: "Sortir la poubelle", template_key: nil,
+                               reminder_minute: 19 * 60)
+    late_task = create(:task, household:, subject: nil, title: "Aérer", template_key: nil, reminder_minute: 19 * 60)
+    occurrences = [
+      today_task.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone),
+      late_task.occurrences.create!(due_at: Date.new(2026, 11, 14).in_time_zone)
+    ]
+
+    render_inline(described_class.new(occurrences:, title: "Aujourd'hui", id: "today"))
+
+    expect(page).to have_link(text: /Sortir la poubelle\s+ce soir 19 h · aujourd'hui/)
+    expect(page).to have_link(text: /\A\s*Aérer\s+prévu il y a 2 j\s*\z/)
+  end
+
+  it "marks a task of an equipment with the icon of its kind" do
+    pool = create(:equipment, household:, kind: "pool", name: "Piscine")
+    task = create(:task, household:, subject: pool, title: "Mesurer le pH", template_key: nil)
+    occurrence = task.occurrences.create!(due_at: Date.new(2026, 11, 16).in_time_zone)
+
+    render_inline(described_class.new(occurrences: [ occurrence ], title: "Aujourd'hui", id: "today"))
+
+    expect(page).to have_css("svg[data-icon=waves]")
+    expect(page).to have_link(text: /Mesurer le pH\s+Piscine · aujourd'hui/)
   end
 end

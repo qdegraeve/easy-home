@@ -5,8 +5,8 @@ class Plant < ApplicationRecord
   belongs_to :location, optional: true
   # The face of the plant, chosen among its photos (otherwise the latest one: #face).
   belongs_to :cover_photo, class_name: "Photo", optional: true
-  has_many :tasks, as: :subject, dependent: :destroy
-  has_many :photos, -> { order(taken_at: :desc, id: :desc) }, dependent: :destroy, inverse_of: :plant
+  has_many :tasks, as: :subject, dependent: :destroy, inverse_of: :subject
+  has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy, inverse_of: :subject
   has_many :analyses, class_name: "PlantAnalysis", dependent: :destroy
   has_one :watering_task, -> { where(template_key: WATERING_TEMPLATE_KEY) }, class_name: "Task", as: :subject
 
@@ -54,7 +54,7 @@ class Plant < ApplicationRecord
   private
 
   def cover_photo_must_be_one_of_its_photos
-    return if cover_photo.nil? || cover_photo.plant_id == id
+    return if cover_photo.nil? || cover_photo.of?(self)
 
     errors.add(:cover_photo, :invalid)
   end

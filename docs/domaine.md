@@ -9,10 +9,13 @@
 | Foyer | `Household` | La maison et ses occupants. Unité de partage des données. |
 | Membre | `HouseholdMember` | Lien entre un utilisateur et un foyer, avec un rôle. |
 | Rôle | `HouseholdMember#role` | `owner` (gère le foyer), `member` (voit et fait tout), `guest` (voit uniquement les tâches qui lui sont ouvertes). |
-| Élément | `Plant`, plus tard `Pool`, `Dishwasher`… | Ce que possède le foyer. Un modèle et une table par type (ADR 0010). |
-| Sujet d'une tâche | `Task#subject` | L'élément auquel une tâche se rattache (polymorphe, optionnel). |
-| Modèle de tâche | `TaskTemplate` | Définition dans le catalogue YAML (pas en base). |
-| Tâche | `Task` | Une chose à faire de façon récurrente. |
+| Domaine qui calcule | `Plant`, plus tard `Pet` | Ce dont l'app exploite les attributs : un modèle et une table par domaine (ADR 0010, 0016). |
+| Équipement | `Equipment` | Ce qu'on entretient et dont l'app rappelle les tâches (piscine, lave-vaisselle, chauffe-eau…) : nom, type, « À savoir », photos. Générique (ADR 0016). |
+| Sujet d'une tâche | `Task#subject` | La plante ou l'équipement auquel une tâche se rattache (polymorphe) ; nul pour une **tâche de la maison** (poubelles). |
+| Suggestion | `config/catalogue.yml`, `Catalogue` | Tâche toute prête d'un type d'équipement ou de la maison, copiée dans la tâche à sa création (pas en base). |
+| Tâche | `Task` | Une chose à faire, une fois ou de façon répétée. |
+| Comment faire | `Task#instructions` | Le mode opératoire d'une tâche, lu au moment de la faire, dans sa feuille. |
+| À savoir | `Equipment#notes` | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
 | Appareil | `ApplicationPushDevice` | Téléphone qui reçoit les notifications : jeton Firebase, rattaché à une session (ADR 0012). |
@@ -58,10 +61,14 @@ Plant                            # un modèle par type d'élément (ADR 0010)
   has_many :tasks, as: :subject
   has_many :photos
 
-# Plus tard : Pool (volume_m3…), Dishwasher (cycles_per_week…), même principe.
+Equipment                        # générique, pas de champ propre à un type (ADR 0016)
+  household (lecture seule), kind (liste du catalogue, « other » = personnalisé), name (le type si vide)
+  notes : text                   # « À savoir »
+  has_many :tasks, as: :subject ; has_many :photos, as: :subject   # suppression : tâches et journal effacés
 
 Photo
-  plant, taken_at                # date de prise de vue (EXIF, sinon envoi), modifiable
+  subject (polymorphe : Plant, Equipment, Task)   # requis en base ; ancienne colonne plant_id ignorée, supprimée ensuite
+  taken_at                       # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
 
@@ -89,25 +96,25 @@ PlantAnalysisQuestion            # question de suivi sur une analyse terminée ;
 
 Task
   household (lecture seule)      # toujours présent : droits et listes passent par lui
-  subject (polymorphe, optionnel)  # Plant… ; même foyer que la tâche ; null pour une tâche manuelle
-  title, description
-  template_key (ex. "plant.watering")
+  subject (polymorphe, optionnel)  # Plant, Equipment ; même foyer que la tâche ; null : tâche de la maison
+  title
+  instructions : text            # « Comment faire » (5 000 caractères au plus), lu dans la feuille de la tâche
+  template_key (ex. "plant.watering")   # tâche gérée par son sujet (réglée depuis la plante)
+  suggestion_key                 # suggestion d'origine (ex. "bins.yellow"), sans comportement
   importance (flexible | critical)   # souple (défaut, arrosage) ou « à ne pas rater » : en tête, en rouge, sans marge
-  recurrence_type (once | fixed | sliding | usage_based)
+  recurrence_type (once | sliding | fixed | on_demand)   # modifiable
   recurrence_config : jsonb      # paramètres du type de récurrence
-  reminder_offset                # quand notifier avant l'échéance (ex. la veille à 19h)
-  assignee (HouseholdMember, optionnel)   # prévu pour les tournantes, hors MVP
+  reminder_minute                # rappel le jour de l'échéance, minutes après minuit, 5 h à 22 h au quart d'heure
+                                 # (ADR 0017) ; nul : le résumé du matin seulement
   active : boolean
 
 TaskOccurrence                   # = une ligne du journal
   task, due_at                   # une seule échéance pending par tâche (index unique partiel)
-  notify_at                      # due_at - reminder_offset, indexé pour le planificateur
-  status (pending | done | skipped | missed | postponed)
+  status (pending | done | missed | postponed)
   completed_by (User, optionnel), completed_at
   source (manual | rain)         # fermée par une personne ou par la pluie (sans auteur, ADR 0015)
-  note
-  feedback : jsonb               # données de recalibrage (ex. { indicator_on: true })
-  notified_at, reminder_count
+  reopened_after_miss : boolean  # rouverte après un oubli : plus jamais manquée
+  reminders_sent, last_reminded_at   # rappels envoyés pour cette échéance et le dernier (ADR 0017)
 
 TaskAccess
   household_member (guest), task
@@ -139,8 +146,7 @@ HouseholdMember
 
 ```
 pending ──(Fait)──────────▶ done
-   │  ├──(Sauter)─────────▶ skipped
-   │  └──(Demain)─────────▶ postponed   (+ la même tâche ouverte le lendemain)
+   │  └──(Reporter)───────▶ postponed   (+ la même tâche ouverte le lendemain)
    └──(délai de grâce dépassé)──▶ missed
 ```
 
@@ -168,54 +174,106 @@ pending ──(Fait)──────────▶ done
   (le suivant repart de ce jour), décalés d'un jour de 3 à 10 mm, inchangés en dessous. Mêmes services et même verrou
   que les gestes de l'utilisateur (`source: :rain`) ; une validation par la pluie s'annule comme une autre.
 
-- À chaque passage en `done` ou `skipped`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la `TaskOccurrence` suivante.
-- Une récurrence **fixe** se cale sur le calendrier : sauter ou rater une échéance ne décale pas la suivante.
-- Une récurrence **glissante** ou **basée sur l'usage** part de la date de réalisation.
+- À chaque passage en `done`, la tâche calcule sa prochaine échéance via le moteur de récurrence et crée la
+  `TaskOccurrence` suivante.
+- Une récurrence **glissante** part de la date de réalisation. Une récurrence **à jour fixe** se cale sur sa règle :
+  faite en avance, à l'heure, en retard ou reportée, la suivante est la première date de la règle après la dernière
+  échéance (après un oubli, selon l'importance, voir « Moteur de récurrence »). Une tâche **quand il le faut** n'a
+  jamais d'échéance ouverte.
 - Un job récurrent (Solid Queue, toutes les 5 minutes) envoie à chacun son **résumé du matin** à l'heure choisie : les
   échéances ouvertes du jour et en retard des foyers suivis, rien les jours sans tâche (ADR 0012). Groupé comme
   l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
-  reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. À venir : relances
-  des tâches « à ne pas rater ».
+  reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. Une tâche avec un rappel y dit quand :
+  « ce soir 19 h : sortir la poubelle jaune ».
+- **Rappels** (ADR 0017, `SendRemindersJob` toutes les 5 minutes, `RemindersDueQuery`, `Notifications::SendReminder`) :
+  une tâche peut avoir un rappel à une heure le jour de son échéance (les poubelles : 19 h). Une notification aux
+  membres qui suivent le foyer, même avec le résumé coupé ; relancée toutes les heures, 3 au plus, rien après 22 h,
+  pour une tâche à ne pas rater. Chaque envoi est réservé de façon atomique (jamais deux fois). « Fait » ou
+  « Reporter » arrêtent les relances ; une échéance reportée est rappelée le lendemain ; changer la date remet les
+  compteurs à zéro. La notification nomme la tâche (et sa plante), jamais son Comment faire, et ouvre sa feuille.
+  L'app Android ne les reçoit pas encore (Firebase à venir).
 
 ## Moteur de récurrence
 
 Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 
-- `Recurrence::Once` : une seule échéance, aucune suivante après réalisation ;
-- `Recurrence::Fixed` : règle calendaire, s'appuie sur `ice_cube` ;
-- `Recurrence::Sliding` : `interval_days` après la dernière réalisation ;
-- `Recurrence::UsageBased` : intervalle = `capacity / usage_per_day`, ajusté par un facteur de calibrage issu du `feedback` des échéances précédentes.
+- `Recurrence::Once` : une seule échéance (`due_on`), aucune suivante après réalisation ;
+- `Recurrence::Sliding` : `interval` jours (1 à 60), semaines (1 à 52), mois (1 à 24) ou ans (1 à 10) après la
+  dernière réalisation (`unit`, `start_on` facultatif, date de la première échéance) ; un 31 tombe le dernier jour
+  d'un mois plus court. Config `{ "interval", "unit", "start_on" }` (migration depuis `interval_days`, 23 novembre
+  2026, l'ancien format n'est plus lu) ; `#interval_days` reste un lecteur pour l'arrosage, compté en jours ;
+- `Recurrence::Fixed` : une ancre (`anchor_on`, « prochaine fois le ») et un pas de N semaines (1 à 52) ou N ans
+  (1 à 10) ; le jour de la semaine ou la date de l'année se déduit de l'ancre (un 29 février tombe le 28 les autres
+  années). Une ancre passée s'ouvre à sa prochaine date, qui devient l'ancre ; modifier « Prochaine fois le » déplace
+  toute la série, modifier le reste (titre, Comment faire) ne touche ni l'ancre ni l'échéance ouverte (une poubelle
+  reportée reste un mardi). Un « Fait » tapé sur une page affichée avant qu'un oubli ait ouvert la collecte suivante
+  est refusé (« Trop tard »). Annuler un « Fait » rejoue la règle : la date reportée revient après un report ; une
+  date passée revient et le job la note manquée comme tout oubli ;
+- `Recurrence::OnDemand` : « quand il le faut », jamais d'échéance ouverte (jamais dans Aujourd'hui, jamais manquée
+  ni rappelée) ; « Fait », sur la fiche de l'équipement ou de la plante, dans les tâches de la maison ou dans la
+  feuille, enregistre directement une échéance faite (`Tasks::RecordDone`, une fois par jour), annulable depuis le
+  journal ; la ligne montre la dernière fois. Le rythme se change en un rythme daté en modifiant la tâche.
 
-Interface commune : `#next_due_at(last_completed_at:)`, qui renvoie une heure dans le fuseau reçu (`Fixed` ajoutera
-ses propres paramètres). Construit depuis `recurrence_type` + `recurrence_config` par une fabrique
-(`Recurrence.build(type:, config:)`). Implémentés : `Sliding` (avec `start_on` facultatif, date de la première
-échéance) et `Once` (`due_on`). `last_completed_at` vaut nil pour une tâche jamais faite ; `nil` en retour signifie
-qu'il n'y a plus d'échéance (tâche unique faite).
+Interface commune : `#next_due_at(last_completed_at:, last_due_on:, not_before:)`, `#period_days` (tolérance : un
+quart de la période, de 0 à 3 jours) et `#dated?`, construits depuis `recurrence_type` + `recurrence_config` par
+`Recurrence.build(type:, config:)` ; `nil` en retour signifie qu'il n'y a plus d'échéance. Le rythme d'une tâche se
+change en la modifiant (`Tasks::Update`).
 
-## Catalogue de modèles de tâches
+Après un oubli, la règle dépend du rythme et de l'importance (`Tolerance.after_miss`) :
 
-Fichiers YAML versionnés dans `config/task_templates/`, un par type d'élément. Chargés au démarrage, pas de table en base.
+| | à ne pas rater | souple |
+|---|---|---|
+| Une fois | terminée | jamais manquée |
+| Après la dernière fois | rouverte (même échéance) | rouverte |
+| À jour fixe | manquée, puis la date suivante de la règle (une collecte ne se rattrape pas) | manquée une fois, rouverte ; une fois faite, la suivante revient sur la règle |
+| Quand il le faut | jamais manquée | jamais manquée |
 
-```yaml
-# config/task_templates/dishwasher.yml
-kind: dishwasher
-properties:
-  cycles_per_week: { type: integer, default: 5 }
-tasks:
-  - key: dishwasher.salt
-    title: Remettre du sel régénérant
-    recurrence:
-      type: usage_based
-      capacity: 40                      # cycles
-      usage_rate: cycles_per_week       # propriété de l'élément
-    feedback_question: Le voyant « sel » était-il allumé ?
-  - key: dishwasher.filter
-    title: Nettoyer le filtre
-    recurrence: { type: sliding, interval_days: 30 }
-```
+L'usage (cycles, kilomètres) est hors v1 (`docs/conception/equipements-et-taches.md`).
 
-Ajouter un élément au foyer (`Plants::Add`, plus tard `Pools::Add`…) crée l'élément et instancie les `Task` de son
-modèle. Le catalogue n'existe pas encore : il arrivera avec le deuxième type ; `Plants::Add` crée directement sa tâche.
+## Catalogue des suggestions
+
+Les types d'équipements (avec leur icône) et les tâches suggérées (de la maison, comme les poubelles, et par type
+d'équipement : piscine, lave-vaisselle, chauffe-eau) sont décrits dans `config/catalogue.yml`, leurs textes dans `config/locales/catalogue.fr.yml` ; pas de
+table (ADR 0016). Une suggestion est **copiée** dans la tâche à sa création (titre, rythme, importance, rappel,
+Comment faire) : tout reste modifiable, y compris le type de rythme. Un équipement de type « Autre » n'a pas de
+suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.md`.
+
+- `Catalogue.suggestions_for(sujet)` : celles de la maison (sans sujet), celles du type d'un équipement, aucune pour
+  une plante ; moins celles déjà ajoutées (`Task.used_suggestion_keys`, tâches actives).
+- Après l'ajout d'un équipement dont le type a des suggestions, un écran « Ajouter des tâches d'entretien ? »
+  (`Equipments::SuggestionsController`) les propose **décochées**, chacune avec son rythme et sa première date (une
+  période après aujourd'hui, comme si elle venait d'être faite ; la prochaine date d'un rythme annuel) : rien
+  n'arrive dans Aujourd'hui le jour de l'ajout. Les cochées sont ajoutées ensemble (`Tasks::AddSuggestions`, une
+  transaction) ; « Plus tard » mène à la fiche. Les mêmes suggestions restent en puces dans « Ajouter une tâche » de
+  la fiche.
+
+## Équipements
+
+- Maison → « Ajouter » → « Un équipement » : le type en pastilles (icône et nom du catalogue), le nom (celui du type
+  si vide), et « À savoir » replié. La fiche (`equipment#show`) a deux onglets, Entretien (ses tâches avec leur
+  rythme, « Ajouter une tâche », puis « À savoir », texte de l'utilisateur échappé) et Historique (le journal de ses
+  tâches). Maison montre la section « Équipements » dès qu'il y en a un.
+- Ses tâches se créent depuis sa fiche (`/equipment/:id/tasks/new`) et vivent comme les autres : Aujourd'hui les
+  sous-titre du nom de l'équipement, avec l'icône de son type ; la feuille, le journal et les rappels le nomment.
+- Un type retiré du catalogue se lit « Autre » : l'équipement reste affiché et modifiable.
+- Pas d'archivage : supprimer un équipement (depuis sa modification, avec confirmation) supprime ses tâches et leur
+  historique.
+- Photos (`SubjectPhotosController`) : un onglet Photos sur la fiche de l'équipement (la plus récente lui sert de
+  visage), et des photos dans la feuille d'une tâche, avec son Comment faire (le filtre à dévisser). Ajoutées en un
+  geste, vues en grand, supprimées après confirmation ; pas de nouvelle photo pour une tâche arrêtée. Les photos d'une
+  plante gardent leur visionneuse.
+
+## Tâches de la maison
+
+- Une tâche sans sujet appartient à la maison (poubelles, aérer la cave) : `Tasks::Add` la crée pour le foyer
+  courant (`TasksController`, `/tasks/new`), elle se liste dans « Maison → Tâches de la maison » (une tâche unique déjà
+  faite en sort, elle reste au journal) et apparaît dans « Aujourd'hui » sans sous-titre.
+- Toute tâche a sa **feuille** (`tasks#show`, modale dans l'app) : le titre, la plante ou « Tâche de la maison », la
+  prochaine échéance avec « Fait » et « Reporter », la dernière fois, et le **Comment faire** (texte de l'utilisateur,
+  échappé, retours à la ligne gardés). Une ligne d'« Aujourd'hui » ou de la fiche plante ouvre la feuille (sauf
+  l'arrosage, qui mène à la plante) ; une icône livre signale un Comment faire. La feuille mène à la modification ; la
+  tâche se supprime depuis l'une ou l'autre, après confirmation (jamais l'arrosage).
+- « Aujourd'hui » liste les tâches dès que le foyer suit quelque chose (une plante ou une tâche), même sans plante.
 
 ## Plantes
 

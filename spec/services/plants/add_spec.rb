@@ -20,7 +20,11 @@ RSpec.describe Plants::Add do
     expect(plant).to have_attributes(name: "Hibiscus", species: "Hibiscus rosa-sinensis", location:)
     expect(plant).to be_species_from_user
     task = plant.watering_task
-    expect(task).to have_attributes(household:, recurrence_type: "sliding", recurrence_config: { "interval_days" => 3 })
+    expect(task).to have_attributes(
+      household:,
+      recurrence_type: "sliding",
+      recurrence_config: { "interval" => 3, "unit" => "days" }
+    )
     expect(task.occurrences.done.sole).to have_attributes(
       completed_at: Time.zone.parse("2026-11-14"),
       completed_by: user

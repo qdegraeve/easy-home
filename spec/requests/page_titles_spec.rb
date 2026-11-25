@@ -32,7 +32,11 @@ RSpec.describe "Page titles", type: :request do
       edit_household_path(user.households.sole) => "Ma maison",
       edit_notification_settings_path => "Notifications",
       edit_plant_photo_path(plant, photo) => "Date de la photo",
-      edit_plant_task_path(plant, pruning) => "Modifier « Tailler »"
+      edit_task_path(pruning) => "Modifier « Tailler »",
+      task_path(pruning) => "Tailler",
+      new_task_path => "Ajouter une tâche",
+      house_tasks_path => "Tâches de la maison",
+      new_house_item_path => "Ajouter"
     }.each do |path, title|
       get path
 

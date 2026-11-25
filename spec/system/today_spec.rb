@@ -52,7 +52,7 @@ RSpec.describe "Today", type: :system do
     expect(page).to have_content("À faire aujourd'hui · 3")
 
     # The detail: everything checked, uncheck the one not watered.
-    click_on "Arroser"
+    within("[aria-labelledby=due-today]") { click_on "Arroser" }
     expect(page).to have_css("h1", text: "Arroser 3 plantes")
     within("section", text: "Terrasse") { uncheck "Menthe" }
     click_on "Valider les arrosages cochés"

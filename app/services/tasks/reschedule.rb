@@ -1,9 +1,16 @@
 module Tasks
-  # Recomputes the open occurrence of an active task from its last completion (see Recurrence: a task never done
-  # starts from its start date). With no next occurrence (one-off task already done), the open occurrence is removed.
-  # Never past the tolerance (Tolerance.earliest): restored, edited or cancelled, a task is not missed at once. A
-  # one-off task missed is over, like once done. Never before the day after a postponement since the last completion
-  # (Tasks::Postpone): the journal says it was moved.
+  # Recomputes the open occurrence of an active task from its history (see Recurrence: a task never done starts from
+  # its start date). With no next occurrence (one-off task already done, or missed when it must not be), the open
+  # occurrence is removed. Never before the day after a postponement since the last completion (Tasks::Postpone): the
+  # journal says it was moved.
+  # - Sliding and one-off: from the last completion, never past the tolerance (Tolerance.earliest): restored, edited
+  #   or cancelled, a task is not missed at once.
+  # - Fixed dates: the rule replayed from the last closed occurrence, as Tasks::Complete, Tasks::MarkMissed and
+  #   Tasks::Postpone did. Postponed last: the day it was moved to. Missed last: a flexible task is reopened on its
+  #   date, one that must not be missed goes on with the next date of its rule (Tolerance.after_miss). Otherwise the
+  #   first date of the rule after the last done one, or its anchor when never done, even past: a completion
+  #   cancelled late brings back its date, which Tasks::MarkMissed then notes as missed like any forgotten one (the
+  #   anchor is the first date the task was given, Task#first_due_at!).
   # Call inside a transaction, with the task locked (task.lock!).
   class Reschedule
     include Dry::Monads[:result]
@@ -12,9 +19,12 @@ module Tasks
       return Success(nil) unless task.active?
 
       last_completed_at = task.occurrences.done.maximum(:completed_at)&.in_time_zone
-      due_at = task.due_within_tolerance(task.recurrence.next_due_at(last_completed_at:))
+      due_at, reopened = if task.fixed?
+        fixed_due(task, last_completed_at)
+      else
+        [ dated_due(task, last_completed_at), false ]
+      end
       due_at = after_last_postponement(task, due_at, last_completed_at)
-      due_at = nil if task.recurrence.closed_by_miss? && task.occurrences.missed.exists?
       pending = task.occurrences.pending.first
       if due_at.nil?
         pending&.destroy!
@@ -23,12 +33,34 @@ module Tasks
 
       occurrence = pending || task.occurrences.build
       # Moved, it is a new due date: it can be missed again, once (Tasks::MarkMissed).
-      occurrence.update!(due_at:, reopened_after_miss: occurrence.reopened_after_miss && occurrence.due_at == due_at)
+      kept = occurrence.reopened_after_miss && occurrence.due_at == due_at
+      occurrence.update!(due_at:, reopened_after_miss: reopened || kept)
 
       Success(occurrence)
     end
 
     private
+
+    def dated_due(task, last_completed_at)
+      return nil if task.after_miss == :close && task.occurrences.missed.exists?
+
+      task.due_within_tolerance(task.recurrence.next_due_at(last_completed_at:))
+    end
+
+    # [due_at, reopened after a miss]
+    def fixed_due(task, last_completed_at)
+      last_closed = task.occurrences.where(status: %i[done missed postponed])
+        .order(completed_at: :desc, id: :desc).first
+      return [ postponed_to(last_closed), false ] if last_closed&.postponed?
+      return [ last_closed.due_at, true ] if last_closed&.missed? && task.after_miss == :reopen
+
+      [ task.recurrence.next_due_at(last_completed_at:, last_due_on: last_closed&.due_at&.to_date), false ]
+    end
+
+    # The day a postponement moved the task to (Tasks::Postpone: the day after its due date, or after today if late).
+    def postponed_to(postponed)
+      [ postponed.due_at.to_date, postponed.completed_at.to_date ].max.next_day.in_time_zone
+    end
 
     def after_last_postponement(task, due_at, last_completed_at)
       postponed_at = task.occurrences.postponed.maximum(:completed_at)&.in_time_zone

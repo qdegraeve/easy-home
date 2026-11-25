@@ -20,6 +20,42 @@
         <%= icon(:chevron_right, class: "text-muted") %>
       <% end %>
     <% end %>
+    <%# Shown once there is one: the "+" below leads to the first. %>
+    <% if @equipment_count.positive? %>
+      <% group.with_row do %>
+        <%= link_to equipment_index_path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
+          <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-gear">
+            <%= icon(:wrench) %>
+          </span>
+          <span class="flex-1">
+            <span class="block font-medium"><%= t(".equipment") %></span>
+            <span class="text-sm text-muted"><%= t(".equipment_count", count: @equipment_count) %></span>
+          </span>
+          <%= icon(:chevron_right, class: "text-muted") %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% if @house_tasks_count.positive? %>
+      <% group.with_row do %>
+        <%= link_to house_tasks_path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
+          <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-plants">
+            <%= icon(:house) %>
+          </span>
+          <span class="flex-1">
+            <span class="block font-medium"><%= t(".house_tasks") %></span>
+            <span class="text-sm text-muted"><%= t(".house_tasks_count", count: @house_tasks_count) %></span>
+          </span>
+          <%= icon(:chevron_right, class: "text-muted") %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if policy(Task.new(household: @household)).create? %>
+    <%# In the Android app, a "+" button of the native top bar (bridge--button). %>
+    <%= link_to t(".add"), new_house_item_path, class: button_class(:secondary, block: true),
+          data: { controller: "bridge--button", bridge_title: t(".add"), bridge_label: t(".add_label"),
+                  bridge_icon: "plus" } %>
   <% end %>
 
   <% if policy(@household).edit? %>

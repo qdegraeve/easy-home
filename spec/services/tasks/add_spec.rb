@@ -19,10 +19,35 @@ RSpec.describe Tasks::Add do
     expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-30 00:00"))
   end
 
+  it "adds a task of the house (no subject) to the given household, with its instructions trimmed" do
+    household = create(:household)
+
+    task = described_class.new.call(
+      household:, params: { title: "Sortir la poubelle", due_on: "2026-11-17", instructions: "  Bac jaune.  " }
+    ).value!
+
+    expect(task).to have_attributes(household:, subject: nil, instructions: "Bac jaune.")
+    expect(task.pending_occurrence.due_at).to eq(Time.zone.parse("2026-11-17 00:00"))
+  end
+
+  it "keeps no blank instructions, and refuses instructions too long" do
+    household = create(:household)
+    blank = described_class.new.call(household:, params: { title: "Aérer", due_on: "2026-11-17", instructions: " " })
+    expect(blank.value!.instructions).to be_nil
+
+    long = described_class.new.call(household:, params: { title: "Aérer", due_on: "2026-11-17",
+                                                          instructions: "a" * (Task::INSTRUCTIONS_MAX + 1) })
+    expect(long.failure.first).to eq(:invalid)
+  end
+
+  it "needs a subject or a household" do
+    expect { described_class.new.call(params: { title: "Aérer", due_on: "2026-11-17" }) }.to raise_error(ArgumentError)
+  end
+
   it "adds a task repeating every N days from the chosen date" do
     task = described_class.new.call(
       subject: plant,
-      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval_days: "14" }
+      params: { title: "Engrais", recurrence_type: "sliding", due_on: "2026-11-20", interval: "14", unit: "days" }
     ).value!
 
     expect(task.recurrence).to have_attributes(interval_days: 14, start_on: Date.new(2026, 11, 20))
@@ -32,8 +57,8 @@ RSpec.describe Tasks::Add do
   {
     "without a title" => { title: "" },
     "without a date" => { due_on: "" },
-    "repeating without an interval" => { recurrence_type: "sliding", interval_days: "" },
-    "repeating over 60 days" => { recurrence_type: "sliding", interval_days: "61" },
+    "repeating without an interval" => { recurrence_type: "sliding", interval: "" },
+    "repeating over 60 days" => { recurrence_type: "sliding", interval: "61", unit: "days" },
     "of an unknown type" => { recurrence_type: "weekly" }
   }.each do |label, override|
     it "rejects a task #{label}, without creating anything" do
@@ -46,7 +71,7 @@ RSpec.describe Tasks::Add do
 
   it "ignores the interval of a one-off task" do
     task = described_class.new.call(
-      subject: plant, params: { title: "Tailler", recurrence_type: "once", due_on: "2026-11-30", interval_days: "abc" }
+      subject: plant, params: { title: "Tailler", recurrence_type: "once", due_on: "2026-11-30", interval: "abc" }
     ).value!
 
     expect(task.recurrence_config).to eq("due_on" => "2026-11-30")

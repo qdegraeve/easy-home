@@ -1,8 +1,14 @@
-# Recurrence engine: plain Ruby, no ActiveRecord. Computes the next due date of a task.
+# Recurrence engine: plain Ruby, no ActiveRecord. Computes the next due date of a task
+# (docs/conception/equipements-et-taches.md).
 #
-# Common interface: #next_due_at(last_completed_at:) returns the next due date (TimeWithZone, at the start of the
-# local day), or nil when there is none left. last_completed_at is nil when the task was never done.
-# #closed_by_miss? tells whether a missed occurrence ends the task (a one-off task) or leaves it to do (see Tolerance).
+# Common interface:
+# - #next_due_at(last_completed_at:, last_due_on: nil, not_before: nil): the due date (TimeWithZone, start of the
+#   local day) of the occurrence to open after the last closed one, or nil when there is none left.
+#   last_completed_at: the last "done" (nil if never done); last_due_on: due date of the last done or missed
+#   occurrence; not_before: earliest acceptable day (only Fixed uses it, to skip the past dates of its rule).
+# - #period_days: approximate length of a period (tolerance), nil without one.
+# - #dated?: whether the task has due dates (not "quand il le faut", Recurrence::OnDemand).
+# What happens after a miss depends on the rule and the importance: Tolerance.after_miss.
 module Recurrence
   class InvalidConfig < ArgumentError; end
 
@@ -11,8 +17,12 @@ module Recurrence
     config = config.to_h.transform_keys(&:to_s)
 
     case type.to_s
-    when "sliding" then Sliding.new(interval_days: config["interval_days"], start_on: date(config["start_on"]))
+    when "sliding"
+      Sliding.new(interval: config["interval"], unit: config.fetch("unit", "days"), start_on: date(config["start_on"]))
     when "once" then Once.new(due_on: date(config["due_on"]))
+    when "on_demand" then OnDemand.new
+    when "fixed"
+      Fixed.new(anchor_on: date(config["anchor_on"]), interval: config["interval"], unit: config["unit"])
     else raise InvalidConfig, "Unknown recurrence type: #{type.inspect}"
     end
   end

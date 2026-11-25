@@ -40,7 +40,7 @@ module Plants
     end
 
     def add_photo(plant, form)
-      Photos::Add.new.call(plant:, file: form.photo).or do |(_code, upload)|
+      Photos::Add.new.call(subject: plant, file: form.photo).or do |(_code, upload)|
         upload.errors.messages_for(:file).each { |message| form.errors.add(:photo, message) }
         Failure[:invalid, form]
       end

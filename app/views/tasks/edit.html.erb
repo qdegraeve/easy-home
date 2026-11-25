@@ -1,0 +1,20 @@
+<div class="mx-auto max-w-md">
+  <%= task_back_link(@task.subject) %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title", title: @task.title) %></h1>
+
+  <div class="mt-6">
+    <%= render "form", form: @form, url: task_path(@task), method: :patch, adding: false, house: @task.subject.nil?,
+          submit: t(".submit") %>
+  </div>
+
+  <%# Deleted from here or from its sheet, not from the rows of a list (design review: always behind a confirmation). %>
+  <%= button_to t(".destroy"), task_path(@task), method: :delete,
+        form: {
+          class: "mt-6",
+          data: {
+            turbo_action: "replace", # "back" never shows the deleted task again
+            **confirm_data(t(".destroy_confirm", title: @task.title), button: t(".destroy"), danger: true)
+          }
+        },
+        class: button_class(:danger, block: true) %>
+</div>

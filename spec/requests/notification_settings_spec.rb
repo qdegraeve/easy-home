@@ -114,7 +114,7 @@ RSpec.describe "Notification settings", type: :request do
   it "keeps the only household followed: its checkbox is not shown" do
     sign_in(user)
     get edit_notification_settings_path
-    expect(response.body).not_to include("Foyers à inclure")
+    expect(response.body).not_to include("Foyers suivis")
 
     patch notification_settings_path, params: {
       notification_settings: {

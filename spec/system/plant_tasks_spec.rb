@@ -22,9 +22,10 @@ RSpec.describe "Plant tasks", type: :system do
     click_on "Ajouter une tâche"
     fill_in "Tâche", with: "Engrais"
     expect(page).to have_no_field("Répétition")
-    choose "Tous les N jours après la dernière fois"
-    fill_in "Première fois", with: Date.new(2026, 11, 16)
+    choose "Tous les N jours, semaines, mois ou ans après la dernière fois"
+    fill_in "Prochaine fois le", with: Date.new(2026, 11, 16)
     fill_in "Répétition", with: "14"
+    select "jours", from: "Unité"
     click_on "Ajouter la tâche"
     expect(page).to have_content("Tâche « Engrais » ajoutée.")
     expect(page).to have_content("Tous les 14 jours · aujourd'hui")
@@ -65,16 +66,21 @@ RSpec.describe "Plant tasks", type: :system do
     open_plant_tab("Soins")
     expect(page).to have_content("Une fois · dans 4 j")
 
-    click_on "Modifier « Tailler »"
+    # The row opens the task sheet, which leads to its edit screen, where it is also deleted.
+    click_link "Tailler"
+    expect(page).to have_css("h1", text: "Tailler")
+    click_on "Modifier"
     fill_in "Tâche", with: "Tailler les gourmands"
     fill_in "Date", with: Date.new(2026, 11, 25)
     click_on "Enregistrer"
     expect(page).to have_content("Tâche « Tailler les gourmands » enregistrée.")
-    expect(page).to have_content("Une fois · dans 9 j")
+    expect(page).to have_content("Prochaine fois : dans 9 j") # back on the sheet, with the changes
 
-    click_on "Supprimer « Tailler les gourmands »"
-    within("dialog") { click_on "Supprimer" }
+    click_on "Modifier"
+    expect(page).to have_field("Tâche", with: "Tailler les gourmands")
+    click_on "Supprimer la tâche" # from its edit screen
+    within("dialog", text: "Son historique et ses photos partent aussi.") { click_on "Supprimer la tâche" }
     expect(page).to have_content("Tâche « Tailler les gourmands » supprimée.")
-    expect(page).to have_no_link("Modifier « Tailler les gourmands »")
+    expect(page).to have_no_link("Tailler les gourmands")
   end
 end

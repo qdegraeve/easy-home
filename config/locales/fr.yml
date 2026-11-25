@@ -9,6 +9,11 @@ fr:
   activemodel:
     errors:
       models:
+        task:
+          attributes:
+            interval:
+              fixed_range: "doit être de 1 à 52 semaines, ou de 1 à 10 ans, pour un jour fixe"
+              sliding_range: "doit être de 1 à 60 jours, 1 à 52 semaines, 1 à 24 mois ou 1 à 10 ans"
         plant:
           attributes:
             new_location_exposure:
@@ -49,9 +54,12 @@ fr:
         last_watered_on: "Dernier arrosage"
       task:
         title: "Tâche"
+        instructions: "Comment faire"
+        reminder_time: "Rappel le jour même"
+        interval: "Répétition"
+        unit: "Unité"
         recurrence_type: "Répétition"
         due_on: "Date"
-        interval_days: "Répétition"
   activerecord:
     errors:
       models:
@@ -63,7 +71,12 @@ fr:
       household: "Foyer"
       location: "Emplacement"
       plant: "Plante"
+      equipment: "Équipement"
     attributes:
+      equipment:
+        kind: "Type"
+        name: "Nom"
+        notes: "À savoir"
       household:
         name: "Nom du foyer"
         address: "Adresse"
@@ -83,6 +96,15 @@ fr:
       watering: "arroser %{name}"
       waterings: "arroser %{count} plantes"
       task: "%{title} (%{name})"
+      at_time: "%{when} : %{what}"
+    reminder:
+      with_subject: "%{title} · %{name}"
+      follow_up: "Toujours à faire : %{what}"
+  reminder_time:
+    evening: "ce soir %{time}"
+    day: "à %{time}"
+    hours: "%{hours} h"
+    hours_minutes: "%{hours} h %{minutes}"
   notification_settings:
     edit:
       back: "← Réglages"
@@ -91,7 +113,7 @@ fr:
       digest_enabled: "Recevoir le résumé du matin"
       critical_only: "Seulement ce qui ne doit pas être raté"
       critical_only_help: "Le résumé ne cite que les tâches « à ne pas rater » ; rien n'est envoyé les autres jours."
-      households: "Foyers à inclure"
+      households: "Foyers suivis : résumé du matin et rappels"
       submit: "Enregistrer"
       devices: "Téléphones"
       devices_count:
@@ -128,6 +150,7 @@ fr:
       all_good: "Tout est à jour dans la maison."
       next_task: "Prochaine tâche : %{what},"
       see_plants: "Voir les plantes"
+      see_house_tasks: "Voir les tâches de la maison"
       upcoming: "Bientôt · %{count}"
       water_plant: "Arroser %{name}"
       task_of: "%{title} (%{name})"
@@ -145,6 +168,16 @@ fr:
       to_review:
         one: "%{count} analyse à revoir"
         other: "%{count} analyses à revoir"
+      equipment: "Équipements"
+      equipment_count:
+        one: "%{count} équipement"
+        other: "%{count} équipements"
+      house_tasks: "Tâches de la maison"
+      house_tasks_count:
+        one: "%{count} tâche"
+        other: "%{count} tâches"
+      add: "Ajouter"
+      add_label: "Ajouter une plante, un équipement ou une tâche"
       places: "Lieux de la maison"
       address_and_locations: "Adresse et emplacements"
       no_address: "Adresse à renseigner"
@@ -152,6 +185,103 @@ fr:
         zero: "aucun emplacement"
         one: "%{count} emplacement"
         other: "%{count} emplacements"
+    new:
+      back: "← Maison"
+      title: "Ajouter"
+      choose: "Que voulez-vous ajouter ?"
+      plant: "Une plante"
+      plant_hint: "Son arrosage, ses photos, son analyse"
+      equipment: "Un équipement"
+      equipment_hint: "Piscine, lave-vaisselle, chauffe-eau… et son entretien"
+      task: "Une tâche de la maison"
+      task_hint: "Les poubelles, aérer la cave…"
+  equipment:
+    back: "← Équipements"
+    form:
+      name_placeholder: "Ex. Clim de la chambre"
+      name_help: "Facultatif : le nom du type si vide."
+      more: "Ajouter ce qui est bon à savoir"
+      notes_placeholder: "Ex. référence du filtre, garantie jusqu'en 2028, réarmer la pompe après une coupure…"
+    index:
+      back: "← Maison"
+      title: "Équipements"
+      empty: "Aucun équipement pour l'instant : piscine, lave-vaisselle, chauffe-eau…"
+      add: "Ajouter un équipement"
+      add_label: "Équipement"
+    show:
+      tabs_label: "Parties de l'équipement"
+      tabs:
+        care: "Entretien"
+        photos: "Photos"
+        history: "Historique"
+      photos: "Photos"
+      no_photos: "Pas encore de photo : la plaque signalétique, le filtre…"
+      face_alt: "Photo de %{name}"
+      tasks: "Entretien"
+      no_tasks: "Aucune tâche d'entretien pour l'instant."
+      add_task: "Ajouter une tâche"
+      add_task_label: "Tâche"
+      no_notes: "Rien de noté pour l'instant."
+      add_notes: "Ajouter ce qui est bon à savoir"
+      history: "Historique"
+      no_history: "Rien de fait pour l'instant."
+      edit: "Modifier"
+    new:
+      title: "Ajouter un équipement"
+      submit: "Ajouter l'équipement"
+    create:
+      success: "Équipement « %{name} » ajouté."
+    edit:
+      title: "Modifier « %{name} »"
+      submit: "Enregistrer"
+      destroy: "Supprimer l'équipement"
+      destroy_confirm: "Supprimer « %{name} » ? Ses tâches, leur historique et ses photos partent aussi."
+    update:
+      success: "Équipement « %{name} » enregistré."
+    destroy:
+      success: "Équipement « %{name} » supprimé."
+  photos:
+    picker:
+      new_photo: "Nouvelle photo"
+      add_photo: "Ajouter une photo"
+      add_photo_label: "Photo"
+  subject_photos:
+    create:
+      success: "Photo ajoutée."
+      subject_archived: "Cette tâche est arrêtée : pas de nouvelle photo."
+    show:
+      title: "Photo du %{date}"
+      alt: "Photo de %{name} du %{date}"
+      destroy: "Supprimer la photo"
+      destroy_confirm: "Supprimer cette photo ?"
+    destroy:
+      success: "Photo supprimée."
+  equipments:
+    suggestions:
+      new:
+        title: "Ajouter des tâches d'entretien ?"
+        intro: "Cochez celles qui servent pour « %{name} ». Tout se modifie ensuite."
+        first_time: "1re fois le %{date}"
+        submit: "Ajouter les tâches cochées"
+        later: "Plus tard"
+      create:
+        success:
+          one: "Une tâche d'entretien ajoutée."
+          other: "%{count} tâches d'entretien ajoutées."
+        none_selected: "Aucune tâche cochée."
+        invalid: "Ces tâches n'ont pas pu être ajoutées."
+  house_tasks:
+    index:
+      back: "← Maison"
+      title: "Tâches de la maison"
+      intro: "Ce qui ne dépend ni d'une plante ni d'un équipement."
+      tasks:
+        zero: "À venir"
+        one: "À venir · %{count}"
+        other: "À venir · %{count}"
+      empty: "Aucune tâche de la maison pour l'instant."
+      add: "Ajouter une tâche"
+      add_label: "Tâche"
   journal:
     show:
       title: "Journal"
@@ -213,12 +343,19 @@ fr:
       one: "Tout arroser : %{count} plante"
       other: "Tout arroser : %{count} plantes"
     watering: "Arrosage"
-    once: "Tâche"
     no_location: "sans emplacement"
   names_sentence:
     others:
       one: "%{count} autre"
       other: "%{count} autres"
+  photo_grid_component:
+    alt: "Photo du %{date}"
+    cover_badge: "Couverture"
+  on_demand_task_row_component:
+    when_needed: "Quand il le faut"
+    never: "jamais fait"
+    last_done: "dernière fois : %{date}"
+    done_today: "Fait aujourd'hui"
   task_row_component:
     done_watering: "J'ai arrosé : %{name}"
     done_with_subject: "Marquer comme fait : %{title} (%{subject})"
@@ -226,6 +363,7 @@ fr:
     watered_today: "Arrosée aujourd'hui"
     done_today: "Fait aujourd'hui"
     postpone_button: "Reporter"
+    has_instructions: "Comment faire disponible"
     postpone: "Reporter à demain : %{title}"
     postpone_with_subject: "Reporter à demain : %{title} (%{subject})"
   due_label:
@@ -237,6 +375,12 @@ fr:
     later:
       one: "dans %{count} j"
       other: "dans %{count} j"
+    later_months:
+      one: "dans %{count} mois"
+      other: "dans %{count} mois"
+    later_years:
+      one: "dans %{count} an"
+      other: "dans %{count} ans"
   plants:
     back: "← Plantes"
     tabs:
@@ -314,23 +458,12 @@ fr:
       new_analysis: "Nouvelle analyse"
       new_analysis_label: "Analyse"
       no_photos: "Aucune photo pour l'instant : une photo de temps en temps permet de voir son évolution."
-      photo_alt: "Photo du %{date}"
-      new_photo: "Nouvelle photo"
-      add_photo: "Ajouter une photo"
-      add_photo_label: "Photo"
-      cover_badge: "Couverture"
       photos_count:
         one: "1 photo"
         other: "%{count} photos"
       no_tasks: "Aucune autre tâche : engrais, taille, rempotage…"
       add_task: "Ajouter une tâche"
       add_task_label: "Tâche"
-      once: "Une fois"
-      edit_task: "Modifier"
-      edit_task_label: "Modifier « %{title} »"
-      destroy_task: "Supprimer"
-      destroy_task_label: "Supprimer « %{title} »"
-      destroy_task_confirm: "Supprimer la tâche « %{title} » et son historique ?"
       done_entry: "%{title}"
       watering_missed: "Arrosage manqué"
       task_missed: "%{title} : manquée"
@@ -473,32 +606,6 @@ fr:
         success: "Date de la photo enregistrée."
       destroy:
         success: "Photo supprimée."
-    tasks:
-      back: "← %{name}"
-      form:
-        title_placeholder: "Ex. Engrais, tailler, rempoter"
-        repeat: "Quand ?"
-        critical: "À ne pas rater"
-        critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
-        kinds:
-          once: "Une seule fois"
-          sliding: "Tous les N jours après la dernière fois"
-        due_on:
-          once: "Date"
-          first: "Première fois"
-          sliding: "Prochaine fois"
-      new:
-        title: "Ajouter une tâche"
-        submit: "Ajouter la tâche"
-      create:
-        success: "Tâche « %{title} » ajoutée."
-      edit:
-        title: "Modifier « %{title} »"
-        submit: "Enregistrer"
-      update:
-        success: "Tâche « %{title} » enregistrée."
-      destroy:
-        success: "Tâche « %{title} » supprimée."
     archives:
       create:
         success: "Plante « %{name} » archivée."
@@ -507,10 +614,97 @@ fr:
         success: "Plante « %{name} » restaurée."
         already: "« %{name} » n'était pas archivée."
   tasks:
+    completions:
+      create:
+        not_on_demand: "Cette tâche a une date : faites-la depuis sa ligne."
+        inactive: "Cette tâche est arrêtée."
+        already_done_today: "Déjà fait aujourd'hui."
+    back_house: "← Tâches de la maison"
+    rhythm:
+      once: "Une fois"
+      on_demand: "Quand il le faut"
+      sliding:
+        days:
+          one: "Tous les jours"
+          other: "Tous les %{count} jours"
+        weeks:
+          one: "Toutes les semaines"
+          other: "Toutes les %{count} semaines"
+        months:
+          one: "Tous les mois"
+          other: "Tous les %{count} mois"
+        years:
+          one: "Tous les ans"
+          other: "Tous les %{count} ans"
+      weeks:
+        one: "Chaque semaine, le %{day}"
+        other: "Toutes les %{count} semaines, le %{day}"
+      years:
+        one: "Chaque année, le %{date}"
+        other: "Tous les %{count} ans, le %{date}"
+      first_day: "1er"
+    form:
+      title_placeholder: "Ex. Engrais, tailler, rempoter"
+      title_placeholder_house: "Ex. Sortir la poubelle jaune, aérer la cave"
+      repeat: "Quand ?"
+      critical: "À ne pas rater"
+      critical_help: "En tête de liste et en rouge le jour venu, sans délai : manquée dès le lendemain."
+      instructions_help: "Facultatif : les étapes, relues au moment de faire la tâche."
+      no_reminder: "Aucun : le résumé du matin suffit"
+      reminder_help: >-
+        Une notification ce jour-là à cette heure. Pour une tâche à ne pas rater, jusqu'à 2 relances à une heure
+        d'écart, jamais après 22 h.
+      instructions_placeholder: "Ex. Sortir le bac jaune devant le portail, couvercle fermé."
+      suggestions: "Suggestions"
+      every_n: "Tous les"
+      units:
+        days: "jours"
+        weeks: "semaines"
+        months: "mois"
+        years: "ans"
+      kinds:
+        once: "Une seule fois"
+        sliding: "Tous les N jours, semaines, mois ou ans après la dernière fois"
+        fixed: "À jour fixe : toutes les N semaines ou chaque année"
+        on_demand: "Quand il le faut : pas de date, je note quand je le fais"
+      due_on:
+        once: "Date"
+        next: "Prochaine fois le"
+        fixed_help: "Le jour de la semaine, ou le jour de l'année, vient de cette date."
+    new:
+      title: "Ajouter une tâche"
+      submit: "Ajouter la tâche"
+    create:
+      success: "Tâche « %{title} » ajoutée."
+    edit:
+      title: "Modifier « %{title} »"
+      submit: "Enregistrer"
+      destroy: "Supprimer la tâche"
+      destroy_confirm: "Supprimer « %{title} » ? Son historique et ses photos partent aussi."
+    update:
+      success: "Tâche « %{title} » enregistrée."
+    destroy:
+      success: "Tâche « %{title} » supprimée."
+    show:
+      house: "Tâche de la maison"
+      when: "Échéance"
+      done_today: "Fait aujourd'hui"
+      next: "Prochaine fois :"
+      none: "Plus d'échéance."
+      instructions: "Comment faire"
+      no_instructions: "Pas encore de « Comment faire »."
+      add_instructions: "Ajouter le comment faire"
+      last_done: "Dernière fois : %{date}"
+      reminder: "Rappel le jour même à %{time}"
+      photos: "Photos"
+      edit: "Modifier"
+      done: "Fait"
+      done_label: "Marquer comme fait : %{title}"
   task_occurrences:
     completions:
       create:
         success: "%{title} noté pour « %{subject} »."
+        success_without_subject: "%{title} noté."
         not_pending: "C'était déjà fait."
         missed: "Trop tard : cette tâche a été notée manquée."
         inactive: "Cette tâche est arrêtée."
@@ -616,6 +810,7 @@ fr:
       partial_shade: "Mi-ombre"
       shade: "Ombre"
   shared:
+    back_to: "← %{name}"
     account_nav:
       label: "Compte"
       notifications: "Notifications"

@@ -2,6 +2,16 @@
 # with its subject (watering) is set up from the subject. An archived subject gets neither new tasks nor edits (it
 # must be restored first); its tasks can still be deleted.
 class TaskPolicy < ApplicationPolicy
+  # The task sheet: what to do and how.
+  def show?
+    manage?
+  end
+
+  # "Fait" on a task done when needed: the service says why it cannot be (a stale page: dated or stopped since).
+  def record_done?
+    manage?
+  end
+
   def create?
     manage? && !subject_archived?
   end

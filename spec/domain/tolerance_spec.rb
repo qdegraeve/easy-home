@@ -6,7 +6,7 @@ RSpec.describe Tolerance do
   end
 
   def every(days)
-    Recurrence::Sliding.new(interval_days: days)
+    Recurrence::Sliding.new(interval: days)
   end
 
   it "gives a flexible repeating task a quarter of its interval, from 0 to 3 days" do
@@ -38,6 +38,44 @@ RSpec.describe Tolerance do
       expect(described_class.earliest(Time.zone.parse("2026-10-01 00:00"), grace_days: nil, today:))
         .to eq(Time.zone.parse("2026-10-01 00:00"))
       expect(described_class.earliest(nil, grace_days: 0, today:)).to be_nil
+    end
+  end
+
+  it "counts the period of a rule in weeks or months" do
+    expect(grace(:flexible, Recurrence::Sliding.new(interval: 1, unit: "weeks"))).to eq(2)
+    expect(grace(:flexible, Recurrence::Sliding.new(interval: 1, unit: "months"))).to eq(3)
+  end
+
+  describe "fixed dates" do
+    def fixed(interval, unit)
+      Recurrence::Fixed.new(anchor_on: Date.new(2026, 12, 1), interval:, unit:)
+    end
+
+    it "gives a flexible task a quarter of its period, from 0 to 3 days, and none to one that must not be missed" do
+      expect(grace(:flexible, fixed(1, "weeks"))).to eq(2)
+      expect(grace(:flexible, fixed(2, "weeks"))).to eq(3)
+      expect(grace(:flexible, fixed(1, "years"))).to eq(3)
+      expect(grace(:critical, fixed(2, "weeks"))).to eq(0)
+    end
+  end
+
+  describe ".after_miss" do
+    def after_miss(importance, recurrence)
+      described_class.after_miss(importance:, recurrence:)
+    end
+
+    let(:once) { Recurrence::Once.new(due_on: Date.new(2026, 11, 20)) }
+    let(:fixed) { Recurrence::Fixed.new(anchor_on: Date.new(2026, 12, 1), interval: 2, unit: "weeks") }
+
+    it "closes a one-off task, reopens a sliding one, whatever their importance" do
+      expect(after_miss(:critical, once)).to eq(:close)
+      expect(after_miss(:critical, every(7))).to eq(:reopen)
+      expect(after_miss(:flexible, every(7))).to eq(:reopen)
+    end
+
+    it "moves a fixed task that must not be missed to its next date, and reopens a flexible one" do
+      expect(after_miss(:critical, fixed)).to eq(:advance)
+      expect(after_miss(:flexible, fixed)).to eq(:reopen)
     end
   end
 end

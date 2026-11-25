@@ -28,7 +28,7 @@ class PlantAnalysis < ApplicationRecord
   end
 
   def watering_accepted?
-    plant.watering_task&.recurrence_config&.dig("interval_days") == watering_interval_days
+    plant.watering_task&.recurrence&.interval_days == watering_interval_days
   end
 
   def action_accepted?(index)

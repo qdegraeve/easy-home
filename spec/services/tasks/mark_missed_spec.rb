@@ -6,7 +6,7 @@ RSpec.describe Tasks::MarkMissed do
   around { |example| travel_to(Time.zone.parse("2026-11-22 01:05")) { example.run } }
 
   def task_due(on, interval_days: 7, importance: :flexible, recurrence_type: :sliding, active: true)
-    config = recurrence_type == :once ? { "due_on" => on.iso8601 } : { "interval_days" => interval_days }
+    config = recurrence_type == :once ? { "due_on" => on.iso8601 } : { "interval" => interval_days, "unit" => "days" }
     task = create(:task, importance:, recurrence_type:, recurrence_config: config, active:, template_key: nil)
     create(:task_occurrence, task:, due_at: on.in_time_zone)
     task
