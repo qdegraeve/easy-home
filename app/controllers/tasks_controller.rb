@@ -3,6 +3,8 @@
 # (plants/:plant_id/tasks, equipment/:equipment_id/tasks), through policy_scope; a task without one belongs to the
 # current household.
 class TasksController < ApplicationController
+  include TaskSheetReturn
+
   SUBJECTS = { plant_id: Plant, equipment_id: Equipment }.freeze
   # The unit offered for "every N…": days for a plant (fertilizer every 14 days), months for an equipment (the filter
   # every month), weeks for the house (the bins).
@@ -65,13 +67,9 @@ class TasksController < ApplicationController
     task = find_task(:destroy?)
     task.destroy!
     notice = t(".success", title: task.title)
-    # From its sheet, a modal in the Android app: dismissed, the screen under it shows the toast.
-    if params[:from] == "sheet"
-      flash[:notice] = notice
-      recede_or_redirect_to back_path(task), status: :see_other
-    else
-      redirect_to back_path(task), notice:, status: :see_other
-    end
+    return close_task_sheet(back_path(task), notice) if from_task_sheet?
+
+    redirect_to back_path(task), notice:, status: :see_other
   end
 
   private

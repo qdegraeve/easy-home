@@ -271,8 +271,8 @@ suggestion. Exemple complet et règles : `docs/conception/equipements-et-taches.
 - Toute tâche a sa **feuille** (`tasks#show`, modale dans l'app) : le titre, la plante ou « Tâche de la maison », la
   prochaine échéance avec « Fait » et « Reporter », la dernière fois, et le **Comment faire** (texte de l'utilisateur,
   échappé, retours à la ligne gardés). Une ligne d'« Aujourd'hui » ou de la fiche plante ouvre la feuille (sauf
-  l'arrosage, qui mène à la plante) ; une icône livre signale un Comment faire. La feuille mène à la modification, où
-  la tâche se supprime aussi.
+  l'arrosage, qui mène à la plante) ; une icône livre signale un Comment faire. La feuille mène à la modification ; la
+  tâche se supprime depuis l'une ou l'autre, après confirmation (jamais l'arrosage).
 - « Aujourd'hui » liste les tâches dès que le foyer suit quelque chose (une plante ou une tâche), même sans plante.
 
 ## Plantes

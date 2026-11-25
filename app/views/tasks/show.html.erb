@@ -94,13 +94,17 @@
   <% if editable %>
     <%= link_to t(".edit"), edit_task_path(@task), class: "mt-6 #{button_class(:secondary, block: true)}" %>
   <% end %>
-  <%# Deleted from here too, without going through its edit screen; red only behind the confirmation. %>
+  <%# Deleted from here too, without going through its edit screen; "back" never shows the deleted task again. %>
   <% if policy(@task).destroy? %>
-    <%= button_to t("tasks.edit.destroy"), task_path(@task, from: "sheet"), method: :delete,
+    <%= button_to t("tasks.edit.destroy"), task_path(@task), method: :delete, params: { from: "sheet" },
           form: {
-            class: "mt-2 flex justify-center",
-            data: confirm_data(t("tasks.edit.destroy_confirm", title: @task.title), button: t("tasks.edit.destroy"),
-                               danger: true)
+            class: "mt-6 flex justify-center",
+            data: {
+              turbo_action: "replace",
+              **confirm_data(
+                t("tasks.edit.destroy_confirm", title: @task.title), button: t("tasks.edit.destroy"), danger: true
+              )
+            }
           },
           class: small_action_class(:danger) %>
   <% end %>
