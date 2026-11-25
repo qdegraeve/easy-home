@@ -26,9 +26,9 @@ production:
   primary: &primary_production
     <<: *default
     host: <%= ENV["DB_HOST"] %>
+    username: <%= ENV["DB_USER"] %>
+    password: <%= ENV["DB_PASSWORD"] %>
     database: easy_home_production
-    username: easy_home
-    password: <%= ENV["EASY_HOME_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: easy_home_production_cache

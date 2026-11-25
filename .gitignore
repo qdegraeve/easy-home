@@ -52,3 +52,10 @@
 
 # Local notes for Claude Code (loaded automatically, never committed)
 /CLAUDE.local.md
+
+# figaro env file
+/config/application.yml
+
+# Ignore key files for decrypting credentials and more.
+/config/credentials/*.key
+

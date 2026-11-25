@@ -1,0 +1,5 @@
+production:
+  # variables used by kamal for deployment
+  APP_HOST: "test.com"
+  KAMAL_HOST: "192.168.0.1"
+  KAMAL_SSH_USER: "root"
