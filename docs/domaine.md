@@ -67,7 +67,7 @@ Equipment                        # générique, pas de champ propre à un type (
   has_many :tasks, as: :subject ; has_many :photos, as: :subject   # suppression : tâches et journal effacés
 
 Photo
-  subject (polymorphe : Plant, Equipment, Task)   # plant_id encore écrit pour une plante, retiré en PR 9
+  subject (polymorphe : Plant, Equipment, Task)   # requis en base ; ancienne colonne plant_id ignorée, supprimée ensuite
   taken_at                       # date de prise de vue (EXIF, sinon envoi), modifiable
   image (Active Storage)         # JPEG, PNG ou WebP, 15 Mo maximum, validés sur le contenu ;
                                  # stockée normalisée : 2048 px max, JPEG sans métadonnées (ADR 0011)
@@ -201,7 +201,7 @@ Ruby pur dans `app/domain/recurrence/`, sans ActiveRecord :
 - `Recurrence::Sliding` : `interval` jours (1 à 60), semaines (1 à 52), mois (1 à 24) ou ans (1 à 10) après la
   dernière réalisation (`unit`, `start_on` facultatif, date de la première échéance) ; un 31 tombe le dernier jour
   d'un mois plus court. Config `{ "interval", "unit", "start_on" }` (migration depuis `interval_days`, 23 novembre
-  2026) ; `#interval_days` reste un lecteur pour l'arrosage, compté en jours ;
+  2026, l'ancien format n'est plus lu) ; `#interval_days` reste un lecteur pour l'arrosage, compté en jours ;
 - `Recurrence::Fixed` : une ancre (`anchor_on`, « prochaine fois le ») et un pas de N semaines (1 à 52) ou N ans
   (1 à 10) ; le jour de la semaine ou la date de l'année se déduit de l'ancre (un 29 février tombe le 28 les autres
   années). Une ancre passée s'ouvre à sa prochaine date, qui devient l'ancre ; modifier « Prochaine fois le » déplace

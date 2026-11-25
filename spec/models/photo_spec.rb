@@ -27,7 +27,7 @@ RSpec.describe Photo, type: :model do
   it "belongs to a subject of a known type, and says whose it is" do
     photo = create(:photo)
 
-    expect(photo.of?(photo.plant)).to be(true)
+    expect(photo.of?(photo.subject)).to be(true)
     expect(photo.of?(create(:plant))).to be(false)
     expect(photo.of?(Household.new(id: photo.subject_id))).to be(false) # same id, another type
     photo.subject = create(:household)

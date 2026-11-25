@@ -19,7 +19,7 @@ RSpec.describe Photos::Add do
     expect(Vips::Image.new_from_file(file_fixture("plant_with_gps.jpg").to_s).get_fields).to include(/GPS/)
 
     photo = described_class.new.call(subject: plant, file: upload("plant_with_gps.jpg")).value!
-    expect(photo).to have_attributes(subject: plant, plant:) # plant_id still written for the code before
+    expect(photo).to have_attributes(subject: plant)
 
     expect(photo).to have_attributes(taken_at: Time.zone.parse("2026-11-10 08:15"))
     expect(photo.image.blob.content_type).to eq("image/jpeg")

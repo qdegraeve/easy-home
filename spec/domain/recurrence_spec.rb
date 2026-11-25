@@ -31,10 +31,4 @@ RSpec.describe Recurrence do
       expect { described_class.build(type: "sliding", config: {}) }.to raise_error(Recurrence::InvalidConfig)
     end
   end
-
-  it "still reads the former config of a sliding task (interval_days), for a deploy or rollback around it" do
-    rule = described_class.build(type: "sliding", config: { "interval_days" => 5, "start_on" => "2026-12-01" })
-
-    expect(rule).to have_attributes(interval: 5, unit: "days", start_on: Date.new(2026, 12, 1))
-  end
 end
