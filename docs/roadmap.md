@@ -63,11 +63,12 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 ## Étape 5 : le reste du MVP
 
 - [x] Conception des autres domaines : `docs/conception/equipements-et-taches.md`, ADR 0016 et 0017
-- [ ] Tâches de la maison, Comment faire et feuille de la tâche (PR 1)
-- [ ] Récurrence à jour fixe et suggestion poubelles (PR 2)
-- [ ] Rappels à une heure et relances (PR 3)
-- [ ] Unités semaines, mois, ans (PR 4) ; photos polymorphes (PR 5)
-- [ ] Équipements, photos d'une tâche (PR 6) ; « quand il le faut » (PR 7) ; suggestions par type (PR 8)
+- [x] Tâches de la maison, Comment faire et feuille de la tâche (PR 1)
+- [x] Récurrence à jour fixe et suggestion poubelles (PR 2)
+- [x] Rappels à une heure et relances (PR 3)
+- [x] Unités semaines, mois, ans (PR 4) ; photos polymorphes (PR 5)
+- [x] Équipements, photos d'une tâche (PR 6) ; « quand il le faut » (PR 7) ; suggestions par type (PR 8)
+- [ ] Nettoyage (PR 9, #97) : à déployer après les PR 1 à 8 en production, puis suppression de `photos.plant_id`
 - [ ] Un animal
 - [ ] Tableau de bord : en retard, aujourd'hui, à venir ; job des échéances manquées
 - [ ] Notifications avec relance, action « Fait » native (`Device`, API `api/v1`)

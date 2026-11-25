@@ -64,7 +64,14 @@ class TasksController < ApplicationController
   def destroy
     task = find_task(:destroy?)
     task.destroy!
-    redirect_to back_path(task), notice: t(".success", title: task.title), status: :see_other
+    notice = t(".success", title: task.title)
+    # From its sheet, a modal in the Android app: dismissed, the screen under it shows the toast.
+    if params[:from] == "sheet"
+      flash[:notice] = notice
+      recede_or_redirect_to back_path(task), status: :see_other
+    else
+      redirect_to back_path(task), notice:, status: :see_other
+    end
   end
 
   private

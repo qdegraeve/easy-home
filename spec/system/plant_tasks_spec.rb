@@ -66,7 +66,7 @@ RSpec.describe "Plant tasks", type: :system do
     open_plant_tab("Soins")
     expect(page).to have_content("Une fois · dans 4 j")
 
-    # The row opens the task sheet, which leads to its edit screen, where it is also deleted.
+    # The row opens the task sheet, which leads to its edit screen, and where it is deleted.
     click_link "Tailler"
     expect(page).to have_css("h1", text: "Tailler")
     click_on "Modifier"
@@ -76,8 +76,7 @@ RSpec.describe "Plant tasks", type: :system do
     expect(page).to have_content("Tâche « Tailler les gourmands » enregistrée.")
     expect(page).to have_content("Prochaine fois : dans 9 j") # back on the sheet, with the changes
 
-    click_on "Modifier"
-    click_on "Supprimer la tâche"
+    click_on "Supprimer la tâche" # from the sheet, without going through its edit screen
     within("dialog", text: "Son historique et ses photos partent aussi.") { click_on "Supprimer la tâche" }
     expect(page).to have_content("Tâche « Tailler les gourmands » supprimée.")
     expect(page).to have_no_link("Tailler les gourmands")
