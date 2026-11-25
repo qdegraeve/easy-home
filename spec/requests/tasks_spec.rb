@@ -182,7 +182,7 @@ RSpec.describe "Tasks", type: :request do
 
       post task_occurrence_completion_path(task.pending_occurrence), params: { from: "sheet" }, headers: app
 
-      expect(response).to redirect_to(%r{/recede_historical_location})
+      expect(response).to redirect_to(%r{/resume_historical_location})
       expect(flash[:notice]).to eq("Sortir la poubelle jaune noté.")
     end
 
@@ -192,15 +192,15 @@ RSpec.describe "Tasks", type: :request do
       sign_in(user)
 
       get task_path(task)
-      expect(response.parsed_body.at_css("form[action='#{task_path(task, from: "sheet")}'] button").text)
+      expect(response.parsed_body.at_css("form[action='#{task_path(task)}'][data-turbo-action=replace] button").text)
         .to eq("Supprimer la tâche")
-      delete task_path(task, from: "sheet")
+      delete task_path(task), params: { from: "sheet" }
       expect(response).to redirect_to(house_tasks_path)
       expect(Task.exists?(task.id)).to be(false)
 
       app = { "User-Agent" => "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android" }
-      delete task_path(other, from: "sheet"), headers: app
-      expect(response).to redirect_to(%r{/recede_historical_location})
+      delete task_path(other), params: { from: "sheet" }, headers: app
+      expect(response).to redirect_to(%r{/resume_historical_location})
       expect(flash[:notice]).to eq("Tâche « Aérer » supprimée.")
     end
 
@@ -214,17 +214,19 @@ RSpec.describe "Tasks", type: :request do
       expect(task.reload.pending_occurrence.due_at.to_date).to eq(Date.new(2026, 11, 17))
     end
 
-    it "shows a watering without edit, and the task of an archived plant without due date nor edit" do
+    it "shows a watering without edit nor deletion, the task of an archived plant with its deletion only" do
       plant = create(:plant, :watered, household:, name: "Citronnier")
       pruning = Tasks::Add.new.call(subject: plant, params: { title: "Tailler", due_on: "2026-11-20" }).value!
       sign_in(user)
 
       get task_path(plant.watering_task)
-      expect(response.body).not_to include("Modifier", "Ajouter le comment faire")
+      expect(response.body).not_to include("Modifier")
+      expect(response.body).not_to include("Ajouter le comment faire")
+      expect(response.body).not_to include("Supprimer la tâche")
 
       Plants::Archive.new.call(plant:)
       get task_path(pruning)
-      expect(response.parsed_body.text.squish).to include("Plus d'échéance.")
+      expect(response.parsed_body.text.squish).to include("Plus d'échéance.", "Supprimer la tâche")
       expect(response.body).not_to include("Modifier")
     end
   end

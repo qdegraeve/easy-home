@@ -64,5 +64,14 @@ RSpec.describe "House tasks", type: :system do
     go_to_tab("Maison")
     click_on "Tâches de la maison"
     expect(page).to have_content("Tous les 3 mois · dans 3 mois")
+
+    click_link "Manœuvrer le groupe de sécurité"
+    expect(page).to have_css("h1", text: "Manœuvrer le groupe de sécurité")
+    click_on "Supprimer la tâche" # from its sheet
+    within("dialog", text: "Son historique et ses photos partent aussi.") { click_on "Supprimer la tâche" }
+    expect(page).to have_content("Tâche « Manœuvrer le groupe de sécurité » supprimée.")
+    expect(page).to have_content("Aucune tâche de la maison pour l'instant.")
+    page.go_back # never the deleted task again
+    expect(page).to have_css("h1", text: "Tâches de la maison")
   end
 end
