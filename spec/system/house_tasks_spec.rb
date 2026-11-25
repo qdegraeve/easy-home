@@ -72,6 +72,7 @@ RSpec.describe "House tasks", type: :system do
     expect(page).to have_content("Tâche « Manœuvrer le groupe de sécurité » supprimée.")
     expect(page).to have_content("Aucune tâche de la maison pour l'instant.")
     page.go_back # never the deleted task again
+    expect(page).to have_no_content("supprimée.") # the previous page, no longer the one the deletion led to
     expect(page).to have_css("h1", text: "Tâches de la maison")
   end
 end

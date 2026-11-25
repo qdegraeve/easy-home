@@ -191,9 +191,11 @@ RSpec.describe "Tasks", type: :request do
       other = Tasks::Add.new.call(household:, params: { title: "Aérer", due_on: "2026-11-16" }).value!
       sign_in(user)
 
-      get task_path(task)
-      expect(response.parsed_body.at_css("form[action='#{task_path(task)}'][data-turbo-action=replace] button").text)
-        .to eq("Supprimer la tâche")
+      [ task_path(task), edit_task_path(task) ].each do |path|
+        get path
+        expect(response.parsed_body.at_css("form[action='#{task_path(task)}'][data-turbo-action=replace] button").text)
+          .to eq("Supprimer la tâche")
+      end
       delete task_path(task), params: { from: "sheet" }
       expect(response).to redirect_to(house_tasks_path)
       expect(Task.exists?(task.id)).to be(false)
@@ -201,7 +203,9 @@ RSpec.describe "Tasks", type: :request do
       app = { "User-Agent" => "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android" }
       delete task_path(other), params: { from: "sheet" }, headers: app
       expect(response).to redirect_to(%r{/resume_historical_location})
-      expect(flash[:notice]).to eq("Tâche « Aérer » supprimée.")
+      follow_redirect!
+      get house_tasks_path, headers: app # the screen under the sheet, loaded again
+      expect(response.parsed_body.text).to include("Tâche « Aérer » supprimée.")
     end
 
     it "postpones from the sheet, back to it" do
