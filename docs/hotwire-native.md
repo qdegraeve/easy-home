@@ -118,15 +118,23 @@ Décision : ADR 0012 (résumé du matin, gem `action_push_native`, appareil ratt
 
 **Côté Android** :
 
-- Permission `POST_NOTIFICATIONS` (Android 13+) demandée au bon moment, pas au premier lancement.
-- Un canal de notification par catégorie (rappels, relances).
-- Action « Fait » : un `BroadcastReceiver` appelle l'API avec le jeton, sans ouvrir l'app, puis met à jour ou retire la notification.
-- Toucher la notification ouvre l'URL de l'échéance dans la webview.
+- Permission `POST_NOTIFICATIONS` (Android 13+) demandée depuis la page Notifications, sur un geste de l'utilisateur,
+  jamais au premier lancement (bridge component `push`, `PushComponent`).
+- Enregistrement : la page envoie le jeton Firebase à `POST /push_devices` ; chaque page de l'app le redonne et ne le
+  poste que s'il manque à la session (reconnexion, jeton renouvelé).
+- Un canal « Rappels » (`reminders`) ; Firebase affiche la notification en arrière-plan, `EasyHomeMessagingService`
+  au premier plan.
+- À venir, action « Fait » : un `BroadcastReceiver` appelle l'API avec le jeton, sans ouvrir l'app, puis met à jour ou
+  retire la notification.
+- Toucher la notification ouvre son `data.path` dans l'onglet Aujourd'hui.
 
 **Configuration** :
 
-- Projet Firebase, `google-services.json` dans l'app (ne pas le versionner s'il est sensible).
-- Compte de service Firebase dans les credentials Rails.
+- Projet Firebase avec deux apps Android (`app.easyhome.android` et `app.easyhome.android.debug`) ; leur
+  `google-services.json` dans `android/app/`, jamais versionné. Sans lui, le plugin n'est pas appliqué : l'app se
+  construit sans Firebase (CI).
+- Compte de service Firebase dans les credentials Rails (`action_push_native.fcm`, `encryption_key` = le JSON entier,
+  `project_id`), de production et de développement.
 
 **Points de vigilance** : les restrictions d'arrière-plan des constructeurs (économies de batterie) sont à tester sur l'appareil réel.
 
