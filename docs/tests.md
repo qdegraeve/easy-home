@@ -17,6 +17,10 @@ Le code est écrit et relu par des agents, et le chef de projet ne le lit pas : 
 - Aucune dépendance au réseau, à l'ordre d'exécution (ordre aléatoire) ou à des données laissées par une autre spec.
 - On cible ce que voit l'utilisateur (texte, libellé, rôle) plutôt qu'une classe CSS ou une structure HTML.
 - Les erreurs JavaScript font échouer la spec (`js_errors: true`).
+- Une image réserve sa place (boîte de hauteur fixe, ou dimensions connues) : sinon, en arrivant, elle déplace les
+  boutons en dessous, et un clic visé avant tombe à côté. C'est aussi un défaut pour l'utilisateur, dont le doigt
+  peut manquer sa cible. Cause de l'échec de `equipment_spec.rb` sur la CI de `main` (fenêtre de confirmation
+  introuvable après « Supprimer la photo »).
 - **Une spec instable se corrige, elle ne se relance pas** : pas de `rspec-retry`. En CI, chaque system spec ajoutée ou modifiée dans une PR est exécutée trois fois en ordre aléatoire.
 
 ### Rapides
