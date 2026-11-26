@@ -16,6 +16,9 @@ application.register("bridge--button", Bridge__ButtonController)
 import Bridge__MenuController from "./bridge/menu_controller"
 application.register("bridge--menu", Bridge__MenuController)
 
+import Bridge__PushController from "./bridge/push_controller"
+application.register("bridge--push", Bridge__PushController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 

@@ -1,0 +1,27 @@
+<%# The phones that receive the notifications. In the app, this phone is registered from here (bridge "push"):
+    asking for the permission is the user's own move, never at the first launch. %>
+<h2 id="devices" class="font-semibold"><%= t(".title") %></h2>
+<% if (count = Current.user.push_devices.count).positive? %>
+  <p class="mt-1"><%= t(".count", count:) %></p>
+  <%= button_to t(".test"), test_notification_path, class: "mt-3 #{button_class(:secondary)}" %>
+<% end %>
+
+<% if hotwire_native_app? %>
+  <% if Current.session.push_devices.none? %>
+    <%# Shown when the app knows the "push" component (application.tailwind.css), the line below otherwise. %>
+    <div data-push-supported>
+      <p class="mt-3 text-muted"><%= t(".this_phone_off") %></p>
+      <button type="button" class="mt-3 <%= button_class(:primary, block: true) %>"
+              data-action="bridge--push#enable"><%= t(".enable") %></button>
+      <div class="mt-3 text-muted" data-bridge--push-target="denied" hidden>
+        <p><%= t(".denied") %></p>
+        <button type="button" class="mt-2 <%= button_class(:secondary) %>"
+                data-action="bridge--push#openSettings"><%= t(".open_settings") %></button>
+      </div>
+      <p class="mt-3 text-muted" data-bridge--push-target="unavailable" hidden><%= t(".unavailable") %></p>
+    </div>
+    <p class="mt-1 text-muted" data-push-unsupported><%= t(".update_app") %></p>
+  <% end %>
+<% elsif count.zero? %>
+  <p class="mt-1 text-muted"><%= t(".web") %></p>
+<% end %>

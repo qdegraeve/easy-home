@@ -7,3 +7,6 @@ local.properties
 captures/
 *.jks
 *.keystore
+
+# Firebase configuration of the project (ADR 0012): kept out of the public repository.
+google-services.json

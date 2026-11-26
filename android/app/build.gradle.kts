@@ -4,6 +4,13 @@ plugins {
     id("com.android.application")
 }
 
+// Firebase (push notifications, ADR 0012): its configuration, app/google-services.json, is downloaded from the
+// Firebase console and never committed. Without it (CI, a fresh clone), the app builds without Firebase and says it
+// cannot receive notifications.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // URL of the Rails app. In debug, the phone reaches the Rails server of the Mac through the USB cable
 // (`adb reverse tcp:3000 tcp:3000`), hence localhost. Override with `easyhome.baseUrl=...` in local.properties
 // (never committed). In release, the production URL comes from `easyhome.releaseUrl` in the same file.
@@ -76,4 +83,6 @@ dependencies {
     implementation("dev.hotwire:core:1.4.1")
     implementation("dev.hotwire:navigation-fragments:1.4.1")
     implementation("com.google.android.material:material:1.14.0")
+    implementation(platform("com.google.firebase:firebase-bom:35.2.0"))
+    implementation("com.google.firebase:firebase-messaging")
 }

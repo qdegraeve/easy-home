@@ -1,12 +1,16 @@
 package app.easyhome.android
 
+import android.Manifest
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -26,6 +30,17 @@ class MainActivity : HotwireActivity() {
     private lateinit var navigatorHosts: View
     private var signedOut = false
     private val navigators = mutableMapOf<String, Navigator>()
+
+    // Notification permission (Android 13+), asked by the "push" bridge component when the user turns notifications
+    // on. Registered with the activity, as Android requires; the answer goes to the component that asked.
+    private var onNotificationPermission: ((Boolean) -> Unit)? = null
+    private val notificationPermission = registerForActivityResult(RequestPermission()) { granted ->
+        onNotificationPermission?.invoke(granted)
+        onNotificationPermission = null
+    }
+
+    // The page of a tapped notification, opened once the "Aujourd'hui" tab is ready (cold start).
+    private var pendingNotificationPath: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Dark system bar icons even when the phone is in dark mode: the app is light only for now (themes.xml).
@@ -53,6 +68,36 @@ class MainActivity : HotwireActivity() {
 
         applyBottomInsets(bottomNavigationView)
         onBackPressedDispatcher.addCallback(this, backToFirstTab)
+        if (savedInstanceState == null) pendingNotificationPath = PushNotifications.pathOf(intent)
+    }
+
+    // A notification tapped while the app runs (single instance): its page, in "Aujourd'hui".
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        PushNotifications.pathOf(intent)?.let(::openFromNotification)
+    }
+
+    fun requestNotificationPermission(callback: (Boolean) -> Unit) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return callback(PushNotifications.permitted(this))
+
+        onNotificationPermission = callback
+        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    // "Aujourd'hui" back to its start page, then the notification's page on top of it (the digest points to "/",
+    // the start page itself: refreshed).
+    private fun openFromNotification(path: String) {
+        bottomNavigation.selectTab(0)
+        navigatorHosts.post {
+            val navigator = delegate.currentNavigator ?: return@post
+            navigator.clearAll {
+                if (path == "/") {
+                    navigator.currentDestination?.refresh(displayProgress = false)
+                } else {
+                    navigator.route(BuildConfig.BASE_URL.trimEnd('/') + path)
+                }
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -67,6 +112,13 @@ class MainActivity : HotwireActivity() {
         navigator.host.navController.addOnDestinationChangedListener { _, _, _ ->
             onPageChanged(navigator)
             updateMainAction()
+        }
+        // Opened from a notification: its page once "Aujourd'hui" exists (its start page loads first anyway).
+        if (navigator.configuration.name == tabs.first().configuration.name) {
+            pendingNotificationPath?.takeIf { it != "/" }?.let { path ->
+                navigatorHosts.post { navigator.route(BuildConfig.BASE_URL.trimEnd('/') + path) }
+            }
+            pendingNotificationPath = null
         }
     }
 

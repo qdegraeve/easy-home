@@ -115,14 +115,19 @@ fr:
       critical_only_help: "Le résumé ne cite que les tâches « à ne pas rater » ; rien n'est envoyé les autres jours."
       households: "Foyers suivis : résumé du matin et rappels"
       submit: "Enregistrer"
-      devices: "Téléphones"
-      devices_count:
+    devices:
+      title: "Téléphones"
+      count:
         one: "1 téléphone reçoit les notifications."
         other: "%{count} téléphones reçoivent les notifications."
-      no_device_app: "Ce téléphone ne reçoit pas encore les notifications : elles arrivent avec une prochaine version
-        de l'app."
-      no_device_web: "Les notifications arrivent sur les téléphones où l'app Android est installée."
       test: "M'envoyer une notification de test"
+      this_phone_off: "Ce téléphone ne reçoit pas les notifications."
+      enable: "Recevoir les notifications sur ce téléphone"
+      denied: "Les notifications sont bloquées pour Easy Home : autorisez-les dans les réglages du téléphone."
+      open_settings: "Ouvrir les réglages du téléphone"
+      unavailable: "Cette version de l'app ne peut pas recevoir de notifications."
+      update_app: "Mettez l'app à jour pour recevoir les notifications sur ce téléphone."
+      web: "Les notifications arrivent sur les téléphones où l'app Android est installée."
     update:
       success: "Enregistré."
   test_notifications:
