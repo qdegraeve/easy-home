@@ -46,8 +46,12 @@ env:
     - RAILS_MASTER_KEY
     - DB_USER
     - DB_PASSWORD
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
   clear:
     APP_HOST: <%= local.fetch("APP_HOST") %>
+    # Sender of the emails, on a real domain: kept in config/application.yml, out of the repository (ADR 0018).
+    MAIL_FROM: <%= local.fetch("MAIL_FROM") %>
 
     # Thruster refuses request bodies over 20 MB before they reach Rails: photos are limited to 15 MB
     # (PhotoUpload), the margin covers the rest of the multipart form. See ADR 0011.

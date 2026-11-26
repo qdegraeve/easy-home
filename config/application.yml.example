@@ -3,3 +3,5 @@ production:
   APP_HOST: "test.com"
   KAMAL_HOST: "192.168.0.1"
   KAMAL_SSH_USER: "root"
+  # sender of the emails, on a domain verified by the email provider (ADR 0018)
+  MAIL_FROM: "Easy Home <no-reply@test.com>"
