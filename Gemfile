@@ -44,7 +44,7 @@ gem "image_processing", "~> 1.2"
 gem "dry-monads", "~> 1.11"
 
 # Reusable, testable & encapsulated view components [https://github.com/ViewComponent/view_component]
-gem "view_component", "~> 4.15"
+gem "view_component", "~> 4.25"
 
 # Minimal authorization through OO design and pure Ruby classes [https://github.com/varvet/pundit]
 gem "pundit", "~> 2.5"
@@ -90,7 +90,7 @@ group :test do
   gem "cuprite", "~> 0.18"
 
   # Stubs HTTP requests: no real network call in the test suite [https://github.com/bblimke/webmock]
-  gem "webmock", "~> 3.35"
+  gem "webmock", "~> 3.39"
 end
 
 group :development do
