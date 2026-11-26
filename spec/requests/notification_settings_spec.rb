@@ -41,7 +41,8 @@ RSpec.describe "Notification settings", type: :request do
 
     expect(response.parsed_body.text.squish).to include("1 téléphone reçoit les notifications.")
     expect(response.parsed_body.at_css("[data-push-supported]")).to be_nil
-    fingerprints = response.parsed_body.at_css("[data-controller~='bridge--push']")["data-bridge--push-fingerprints-value"]
+    component = response.parsed_body.at_css("[data-controller~='bridge--push']")
+    fingerprints = component["data-bridge--push-fingerprints-value"]
     expect(JSON.parse(fingerprints)).to eq([ Digest::SHA256.hexdigest("fcm-1") ])
   end
 

@@ -153,7 +153,8 @@ RSpec.describe "In the Android app", type: :system do
       supportsComponent(component) { return this.supportedComponents.includes(component) },
       receive(message) {
         if (message.event == "enable") window.pushAllowed = true // the user accepts the permission
-        const data = window.pushAllowed ? { status: "granted", token: "fcm-phone-1", name: "Pixel 9" } : { status: "prompt" }
+        const granted = { status: "granted", token: "fcm-phone-1", name: "Pixel 9" }
+        const data = window.pushAllowed ? granted : { status: "prompt" }
         if (message.event != "openSettings") setTimeout(() => window.HotwireNative.web.receive({ ...message, data }))
       }
     })
@@ -177,7 +178,11 @@ RSpec.describe "In the Android app", type: :system do
     click_on "Recevoir les notifications sur ce téléphone"
     expect(page).to have_content("1 téléphone reçoit les notifications.")
     expect(page).to have_no_button("Recevoir les notifications sur ce téléphone")
-    expect(ApplicationPushDevice.sole).to have_attributes(token: "fcm-phone-1", name: "Pixel 9", owner: user.sessions.sole)
+    expect(ApplicationPushDevice.sole).to have_attributes(
+      token: "fcm-phone-1",
+      name: "Pixel 9",
+      owner: user.sessions.sole
+    )
 
     # Signed out, the phone is forgotten; signed in again, any page of the app registers it again.
     visit settings_path
