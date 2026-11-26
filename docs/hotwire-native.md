@@ -13,7 +13,8 @@
 
 - Projet Android dans le dossier `android/` de ce dépôt (un seul dépôt tant que le projet est personnel).
 - Kotlin, Android Studio, bibliothèques `dev.hotwire:core` et `dev.hotwire:navigation-fragments` (1.4.1).
-- Identifiant de l'app : `app.easyhome.android` (neutre, aucun vrai domaine ; à revoir avant une publication).
+- Identifiant de l'app : `app.easyhome.android` en production, `app.easyhome.android.debug` pour la version de test
+  (« Easy Home (dev) », icône grise) : les deux s'installent côte à côte. Neutre, aucun vrai domaine.
 - Build : Android Gradle Plugin 9.4 (Kotlin intégré), Gradle 9.9 (wrapper versionné), compileSdk et targetSdk 37,
   minSdk 28, Java 17. La CI construit l'APK de debug (job « Android ») ; Dependabot suit les dépendances Gradle.
 - Code : `EasyHomeApplication` (configuration Hotwire, chargement de la path configuration), `MainActivity` et
@@ -54,7 +55,7 @@
    sur le Wi-Fi. Le http en clair n'est autorisé qu'en debug et que pour `localhost`
    (`android/app/src/debug/res/xml/network_security_config.xml`).
 3. Construire et installer : `cd android && ./gradlew installDebug` (ou depuis Android Studio).
-4. Journaux : `adb logcat --pid=$(adb shell pidof app.easyhome.android)` ; la webview se débogue depuis Chrome
+4. Journaux : `adb logcat --pid=$(adb shell pidof app.easyhome.android.debug)` ; la webview se débogue depuis Chrome
    (`chrome://inspect`).
 
 `android/local.properties` (jamais versionné) contient `sdk.dir` et, au besoin, `easyhome.baseUrl` pour viser un autre
@@ -132,9 +133,11 @@ Décision : ADR 0012 (résumé du matin, gem `action_push_native`, appareil ratt
 ## Déploiement
 
 - **Rails** : Kamal (`config/deploy.yml`). Il faut une URL HTTPS publique pour l'app mobile et Firebase. Si l'app est auto-hébergée, passer par un tunnel (ex. Cloudflare Tunnel).
-- **Android, usage privé** : APK signé installé à la main, ou piste de test interne de la Play Console (compte développeur requis).
+- **Android, usage privé** : APK de production signé, installé à la main (voir « Version de production » dans
+  `docs/android-coque.md`). Piste de test interne de la Play Console possible plus tard (compte développeur requis).
 - La publication publique impose des contraintes supplémentaires (test fermé obligatoire pour les comptes personnels) : hors périmètre pour l'instant.
-- Garder la clé de signature hors du dépôt.
+- La clé de signature et ses mots de passe restent hors du dépôt (`android/local.properties`, copie de secours dans
+  le gestionnaire de secrets). La perdre oblige à désinstaller l'app pour la mettre à jour.
 
 ## Journal d'apprentissage
 

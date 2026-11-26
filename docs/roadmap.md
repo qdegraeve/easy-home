@@ -56,9 +56,11 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 
 ## Étape 4 : déploiement minimal
 
-- [ ] Kamal vers le serveur de la maison, HTTPS public via le tunnel
+- [x] Kamal vers le serveur de la maison, HTTPS public via son propre tunnel Cloudflare
 - [ ] CLI `claude` et jeton dans l'image (ADR 0008)
-- [ ] Sauvegardes de la base de production (`pg_dump` planifié)
+- [x] Sauvegardes chiffrées de la base et des photos (accessory `backup` : restic vers R2, alerte si absente)
+- [x] App Android de production signée, à côté de la version de test (`.debug`)
+- [ ] Envoi des e-mails en production (mot de passe oublié)
 
 ## Étape 5 : le reste du MVP
 
