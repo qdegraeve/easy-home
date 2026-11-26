@@ -6,7 +6,7 @@ plugins {
 
 // URL of the Rails app. In debug, the phone reaches the Rails server of the Mac through the USB cable
 // (`adb reverse tcp:3000 tcp:3000`), hence localhost. Override with `easyhome.baseUrl=...` in local.properties
-// (never committed). The release URL comes with the deployment (roadmap, step 4).
+// (never committed). In release, the production URL comes from `easyhome.releaseUrl` in the same file.
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
     if (file.exists()) file.inputStream().use { load(it) }
@@ -24,8 +24,25 @@ android {
         versionName = "0.1.0"
     }
 
+    // Release signing key: kept outside the repository, configured in local.properties. Without it (CI), the
+    // release build stays unsigned instead of failing.
+    signingConfigs {
+        create("release") {
+            val store = localProperties.getProperty("easyhome.signing.storeFile")
+            if (store != null) {
+                storeFile = file(store)
+                storePassword = localProperties.getProperty("easyhome.signing.storePassword")
+                keyAlias = localProperties.getProperty("easyhome.signing.keyAlias")
+                keyPassword = localProperties.getProperty("easyhome.signing.keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
+            // A separate app on the phone, so the test and production versions can be installed side by side.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
             buildConfigField(
                 "String",
                 "BASE_URL",
@@ -34,6 +51,9 @@ android {
         }
         release {
             isMinifyEnabled = false
+            if (localProperties.getProperty("easyhome.signing.storeFile") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             buildConfigField(
                 "String",
                 "BASE_URL",

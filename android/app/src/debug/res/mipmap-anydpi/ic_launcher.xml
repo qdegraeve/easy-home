@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Grey instead of the brand green: tells the test app apart from production on the home screen. -->
+    <background android:drawable="@color/launcher_debug" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <!-- Themed icon (Android 13+): the system recolors this single-color mark. -->
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

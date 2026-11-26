@@ -83,7 +83,9 @@ est intégré au plugin, donc pas de plugin Kotlin à déclarer.
 **`app/build.gradle.kts`** : le fichier le plus important du build.
 
 - `namespace` / `applicationId = "app.easyhome.android"` : l'identifiant unique de l'app sur le téléphone (et sur le
-  Play Store un jour). Il ne change plus une fois publié.
+  Play Store un jour). Il ne change plus une fois publié. En debug, `applicationIdSuffix = ".debug"` en fait une
+  autre app (`app.easyhome.android.debug`) : test et production cohabitent sur le téléphone, chacune avec ses
+  données.
 - `compileSdk = 37` / `targetSdk = 37` : on compile avec les API d'Android 17 et on déclare en suivre les règles.
 - `minSdk = 28` : l'app s'installe à partir d'Android 9.
 - `versionCode` / `versionName` : numéro interne (entier qui doit augmenter à chaque publication) et numéro affiché.
@@ -91,7 +93,10 @@ est intégré au plugin, donc pas de plugin Kotlin à déclarer.
 - `buildConfigField("String", "BASE_URL", …)` : crée une constante `BuildConfig.BASE_URL`, utilisable dans le Kotlin.
   C'est l'équivalent d'une variable d'environnement figée dans l'app au moment du build.
   - en debug : `http://localhost:3000` (voir « adb reverse » plus bas), modifiable dans `local.properties` ;
-  - en release : `https://easyhome.invalid`, une adresse volontairement invalide en attendant le déploiement.
+  - en release : `easyhome.releaseUrl` de `local.properties`, l'adresse de production ; sans elle,
+    `https://easyhome.invalid`, une adresse volontairement invalide.
+- `signingConfigs` : la clé de signature de la production, lue dans `local.properties`. Sans elle (en CI), le build
+  release reste non signé au lieu d'échouer.
 - `dependencies` : les « gems ».
   - `dev.hotwire:core` : la WebView pilotée par Turbo, le chargement des règles et le sélecteur de fichiers ;
   - `dev.hotwire:navigation-fragments` : les écrans, la pile de navigation et les modals ;
@@ -102,7 +107,7 @@ version de Gradle, téléchargée automatiquement au premier lancement. Le `.jar
 lire.
 
 **`local.properties`** : fichier personnel, jamais versionné. Il contient le chemin du SDK sur ton Mac, et au besoin
-une autre URL de serveur. C'est l'équivalent d'un `.env` local.
+une autre URL de serveur, l'adresse de production et la clé de signature. C'est l'équivalent d'un `.env` local.
 
 ### Le manifeste : `src/main/AndroidManifest.xml`
 
@@ -304,7 +309,7 @@ renvoie le fichier à la page. Le formulaire Rails reçoit la photo comme depuis
 
 La WebView garde ses cookies comme Chrome. Le cookie de session Rails (authentification du générateur Rails 8)
 fonctionne donc sans rien changer, et reste valable d'un lancement à l'autre. Un vidage des données de l'app
-(`adb shell pm clear app.easyhome.android`) déconnecte.
+(`adb shell pm clear app.easyhome.android.debug`) déconnecte.
 
 ### 4.7 Les bridge components
 
@@ -372,7 +377,7 @@ Chrome : chrome://inspect  ◄────────────────�
 - **Modifier les règles** : éditer `config/hotwire/android_v1.json` **et** la copie dans `android/` (la spec le
   rappelle). L'app prend la nouvelle version au plus tard au lancement suivant.
 - **Modifier la coque** (Kotlin, manifeste, ressources) : `./gradlew installDebug`, puis relancer l'app.
-- **Repartir de zéro** : `adb shell pm clear app.easyhome.android` (déconnecte et vide le cache).
+- **Repartir de zéro** : `adb shell pm clear app.easyhome.android.debug` (déconnecte et vide le cache).
 
 Ce qui se passe au lancement, d'après les journaux :
 
@@ -387,14 +392,37 @@ Ce qui se passe au lancement, d'après les journaux :
 
 | | Debug | Release |
 |---|---|---|
-| Serveur | `http://localhost:3000` via `adb reverse` | URL https de production (étape 4 de la roadmap) |
+| App | `app.easyhome.android.debug`, « Easy Home (dev) », icône grise | `app.easyhome.android`, « Easy Home » |
+| Serveur | `http://localhost:3000` via `adb reverse` | URL https de production (`easyhome.releaseUrl`) |
 | http en clair | Autorisé vers `localhost` seulement | Interdit |
 | Inspecteur Chrome, journaux | Oui | Non |
-| Signature | Clé de debug générée automatiquement | Clé personnelle, à garder hors du dépôt (à créer) |
-| Installation | `./gradlew installDebug` | APK signé installé à la main, ou piste de test du Play Store |
+| Signature | Clé de debug générée automatiquement | Clé personnelle, hors du dépôt |
+| Installation | `./gradlew installDebug` | `./gradlew assembleRelease`, puis `adb install -r` |
 
-Une app Android doit être **signée** pour s'installer. En debug, Android Studio utilise une clé jetable. Pour une
-version durable, il faudra une clé à nous : la perdre empêche de mettre à jour l'app installée.
+Une app Android doit être **signée** pour s'installer. En debug, Android Studio utilise une clé jetable. La
+production a sa propre clé : Android refuse une mise à jour signée par une autre clé, donc la perdre oblige à
+désinstaller l'app (et à se reconnecter).
+
+### Version de production
+
+1. Une seule fois, créer la clé hors du dépôt avec le `keytool` d'Android Studio (`JAVA_HOME` pointant vers
+   `/Applications/Android Studio.app/Contents/jbr/Contents/Home`), puis en garder une copie (fichier en base64 et
+   mot de passe) dans le gestionnaire de secrets :
+
+   ```bash
+   keytool -genkeypair -keystore ~/.config/easy-home/release.jks -alias easyhome \
+     -keyalg RSA -keysize 4096 -validity 10000 -dname "CN=Easy Home"
+   ```
+
+2. Dans `android/local.properties` : `easyhome.releaseUrl` (https, sans `/` final), `easyhome.signing.storeFile`
+   (chemin absolu, sans `~`), `easyhome.signing.storePassword`, `easyhome.signing.keyAlias`,
+   `easyhome.signing.keyPassword`.
+3. Augmenter `versionCode` à chaque version installée, puis `./gradlew assembleRelease` et
+   `adb install -r app/build/outputs/apk/release/app-release.apk`.
+
+La première installation de la production remplace une ancienne app de debug du même identifiant : la
+désinstaller d'abord (`adb uninstall app.easyhome.android`), sinon Android refuse
+(`INSTALL_FAILED_UPDATE_INCOMPATIBLE`).
 
 ## 8. La CI
 
