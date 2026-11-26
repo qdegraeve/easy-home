@@ -8,7 +8,8 @@ module PushDevicesHelper
       bridge__push_fingerprints_value: push_token_fingerprints.to_json,
       bridge__push_url_value: push_devices_path
     }
-    content_tag(name, **options, data: data.merge(options.fetch(:data, {})), &)
+    # Empty or with a block: the attributes always go as attributes, never as the content.
+    content_tag(name, nil, options.merge(data: data.merge(options.fetch(:data, {}))), &)
   end
 
   def push_token_fingerprints

@@ -142,4 +142,54 @@ RSpec.describe "In the Android app", type: :system do
     within("dialog") { click_on "Supprimer la photo" }
     expect(page).to have_content("Photo supprimée.")
   end
+
+  # The app's side of the "push" component: it answers with the Firebase token of the phone, once the permission is
+  # given (window.pushAllowed), like PushComponent.
+  FAKE_PUSH_APP = <<~JS.freeze
+    window.pushAllowed = window.pushAllowed || false
+    window.HotwireNative.web.setAdapter({
+      platform: "android",
+      supportedComponents: ["push"],
+      supportsComponent(component) { return this.supportedComponents.includes(component) },
+      receive(message) {
+        if (message.event == "enable") window.pushAllowed = true // the user accepts the permission
+        const data = window.pushAllowed ? { status: "granted", token: "fcm-phone-1", name: "Pixel 9" } : { status: "prompt" }
+        if (message.event != "openSettings") setTimeout(() => window.HotwireNative.web.receive({ ...message, data }))
+      }
+    })
+  JS
+
+  it "registers this phone from the Notifications page, then again by itself in a new session" do
+    page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [push]")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+
+    visit root_path
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    expect(page).to have_css("h1", text: "Aujourd'hui")
+    visit edit_notification_settings_path
+    page.execute_script(FAKE_PUSH_APP)
+
+    # Nothing asked before the user's own move: no permission, no phone.
+    expect(page).to have_no_content("Mettez l'app à jour")
+    expect(user.push_devices).to be_empty
+    click_on "Recevoir les notifications sur ce téléphone"
+    expect(page).to have_content("1 téléphone reçoit les notifications.")
+    expect(page).to have_no_button("Recevoir les notifications sur ce téléphone")
+    expect(ApplicationPushDevice.sole).to have_attributes(token: "fcm-phone-1", name: "Pixel 9", owner: user.sessions.sole)
+
+    # Signed out, the phone is forgotten; signed in again, any page of the app registers it again.
+    visit settings_path
+    click_on "Se déconnecter"
+    within("dialog", text: "Se déconnecter ?") { click_on "Se déconnecter" }
+    fill_in "Votre adresse e-mail", with: "quentin@example.com"
+    fill_in "Votre mot de passe", with: "secret-password"
+    click_on "Se connecter"
+    expect(page).to have_css("h1", text: "Aujourd'hui")
+    page.execute_script("window.pushAllowed = true")
+    page.execute_script(FAKE_PUSH_APP)
+    page.document.synchronize { raise Capybara::ExpectationNotMet unless ApplicationPushDevice.count == 1 }
+    expect(ApplicationPushDevice.sole.owner).to eq(user.sessions.sole)
+  end
 end
