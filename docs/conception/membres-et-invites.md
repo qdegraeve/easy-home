@@ -1,8 +1,9 @@
 # Membres et invités
 
-> **Statut : proposition, à valider par le propriétaire.** Choix déjà faits par le propriétaire le 27 novembre 2026 :
-> invitation par un lien à partager, tous les gestionnaires peuvent inviter, invités ouverts par sujet avec un choix
-> « Tout », conception complète avant la série de PR. Remplace l'esquisse `TaskAccess` de `docs/domaine.md`.
+> **Statut : validée par le propriétaire le 27 novembre 2026.** Ses choix : invitation par un lien à partager, tous
+> les gestionnaires peuvent inviter, invités ouverts par sujet avec un choix « Tout », accès réglés dès l'invitation,
+> lien ouvert dans le navigateur, conception complète avant la série de PR. Décisions : ADR 0019. Remplace l'esquisse
+> `TaskAccess` de `docs/domaine.md`.
 
 Objectif (`docs/produit.md`) : toute la connaissance de la maison est partagée par les membres du foyer. Tant qu'un
 foyer n'a qu'un utilisateur, rien n'est partagé : c'est la fonction qui rend l'objectif réel.
@@ -82,6 +83,27 @@ ouvert et jusqu'à quand.
 - **Qui a fait quoi** : le journal ne le montre pas encore, alors que `completed_by` est enregistré. Avec plusieurs
   membres, il affiche « Fait par Léa ». Il faut un **prénom** (`users.name`), demandé à la création du compte par
   invitation et modifiable dans les réglages ; à défaut, la partie de l'e-mail avant `@`.
+
+### Supprimer son compte
+
+Exigé par Google Play (et par l'App Store) dès qu'une app permet de créer un compte : dans l'app **et** sur le web.
+
+- **Réglages → Mon compte → Supprimer mon compte**, avec le mot de passe pour confirmer. Le compte, ses sessions, ses
+  téléphones et ses places dans les foyers disparaissent.
+- Le journal garde les échéances faites, sans le nom : « Fait par un ancien membre » (`completed_by` remis à nul).
+- **Seul dans un foyer** : le foyer est supprimé avec lui (plantes, équipements, tâches, photos), et l'écran le dit en
+  nommant le foyer.
+- **Dernier gestionnaire d'un foyer partagé** : refusé tant qu'il n'a pas nommé un autre gestionnaire. L'écran donne
+  le lien vers les membres de ce foyer.
+- Sur le web, la même page, accessible une fois connecté. La page de confidentialité (ci-dessous) explique la
+  démarche pour qui n'a plus l'app.
+
+### Page de confidentialité
+
+Une page publique (`/confidentialite`), exigée par les stores : quelles données (e-mail, prénom, tâches, photos, jeton
+de notification), où (le serveur du foyer, les sauvegardes chiffrées), qui les voit (les membres du foyer), les
+services externes (Firebase, Brevo, Claude pour l'analyse d'une photo), et comment supprimer son compte. Sans nom,
+adresse ni domaine réels : le texte est dans le dépôt public.
 
 ## 5. Les invités
 
@@ -183,9 +205,11 @@ Dans une branche d'intégration `membres`, comme la série `domaines` ; le propr
 | 3 | Changer un rôle, retirer, quitter ; garde-fou du dernier gestionnaire ; « Fait par Léa » dans le journal |
 | 4 | Invités : `GuestAccess`, « Tout ouvrir », période ; `VisibleTasksQuery` et policies ; Aujourd'hui, feuille, Journal, Maison, fiches en lecture |
 | 5 | Notifications des invités (résumé et rappels des tâches ouvertes, dans la période) ; parcours complet « le voisin pendant les vacances » |
+| 6 | Supprimer son compte (app et web), page de confidentialité ; « Fait par un ancien membre » |
 
 Parcours critiques ajoutés à `docs/tests.md` : inviter puis rejoindre sans compte ; rejoindre avec un compte ;
-retirer un membre ; ouvrir un sujet à un invité qui fait la tâche, et ne voit rien d'autre ; accès hors période.
+retirer un membre ; ouvrir un sujet à un invité qui fait la tâche, et ne voit rien d'autre ; accès hors période ;
+supprimer son compte.
 
 ## 8. Points ouverts
 

@@ -191,7 +191,8 @@ end
 
 - Chaque modèle exposé a sa policy. L'autorisation est explicite dans chaque action (`authorize`, `policy_scope`) :
   pas de callback global `verify_authorized` / `verify_policy_scoped`. Les request specs couvrent les accès refusés.
-- `Scope#resolve` borne toujours au foyer de l'utilisateur. Pour un `guest`, il borne en plus aux tâches ouvertes via `TaskAccess` (et à la période en cours).
+- `Scope#resolve` borne toujours au foyer de l'utilisateur. Pour un `guest`, il borne en plus aux tâches des sujets
+  ouverts via `GuestAccess` (et à la période en cours, ADR 0019).
 - Les policies se testent unitairement, avec une matrice rôle × action.
 
 ## Composants (ViewComponent)

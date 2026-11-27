@@ -89,8 +89,9 @@ Détails et exemples dans `docs/architecture.md`. Principe directeur : **une str
 ## État actuel
 
 Les **plantes** sont faites (inventaire, arrosage, pluie, photos, analyse par IA, ADR 0008), avec l'app Android et la
-refonte UX. En cours : les **autres domaines** (tâches de la maison et poubelles, rappels, équipements), en 10 PR
-suivant `docs/conception/equipements-et-taches.md` (ADR 0016, 0017). Voir `docs/roadmap.md`. **Vérifier le `Gemfile`
+refonte UX, puis les **autres domaines** (tâches de la maison et poubelles, rappels, équipements, ADR 0016, 0017), les
+notifications Android et la mise en production. En cours : les **membres et invités**, en 6 PR suivant
+`docs/conception/membres-et-invites.md` (ADR 0019). Voir `docs/roadmap.md`. **Vérifier le `Gemfile`
 avant de supposer qu'une gem citée ici est installée.**
 
 ## Façon de travailler

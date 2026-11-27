@@ -8,7 +8,7 @@
 |---|---|---|
 | Foyer | `Household` | La maison et ses occupants. Unité de partage des données. |
 | Membre | `HouseholdMember` | Lien entre un utilisateur et un foyer, avec un rôle. |
-| Rôle | `HouseholdMember#role` | `owner` (gère le foyer), `member` (voit et fait tout), `guest` (voit uniquement les tâches qui lui sont ouvertes). |
+| Rôle | `HouseholdMember#role` | `owner` (gère le foyer ; deviendra `manager`, gestionnaire, ADR 0019), `member` (voit et fait tout), `guest` (voit uniquement les tâches des sujets qui lui sont ouverts). |
 | Domaine qui calcule | `Plant`, plus tard `Pet` | Ce dont l'app exploite les attributs : un modèle et une table par domaine (ADR 0010, 0016). |
 | Équipement | `Equipment` | Ce qu'on entretient et dont l'app rappelle les tâches (piscine, lave-vaisselle, chauffe-eau…) : nom, type, « À savoir », photos. Générique (ADR 0016). |
 | Sujet d'une tâche | `Task#subject` | La plante ou l'équipement auquel une tâche se rattache (polymorphe) ; nul pour une **tâche de la maison** (poubelles). |
@@ -17,7 +17,8 @@
 | Comment faire | `Task#instructions` | Le mode opératoire d'une tâche, lu au moment de la faire, dans sa feuille. |
 | À savoir | `Equipment#notes` | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
-| Accès invité | `TaskAccess` | Autorise un membre `guest` à voir et valider une tâche, éventuellement sur une période. |
+| Accès invité | `GuestAccess` (à venir) | Ouvre un sujet (plante, équipement, ou le foyer pour les tâches de la maison) et toutes ses tâches à un `guest`, pendant sa période (ADR 0019). |
+| Invitation | `Invitation` (à venir) | Lien à usage unique qui donne à une personne la place réservée pour elle dans le foyer (ADR 0019). |
 | Appareil | `ApplicationPushDevice` | Téléphone qui reçoit les notifications : jeton Firebase, rattaché à une session (ADR 0012). |
 | Plante | `Plant` | Un élément du foyer : nom, espèce, emplacement. Archivable (`archived_at`). |
 | Emplacement | `Location` | Zone de la maison (« terrasse », « jardin devant ») avec son exposition au soleil. |
@@ -50,7 +51,8 @@ Location
 
 HouseholdMember
   user, household, role (owner | member | guest)
-  has_many :task_accesses        # utile pour les guests uniquement
+  # à venir (ADR 0019) : user nullable (place réservée par une invitation), guest_full_access,
+  # access_starts_on, access_ends_on, has_many :guest_accesses, has_one :invitation
 
 Plant                            # un modèle par type d'élément (ADR 0010)
   household (lecture seule), name
@@ -116,9 +118,11 @@ TaskOccurrence                   # = une ligne du journal
   reopened_after_miss : boolean  # rouverte après un oubli : plus jamais manquée
   reminders_sent, last_reminded_at   # rappels envoyés pour cette échéance et le dernier (ADR 0017)
 
-TaskAccess
-  household_member (guest), task
-  starts_on, ends_on (optionnels)
+GuestAccess                      # à venir (ADR 0019)
+  household_member (guest), subject (Plant, Equipment, ou Household pour les tâches de la maison)
+
+Invitation                       # à venir (ADR 0019)
+  household_member (la place réservée), created_by (User), token_digest, expires_at, accepted_at
 
 ApplicationPushDevice            # gem action_push_native (ADR 0012)
   owner (Session)                # se déconnecter supprime l'appareil
