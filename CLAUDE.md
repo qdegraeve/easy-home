@@ -44,6 +44,7 @@ bin/ci                   # CI locale complète (lint, audits, tests)
 bin/rubocop -a           # lint avec correction automatique
 bin/brakeman             # analyse de sécurité
 bin/jobs                 # worker Solid Queue en local
+# http://localhost:3000/letter_opener : les e-mails de dev (invitations, mot de passe oublié), jamais envoyés
 bundle exec rspec        # tests Ruby, dont end to end (yarn build && yarn build:css avant les system specs)
 yarn test                # tests JS Vitest
 bin/check-specs          # garde-fous des specs : pas de sleep, de focus, de retry, de Time.now
