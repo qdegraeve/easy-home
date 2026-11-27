@@ -21,6 +21,13 @@ RSpec.describe Members::SetGuestAccess do
     expect(guest.reload.access_starts_on).to be_nil
   end
 
+  it "refuses an unreadable date instead of opening the access without end" do
+    result = described_class.new.call(member: guest, params: { ends_on: "2026-02-30" })
+
+    expect(result.failure.first).to eq(:invalid)
+    expect(guest.reload.access_ends_on).to be_nil
+  end
+
   it "loses the accesses when the guest becomes a member" do
     create(:household_member, household:, role: :manager)
     described_class.new.call(member: guest, params: { full_access: "1", subjects: [ "Plant:#{ficus.id}" ] })

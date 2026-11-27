@@ -8,7 +8,8 @@ class HouseController < ApplicationController
     authorize @household
     plants = policy_scope(Plant).where(household: @household).active.includes(:location, :analyses).to_a
     @plants_count = plants.size
-    @analyses_to_review = plants.count(&:place_change_since_analysis)
+    # Analyses are not a guest's (ADR 0019).
+    @analyses_to_review = policy(@household).manage? ? plants.count(&:place_change_since_analysis) : 0
     @locations_count = @household.locations.count
     @equipment_count = policy_scope(Equipment).where(household: @household).count
     house_tasks = policy_scope(Task).where(household: @household).without_subject

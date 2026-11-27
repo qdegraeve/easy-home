@@ -1,4 +1,6 @@
 <%# "Soins" tab: the state of the plant (last analysis), then its other tasks. %>
+<%# A guest sees the plant, not its analyses (ADR 0019). %>
+<% if policy(PlantAnalysis.new(plant: @plant)).show? %>
 <section aria-labelledby="analysis" class="space-y-3">
   <h2 id="analysis" class="font-semibold"><%= heading_with_icon(:activity, t("plants.show.analysis")) %></h2>
   <%# Not while an analysis runs (the restart itself), nor for an archived plant (nothing to offer). %>
@@ -19,11 +21,10 @@
     </div>
   <% end %>
   <% latest = @analyses.first %>
-  <%# A guest sees the plant, not its analyses (ADR 0019). %>
-  <% if latest && policy(latest).show? %>
+  <% if latest %>
     <%= render "plants/analyses/summary", analysis: latest,
           restart: latest.failed? && policy(PlantAnalysis.new(plant: @plant)).create? %>
-  <% elsif policy(PlantAnalysis.new(plant: @plant)).create? %>
+  <% else %>
     <%= render EmptyStateComponent.new(text: t("plants.show.no_analysis")) %>
   <% end %>
   <% if @photos.any? && !latest&.pending? && policy(PlantAnalysis.new(plant: @plant)).create? %>
@@ -34,6 +35,7 @@
                   bridge_label: t("plants.show.new_analysis_label"), bridge_order: 2 } %>
   <% end %>
 </section>
+<% end %>
 
 <div>
   <%= render ListGroupComponent.new(title: t("plants.show.tasks"), id: "tasks", icon: :list_todo) do |group| %>

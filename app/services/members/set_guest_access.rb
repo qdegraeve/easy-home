@@ -14,7 +14,7 @@ module Members
         access_ends_on: params[:ends_on].presence
       )
       subjects = find_subjects(member.household, Array(params[:subjects]))
-      return Failure[:invalid, member] unless member.valid?
+      return Failure[:invalid, member] unless member.valid? & dates_valid?(member, params)
 
       ActiveRecord::Base.transaction do
         member.save!
@@ -40,6 +40,14 @@ module Members
 
     def keep(member, subject)
       member.guest_accesses.find_by(subject:)&.id
+    end
+
+    # A date given but unreadable must not silently open the access without end.
+    def dates_valid?(member, params)
+      { access_starts_on: :starts_on, access_ends_on: :ends_on }.each do |attribute, key|
+        member.errors.add(attribute, :invalid) if params[key].present? && member.public_send(attribute).nil?
+      end
+      member.errors.none?
     end
   end
 end
