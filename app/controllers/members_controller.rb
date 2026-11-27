@@ -39,7 +39,7 @@ class MembersController < ApplicationController
     if result.success?
       redirect_to members_path, notice: t(".success", name: @member.user.display_name)
     else
-      redirect_to edit_member_path(@member), alert: t(".#{result.failure.first}")
+      redirect_to members_path, alert: t(".#{result.failure.first}")
     end
   end
 

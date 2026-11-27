@@ -73,7 +73,7 @@ RSpec.describe "Members", type: :request do
 
     own = household.members.find_by!(user: manager)
     patch member_path(own), params: { household_member: { role: "member" } }
-    expect(response).to redirect_to(edit_member_path(own))
+    expect(response).to redirect_to(members_path)
     expect(flash[:alert]).to eq("Il faut au moins un gestionnaire : nommez-en un autre d'abord.")
     expect(own.reload).to be_manager
 

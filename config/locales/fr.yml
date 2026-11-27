@@ -362,6 +362,7 @@ fr:
     update:
       success: "Rôle de %{name} enregistré."
       invalid_role: "Ce rôle n'est pas possible."
+      gone: "Cette personne ne fait plus partie du foyer."
       last_manager: "Il faut au moins un gestionnaire : nommez-en un autre d'abord."
     destroy:
       cancelled: "Invitation annulée."

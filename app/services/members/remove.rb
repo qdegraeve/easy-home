@@ -6,6 +6,10 @@ module Members
 
     def call(member:)
       member.household.with_lock do
+        # Read again under the lock: the role may have changed since the page was loaded.
+        return Failure[:gone, member] unless member.class.exists?(member.id)
+
+        member.reload
         yield LastManager.new.ensure_not(member)
 
         member.destroy!

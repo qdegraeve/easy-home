@@ -23,4 +23,13 @@ RSpec.describe Members::Remove do
     expect(described_class.new.call(member: manager).failure).to eq([ :last_manager, manager ])
     expect(manager.reload).to be_present
   end
+  it "reads the role again under the lock: a member promoted meanwhile, now the last manager, stays" do
+    member = create(:household_member, household:, role: :member)
+    stale = HouseholdMember.find(member.id) # loaded by a page before the promotion
+    member.update!(role: :manager)
+    manager.destroy!
+
+    expect(described_class.new.call(member: stale).failure.first).to eq(:last_manager)
+    expect(member.reload).to be_manager
+  end
 end
