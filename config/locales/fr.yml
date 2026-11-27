@@ -310,6 +310,7 @@ fr:
     watered_by_rain: "Arrosé par la pluie"
     by_rain: "par la pluie"
     by_you: "par vous"
+    by_former_member: "par un ancien membre"
     by: "par %{name}"
     missed: "Non fait, prévu le %{date}"
     watering_missed: "Arrosage non fait, prévu le %{date}"
@@ -329,8 +330,79 @@ fr:
       title: "Mon compte"
       name_help: "Affiché aux autres membres du foyer, et dans le journal."
       save: "Enregistrer"
+      delete_title: "Supprimer mon compte"
+      delete_help: >-
+        Votre compte, vos sessions et vos téléphones sont supprimés, et vous quittez vos foyers. Ce que vous avez
+        fait reste dans leur journal, sans votre nom. Impossible à annuler.
+      hand_over: >-
+        Vous êtes le seul gestionnaire de %{households}, que d'autres partagent : nommez d'abord un autre gestionnaire.
+      members_link: "Membres du foyer"
+      households_alone:
+        one: >-
+          Vous êtes seul dans %{households} : ce foyer sera supprimé avec tout son contenu (plantes, équipements,
+          tâches, photos).
+        other: >-
+          Vous êtes seul dans %{households} : ces foyers seront supprimés avec tout leur contenu (plantes, équipements,
+          tâches, photos).
+      password: "Votre mot de passe, pour confirmer"
+      delete: "Supprimer mon compte"
+      delete_confirm: "Supprimer définitivement votre compte ?"
+      privacy: "Confidentialité"
     update:
       success: "Compte enregistré."
+    destroy:
+      success: "Votre compte est supprimé."
+      wrong_password: "Mot de passe incorrect : rien n'a été supprimé."
+      last_manager: "Nommez d'abord un autre gestionnaire : rien n'a été supprimé."
+      rate_limited: "Trop d'essais. Réessayez dans quelques minutes."
+  privacy:
+    show:
+      title: "Confidentialité"
+      intro: >-
+        Easy Home est une application privée, faite pour un foyer et ses proches. Elle n'affiche aucune publicité et
+        ne vend aucune donnée : seuls les services nommés plus bas en reçoivent, pour ce qu'ils font.
+      data:
+        title: "Les données enregistrées"
+        body:
+          - "Votre adresse e-mail, votre prénom et votre mot de passe (chiffré, jamais lisible)."
+          - >-
+              Ce que le foyer y met : plantes, équipements, tâches, leurs « Comment faire », photos, l'adresse de la
+              maison, et le journal de ce qui a été fait, par qui et quand.
+          - "Pour les notifications : un identifiant de votre téléphone, fourni par Firebase."
+      where:
+        title: "Où elles sont"
+        body:
+          - >-
+              Sur le serveur du foyer, et dans des sauvegardes chiffrées avant l'envoi, illisibles par l'hébergeur des
+              sauvegardes.
+      who:
+        title: "Qui les voit"
+        body:
+          - >-
+              Les membres du foyer voient ce que contient le foyer. Un invité ne voit que ce qui lui est ouvert, pendant
+              la période prévue.
+      services:
+        title: "Les services utilisés"
+        body:
+          - "Firebase Cloud Messaging (Google) achemine les notifications vers les téléphones Android."
+          - "Brevo envoie les e-mails (mot de passe oublié)."
+          - >-
+              Anthropic (Claude) analyse les photos d'une plante quand une analyse est lancée : les photos, la plante
+              (nom, espèce, emplacement, arrosage), votre remarque et la position de la maison à 1 km près, jamais
+              l'adresse.
+          - >-
+              Des services publics de géographie et de météo reçoivent la position de la maison, pour l'altitude et la
+              pluie.
+      deletion:
+        title: "Supprimer son compte"
+        body:
+          - >-
+              Dans l'app ou sur le site : Réglages, Mon compte, Supprimer mon compte. Votre compte, vos sessions et vos
+              téléphones sont supprimés aussitôt ; un foyer où vous êtes seul est supprimé avec vous. Ce que vous avez
+              fait dans un foyer partagé (journal, analyses, questions) y reste, sans votre nom.
+          - >-
+              Les sauvegardes chiffrées gardent les données supprimées jusqu'à leur expiration, un an au plus.
+          - "Sans accès à l'app : demandez-le à un gestionnaire de votre foyer, qui transmettra."
   members:
     index:
       back: "← Réglages"

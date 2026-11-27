@@ -76,7 +76,8 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [ ] Tableau de bord : en retard, aujourd'hui, à venir ; job des échéances manquées
 - [ ] Notifications avec relance, action « Fait » native (`Device`, API `api/v1`)
 - [x] Conception des membres et invités : `docs/conception/membres-et-invites.md`, ADR 0019
-- [ ] Membres et invités, en 6 PR (gestionnaires, invitation par lien, invités par sujet, suppression du compte)
+- [x] Membres et invités, en 6 PR (gestionnaires, invitation par lien, invités par sujet, suppression du compte),
+  dans la branche `membres` (#111 à #117), à tester avant le merge dans `main`
 - [ ] Distribution des apps : Play Store en test interne, puis app iOS
 
 ## Après le MVP

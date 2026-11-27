@@ -104,6 +104,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Réglages des notifications, enregistrés à chaque changement : résumé coupé, heure, « seulement ce qui ne doit pas être raté », foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Dans l'app : enregistrer ce téléphone pour les notifications depuis la page Notifications (permission sur un geste), puis de nouveau tout seul après une reconnexion | `spec/system/native_app_spec.rb` | Fait |
 | Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement ; pour un invité, ses tâches ouvertes, dans sa période (de même pour les rappels) | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
+| Supprimer son compte (exigé par les stores) : ce qui part avec lui dit avant, mot de passe et confirmation, foyer où l'on est seul supprimé ; refusé au dernier gestionnaire d'un foyer partagé ; « par un ancien membre » au journal | `spec/system/account_deletion_spec.rb`, `spec/services/accounts/destroy_spec.rb`, `spec/requests/accounts_spec.rb` | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
 | Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 5 |
 | Validation d'une tâche : journal mis à jour, échéance suivante créée | | Étape 5 |

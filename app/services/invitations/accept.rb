@@ -10,6 +10,8 @@ module Invitations
       ActiveRecord::Base.transaction do
         invitation = yield find(token)
         member = invitation.household_member
+        # The household too: a deletion of the account of its last person (Accounts::Destroy) waits, or goes first.
+        member.household.lock!
         user ||= yield create_account(account)
         yield ensure_newcomer(member.household, user)
 

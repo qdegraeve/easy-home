@@ -31,7 +31,7 @@ RSpec.describe JournalEntryComponent, type: :component do
     expect(line(entry(watering, by: me))).to start_with("Citronnier Arrosé · par vous · 18 h 30")
     expect(line(entry(pruning, by: me))).to start_with("Tailler Citronnier · par vous · 18 h 30")
     expect(line(entry(bins, by: me))).to start_with("Poubelle jaune par vous · 18 h 30")
-    expect(line(entry(watering))).to start_with("Citronnier Arrosé · 18 h 30")
+    expect(line(entry(watering))).to start_with("Citronnier Arrosé · par un ancien membre · 18 h 30") # account deleted
     expect(line(entry(watering, source: :rain))).to start_with("Citronnier Arrosé par la pluie · 18 h 30")
   end
 

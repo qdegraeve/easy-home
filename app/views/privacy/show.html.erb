@@ -1,0 +1,16 @@
+<div class="mx-auto max-w-2xl pt-6">
+  <p class="text-xs font-semibold uppercase tracking-wide text-action"><%= t("layouts.application.app_name") %></p>
+  <h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+  <p class="mt-2 text-muted"><%= t(".intro") %></p>
+
+  <div class="mt-6 space-y-6">
+    <% %w[data where who services deletion].each do |section| %>
+      <section class="space-y-2 rounded-2xl bg-surface p-4" aria-labelledby="privacy-<%= section %>">
+        <h2 id="privacy-<%= section %>" class="font-semibold"><%= t(".#{section}.title") %></h2>
+        <% Array(t(".#{section}.body")).each do |paragraph| %>
+          <p class="text-sm"><%= paragraph %></p>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+</div>

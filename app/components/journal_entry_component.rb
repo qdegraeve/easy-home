@@ -32,10 +32,10 @@ class JournalEntryComponent < ViewComponent::Base
     parts.compact.join(" · ")
   end
 
-  # "par vous", "par Sam", "par la pluie", or nothing (User#display_name).
+  # "par vous", "par Sam", "par la pluie", "par un ancien membre" (account deleted, ADR 0019) (User#display_name).
   def author
     return t(entry.done? && task.watering? ? ".watered_by_rain" : ".by_rain") if entry.by_rain?
-    return unless entry.completed_by
+    return t(".by_former_member") unless entry.completed_by
     return t(".by_you") if entry.completed_by == user
 
     t(".by", name: entry.completed_by.display_name)
