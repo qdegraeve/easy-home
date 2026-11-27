@@ -26,11 +26,14 @@ l'utilisateur va le relire.**
 
 ## 2. Inviter
 
-Depuis **Réglages → Membres du foyer** (gestionnaire) : « Inviter quelqu'un », choix du rôle, puis l'écran du lien.
+Depuis **Réglages → Membres du foyer** (gestionnaire) : « Inviter quelqu'un », un nom pour s'y retrouver, le rôle
+(pour un invité : ce qui lui est ouvert et la période, voir 5), puis l'écran du lien.
 
 ```
 Inviter quelqu'un
-  Rôle : (•) Membre   ( ) Gestionnaire   ( ) Invité
+  Pour : [ Marc (le voisin) ]
+  Rôle : ( ) Membre   ( ) Gestionnaire   (•) Invité
+  Ce qui lui est ouvert, période… (invité seulement)
   [Créer le lien]
 
 Lien d'invitation, valable 7 jours, pour une seule personne
@@ -41,9 +44,11 @@ Lien d'invitation, valable 7 jours, pour une seule personne
   fuite de la base ne donne aucun lien valable. Le lien porte le rôle.
 - **Partager** ouvre le partage d'Android dans l'app (Web Share API, disponible dans la WebView), **Copier** partout.
   L'app n'envoie rien elle-même : pas d'e-mail, pas d'adresse à saisir.
-- **Les invitations en attente** sont listées sous les membres (« Membre, créée par Quentin, expire le 4 déc. »), avec
+- **Les invitations en attente** sont dans la liste des membres (« Marc, invité, en attente jusqu'au 4 déc. »), avec
   « Annuler ». Une invitation expirée disparaît de la liste.
-- Le lien ne se réaffiche pas après coup (seule l'empreinte est gardée) : perdu, on l'annule et on en crée un autre.
+- Le lien ne se réaffiche pas après coup (seule l'empreinte est gardée) : perdu, « Nouveau lien » remplace l'ancien
+  sans toucher aux réglages de la place.
+- Le nom saisi sert seulement à reconnaître l'invitation dans la liste ; la personne donne son prénom en rejoignant.
 
 ## 3. Rejoindre
 
@@ -101,8 +106,9 @@ Du [ 20 déc. ] au [ 5 janv. ]   (facultatif)
 - **La période** (du / au, facultatifs) porte sur l'invité, pas sur chaque sujet : c'est « pendant les vacances ».
   Hors période, l'invité voit « Votre accès à Maison commence le 20 déc. » ou « … s'est terminé le 5 janv. » et ne
   reçoit rien. Prolonger = changer la date.
-- Les accès se règlent **après** que l'invité a rejoint : l'invitation ne porte que le rôle. Tant que rien n'est
-  ouvert : « Rien ne vous est encore confié dans Maison ».
+- Les accès se règlent **dès l'invitation** : inviter un invité ouvre sa fiche (nom, sujets, période) avant le lien.
+  Quand il clique, tout est prêt. Les mêmes réglages restent modifiables avant et après qu'il a rejoint : c'est la
+  même fiche. Si rien n'est ouvert : « Rien ne vous est encore confié dans Maison ».
 - Archiver ou supprimer un sujet retire son accès (la ligne d'accès est supprimée avec le sujet).
 
 ### Ce qu'il voit et fait
@@ -129,31 +135,37 @@ Household
   has_many :members (HouseholdMember), :invitations
 
 HouseholdMember
+  user (nul tant que l'invitation n'est pas acceptée)
   role (manager | member | guest)       # owner renommé manager
   guest_full_access (bool, false)       # « Tout ouvrir »
   access_starts_on, access_ends_on      # période de l'invité, facultatives
   has_many :guest_accesses
+  has_one :invitation
 
 GuestAccess                             # un sujet ouvert à un invité
   household_member (guest), subject (polymorphe : Plant, Equipment, Household = tâches de la maison)
   unique (household_member, subject)
 
-Invitation
-  household, created_by (User), role
+Invitation                              # le lien qui donne sa place à une personne
+  household_member (la place réservée), created_by (User)
   token_digest (SHA-256, unique), expires_at (7 jours)
-  accepted_by (User), accepted_at, revoked_at
+  accepted_at
 
 User
   name                                  # prénom affiché dans le journal et la liste des membres
 ```
 
+- **Inviter réserve une place** : un `HouseholdMember` sans utilisateur, avec son rôle (et, pour un invité, ses
+  accès), et son `Invitation`. Accepter remplit `user` : il n'y a rien à recopier, et une seule fiche pour régler un
+  invité avant comme après. Annuler une invitation, ou la laisser expirer, supprime la place. Une place sans
+  utilisateur ne donne aucun droit et n'est comptée nulle part (ni gestionnaire, ni destinataire de notification).
 - « Tâches de la maison » ouvertes = un `GuestAccess` dont le sujet est le foyer : pas de valeur spéciale.
 - **Les règles d'accès vivent dans les policies** (Pundit), à partir d'un query object `VisibleTasksQuery(user,
   household)` : toutes les tâches pour un gestionnaire ou un membre ; pour un invité dans sa période, celles des sujets
   ouverts (ou toutes si `guest_full_access`). Aujourd'hui, le Journal, la Maison, le résumé et les rappels lisent tous
   ce scope : une seule définition de « ce que je vois ».
-- Services : `Invitations::Create`, `Invitations::Accept` (crée le compte au besoin, la membership, consomme le lien,
-  dans une transaction avec verrou sur l'invitation : deux clics simultanés ne créent qu'une membership),
+- Services : `Invitations::Create`, `Invitations::Accept` (crée le compte au besoin, attache l'utilisateur à sa place,
+  consomme le lien, dans une transaction avec verrou sur l'invitation : deux clics simultanés n'en font qu'un),
   `Members::ChangeRole`, `Members::Remove` (garde-fou du dernier gestionnaire, sous verrou du foyer).
 - Sécurité : création de compte limitée par `rate_limit` (comme la connexion) ; le jeton se compare par son empreinte ;
   les pages d'invitation ne disent pas si un e-mail a déjà un compte.
@@ -177,10 +189,9 @@ retirer un membre ; ouvrir un sujet à un invité qui fait la tâche, et ne voit
 
 ## 8. Points ouverts
 
-1. **L'app Android pour les autres membres** : sans Play Store, il faut leur envoyer l'APK de production (signé,
-   mises à jour à la main) ou qu'ils utilisent le site. Un canal de distribution (Play Store en test interne, Firebase
-   App Distribution) est un sujet à part, hors de cette série.
-2. **Lien ouvert dans l'app** : un lien d'invitation s'ouvre dans le navigateur, pas dans l'app (les App Links
-   Android demandent un fichier `assetlinks.json` et la clé de signature). Hors série, sauf avis contraire.
-3. **Accès réglés à l'invitation** plutôt qu'après : plus confortable pour le voisin (tout est prêt quand il clique),
-   mais l'invitation doit alors porter les accès. Proposé : après, plus simple ; à revoir à l'usage.
+1. **Distribuer les apps** (Play Store, App Store, test interne ou TestFlight) : sujet à part, à trancher avant la
+   série ou en parallèle. Tant qu'il n'est pas fait, un nouveau membre utilise le site.
+2. **Lien vers les stores** : sur un téléphone, hors de l'app, la page d'invitation (et la page de connexion) propose
+   « Installer l'app » vers le store de la plateforme, quand l'app y est. Dépend du point 1.
+3. **Lien ouvert dans l'app** : validé, un lien d'invitation s'ouvre dans le navigateur (pas d'App Links ni
+   d'Universal Links).
