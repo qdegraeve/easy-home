@@ -41,7 +41,7 @@ RSpec.describe Notifications::SendReminder do
     expect(enqueued_jobs.to_s).not_to include("Couper les gourmands")
   end
 
-  it "reaches a member whose morning digest is off, but neither a guest, a member who unfollowed, nor another home" do
+  it "reaches a member whose digest is off, not a guest with nothing opened, an unfollowing member, another home" do
     user.update!(digest_enabled: false)
     guest = create(:household_member, household:, role: :guest).user
     create(:push_device, owner: create(:session, user: guest))
@@ -51,6 +51,19 @@ RSpec.describe Notifications::SendReminder do
 
     expect { described_class.new.call(occurrence: bins) }
       .to have_enqueued_job(ApplicationPushNotificationJob).exactly(1).times.with(anything, anything, device)
+  end
+
+  it "reaches a guest to whom the task is opened, during their period only (ADR 0019)" do
+    guest = create(:household_member, household:, role: :guest)
+    guest_phone = create(:push_device, owner: create(:session, user: guest.user))
+    Members::SetGuestAccess.new.call(member: guest, params: { subjects: [ "Household:#{household.id}" ],
+                                                              ends_on: "2026-12-01" })
+
+    expect { described_class.new.call(occurrence: bins) }
+      .to have_enqueued_job(ApplicationPushNotificationJob).with(anything, anything, guest_phone)
+
+    guest.update!(access_ends_on: Date.new(2026, 11, 30))
+    expect(described_class.recipients(bins.task)).to eq([ device ])
   end
 
   it "claims each send once: a second run with the same count, or a closed occurrence, sends nothing" do

@@ -37,6 +37,22 @@ RSpec.describe Notifications::SendDigest do
     expect(user.reload.last_digest_on).to eq(today)
   end
 
+  it "lists for a guest only the tasks opened to them (ADR 0019)" do
+    guest = create(:household_member, household:, role: :guest)
+    guest_phone = create(:push_device, owner: create(:session, user: guest.user))
+    lemon = due_plant("Citronnier")
+    due_plant("Basilic")
+    Members::SetGuestAccess.new.call(member: guest, params: { subjects: [ "Plant:#{lemon.id}" ] })
+
+    expect { described_class.new.call(user: guest.user, today:) }
+      .to have_enqueued_job(ApplicationPushNotificationJob)
+      .with("ApplicationPushNotification", hash_including(body: "Arroser Citronnier"), guest_phone)
+
+    guest.update!(access_ends_on: Date.new(2026, 11, 15))
+    guest.user.update_column(:last_digest_on, nil)
+    expect(described_class.new.call(user: guest.user, today:).failure.first).to eq(:nothing_due)
+  end
+
   it "puts the tasks that must not be missed first, and names a single watering" do
     lemon = due_plant("Citronnier")
     create(:task, household:, subject: lemon, title: "Traitement", template_key: nil, importance: :critical,

@@ -196,9 +196,12 @@ pending ──(Fait)──────────▶ done
   l'écran : les tâches « à ne pas rater » d'abord, tous les arrosages en un élément (« arroser 4 plantes »), puis le
   reste ; ou seulement les « à ne pas rater » si l'utilisateur le choisit. Une tâche avec un rappel y dit quand :
   « ce soir 19 h : sortir la poubelle jaune ».
+- **Résumé du matin d'un invité** (ADR 0019) : seulement les tâches qui lui sont ouvertes, pendant sa période (la même
+  définition que les écrans : `TaskOccurrencePolicy::Scope`).
 - **Rappels** (ADR 0017, `SendRemindersJob` toutes les 5 minutes, `RemindersDueQuery`, `Notifications::SendReminder`) :
   une tâche peut avoir un rappel à une heure le jour de son échéance (les poubelles : 19 h). Une notification aux
-  membres qui suivent le foyer, même avec le résumé coupé ; relancée toutes les heures, 3 au plus, rien après 22 h,
+  membres qui suivent le foyer, même avec le résumé coupé, et aux invités à qui la tâche est ouverte (pendant leur
+  période, ADR 0019) ; relancée toutes les heures, 3 au plus, rien après 22 h,
   pour une tâche à ne pas rater. Chaque envoi est réservé de façon atomique (jamais deux fois). « Fait » ou
   « Reporter » arrêtent les relances ; une échéance reportée est rappelée le lendemain ; changer la date remet les
   compteurs à zéro. La notification nomme la tâche (et sa plante), jamais son Comment faire, et ouvre sa feuille.
