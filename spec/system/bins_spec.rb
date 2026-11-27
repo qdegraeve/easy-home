@@ -9,11 +9,11 @@ RSpec.describe "Bins", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-12-01 18:00")) { example.run } }
 
   it "adds the yellow bin from its suggestion, does it, then misses the next one" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     go_to_tab("Maison")
@@ -52,11 +52,11 @@ RSpec.describe "Bins", type: :system do
   end
 
   it "keeps a forgotten flexible yearly task to do, then brings it back on its day the next year" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit new_task_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     visit new_task_path
     fill_in "Tâche", with: "Préparer la saison cyclonique"

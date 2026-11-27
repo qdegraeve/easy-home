@@ -4,7 +4,7 @@ RSpec.describe "Push devices", type: :request do
   let(:user) { create(:user) }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   it "registers the phone of the signed-in session" do

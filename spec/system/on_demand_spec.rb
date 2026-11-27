@@ -9,12 +9,12 @@ RSpec.describe "Tasks done when needed", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   it "adds the salt when needed, does it from the dishwasher, undoes it, then makes it monthly" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     dishwasher = create(:equipment, household: user.households.sole, kind: "dishwasher", name: "Lave-vaisselle")
 
     visit equipment_path(dishwasher)
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     visit equipment_path(dishwasher)
     click_on "Ajouter une tâche"

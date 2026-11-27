@@ -17,7 +17,7 @@ RSpec.describe "Guests", type: :system do
 
     visit new_session_path
     fill_in "Votre adresse e-mail", with: manager.email
-    fill_in "Votre mot de passe", with: "password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     click_on "Réglages"
     click_on "Membres du foyer"
@@ -38,8 +38,8 @@ RSpec.describe "Guests", type: :system do
     expect(page).to have_content("Quentin vous invite comme invité.")
     fill_in "Prénom", with: "Marc"
     fill_in "E-mail", with: "marc@example.com"
-    fill_in "Mot de passe", with: "secret-password"
-    fill_in "Confirmation du mot de passe", with: "secret-password"
+    fill_in "Mot de passe", with: "passwordpassword"
+    fill_in "Confirmation du mot de passe", with: "passwordpassword"
     click_on "Créer mon compte et rejoindre Maison"
 
     expect(page).to have_content("Bienvenue dans Maison.")

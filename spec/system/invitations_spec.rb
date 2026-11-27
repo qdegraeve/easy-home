@@ -9,7 +9,7 @@ RSpec.describe "Invitations", type: :system do
                               user: create(:user, name: "Quentin", email: "quentin@example.com")).user
   end
 
-  def sign_in(email, password = "password")
+  def sign_in(email, password = "passwordpassword")
     visit new_session_path
     fill_in "Votre adresse e-mail", with: email
     fill_in "Votre mot de passe", with: password
@@ -47,8 +47,8 @@ RSpec.describe "Invitations", type: :system do
     expect(page).to have_content("Quentin vous invite comme membre.")
     fill_in "Prénom", with: "Léa"
     fill_in "E-mail", with: "lea@example.com"
-    fill_in "Mot de passe", with: "secret-password"
-    fill_in "Confirmation du mot de passe", with: "secret-password"
+    fill_in "Mot de passe", with: "passwordpassword"
+    fill_in "Confirmation du mot de passe", with: "passwordpassword"
     click_on "Créer mon compte et rejoindre Maison"
 
     expect(page).to have_content("Bienvenue dans Maison.")
@@ -74,7 +74,7 @@ RSpec.describe "Invitations", type: :system do
     visit invitation_path(invitation.token)
     click_on "Se connecter"
     fill_in "Votre adresse e-mail", with: "lea@example.com"
-    fill_in "Votre mot de passe", with: "password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     expect(page).to have_css("h1", text: "Rejoindre Maison")

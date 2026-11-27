@@ -4,7 +4,7 @@ RSpec.describe "Invitations", type: :request do
   let(:invitation) { create(:invitation) }
   let(:household) { invitation.household_member.household }
   let(:account) do
-    { name: "Léa", email: "lea@example.com", password: "secret-123", password_confirmation: "secret-123" }
+    { name: "Léa", email: "lea@example.com", password: "une phrase de passe", password_confirmation: "une phrase de passe" }
   end
 
   it "answers an unknown, used or expired link the same way" do
@@ -38,7 +38,7 @@ RSpec.describe "Invitations", type: :request do
 
   it "tells someone already in the household, without using the link" do
     user = create(:household_member, household:, role: :member).user
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
 
     get invitation_path(invitation.token)
     expect(response.body).to include("Vous faites déjà partie de ce foyer.")

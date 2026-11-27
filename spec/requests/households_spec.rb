@@ -4,7 +4,7 @@ RSpec.describe "Households", type: :request do
   let(:user) { create(:user) }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   describe "GET /households" do

@@ -8,7 +8,7 @@ RSpec.describe "Sections", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
 
   it "goes from Aujourd'hui to Maison, Plantes and a plant, then cancels a watering from the journal" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     create(
       :plant,
       :watered,
@@ -20,7 +20,7 @@ RSpec.describe "Sections", type: :system do
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_css("nav[aria-label=Sections] a[aria-current=page]", text: "Aujourd'hui")
     click_on "J'ai arrosé : Basilic"
@@ -50,12 +50,12 @@ RSpec.describe "Sections", type: :system do
   end
 
   it "deletes a plant in place of its page: going back never shows it again" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     create(:plant, :watered, household: user.households.sole, name: "Basilic")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     open_plant("Basilic")
     click_on "Supprimer"

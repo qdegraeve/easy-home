@@ -8,7 +8,7 @@ RSpec.describe "Batch completions", type: :request do
 
   around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
 
-  before { post session_path, params: { email: user.email, password: "password" } }
+  before { post session_path, params: { email: user.email, password: "passwordpassword" } }
 
   def due_watering(name, household: self.household)
     plant = create(
@@ -63,7 +63,7 @@ RSpec.describe "Batch completions", type: :request do
 
   it "does not let a guest do the tasks" do
     guest = create(:household_member, household:, role: :guest).user
-    post session_path, params: { email: guest.email, password: "password" }
+    post session_path, params: { email: guest.email, password: "passwordpassword" }
     lemon = due_watering("Citronnier")
 
     post task_occurrences_batch_completion_path, params: { occurrence_ids: [ lemon.id ] }

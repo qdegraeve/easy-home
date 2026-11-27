@@ -5,7 +5,7 @@ RSpec.describe "Members", type: :request do
   let(:manager) { create(:household_member, household:, role: :manager).user }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   def invite(params = { role: "member", invitee_name: "Léa" })

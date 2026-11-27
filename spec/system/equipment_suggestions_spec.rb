@@ -9,11 +9,11 @@ RSpec.describe "Equipment suggestions", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-23 10:00")) { example.run } }
 
   it "adds a dishwasher, then the filter and the salt among its suggested tasks" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     go_to_tab("Maison")

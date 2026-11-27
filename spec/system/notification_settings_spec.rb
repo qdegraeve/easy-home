@@ -4,12 +4,12 @@ require "rails_helper"
 # app; here the settings that drive the morning digest.
 RSpec.describe "Notification settings", type: :system do
   it "turns the morning digest off, changes its time, its scope and the households it covers" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     create(:household_member, user:, role: :member, household: create(:household, name: "Chez Mamie"))
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     click_on "Réglages"

@@ -3,11 +3,11 @@ require "rails_helper"
 # Critical journey: without a household, the app is unusable (see docs/tests.md).
 RSpec.describe "Households", type: :system do
   it "creates a first household on first sign in, then adds a second one and switches" do
-    create(:user, email: "quentin@example.com", password: "secret-password")
+    create(:user, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     expect(page).to have_css("h1", text: "Créer un foyer")

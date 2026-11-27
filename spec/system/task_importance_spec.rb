@@ -9,13 +9,13 @@ RSpec.describe "Task importance", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   it "puts a task that must not be missed first in red, then shows it and a late watering missed" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     create(:plant, :watered, household: user.households.first, name: "Citronnier", interval_days: 7,
                              last_watered_at: Time.zone.parse("2026-11-09 08:00"))
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Ajouter une tâche"
@@ -50,13 +50,13 @@ RSpec.describe "Task importance", type: :system do
   end
 
   it "postpones a task of the day to tomorrow, with a discreet trace in the journal" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     create(:plant, :watered, household: user.households.first, name: "Citronnier", interval_days: 7,
                              last_watered_at: Time.zone.parse("2026-11-09 08:00"))
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_content("À faire aujourd'hui · 1")
 

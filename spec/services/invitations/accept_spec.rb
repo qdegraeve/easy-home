@@ -4,7 +4,7 @@ RSpec.describe Invitations::Accept do
   let(:invitation) { create(:invitation) }
   let(:household) { invitation.household_member.household }
   let(:account) do
-    { name: "Léa", email: "lea@example.com", password: "secret-123", password_confirmation: "secret-123" }
+    { name: "Léa", email: "lea@example.com", password: "une phrase de passe", password_confirmation: "une phrase de passe" }
   end
 
   it "gives the place to the signed-in user and uses the link up" do
@@ -21,7 +21,7 @@ RSpec.describe Invitations::Accept do
     member = described_class.new.call(token: invitation.token, account:).value!
 
     expect(member.user).to have_attributes(name: "Léa", email: "lea@example.com")
-    expect(member.user.authenticate("secret-123")).to be_truthy
+    expect(member.user.authenticate("une phrase de passe")).to be_truthy
   end
 
   it "creates nothing from an invalid account and keeps the link" do

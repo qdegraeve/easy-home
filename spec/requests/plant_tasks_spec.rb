@@ -11,7 +11,7 @@ RSpec.describe "Plant tasks", type: :request do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   def add_task(params = once_params[:task])

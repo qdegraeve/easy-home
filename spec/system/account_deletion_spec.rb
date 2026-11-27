@@ -7,13 +7,13 @@ RSpec.describe "Account deletion", type: :system do
 
     visit new_session_path
     fill_in "Votre adresse e-mail", with: "lea@example.com"
-    fill_in "Votre mot de passe", with: "password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     click_on "Réglages"
     click_on "Lea"
 
     expect(page).to have_content("Vous êtes seul dans Maison de test : ce foyer sera supprimé")
-    fill_in "Votre mot de passe, pour confirmer", with: "password"
+    fill_in "Votre mot de passe, pour confirmer", with: "passwordpassword"
     click_on "Supprimer mon compte"
     within("dialog", text: "Supprimer définitivement votre compte ?") { click_on "Supprimer mon compte" }
 

@@ -9,7 +9,7 @@ RSpec.describe "Plant analysis questions", type: :request do
   let(:analysis) { create(:plant_analysis, :done, plant:) }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   it "asks a question, then shows the answer under the analysis" do

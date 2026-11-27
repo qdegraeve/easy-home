@@ -3,11 +3,11 @@ require "rails_helper"
 # Critical journey: the address and locations feed the watering advice (see docs/tests.md).
 RSpec.describe "My house", type: :system do
   it "picks the address in the suggestions, sees the computed altitude, then manages locations" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     go_to_tab("Maison")
     click_on "Adresse et emplacements"

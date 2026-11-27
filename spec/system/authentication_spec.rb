@@ -2,13 +2,13 @@ require "rails_helper"
 
 # Critical journey: without signing in, the app is unusable (see docs/tests.md).
 RSpec.describe "Authentication", type: :system do
-  let!(:user) { create(:user, :with_household, email: "quentin@example.com", password: "secret-password") }
+  let!(:user) { create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword") }
 
   it "signs the user in then out" do
     visit root_path
 
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     expect(page).to have_css("h1", text: "Aujourd'hui")

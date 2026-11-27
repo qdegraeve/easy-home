@@ -10,7 +10,7 @@ RSpec.describe "Home", type: :request do
 
     it "renders the household page for a signed in user" do
       user = create(:user, :with_household)
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
 
       get root_path
 
@@ -20,7 +20,7 @@ RSpec.describe "Home", type: :request do
 
     it "sends a user without household to the household form" do
       user = create(:user)
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
 
       get root_path
 
@@ -31,7 +31,7 @@ RSpec.describe "Home", type: :request do
       user = create(:user)
       create(:household_member, user:, household: create(:household, name: "Zébu"))
       create(:household_member, user:, household: create(:household, name: "Appartement"))
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
 
       get root_path
 
@@ -46,7 +46,7 @@ RSpec.describe "Home", type: :request do
 
     let(:user) { create(:user, :with_household) }
 
-    before { post session_path, params: { email: user.email, password: "password" } }
+    before { post session_path, params: { email: user.email, password: "passwordpassword" } }
 
     it "says so, with the next task when none comes in the next days" do
       create(
@@ -105,7 +105,7 @@ RSpec.describe "Home", type: :request do
       done.call("Citronnier", by: user, at: "2026-11-16 09:15")
       done.call("Menthe", by: user, at: "2026-11-15 09:00")
       done.call("Voisin", by: user, at: "2026-11-16 09:00", home: create(:household))
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
 
       get root_path
 
@@ -135,7 +135,7 @@ RSpec.describe "Home", type: :request do
         create(:plant, :watered, household:, name:, location: garden,
                                  last_watered_at: Time.zone.parse("2026-11-13 08:00"))
       end
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
     end
 
     it "says the next day that a shower postponed the waterings of the plants it names, then no more" do

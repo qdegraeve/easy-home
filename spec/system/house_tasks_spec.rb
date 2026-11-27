@@ -9,11 +9,11 @@ RSpec.describe "House tasks", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   it "adds a task of the house with its instructions, reads them from Aujourd'hui and does it" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     go_to_tab("Maison")
@@ -43,11 +43,11 @@ RSpec.describe "House tasks", type: :system do
   end
 
   it "repeats a task every 3 months after the last time: done today, back in 3 months" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit new_task_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     visit new_task_path
     fill_in "Tâche", with: "Manœuvrer le groupe de sécurité"
