@@ -29,7 +29,7 @@
 
 ```
 User
-  email, name (prénom affiché aux autres membres ; à défaut, l'e-mail avant « @ »)
+  email, name (prénom affiché aux autres membres ; à défaut, le début de l'e-mail : « sam.dupont@… » donne « Sam »)
   has_many :household_members
   has_many :devices
 
@@ -144,6 +144,9 @@ HouseholdMember
 
 - Un compte est créé en console (`bin/rails accounts:create`), sans inscription publique. Le foyer se crée ensuite
   dans l'app : un utilisateur sans foyer est envoyé vers « Créer un foyer » (`Households::Create`, rôle `manager`).
+- Membres (ADR 0019, `Members::ChangeRole`, `Members::Remove`) : un gestionnaire change un rôle (membre ↔
+  gestionnaire) et retire quelqu'un ; chacun quitte un foyer depuis « Mes foyers ». Un foyer garde toujours un
+  gestionnaire (sous verrou du foyer). Retirer ne supprime ni le compte ni ses lignes du journal.
 - Un utilisateur peut avoir plusieurs foyers. Le **foyer actif** est mémorisé en session (`session[:household_id]`) et
   se change depuis « Mes foyers ». À défaut, ou si la session pointe vers un foyer dont il n'est plus membre, c'est son
   premier foyer par ordre alphabétique. Toute lecture passe par `policy_scope(Household)`.

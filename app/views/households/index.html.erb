@@ -8,11 +8,20 @@
           <span class="block font-medium"><%= household.name %></span>
           <span class="text-sm text-muted"><%= t(".roles.#{@roles[household.id]}") %></span>
         </span>
-        <% if household == @current_household %>
-          <span class="text-sm text-muted"><%= t(".current") %></span>
-        <% else %>
-          <%= button_to t(".select"), household_selection_path(household), class: button_class(:secondary) %>
-        <% end %>
+        <span class="flex items-center gap-2">
+          <% if household == @current_household %>
+            <span class="text-sm text-muted"><%= t(".current") %></span>
+          <% else %>
+            <%= button_to t(".select"), household_selection_path(household), class: button_class(:secondary) %>
+          <% end %>
+          <%= button_to(
+            t(".leave"),
+            member_path(@memberships.fetch(household.id)),
+            method: :delete,
+            class: small_action_class(:danger),
+            form: { data: confirm_data(t(".leave_confirm", name: household.name), button: t(".leave"), danger: true) }
+          ) %>
+        </span>
       </div>
     <% end %>
   <% end %>

@@ -18,8 +18,9 @@ class User < ApplicationRecord
   # What the morning digest lists: every task due, or only the ones that must not be missed (UX review #22).
   enum :digest_scope, { all: "all", critical: "critical" }, prefix: :digest, validate: true
 
-  # Shown to the other members (ADR 0019): the first name, else the part of the email before "@".
+  # Shown to the other members (ADR 0019): the first name, else the start of the email, up to the first dot or
+  # underscore ("sam.dupont@…" gives "Sam").
   def display_name
-    name || email.split("@").first
+    name || email.split(/[@._]/).first.upcase_first
   end
 end

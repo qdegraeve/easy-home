@@ -1,0 +1,19 @@
+module Members
+  # A manager changes the role of someone who joined (ADR 0019): member ↔ manager. Under the household lock, so that
+  # two managers demoting each other at once never leave it without one.
+  class ChangeRole
+    include Dry::Monads[:result, :do]
+
+    ROLES = %w[member manager].freeze
+
+    def call(member:, role:)
+      member.household.with_lock do
+        return Failure[:invalid_role, member] unless ROLES.include?(role.to_s) && !member.pending?
+        yield LastManager.new.ensure_not(member) unless role.to_s == "manager"
+
+        member.update!(role:)
+      end
+      Success(member)
+    end
+  end
+end
