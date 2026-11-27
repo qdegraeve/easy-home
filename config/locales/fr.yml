@@ -63,6 +63,10 @@ fr:
   activerecord:
     errors:
       models:
+        household_member:
+          attributes:
+            email:
+              already_member: "fait déjà partie du foyer"
         user:
           attributes:
             password:
@@ -83,7 +87,8 @@ fr:
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
       household_member:
-        invitee_name: "Pour qui ?"
+        invitee_name: "Prénom"
+        email: "E-mail"
         role: "Rôle"
       equipment:
         kind: "Type"
@@ -415,7 +420,7 @@ fr:
       invited: "Invitations en attente"
       unnamed: "Sans nom"
       pending: "%{role}, lien valable jusqu'au %{date}"
-      new_link: "Nouveau lien"
+      resend: "Renvoyer"
       cancel: "Annuler"
       cancel_confirm: "Annuler l'invitation de %{name} ? Son lien ne marchera plus."
       invite: "Inviter quelqu'un"
@@ -424,16 +429,23 @@ fr:
     new:
       back: "← Membres"
       title: "Inviter quelqu'un"
-      intro: "Vous obtenez un lien à envoyer vous-même (message, WhatsApp…). Il sert une seule fois, pendant 7 jours."
+      intro: "Un e-mail part à cette adresse, avec un lien qui sert une seule fois, pendant 7 jours."
       invitee_name_placeholder: "Ex. Léa"
-      invitee_name_help: "Pour vous y retrouver dans les invitations en attente. La personne donnera son prénom."
+      invitee_name_help: "Facultatif, pour vous y retrouver. La personne donnera son prénom."
+      email_help: "Seule cette adresse pourra rejoindre le foyer."
       role_help:
         member: "Voit et fait tout : plantes, équipements, tâches."
         manager: "Comme un membre, et gère le foyer : son adresse, ses membres."
         guest: "Voit et fait seulement ce que vous lui ouvrez, pendant une période si vous voulez."
-      submit: "Créer le lien"
+      submit: "Envoyer l'invitation"
     create:
-      success: "Lien créé."
+      success: "Invitation envoyée à %{email}."
+      not_sent: "L'e-mail n'a pas pu partir : rien n'a été créé. Réessayez dans un moment."
+    resends:
+      create:
+        success: "Invitation renvoyée à %{email}."
+        accepted: "Cette invitation a déjà été acceptée."
+        not_sent: "L'e-mail n'a pas pu partir. Réessayez dans un moment."
     guest_access:
       title: "Ce que cette personne peut voir et faire"
       help: "Ouvrir une plante ou un équipement ouvre toutes ses tâches. Rien d'autre : ni modifier, ni ajouter."
@@ -467,24 +479,13 @@ fr:
       removed: "%{name} ne fait plus partie du foyer."
       left: "Vous avez quitté %{name}."
       last_manager: "Il faut au moins un gestionnaire : nommez-en un autre d'abord."
-    links:
-      show:
-        back: "← Membres"
-        title: "Lien d'invitation"
-        intro: "Envoyez ce lien à %{name}. Il ne sera plus affiché ensuite."
-        copy: "Copier"
-        copied: "Copié"
-        share: "Partager"
-        share_text: "Rejoins %{household} sur Easy Home : %{url}"
-        validity: "Valable une seule fois, jusqu'au %{date}."
-        gone: "Le lien n'est affiché qu'une fois, à sa création. Perdu ? Un nouveau lien remplace l'ancien."
-        renew: "Nouveau lien"
   invitations:
     show:
       title: "Rejoindre %{name}"
       intro: "%{inviter} vous invite comme %{role}."
       someone: "Quelqu'un"
       already_member: "Vous faites déjà partie de ce foyer."
+      other_account: "Cette invitation est pour %{email}. Déconnectez-vous pour l'accepter avec ce compte."
       open: "Ouvrir Easy Home"
       join: "Rejoindre %{name}"
       create_account: "Créer votre compte"
@@ -498,6 +499,7 @@ fr:
       create:
         success: "Bienvenue dans %{name}."
         already_member: "Vous faites déjà partie de %{name}."
+        other_account: "Cette invitation est pour %{email}, pas pour ce compte."
         rate_limited: "Trop d'essais. Réessayez dans quelques minutes."
   settings:
     show:
@@ -1025,6 +1027,7 @@ fr:
       sign_out_confirm: "Se déconnecter ?"
       settings: "Réglages"
   passwords:
+    rule: "15 caractères au moins : une phrase de quelques mots, par exemple."
     create:
       notice: "Si un compte existe avec cette adresse, les instructions de réinitialisation ont été envoyées."
       rate_limited: "Trop de tentatives, réessayez plus tard."
@@ -1042,6 +1045,14 @@ fr:
     update:
       notice: "Votre mot de passe a été réinitialisé."
       alert: "Les mots de passe ne correspondent pas."
+  invitations_mailer:
+    invite:
+      subject: "Invitation à rejoindre %{household} sur Easy Home"
+      intro: "%{inviter} vous invite à rejoindre %{household} sur Easy Home."
+      someone: "Quelqu'un"
+      link: "Rejoindre %{household}"
+      validity: "Ce lien sert une seule fois, jusqu'au %{date}."
+      ignore: "Vous ne vous attendiez pas à cette invitation ? Ignorez cet e-mail."
   passwords_mailer:
     reset:
       subject: "Réinitialisation de votre mot de passe"

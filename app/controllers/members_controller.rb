@@ -24,12 +24,12 @@ class MembersController < ApplicationController
     )
 
     if result.success?
-      invitation = result.value!
-      # Shown once on the next page: only the digest is kept.
-      flash[:invitation_token] = invitation.token
-      redirect_to member_link_path(invitation.household_member)
+      redirect_to members_path, notice: t(".success", email: result.value!.email)
     else
-      _code, @member = result.failure
+      code, payload = result.failure
+      @member = code == :not_sent ? payload.household_member : payload
+      @email = params.dig(:household_member, :email)
+      flash.now[:alert] = t(".not_sent") if code == :not_sent
       @subjects = GuestAccessOptions.new(@household)
       render :new, status: :unprocessable_content
     end
@@ -79,6 +79,6 @@ class MembersController < ApplicationController
   end
 
   def member_params
-    params.expect(household_member: [ :role, :invitee_name ])
+    params.expect(household_member: [ :role, :invitee_name, :email ])
   end
 end

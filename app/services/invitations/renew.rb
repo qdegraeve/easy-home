@@ -1,6 +1,6 @@
 module Invitations
-  # "Nouveau lien": the link was lost (only its digest is kept). A new token and 7 more days; the old link stops
-  # working, the place keeps its settings. Under the invitation lock, like Accept and PurgeExpired.
+  # "Renvoyer l'invitation": a new token and 7 more days, e-mailed again; the previous link stops working, the place
+  # keeps its settings. Under the invitation lock, like Accept and PurgeExpired.
   class Renew
     include Dry::Monads[:result]
 
@@ -10,7 +10,7 @@ module Invitations
 
         invitation.renew_token.save!
       end
-      Success(invitation)
+      Invitations::Send.new.call(invitation:)
     end
   end
 end

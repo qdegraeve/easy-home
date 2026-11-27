@@ -5,6 +5,7 @@ FactoryBot.define do
       association(:household_member, strategy: :build, user: nil, role: :member, invitation: instance)
     end
     created_by { association(:user) }
+    sequence(:email) { |n| "invite#{n}@example.com" }
     after(:build, &:renew_token)
   end
 end

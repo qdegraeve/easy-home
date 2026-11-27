@@ -31,22 +31,22 @@ RSpec.describe "Invitations", type: :system do
     click_on "Réglages"
     click_on "Membres du foyer"
     click_on "Inviter quelqu'un"
-    fill_in "Pour qui ?", with: "Léa"
+    fill_in "E-mail", with: "lea@example.com"
+    fill_in "Prénom", with: "Léa"
     choose "Membre"
-    click_on "Créer le lien"
+    click_on "Envoyer l'invitation"
 
-    link = find("[data-invitation-link]").text
-    expect(page).to have_button("Copier")
-    click_on "← Membres"
+    expect(page).to have_content("Invitation envoyée à lea@example.com.")
+    link = ActionMailer::Base.deliveries.last.text_part.body.to_s[%r{http\S+/invitations/\S+}]
     expect(page).to have_content("Léa")
     expect(page).to have_content("Membre, lien valable jusqu'au")
     sign_out
 
-    visit link
+    visit URI(link).path
     expect(page).to have_css("h1", text: "Rejoindre Maison")
     expect(page).to have_content("Quentin vous invite comme membre.")
+    expect(page).to have_content("lea@example.com")
     fill_in "Prénom", with: "Léa"
-    fill_in "E-mail", with: "lea@example.com"
     fill_in "Mot de passe", with: "passwordpassword"
     fill_in "Confirmation du mot de passe", with: "passwordpassword"
     click_on "Créer mon compte et rejoindre Maison"
@@ -63,13 +63,14 @@ RSpec.describe "Invitations", type: :system do
     expect(page).to have_no_content("Invitations en attente")
     expect(page).to have_no_link("Inviter quelqu'un")
 
-    visit link
+    visit URI(link).path
     expect(page).to have_css("h1", text: "Lien expiré")
   end
 
   it "lets someone with an account sign in from the link, then join" do
     create(:user, :with_household, email: "lea@example.com")
-    invitation = create(:invitation, household_member: build(:household_member, household:, user: nil, role: :member))
+    invitation = create(:invitation, email: "lea@example.com",
+                                     household_member: build(:household_member, household:, user: nil, role: :member))
 
     visit invitation_path(invitation.token)
     click_on "Se connecter"

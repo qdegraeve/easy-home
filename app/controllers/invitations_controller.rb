@@ -9,8 +9,10 @@ class InvitationsController < ApplicationController
 
     @household = @invitation.household
     @already_member = authenticated? && @household.members.exists?(user: Current.user)
+    # Signed in with another address than the one invited: the invitation is not for this account.
+    @other_account = authenticated? && Current.user.email != @invitation.email
     # "J'ai déjà un compte": back here once signed in.
     session[:return_to_after_authenticating] = request.url unless authenticated?
-    @user = User.new
+    @user = User.new(email: @invitation.email)
   end
 end

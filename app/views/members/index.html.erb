@@ -33,7 +33,8 @@
           <% group.with_row do %>
             <div class="flex min-h-14 items-center gap-3 px-3 py-2">
               <span class="min-w-0 flex-1">
-                <span class="block font-medium"><%= member.invitee_name || t(".unnamed") %></span>
+                <span class="block font-medium"><%= member.invitee_name || member.invitation.email %></span>
+                <span class="block break-words text-sm text-muted"><%= member.invitation.email %></span>
                 <span class="block text-sm text-muted">
                   <%= t(
                     ".pending",
@@ -47,7 +48,7 @@
                       aria: { label: t(".manage_label", name: member.invitee_name || t(".unnamed")) } %>
               <% end %>
               <% if policy(member).renew? %>
-                <%= button_to t(".new_link"), member_link_path(member), class: small_action_class %>
+                <%= button_to t(".resend"), member_resend_path(member), class: small_action_class %>
                 <%= button_to(
                   t(".cancel"),
                   member_path(member),

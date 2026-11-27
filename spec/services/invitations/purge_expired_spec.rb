@@ -6,7 +6,8 @@ RSpec.describe Invitations::PurgeExpired do
   it "frees the places of expired invitations only" do
     expired = create(:invitation)
     open = travel_to(3.days.from_now) { create(:invitation) }
-    accepted = create(:invitation).tap { Invitations::Accept.new.call(token: _1.token, user: create(:user)) }
+    accepted = create(:invitation)
+    Invitations::Accept.new.call(token: accepted.token, user: create(:user, email: accepted.email))
 
     renewed = create(:invitation)
 

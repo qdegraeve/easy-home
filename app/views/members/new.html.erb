@@ -8,6 +8,14 @@
     <%= render "shared/errors", record: @member %>
 
     <div>
+      <%= label_tag "household_member_email", HouseholdMember.human_attribute_name(:email),
+            class: "block text-sm font-semibold" %>
+      <%= email_field_tag "household_member[email]", @email, id: "household_member_email", required: true,
+            autocomplete: "off", class: "mt-1 w-full rounded-xl border border-field px-3 py-3" %>
+      <p class="mt-1 text-[13px] text-muted"><%= t(".email_help") %></p>
+    </div>
+
+    <div>
       <%= form.label :invitee_name, class: "block text-sm font-semibold" %>
       <%= form.text_field(
         :invitee_name,

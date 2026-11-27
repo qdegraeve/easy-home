@@ -21,7 +21,8 @@ Une décision structurante = un fichier court : contexte, décision, alternative
 | [0016](0016-equipement-generique-et-domaines.md) | Un modèle par domaine qui calcule, un équipement générique pour le reste | Acceptée |
 | [0017](0017-rappels-a-heure-fixe.md) | Rappels à heure fixe | Acceptée |
 | [0018](0018-envoi-des-emails.md) | Envoi des e-mails : relais SMTP de Brevo | Acceptée |
-| [0019](0019-membres-invitations-et-invites.md) | Membres, invitation par lien et invités par sujet | Acceptée |
+| [0019](0019-membres-invitations-et-invites.md) | Membres, invitation par lien et invités par sujet | Acceptée (invitation par e-mail : 0020) |
+| [0020](0020-authentification.md) | Authentification : générateur Rails, invitation par e-mail, mots de passe longs | Acceptée |
 
 Le numéro 0007 est réservé au flux de livraison (branche `chore/flux-de-livraison`, gelée).
 

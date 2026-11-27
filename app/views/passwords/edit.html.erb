@@ -11,7 +11,9 @@
       maxlength: 72,
       class: "w-full rounded-xl border border-field bg-surface px-3 py-3"
     ) %>
-    <%= form.label :password_confirmation, t(".password_confirmation_placeholder"), class: "block text-sm font-semibold" %>
+    <p class="text-[13px] text-muted"><%= t("passwords.rule") %></p>
+    <%= form.label :password_confirmation, t(".password_confirmation_placeholder"),
+          class: "block text-sm font-semibold" %>
     <%= form.password_field(
       :password_confirmation,
       required: true,
