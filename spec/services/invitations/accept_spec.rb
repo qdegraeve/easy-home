@@ -33,10 +33,13 @@ RSpec.describe Invitations::Accept do
     expect(Invitation.find_usable(invitation.token)).to eq(invitation)
   end
 
-  it "requires a password for a new account" do
-    result = described_class.new.call(token: invitation.token, account: account.merge(password: ""))
+  it "requires a password of 8 characters at least for a new account" do
+    [ "", "court" ].each do |password|
+      weak = account.merge(password:, password_confirmation: password)
+      result = described_class.new.call(token: invitation.token, account: weak)
 
-    expect(result.failure.first).to eq(:invalid_account)
+      expect(result.failure.first).to eq(:invalid_account)
+    end
   end
 
   it "keeps the link for someone already in the household" do

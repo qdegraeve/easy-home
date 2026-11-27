@@ -31,9 +31,12 @@ module Invitations
     private
 
     def failure(code, payload = nil)
+      @invitation = Invitation.find_usable(params[:invitation_token]) if code == :invalid_account
+      session.delete(:return_to_after_authenticating) unless @invitation
       case code
       when :invalid_account
-        @invitation = Invitation.find_usable(params[:invitation_token])
+        return render("invitations/unusable", status: :not_found) unless @invitation # expired meanwhile
+
         @household = @invitation.household
         @user = payload
         render "invitations/show", status: :unprocessable_content

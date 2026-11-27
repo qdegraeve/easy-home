@@ -190,8 +190,9 @@ User
 - Services : `Invitations::Create`, `Invitations::Accept` (crée le compte au besoin, attache l'utilisateur à sa place,
   consomme le lien, dans une transaction avec verrou sur l'invitation : deux clics simultanés n'en font qu'un),
   `Members::ChangeRole`, `Members::Remove` (garde-fou du dernier gestionnaire, sous verrou du foyer).
-- Sécurité : création de compte limitée par `rate_limit` (comme la connexion) ; le jeton se compare par son empreinte ;
-  les pages d'invitation ne disent pas si un e-mail a déjà un compte.
+- Sécurité : création de compte limitée par `rate_limit` (comme la connexion), mot de passe de 8 caractères au
+  moins ; le jeton se compare par son empreinte. Seule fuite assumée : un e-mail déjà pris le dit à l'inscription.
+  Limite connue : le jeton est dans le chemin de l'URL, donc dans les journaux du serveur, pendant ses 7 jours.
 
 ## 7. Découpage en PR
 
