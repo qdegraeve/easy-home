@@ -11,7 +11,7 @@ RSpec.describe "My account", type: :request do
     sign_in(user)
 
     get settings_path
-    expect(response.parsed_body.at_css("a[href='#{edit_account_path}']").text.squish).to eq("lea lea@example.com")
+    expect(response.parsed_body.at_css("a[href='#{edit_account_path}']").text.squish).to eq("Lea lea@example.com")
 
     get edit_account_path
     expect(response.parsed_body.text.squish).to include("Mon compte", "Prénom", "lea@example.com")

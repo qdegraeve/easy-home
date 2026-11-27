@@ -13,9 +13,9 @@ RSpec.describe User, type: :model do
   end
 
   describe "#display_name" do
-    it "is the first name, squished, else the part of the email before @" do
+    it "is the first name, squished, else the start of the email" do
       expect(build(:user, name: "  Léa  ").display_name).to eq("Léa")
-      expect(build(:user, name: "   ", email: "lea.martin@example.com").display_name).to eq("lea.martin")
+      expect(build(:user, name: "   ", email: "lea.martin@example.com").display_name).to eq("Lea")
     end
   end
 end

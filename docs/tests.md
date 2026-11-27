@@ -111,6 +111,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Ajout d'un élément du catalogue : les tâches sont générées | | Étape 5 |
 | Échéance manquée : marquée comme telle par le job, visible dans le journal | | Étape 5 |
 | Membres : un gestionnaire invite par un lien (affiché une fois, en attente dans la liste), la personne crée son compte depuis le lien et voit le foyer ; le lien ne sert plus ; rejoindre avec un compte existant après connexion | `spec/system/invitations_spec.rb` | Fait |
+| Gérer les membres : un second gestionnaire nommé, un membre retiré (il perd le foyer, son nom reste au journal) ; quitter un foyer, jamais le dernier gestionnaire | `spec/system/members_spec.rb`, `spec/requests/members_spec.rb`, `spec/services/members/` | Fait |
 | Invité : ne voit et ne valide que les tâches des sujets ouverts, pendant sa période | | Série membres, PR 4 |
 
 Les specs système tournent dans un viewport mobile (390 × 844) : l'app est utilisée dans une webview Android.

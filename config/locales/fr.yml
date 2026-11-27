@@ -340,6 +340,8 @@ fr:
       cancel: "Annuler"
       cancel_confirm: "Annuler l'invitation de %{name} ? Son lien ne marchera plus."
       invite: "Inviter quelqu'un"
+      manage: "Gérer"
+      manage_label: "Gérer %{name}"
     new:
       back: "← Membres"
       title: "Inviter quelqu'un"
@@ -352,8 +354,21 @@ fr:
       submit: "Créer le lien"
     create:
       success: "Lien créé."
+    edit:
+      back: "← Membres"
+      save: "Enregistrer"
+      remove: "Retirer du foyer"
+      remove_confirm: "Retirer %{name} de %{household} ? Son compte reste, son nom aussi dans le journal."
+    update:
+      success: "Rôle de %{name} enregistré."
+      invalid_role: "Ce rôle n'est pas possible."
+      gone: "Cette personne ne fait plus partie du foyer."
+      last_manager: "Il faut au moins un gestionnaire : nommez-en un autre d'abord."
     destroy:
-      success: "Invitation annulée."
+      cancelled: "Invitation annulée."
+      removed: "%{name} ne fait plus partie du foyer."
+      left: "Vous avez quitté %{name}."
+      last_manager: "Il faut au moins un gestionnaire : nommez-en un autre d'abord."
     links:
       show:
         back: "← Membres"
@@ -862,6 +877,8 @@ fr:
       title: "Mes foyers"
       current: "Foyer actif"
       select: "Choisir"
+      leave: "Quitter"
+      leave_confirm: "Quitter %{name} ? Vous n'y aurez plus accès, sauf nouvelle invitation."
       new: "+ Nouveau foyer"
     new:
       title: "Créer un foyer"

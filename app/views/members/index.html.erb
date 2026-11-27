@@ -18,6 +18,10 @@
                 <%= t("households.index.roles.#{member.role}") %> · <%= member.user.email %>
               </span>
             </span>
+            <% if policy(member).edit? %>
+              <%= link_to t(".manage"), edit_member_path(member), class: small_action_class,
+                    aria: { label: t(".manage_label", name: member.user.display_name) } %>
+            <% end %>
           </div>
         <% end %>
       <% end %>

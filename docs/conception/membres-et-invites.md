@@ -83,7 +83,7 @@ ouvert et jusqu'à quand.
   `docs/domaine.md`, Foyers et comptes).
 - **Qui a fait quoi** : le journal ne le montre pas encore, alors que `completed_by` est enregistré. Avec plusieurs
   membres, il affiche « Fait par Léa ». Il faut un **prénom** (`users.name`), demandé à la création du compte par
-  invitation et modifiable dans les réglages ; à défaut, la partie de l'e-mail avant `@`.
+  invitation et modifiable dans les réglages ; à défaut, le début de l'e-mail (« sam.dupont@… » donne « Sam »).
 
 ### Supprimer son compte
 

@@ -1,7 +1,9 @@
 class HouseholdsController < ApplicationController
   def index
     @households = policy_scope(Household).order(:name, :id)
-    @roles = Current.user.household_members.pluck(:household_id, :role).to_h
+    memberships = Current.user.household_members.to_a
+    @roles = memberships.to_h { [ _1.household_id, _1.role ] }
+    @memberships = memberships.index_by(&:household_id)
     @current_household = current_household
   end
 
