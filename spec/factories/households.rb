@@ -11,6 +11,6 @@ FactoryBot.define do
   factory :household_member do
     user
     household
-    role { :owner }
+    role { :manager }
   end
 end

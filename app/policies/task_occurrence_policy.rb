@@ -1,6 +1,6 @@
 class TaskOccurrencePolicy < ApplicationPolicy
   def complete?
-    HouseholdPolicy.new(user, record.task.household).update?
+    HouseholdPolicy.new(user, record.task.household).manage?
   end
 
   def postpone?

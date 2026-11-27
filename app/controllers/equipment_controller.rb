@@ -7,7 +7,7 @@ class EquipmentController < ApplicationController
     @household = current_household
     return redirect_to(new_household_path) unless @household
 
-    authorize @household, :update?
+    authorize @household, :manage?
     @equipment = policy_scope(Equipment).where(household: @household).order(:name).to_a
     # The next due date of each, in one query.
     @next_due = Task.to_do.where(subject: @equipment).group(:subject_id).minimum("task_occurrences.due_at")

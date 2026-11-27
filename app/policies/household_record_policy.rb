@@ -1,5 +1,6 @@
-# What belongs to a household and is managed like it (a plant, an equipment): its owner and members see and change
-# it; a guest has no access (their opened tasks will come with TaskAccess). The records of the managed households only.
+# What belongs to a household and is managed like it (a plant, an equipment): its managers and members see and
+# change it; a guest has no access (their opened subjects will come with GuestAccess, ADR 0019). The records of the
+# managed households only.
 class HouseholdRecordPolicy < ApplicationPolicy
   def show?
     manage?
@@ -36,6 +37,6 @@ class HouseholdRecordPolicy < ApplicationPolicy
   private
 
   def manage?
-    HouseholdPolicy.new(user, record.household).update?
+    HouseholdPolicy.new(user, record.household).manage?
   end
 end

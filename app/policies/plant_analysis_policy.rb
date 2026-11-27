@@ -1,4 +1,4 @@
-# AI analyses of a plant: owner and member, like the plant itself. An archived plant gets no new analysis, and its
+# AI analyses of a plant: manager and member, like the plant itself. An archived plant gets no new analysis, and its
 # analyses' proposals cannot be accepted; only a finished analysis has proposals.
 class PlantAnalysisPolicy < ApplicationPolicy
   def show?

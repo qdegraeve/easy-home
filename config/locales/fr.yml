@@ -73,6 +73,9 @@ fr:
       plant: "Plante"
       equipment: "Équipement"
     attributes:
+      user:
+        name: "Prénom"
+        email: "E-mail"
       equipment:
         kind: "Type"
         name: "Nom"
@@ -312,6 +315,14 @@ fr:
     cancel_confirm_stopped: "Retirer « %{what} » (%{date}) du journal ?"
     cancel_confirm_button: "Retirer"
     keep: "Garder"
+  accounts:
+    edit:
+      back: "← Réglages"
+      title: "Mon compte"
+      name_help: "Affiché aux autres membres du foyer, et dans le journal."
+      save: "Enregistrer"
+    update:
+      success: "Compte enregistré."
   settings:
     show:
       title: "Réglages"
@@ -756,6 +767,8 @@ fr:
         Le climat change beaucoup d'un quartier à l'autre : l'adresse sert à adapter les conseils d'arrosage et les
         analyses. Elle n'est jamais transmise à l'IA.
       address_placeholder: "Commencez à taper votre adresse"
+      no_address: "Pas encore d'adresse."
+      address_by_managers: "Seul un gestionnaire du foyer peut changer l'adresse."
       meters: "mètres"
       altitude_help: "Calculée automatiquement à partir de l'adresse choisie. Vous pouvez la corriger."
       altitude_unknown: >-
@@ -779,7 +792,7 @@ fr:
       success: "Adresse enregistrée."
     index:
       roles:
-        owner: "Propriétaire"
+        manager: "Gestionnaire"
         member: "Membre"
         guest: "Invité"
       title: "Mes foyers"

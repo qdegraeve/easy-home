@@ -26,7 +26,7 @@ RSpec.describe TaskOccurrencePolicy do
 
   describe "Scope" do
     it "only returns occurrences of households where the user is not a guest" do
-      user = create(:household_member, household:, role: :owner).user
+      user = create(:household_member, household:, role: :manager).user
       other = create(:task_occurrence)
       create(:household_member, user:, household: other.task.household, role: :guest)
 

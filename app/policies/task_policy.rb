@@ -1,4 +1,4 @@
-# Tasks of a household: owner and member manage them. Only manual tasks are edited and deleted here; a task created
+# Tasks of a household: manager and member manage them. Only manual tasks are edited and deleted here; a task created
 # with its subject (watering) is set up from the subject. An archived subject gets neither new tasks nor edits (it
 # must be restored first); its tasks can still be deleted.
 class TaskPolicy < ApplicationPolicy
@@ -43,7 +43,7 @@ class TaskPolicy < ApplicationPolicy
   private
 
   def manage?
-    HouseholdPolicy.new(user, record.household).update?
+    HouseholdPolicy.new(user, record.household).manage?
   end
 
   def subject_archived?

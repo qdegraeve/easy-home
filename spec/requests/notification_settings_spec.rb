@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Notification settings", type: :request do
   let(:home) { create(:household, name: "Maison") }
-  let(:user) { create(:household_member, household: home, role: :owner).user }
+  let(:user) { create(:household_member, household: home, role: :manager).user }
 
   def sign_in(user)
     post session_path, params: { email: user.email, password: "password" }

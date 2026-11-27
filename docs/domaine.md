@@ -8,7 +8,7 @@
 |---|---|---|
 | Foyer | `Household` | La maison et ses occupants. Unité de partage des données. |
 | Membre | `HouseholdMember` | Lien entre un utilisateur et un foyer, avec un rôle. |
-| Rôle | `HouseholdMember#role` | `owner` (gère le foyer ; deviendra `manager`, gestionnaire, ADR 0019), `member` (voit et fait tout), `guest` (voit uniquement les tâches des sujets qui lui sont ouverts). |
+| Rôle | `HouseholdMember#role` | `manager` (gestionnaire : règle le foyer, et bientôt ses membres ; plusieurs par foyer, ADR 0019), `member` (voit et fait tout : plantes, équipements, tâches, emplacements), `guest` (voit uniquement les tâches des sujets qui lui sont ouverts). |
 | Domaine qui calcule | `Plant`, plus tard `Pet` | Ce dont l'app exploite les attributs : un modèle et une table par domaine (ADR 0010, 0016). |
 | Équipement | `Equipment` | Ce qu'on entretient et dont l'app rappelle les tâches (piscine, lave-vaisselle, chauffe-eau…) : nom, type, « À savoir », photos. Générique (ADR 0016). |
 | Sujet d'une tâche | `Task#subject` | La plante ou l'équipement auquel une tâche se rattache (polymorphe) ; nul pour une **tâche de la maison** (poubelles). |
@@ -29,6 +29,7 @@
 
 ```
 User
+  email, name (prénom affiché aux autres membres ; à défaut, l'e-mail avant « @ »)
   has_many :household_members
   has_many :devices
 
@@ -50,7 +51,7 @@ Location
   has_many :plants               # nullify à la suppression de l'emplacement
 
 HouseholdMember
-  user, household, role (owner | member | guest)
+  user, household, role (manager | member | guest)
   # à venir (ADR 0019) : user nullable (place réservée par une invitation), guest_full_access,
   # access_starts_on, access_ends_on, has_many :guest_accesses, has_one :invitation
 
@@ -141,7 +142,7 @@ HouseholdMember
 ## Foyers et comptes
 
 - Un compte est créé en console (`bin/rails accounts:create`), sans inscription publique. Le foyer se crée ensuite
-  dans l'app : un utilisateur sans foyer est envoyé vers « Créer un foyer » (`Households::Create`, rôle `owner`).
+  dans l'app : un utilisateur sans foyer est envoyé vers « Créer un foyer » (`Households::Create`, rôle `manager`).
 - Un utilisateur peut avoir plusieurs foyers. Le **foyer actif** est mémorisé en session (`session[:household_id]`) et
   se change depuis « Mes foyers ». À défaut, ou si la session pointe vers un foyer dont il n'est plus membre, c'est son
   premier foyer par ordre alphabétique. Toute lecture passe par `policy_scope(Household)`.
