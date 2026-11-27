@@ -18,20 +18,27 @@ export default class extends BridgeComponent {
   static targets = ["denied", "unavailable"]
   static values = { fingerprints: Array, url: String }
 
+  // The answer of the app being handled (hashing the token and posting it take time): a promise, awaited by the
+  // tests instead of a duration.
+  handling = Promise.resolve()
+
   connect() {
     super.connect()
-    this.send("token", {}, ({ data }) => this.register(data))
+    this.send("token", {}, ({ data }) => { this.handling = this.register(data) })
   }
 
   enable() {
-    this.send("enable", {}, async ({ data }) => {
-      this.deniedTargets.forEach((element) => { element.hidden = data.status !== "denied" })
-      this.unavailableTargets.forEach((element) => { element.hidden = data.status !== "unavailable" })
-      if (data.status !== "granted") return
+    this.send("enable", {}, ({ data }) => { this.handling = this.enabled(data) })
+  }
 
-      await this.register(data)
-      Turbo.visit(window.location.href, { action: "replace" })
-    })
+  // The answer of the app to the user's own move: the phone registered and the page reloaded, or why not.
+  async enabled(data) {
+    this.deniedTargets.forEach((element) => { element.hidden = data.status !== "denied" })
+    this.unavailableTargets.forEach((element) => { element.hidden = data.status !== "unavailable" })
+    if (data.status !== "granted") return
+
+    await this.register(data)
+    Turbo.visit(window.location.href, { action: "replace" })
   }
 
   openSettings() {

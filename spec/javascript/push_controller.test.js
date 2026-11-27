@@ -38,7 +38,11 @@ describe("push bridge component", () => {
     window.fetch = vi.fn(async () => ({ ok: true }))
   })
 
-  afterEach(() => application?.stop())
+  // Whatever a test left running ends before the next one: a late request never lands in another test.
+  afterEach(async () => {
+    await controller()?.handling
+    application?.stop()
+  })
 
   const mount = async (fingerprints = []) => {
     document.head.innerHTML = `<meta name="csrf-token" content="csrf-123">`
@@ -51,10 +55,16 @@ describe("push bridge component", () => {
       </section>`
     application = Application.start()
     application.register("bridge--push", PushController)
-    await settle()
+    await vi.waitFor(() => expect(message("token")).toBeDefined()) // connected: the app was asked
   }
 
-  const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+  const controller = () => application?.controllers[0]
+  // The app answers, then the test waits for the page to be done with the answer (hash, request): a state, not a
+  // duration.
+  const answer = async (event, data) => {
+    app.reply(message(event), data)
+    await controller().handling
+  }
   const sha256 = async (text) => {
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text))
     return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")
@@ -64,8 +74,7 @@ describe("push bridge component", () => {
   it("posts the token of the app when the session does not know it yet", async () => {
     await mount([ FINGERPRINT ])
 
-    app.reply(message("token"), { status: "granted", token: TOKEN, name: "Pixel 9" })
-    await settle()
+    await answer("token", { status: "granted", token: TOKEN, name: "Pixel 9" })
 
     expect(window.fetch).toHaveBeenCalledOnce()
     const [url, request] = window.fetch.mock.calls[0]
@@ -78,25 +87,22 @@ describe("push bridge component", () => {
 
   it("posts nothing when the session already knows the token, or when notifications are not allowed", async () => {
     await mount([ await sha256(TOKEN) ])
-    app.reply(message("token"), { status: "granted", token: TOKEN })
-    await settle()
+    await answer("token", { status: "granted", token: TOKEN })
     expect(window.fetch).not.toHaveBeenCalled()
 
     application.stop()
     app.messages = []
     await mount()
-    app.reply(message("token"), { status: "prompt" })
-    await settle()
+    await answer("token", { status: "prompt" })
     expect(window.fetch).not.toHaveBeenCalled()
   })
 
   it("asks the app for the permission, registers the phone, then reloads the page", async () => {
     await mount()
     document.querySelector("button").click()
-    await settle()
+    await vi.waitFor(() => expect(message("enable")).toBeDefined())
 
-    app.reply(message("enable"), { status: "granted", token: TOKEN, name: "Pixel 9" })
-    await settle()
+    await answer("enable", { status: "granted", token: TOKEN, name: "Pixel 9" })
 
     expect(window.fetch).toHaveBeenCalledOnce()
     expect(Turbo.visit).toHaveBeenCalledWith(window.location.href, { action: "replace" })
@@ -105,27 +111,25 @@ describe("push bridge component", () => {
   it("explains a refused permission and opens the phone's settings on demand", async () => {
     await mount()
     document.querySelector("button").click()
-    await settle()
+    await vi.waitFor(() => expect(message("enable")).toBeDefined())
 
-    app.reply(message("enable"), { status: "denied" })
-    await settle()
+    await answer("enable", { status: "denied" })
 
     expect(document.querySelector("[data-bridge--push-target=denied]").hidden).toBe(false)
     expect(document.querySelector("[data-bridge--push-target=unavailable]").hidden).toBe(true)
     expect(window.fetch).not.toHaveBeenCalled()
     expect(Turbo.visit).not.toHaveBeenCalled()
 
-    application.controllers[0].openSettings()
+    controller().openSettings()
     expect(message("openSettings")).toBeDefined()
   })
 
   it("says when the app cannot receive notifications at all", async () => {
     await mount()
     document.querySelector("button").click()
-    await settle()
+    await vi.waitFor(() => expect(message("enable")).toBeDefined())
 
-    app.reply(message("enable"), { status: "unavailable" })
-    await settle()
+    await answer("enable", { status: "unavailable" })
 
     expect(document.querySelector("[data-bridge--push-target=unavailable]").hidden).toBe(false)
     expect(document.querySelector("[data-bridge--push-target=denied]").hidden).toBe(true)
@@ -135,11 +139,10 @@ describe("push bridge component", () => {
     window.fetch = vi.fn(async () => ({ ok: false }))
     await mount()
     document.querySelector("button").click()
-    await settle()
+    await vi.waitFor(() => expect(message("enable")).toBeDefined())
 
-    app.reply(message("enable"), { status: "granted", token: TOKEN })
-    await settle()
+    await answer("enable", { status: "granted", token: TOKEN })
 
-    expect(application.controllers[0].fingerprintsValue).toEqual([])
+    expect(controller().fingerprintsValue).toEqual([])
   })
 })
