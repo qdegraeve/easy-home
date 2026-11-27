@@ -48,6 +48,9 @@ RSpec.describe "Plants", type: :system do
     page.go_back
     expect(page).to have_content("Rien à faire aujourd'hui.")
     expect(page).to have_no_content("Arrosage noté pour « Basilic ».")
+    # The cached page is a preview until Turbo has rendered the fresh one: clicking before would hit a removed node.
+    expect(page).to have_no_css("html[data-turbo-preview]")
+    expect(page).to have_no_css("html[aria-busy]")
 
     open_plant("Basilic")
     expect(page).to have_content("Prochain arrosage : dans 2 j")

@@ -5,7 +5,7 @@ class HouseTasksController < ApplicationController
     @household = current_household
     return redirect_to(new_household_path) unless @household
 
-    authorize @household, :manage?
+    authorize @household, :show?
     @tasks = policy_scope(Task).where(household: @household).without_subject.to_do
       .includes(:pending_occurrence).order("task_occurrences.due_at", :id)
     @on_demand_tasks = policy_scope(Task).where(household: @household).without_subject.active.on_demand

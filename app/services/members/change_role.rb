@@ -15,7 +15,9 @@ module Members
         return Failure[:invalid_role, member] unless ROLES.include?(role.to_s) && !member.pending?
         yield LastManager.new.ensure_not(member) unless role.to_s == "manager"
 
-        member.update!(role:)
+        # A guest who becomes a member sees everything: their accesses go.
+        member.guest_accesses.delete_all if member.guest?
+        member.update!(role:, guest_full_access: false, access_starts_on: nil, access_ends_on: nil)
       end
       Success(member)
     end

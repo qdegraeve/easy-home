@@ -18,8 +18,8 @@ RSpec.describe Invitations::Create do
     end
   end
 
-  it "refuses a guest for now, or an unknown role, and reserves nothing" do
-    %w[guest owner].each do |role|
+  it "refuses an unknown role, and reserves nothing" do
+    %w[owner admin].each do |role|
       result = described_class.new.call(household:, created_by: manager, params: { role: })
 
       expect(result.failure.first).to eq(:invalid)
@@ -33,5 +33,16 @@ RSpec.describe Invitations::Create do
 
     expect(household.members.joined.map(&:user)).to eq([ manager ])
     expect(household.members.invited.count).to eq(1)
+  end
+
+  it "reserves a guest's place with what is opened to them, ready when they join" do
+    plant = create(:plant, household:)
+    invitation = described_class.new.call(
+      household:, created_by: manager, params: { role: "guest" },
+      access: { subjects: [ "Plant:#{plant.id}" ], ends_on: "2027-01-05" }
+    ).value!
+
+    expect(invitation.household_member).to have_attributes(role: "guest", access_ends_on: Date.new(2027, 1, 5))
+    expect(invitation.household_member.guest_accesses.map(&:subject)).to eq([ plant ])
   end
 end

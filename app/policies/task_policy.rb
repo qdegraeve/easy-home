@@ -1,15 +1,16 @@
-# Tasks of a household: manager and member manage them. Only manual tasks are edited and deleted here; a task created
-# with its subject (watering) is set up from the subject. An archived subject gets neither new tasks nor edits (it
-# must be restored first); its tasks can still be deleted.
+# Tasks of a household: managers and members manage them; a guest sees and does the tasks opened to them, nothing
+# more (ADR 0019). Only manual tasks are edited and deleted here; a task created with its subject (watering) is set
+# up from the subject. An archived subject gets neither new tasks nor edits (it must be restored first); its tasks
+# can still be deleted.
 class TaskPolicy < ApplicationPolicy
   # The task sheet: what to do and how.
   def show?
-    manage?
+    manage? || opened_to_guest?
   end
 
   # "Fait" on a task done when needed: the service says why it cannot be (a stale page: dated or stopped since).
   def record_done?
-    manage?
+    show?
   end
 
   def create?
@@ -36,7 +37,8 @@ class TaskPolicy < ApplicationPolicy
     def resolve
       return scope.none unless user
 
-      scope.where(household_id: managed_household_ids)
+      opened = GuestVisibilityQuery.new(user).tasks.select(:id)
+      scope.where(household_id: managed_household_ids).or(scope.where(id: opened))
     end
   end
 
@@ -44,6 +46,10 @@ class TaskPolicy < ApplicationPolicy
 
   def manage?
     HouseholdPolicy.new(user, record.household).manage?
+  end
+
+  def opened_to_guest?
+    record.persisted? && GuestVisibilityQuery.new(user).tasks.exists?(record.id)
   end
 
   def subject_archived?

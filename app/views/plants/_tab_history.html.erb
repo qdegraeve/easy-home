@@ -53,7 +53,7 @@
   <% end %>
 <% end %>
 
-<% if @analyses.any? %>
+<% if @analyses.any? && policy(@analyses.first).show? %>
   <%= render ListGroupComponent.new(title: t("plants.show.analyses"), id: "analyses", icon: :activity) do |group| %>
     <% @analyses.each do |analysis| %>
       <% group.with_row do %>

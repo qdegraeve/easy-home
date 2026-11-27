@@ -37,7 +37,7 @@ RSpec.describe "Members", type: :request do
   it "re-renders the form on an invalid role" do
     sign_in(manager)
 
-    invite(role: "guest")
+    invite(role: "owner")
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(household.members.invited).to be_empty

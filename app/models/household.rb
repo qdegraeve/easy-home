@@ -1,6 +1,8 @@
 class Household < ApplicationRecord
   has_many :members, class_name: "HouseholdMember", dependent: :destroy
   has_many :invitations, through: :members
+  # The tasks of the house opened to guests (ADR 0019).
+  has_many :guest_accesses, as: :subject, dependent: :delete_all
   has_many :users, through: :members
   has_many :locations, dependent: :destroy
   has_many :plants, dependent: :destroy

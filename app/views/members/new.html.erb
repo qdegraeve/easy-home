@@ -3,7 +3,8 @@
   <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
   <p class="mt-1 text-sm text-muted"><%= t(".intro") %></p>
 
-  <%= form_with model: @member, url: members_path, class: "mt-6 space-y-5 rounded-2xl bg-surface p-4" do |form| %>
+  <%# The guest settings show once "Invité" is chosen (CSS :has, no script). %>
+  <%= form_with model: @member, url: members_path, class: "group mt-6 space-y-5 rounded-2xl bg-surface p-4" do |form| %>
     <%= render "shared/errors", record: @member %>
 
     <div>
@@ -30,6 +31,10 @@
         <% end %>
       </div>
     </fieldset>
+
+    <div class="hidden group-has-[[value=guest]:checked]:block" data-guest-access>
+      <%= render "members/guest_access", subjects: @subjects, member: @member %>
+    </div>
 
     <%= form.submit t(".submit"), class: button_class(:primary, block: true) %>
   <% end %>
