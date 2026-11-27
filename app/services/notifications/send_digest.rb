@@ -26,9 +26,12 @@ module Notifications
       claimed == 1 ? Success(user) : Failure[:already_sent, user]
     end
 
+    # The followed households; a guest's digest lists only the tasks opened to them, during their period (ADR 0019):
+    # what the policies let the user see.
     def due_occurrences(user, today)
-      household_ids = user.household_members.where.not(role: :guest).where(digest: true).select(:household_id)
-      occurrences = DueOccurrencesQuery.new.call(household_ids:, today:)
+      household_ids = user.household_members.where(digest: true).select(:household_id)
+      visible = TaskOccurrencePolicy::Scope.new(user, TaskOccurrence).resolve
+      occurrences = DueOccurrencesQuery.new(visible).call(household_ids:, today:)
         .includes(task: :subject).order(:due_at, :id).to_a
       occurrences.select! { |occurrence| occurrence.task.critical? } if user.digest_critical?
       occurrences.any? ? Success(occurrences) : Failure[:nothing_due, user]

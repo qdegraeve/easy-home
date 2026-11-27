@@ -103,7 +103,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Suggestions d'un équipement : lave-vaisselle ajouté, ses tâches proposées décochées avec leur première date, filtre et sel cochés et ajoutés avec leur Comment faire, rien dans Aujourd'hui | `spec/system/equipment_suggestions_spec.rb` | Fait |
 | Réglages des notifications, enregistrés à chaque changement : résumé coupé, heure, « seulement ce qui ne doit pas être raté », foyers inclus | `spec/system/notification_settings_spec.rb` | Fait |
 | Dans l'app : enregistrer ce téléphone pour les notifications depuis la page Notifications (permission sur un geste), puis de nouveau tout seul après une reconnexion | `spec/system/native_app_spec.rb` | Fait |
-| Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
+| Résumé du matin : à l'heure choisie, une fois par jour, rien sans tâche, foyers suivis seulement ; pour un invité, ses tâches ouvertes, dans sa période (de même pour les rappels) | `spec/services/notifications/` (le téléphone ne se teste pas en system spec) | Fait |
 | Tableau de bord : tâches en retard, du jour, à venir | | Étape 5 |
 | Création d'une tâche récurrente : l'échéance apparaît au bon jour | | Étape 5 |
 | Validation d'une tâche : journal mis à jour, échéance suivante créée | | Étape 5 |
