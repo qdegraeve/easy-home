@@ -1,8 +1,9 @@
-# AI analyses of a plant: manager and member, like the plant itself. An archived plant gets no new analysis, and its
+# AI analyses of a plant: managers and members, who manage the plant; not a guest, even with the plant opened.
+# An archived plant gets no new analysis, and its
 # analyses' proposals cannot be accepted; only a finished analysis has proposals.
 class PlantAnalysisPolicy < ApplicationPolicy
   def show?
-    PlantPolicy.new(user, record.plant).show?
+    PlantPolicy.new(user, record.plant).update?
   end
 
   def create?

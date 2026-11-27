@@ -24,7 +24,7 @@ RSpec.describe "Members", type: :system do
     click_on "Membres du foyer"
     click_on "Gérer Léa"
     choose "Gestionnaire"
-    click_on "Enregistrer"
+    click_on "Enregistrer le rôle"
     expect(page).to have_content("Rôle de Léa enregistré.")
     expect(page).to have_content("Gestionnaire · #{lea.email}")
 

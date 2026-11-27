@@ -11,11 +11,17 @@ class MembersController < ApplicationController
 
   def new
     @member = authorize(HouseholdMember.new(household: @household, role: :member))
+    @subjects = GuestAccessOptions.new(@household)
   end
 
   def create
     authorize HouseholdMember.new(household: @household)
-    result = Invitations::Create.new.call(household: @household, created_by: Current.user, params: member_params)
+    result = Invitations::Create.new.call(
+      household: @household,
+      created_by: Current.user,
+      params: member_params,
+      access: GuestAccessParams.from(params)
+    )
 
     if result.success?
       invitation = result.value!
@@ -24,12 +30,14 @@ class MembersController < ApplicationController
       redirect_to member_link_path(invitation.household_member)
     else
       _code, @member = result.failure
+      @subjects = GuestAccessOptions.new(@household)
       render :new, status: :unprocessable_content
     end
   end
 
   def edit
-    @member = authorize(policy_scope(HouseholdMember).joined.find(params[:id]))
+    @member = authorize(policy_scope(HouseholdMember).find(params[:id]))
+    @subjects = GuestAccessOptions.new(@member.household) if @member.guest?
   end
 
   def update

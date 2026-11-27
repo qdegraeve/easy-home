@@ -6,6 +6,7 @@ class Equipment < ApplicationRecord
 
   belongs_to :household
   has_many :tasks, as: :subject, dependent: :destroy, inverse_of: :subject
+  has_many :guest_accesses, as: :subject, dependent: :delete_all
   has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy, inverse_of: :subject
 
   # Authorization goes through the household: it never changes (ADR 0010).

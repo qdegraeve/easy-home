@@ -1,39 +1,58 @@
+<% name = @member.user&.display_name || @member.invitee_name || t("members.index.unnamed") %>
 <div class="mx-auto max-w-2xl">
   <%= back_link_to t(".back"), members_path %>
-  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title @member.user.display_name %></h1>
-  <p class="mt-1 break-words text-sm text-muted"><%= @member.user.email %></p>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title name %></h1>
+  <p class="mt-1 break-words text-sm text-muted">
+    <%= @member.pending? ? t(".pending") : @member.user.email %>
+  </p>
 
-  <%= form_with(
-    model: @member,
-    url: member_path(@member),
-    class: "mt-6 space-y-5 rounded-2xl bg-surface p-4"
-  ) do |form| %>
-    <fieldset>
-      <legend class="text-sm font-semibold"><%= HouseholdMember.human_attribute_name(:role) %></legend>
-      <div class="mt-2 space-y-2">
-        <% Members::ChangeRole::ROLES.each do |role| %>
-          <label class="flex items-start gap-3 rounded-xl border border-field p-3">
-            <%= form.radio_button :role, role, class: "mt-1 h-5 w-5" %>
-            <span>
-              <span class="block font-medium"><%= t("households.index.roles.#{role}") %></span>
-              <span class="block text-sm text-muted"><%= t("members.new.role_help.#{role}") %></span>
-            </span>
-          </label>
+  <% if policy(@member).update? %>
+    <%= form_with(
+      model: @member,
+      url: member_path(@member),
+      class: "mt-6 space-y-5 rounded-2xl bg-surface p-4"
+    ) do |form| %>
+      <fieldset>
+        <legend class="text-sm font-semibold"><%= HouseholdMember.human_attribute_name(:role) %></legend>
+        <div class="mt-2 space-y-2">
+          <% Members::ChangeRole::ROLES.each do |role| %>
+            <label class="flex items-start gap-3 rounded-xl border border-field p-3">
+              <%= form.radio_button :role, role, class: "mt-1 h-5 w-5" %>
+              <span>
+                <span class="block font-medium"><%= t("households.index.roles.#{role}") %></span>
+                <span class="block text-sm text-muted"><%= t("members.new.role_help.#{role}") %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+        <% if @member.guest? %>
+          <p class="mt-2 text-sm text-muted"><%= t(".guest_role_help") %></p>
         <% end %>
-      </div>
-    </fieldset>
+      </fieldset>
 
-    <%= form.submit t(".save"), class: button_class(:primary, block: true) %>
+      <%= form.submit t(".save_role"), class: button_class(:secondary, block: true) %>
+    <% end %>
+  <% end %>
+
+  <% if policy(@member).access? %>
+    <%= form_with(
+      url: member_access_path(@member),
+      method: :patch,
+      class: "mt-6 space-y-5 rounded-2xl bg-surface p-4"
+    ) do %>
+      <%= render "members/guest_access", subjects: @subjects, member: @member %>
+      <%= submit_tag t(".save_access"), class: button_class(:primary, block: true) %>
+    <% end %>
   <% end %>
 
   <%= button_to(
-    t(".remove"),
+    @member.pending? ? t("members.index.cancel") : t(".remove"),
     member_path(@member),
     method: :delete,
     class: "mt-6 #{button_class(:danger, block: true)}",
     form: {
       data: confirm_data(
-        t(".remove_confirm", name: @member.user.display_name, household: @member.household.name),
+        t(".remove_confirm", name:, household: @member.household.name),
         button: t(".remove"),
         danger: true
       )

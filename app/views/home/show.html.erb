@@ -13,6 +13,16 @@
 </div>
 
 <div class="mt-6 space-y-6 lg:max-w-2xl">
+  <% if @guest && (state = @guest.access_period_state) %>
+    <p class="rounded-2xl bg-surface px-3 py-3" id="guest-period">
+      <%= t(".guest_#{state}", household: @household.name,
+            date: l(state == :upcoming ? @guest.access_starts_on : @guest.access_ends_on, format: :day)) %>
+    </p>
+  <% elsif @guest && !@has_content %>
+    <p class="rounded-2xl bg-surface px-3 py-3" id="guest-period">
+      <%= t(".guest_nothing", household: @household.name) %>
+    </p>
+  <% end %>
   <% if @rain %>
     <% rainfall = @rain[:rainfall] %>
     <p class="flex items-center gap-3 rounded-2xl bg-surface px-3 py-3 text-sm" id="rain">

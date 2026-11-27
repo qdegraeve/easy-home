@@ -42,6 +42,10 @@
                   ) %>
                 </span>
               </span>
+              <% if policy(member).access? %>
+                <%= link_to t(".manage"), edit_member_path(member), class: small_action_class,
+                      aria: { label: t(".manage_label", name: member.invitee_name || t(".unnamed")) } %>
+              <% end %>
               <% if policy(member).renew? %>
                 <%= button_to t(".new_link"), member_link_path(member), class: small_action_class %>
                 <%= button_to(

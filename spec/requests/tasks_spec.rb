@@ -251,7 +251,7 @@ RSpec.describe "Tasks", type: :request do
       expect(task.reload.title).to eq("Sortir la poubelle jaune")
     end
 
-    it "forbids a guest to see, add or list the house tasks" do
+    it "forbids a guest to see, add or list the house tasks not opened to them" do
       task
       sign_in(create(:household_member, household:, role: :guest).user)
 
@@ -262,7 +262,7 @@ RSpec.describe "Tasks", type: :request do
       post tasks_path, params: bins_params
       expect(response).to have_http_status(:forbidden)
       get house_tasks_path
-      expect(response).to have_http_status(:forbidden)
+      expect(response.body).not_to include("Sortir la poubelle jaune")
       get new_house_item_path
       expect(response).to have_http_status(:forbidden)
       expect(Task.count).to eq(1)

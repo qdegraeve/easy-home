@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_100000) do
     t.index ["household_id"], name: "index_equipment_on_household_id"
   end
 
+  create_table "guest_accesses", force: :cascade do |t|
+    t.bigint "household_member_id", null: false
+    t.string "subject_type", null: false
+    t.bigint "subject_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["household_member_id", "subject_type", "subject_id"], name: "index_guest_accesses_unique", unique: true
+    t.index ["household_member_id"], name: "index_guest_accesses_on_household_member_id"
+    t.index ["subject_type", "subject_id"], name: "index_guest_accesses_on_subject"
+  end
+
   create_table "household_members", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "household_id", null: false
@@ -72,6 +83,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_100000) do
     t.datetime "updated_at", null: false
     t.boolean "digest", default: true, null: false
     t.string "invitee_name"
+    t.boolean "guest_full_access", default: false, null: false
+    t.date "access_starts_on"
+    t.date "access_ends_on"
     t.index ["household_id"], name: "index_household_members_on_household_id"
     t.index ["user_id", "household_id"], name: "index_household_members_on_user_id_and_household_id", unique: true
   end
@@ -261,6 +275,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_100000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "equipment", "households"
+  add_foreign_key "guest_accesses", "household_members", on_delete: :cascade
   add_foreign_key "household_members", "households"
   add_foreign_key "household_members", "users"
   add_foreign_key "invitations", "household_members", on_delete: :cascade

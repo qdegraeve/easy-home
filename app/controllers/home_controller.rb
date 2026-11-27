@@ -7,6 +7,8 @@ class HomeController < ApplicationController
     return redirect_to(new_household_path) unless @household
 
     authorize @household
+    # A guest outside their period sees nothing: the page says when it starts or ended (ADR 0019).
+    @guest = @household.members.guest.find_by(user: Current.user)
     # Something to follow: a plant, or a task of any kind (the house's own, without plants).
     @has_plants = policy_scope(Plant).where(household: @household).active.exists?
     tasks = policy_scope(Task).where(household: @household)

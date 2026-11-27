@@ -24,8 +24,14 @@ class HouseholdMemberPolicy < ApplicationPolicy
     create? && !record.pending?
   end
 
+  # What is opened to a guest: before and after they join.
+  def access?
+    create? && record.guest?
+  end
+
+  # Their page: the role, or what is opened to a guest.
   def edit?
-    update?
+    update? || access?
   end
 
   # Cancelling an invitation, removing someone, or leaving.

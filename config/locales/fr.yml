@@ -148,6 +148,9 @@ fr:
         other: "Notification de test envoyée à %{count} téléphones."
   home:
     show:
+      guest_upcoming: "Votre accès à %{household} commence le %{date}."
+      guest_over: "Votre accès à %{household} s'est terminé le %{date}."
+      guest_nothing: "Rien ne vous est encore confié dans %{household}."
       title: "Aujourd'hui"
       empty_title: "Aucune plante pour l'instant"
       empty_body: "Ajoutez votre première plante pour suivre son arrosage."
@@ -351,12 +354,31 @@ fr:
       role_help:
         member: "Voit et fait tout : plantes, équipements, tâches."
         manager: "Comme un membre, et gère le foyer : son adresse, ses membres."
+        guest: "Voit et fait seulement ce que vous lui ouvrez, pendant une période si vous voulez."
       submit: "Créer le lien"
     create:
       success: "Lien créé."
+    guest_access:
+      title: "Ce que cette personne peut voir et faire"
+      help: "Ouvrir une plante ou un équipement ouvre toutes ses tâches. Rien d'autre : ni modifier, ni ajouter."
+      full_access: "Tout ouvrir"
+      house_tasks: "Tâches de la maison"
+      groups:
+        house: "poubelles…"
+        plants: "plante"
+        equipment: "équipement"
+      starts_on: "Du"
+      ends_on: "Au"
+      period_help: "Facultatif : en dehors de ces dates, rien n'est ouvert."
+    accesses:
+      update:
+        success: "Accès de %{name} enregistrés."
     edit:
       back: "← Membres"
-      save: "Enregistrer"
+      pending: "Invitation en attente"
+      guest_role_help: "Membre ou gestionnaire : la personne voit alors tout, ses accès d'invité disparaissent."
+      save_role: "Enregistrer le rôle"
+      save_access: "Enregistrer les accès"
       remove: "Retirer du foyer"
       remove_confirm: "Retirer %{name} de %{household} ? Son compte reste, son nom aussi dans le journal."
     update:

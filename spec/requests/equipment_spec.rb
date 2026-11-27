@@ -152,16 +152,17 @@ RSpec.describe "Equipment", type: :request do
       end
     end
 
-    it "forbids a guest to list or add equipment" do
+    it "forbids a guest to add equipment, and lists only what is opened to them" do
+      create(:equipment, household:, name: "Piscine")
       sign_in(create(:household_member, household:, role: :guest).user)
 
       get equipment_index_path
-      expect(response).to have_http_status(:forbidden)
+      expect(response.body).not_to include("Piscine")
       get new_equipment_path
       expect(response).to have_http_status(:forbidden)
       post equipment_index_path, params: { equipment: { kind: "pool" } }
       expect(response).to have_http_status(:forbidden)
-      expect(Equipment.count).to eq(0)
+      expect(Equipment.count).to eq(1)
     end
   end
 end

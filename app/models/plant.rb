@@ -6,6 +6,7 @@ class Plant < ApplicationRecord
   # The face of the plant, chosen among its photos (otherwise the latest one: #face).
   belongs_to :cover_photo, class_name: "Photo", optional: true
   has_many :tasks, as: :subject, dependent: :destroy, inverse_of: :subject
+  has_many :guest_accesses, as: :subject, dependent: :delete_all
   has_many :photos, -> { order(taken_at: :desc, id: :desc) }, as: :subject, dependent: :destroy, inverse_of: :subject
   has_many :analyses, class_name: "PlantAnalysis", dependent: :destroy
   has_one :watering_task, -> { where(template_key: WATERING_TEMPLATE_KEY) }, class_name: "Task", as: :subject

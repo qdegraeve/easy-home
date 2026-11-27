@@ -1,0 +1,47 @@
+<%# What is opened to a guest (ADR 0019): "Tout ouvrir", or subjects one by one, and an optional period. Fields under
+    guest_access[...] (GuestAccessParams). Locals: subjects (GuestAccessOptions), member. %>
+<% selected = subjects.selected(member) %>
+<fieldset class="space-y-3">
+  <legend class="text-sm font-semibold"><%= t("members.guest_access.title") %></legend>
+  <p class="text-sm text-muted"><%= t("members.guest_access.help") %></p>
+
+  <label class="flex items-center gap-3 rounded-xl border border-field p-3 font-medium">
+    <%= hidden_field_tag "guest_access[full_access]", "0", id: nil %>
+    <%= check_box_tag "guest_access[full_access]", "1", member.guest_full_access, class: "h-5 w-5" %>
+    <%= t("members.guest_access.full_access") %>
+  </label>
+
+  <div class="space-y-1">
+    <%= hidden_field_tag "guest_access[subjects][]", "", id: nil %>
+    <% subjects.each do |option| %>
+      <label class="flex min-h-11 items-center gap-3 px-1">
+        <%= check_box_tag "guest_access[subjects][]", option.key, selected.include?(option.key),
+              id: "guest_access_#{option.key.parameterize}", class: "h-5 w-5" %>
+        <span><%= option.label %></span>
+        <span class="text-sm text-muted"><%= t("members.guest_access.groups.#{option.group}") %></span>
+      </label>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= label_tag(
+        "guest_access_starts_on",
+        t("members.guest_access.starts_on"),
+        class: "block text-sm font-semibold"
+      ) %>
+      <%= date_field_tag "guest_access[starts_on]", member.access_starts_on, id: "guest_access_starts_on",
+            class: "mt-1 w-full rounded-xl border border-field px-3 py-3" %>
+    </div>
+    <div>
+      <%= label_tag(
+        "guest_access_ends_on",
+        t("members.guest_access.ends_on"),
+        class: "block text-sm font-semibold"
+      ) %>
+      <%= date_field_tag "guest_access[ends_on]", member.access_ends_on, id: "guest_access_ends_on",
+            class: "mt-1 w-full rounded-xl border border-field px-3 py-3" %>
+    </div>
+  </div>
+  <p class="text-[13px] text-muted"><%= t("members.guest_access.period_help") %></p>
+</fieldset>
