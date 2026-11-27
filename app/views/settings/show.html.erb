@@ -19,9 +19,10 @@
 
     <%= render ListGroupComponent.new(title: t(".preferences"), id: "preferences") do |group| %>
       <% [
+        ([ :users, t(".members"), members_path ] if @members_visible),
         [ :bell, t(".notifications"), edit_notification_settings_path ],
         [ :house, t(".households"), households_path ]
-      ].each do |icon_name, label, path| %>
+      ].compact.each do |icon_name, label, path| %>
         <% group.with_row do %>
           <%= link_to path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
             <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-muted">

@@ -43,7 +43,8 @@ Lien d'invitation, valable 7 jours, pour une seule personne
 
 - **Le lien** : un jeton aléatoire, à usage unique, valable 7 jours. Seule son empreinte (SHA-256) est en base : une
   fuite de la base ne donne aucun lien valable. Le lien porte le rôle.
-- **Partager** ouvre le partage d'Android dans l'app (Web Share API, disponible dans la WebView), **Copier** partout.
+- **Partager** ouvre le partage d'Android dans l'app (bridge component `share` : la WebView n'a pas la Web Share
+  API), celui du navigateur ailleurs quand il existe ; **Copier** partout.
   L'app n'envoie rien elle-même : pas d'e-mail, pas d'adresse à saisir.
 - **Les invitations en attente** sont dans la liste des membres (« Marc, invité, en attente jusqu'au 4 déc. »), avec
   « Annuler ». Une invitation expirée disparaît de la liste.

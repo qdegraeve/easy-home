@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_090100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -65,12 +65,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_090100) do
   end
 
   create_table "household_members", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.bigint "household_id", null: false
     t.string "role", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "digest", default: true, null: false
+    t.string "invitee_name"
     t.index ["household_id"], name: "index_household_members_on_household_id"
     t.index ["user_id", "household_id"], name: "index_household_members_on_user_id_and_household_id", unique: true
   end
@@ -84,6 +85,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_090100) do
     t.decimal "latitude", precision: 9, scale: 6
     t.decimal "longitude", precision: 9, scale: 6
     t.integer "altitude_m"
+  end
+
+  create_table "invitations", force: :cascade do |t|
+    t.bigint "household_member_id", null: false
+    t.bigint "created_by_id"
+    t.string "token_digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_invitations_on_created_by_id"
+    t.index ["household_member_id"], name: "index_invitations_on_household_member_id", unique: true
+    t.index ["token_digest"], name: "index_invitations_on_token_digest", unique: true
   end
 
   create_table "locations", force: :cascade do |t|
@@ -249,6 +263,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_090100) do
   add_foreign_key "equipment", "households"
   add_foreign_key "household_members", "households"
   add_foreign_key "household_members", "users"
+  add_foreign_key "invitations", "household_members", on_delete: :cascade
+  add_foreign_key "invitations", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "locations", "households"
   add_foreign_key "plant_analyses", "plants"
   add_foreign_key "plant_analyses", "users", column: "requested_by_id"

@@ -4,6 +4,7 @@ import android.app.Application
 import app.easyhome.android.bridge.ButtonComponent
 import app.easyhome.android.bridge.MenuComponent
 import app.easyhome.android.bridge.PushComponent
+import app.easyhome.android.bridge.ShareComponent
 import dev.hotwire.core.bridge.BridgeComponentFactory
 import dev.hotwire.core.config.Hotwire
 import dev.hotwire.core.logging.HotwireLogLevel
@@ -24,7 +25,8 @@ class EasyHomeApplication : Application() {
         Hotwire.registerBridgeComponents(
             BridgeComponentFactory("button", ::ButtonComponent),
             BridgeComponentFactory("menu", ::MenuComponent),
-            BridgeComponentFactory("push", ::PushComponent)
+            BridgeComponentFactory("push", ::PushComponent),
+            BridgeComponentFactory("share", ::ShareComponent)
         )
         PushNotifications.createChannel(this)
 

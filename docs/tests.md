@@ -110,7 +110,8 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Saut d'une échéance | | Étape 5 |
 | Ajout d'un élément du catalogue : les tâches sont générées | | Étape 5 |
 | Échéance manquée : marquée comme telle par le job, visible dans le journal | | Étape 5 |
-| Invité : ne voit et ne valide que ses tâches ouvertes | | Étape 5 |
+| Membres : un gestionnaire invite par un lien (affiché une fois, en attente dans la liste), la personne crée son compte depuis le lien et voit le foyer ; le lien ne sert plus ; rejoindre avec un compte existant après connexion | `spec/system/invitations_spec.rb` | Fait |
+| Invité : ne voit et ne valide que les tâches des sujets ouverts, pendant sa période | | Série membres, PR 4 |
 
 Les specs système tournent dans un viewport mobile (390 × 844) : l'app est utilisée dans une webview Android.
 

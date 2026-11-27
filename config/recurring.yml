@@ -19,6 +19,9 @@ production:
   mark_missed:
     class: MarkMissedJob
     schedule: every hour at minute 5
+  purge_expired_invitations:
+    class: PurgeExpiredInvitationsJob
+    schedule: every day at 4am Indian/Reunion
   record_rain:
     class: RecordRainJob
     schedule: every day at 10pm Indian/Reunion
