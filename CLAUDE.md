@@ -18,6 +18,7 @@ Lire le document concerné avant toute tâche qui touche son sujet.
 | `docs/produit.md` | Vision, périmètre du MVP, ce qui est hors MVP |
 | `docs/domaine.md` | Glossaire et modèle de données (provisoire) |
 | `docs/architecture.md` | Couches applicatives, règles d'usage, exemples de code |
+| `docs/infrastructure.md` | Serveur, services externes, déploiement, secrets, sauvegardes (schémas) |
 | `docs/tests.md` | Exigences de test, stratégie par couche, parcours critiques |
 | `docs/hotwire-native.md` | App Android, notifications push, authentification native, déploiement |
 | `docs/android-coque.md` | Explication pas à pas de la coque Android et de Hotwire Native |
