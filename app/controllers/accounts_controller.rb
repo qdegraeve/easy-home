@@ -1,5 +1,13 @@
 # "Mon compte": the first name shown to the other members of the household, and deleting the account (ADR 0019).
 class AccountsController < ApplicationController
+  # The password confirms the deletion: not to be guessed from a session left open.
+  rate_limit(
+    to: 5,
+    within: 3.minutes,
+    only: :destroy,
+    with: -> { redirect_to edit_account_path, alert: t("accounts.destroy.rate_limited"), status: :see_other }
+  )
+
   def edit
     authorize Current.user, policy_class: UserPolicy
     @user = Current.user

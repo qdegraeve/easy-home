@@ -354,12 +354,13 @@ fr:
       success: "Votre compte est supprimé."
       wrong_password: "Mot de passe incorrect : rien n'a été supprimé."
       last_manager: "Nommez d'abord un autre gestionnaire : rien n'a été supprimé."
+      rate_limited: "Trop d'essais. Réessayez dans quelques minutes."
   privacy:
     show:
       title: "Confidentialité"
       intro: >-
         Easy Home est une application privée, faite pour un foyer et ses proches. Elle n'affiche aucune publicité et
-        ne vend ni ne partage aucune donnée.
+        ne vend aucune donnée : seuls les services nommés plus bas en reçoivent, pour ce qu'ils font.
       data:
         title: "Les données enregistrées"
         body:
@@ -386,8 +387,9 @@ fr:
           - "Firebase Cloud Messaging (Google) achemine les notifications vers les téléphones Android."
           - "Brevo envoie les e-mails (mot de passe oublié)."
           - >-
-              Anthropic (Claude) analyse une photo de plante quand vous le demandez : la photo et le nom de la plante,
-              jamais l'adresse.
+              Anthropic (Claude) analyse les photos d'une plante quand une analyse est lancée : les photos, la plante
+              (nom, espèce, emplacement, arrosage), votre remarque et la position de la maison à 1 km près, jamais
+              l'adresse.
           - >-
               Des services publics de géographie et de météo reçoivent la position de la maison, pour l'altitude et la
               pluie.
@@ -396,7 +398,10 @@ fr:
         body:
           - >-
               Dans l'app ou sur le site : Réglages, Mon compte, Supprimer mon compte. Votre compte, vos sessions et vos
-              téléphones sont supprimés aussitôt ; un foyer où vous êtes seul est supprimé avec vous.
+              téléphones sont supprimés aussitôt ; un foyer où vous êtes seul est supprimé avec vous. Ce que vous avez
+              fait dans un foyer partagé (journal, analyses, questions) y reste, sans votre nom.
+          - >-
+              Les sauvegardes chiffrées gardent les données supprimées jusqu'à leur expiration, un an au plus.
           - "Sans accès à l'app : demandez-le à un gestionnaire de votre foyer, qui transmettra."
   members:
     index:
