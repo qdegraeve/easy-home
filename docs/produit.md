@@ -10,6 +10,11 @@ Un rappel récurrent de calendrier ne suffit pas :
 - il ne connaît pas le contexte de la maison (équipements, animaux, membres du foyer) ;
 - il ne garde aucune trace de ce qui a été fait, par qui et quand.
 
+Surtout, la connaissance de la maison reste dans la tête de celui qui fait la tâche d'habitude : quel jour sortir
+quelle poubelle, quel produit mettre dans la piscine, où est le filtre de la clim. Quand il est absent, personne ne
+sait faire. L'objectif d'Easy Home est que **toute la connaissance de la maison soit partagée par les membres du
+foyer** ; ne pas oublier les tâches en est une fonction essentielle.
+
 Les plantes cumulent tous ces problèmes : l'arrosage dépend de chaque espèce et de la saison, et on ne voit un problème
 (maladie, parasite, manque d'eau) que lorsqu'il est déjà avancé. C'est le besoin initial et la **première priorité**.
 
@@ -18,7 +23,8 @@ Les plantes cumulent tous ces problèmes : l'arrosage dépend de chaque espèce 
 1. **Rappeler au bon moment** : la veille au soir pour les poubelles, avec relance tant que ce n'est pas fait.
 2. **Valider en un geste** : bouton « Fait » directement dans la notification.
 3. **Garder un journal** : historique des tâches faites, sautées ou manquées.
-4. **Partager le foyer** : plusieurs membres, et des invités aux droits restreints (pet-sitter, voisin pendant les vacances).
+4. **Partager le foyer** : plusieurs membres qui voient tous les mêmes tâches, avec leur « Comment faire » et leurs
+   notes « À savoir », et des invités aux droits restreints (pet-sitter, voisin pendant les vacances).
 5. **Démarrer vite** : déclarer ses équipements génère les tâches d'entretien associées.
 
 ## Concepts clés

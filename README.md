@@ -1,15 +1,16 @@
 # Easy Home
 
-**Ne plus oublier la poubelle jaune.** Easy Home aide un foyer à suivre les tâches trop rares pour devenir des
-habitudes et trop fréquentes pour être des événements : la poubelle jaune une semaine sur deux, l'arrosage de chaque
-plante, le sel du lave-vaisselle, le filtre de la clim.
+**Toute la connaissance de la maison, partagée par le foyer.** Easy Home gère les tâches de la maison : ce qu'il faut
+faire, quand, et comment. Dans un foyer, ce savoir est souvent dans la tête de celui qui s'en charge d'habitude : le
+jour de la poubelle jaune, la dose de produit pour la piscine, l'endroit du filtre de la clim, la plante qui n'aime pas
+trop d'eau. Dans Easy Home, il est écrit et partagé : n'importe quel membre du foyer peut prendre le relais.
 
-Un rappel de calendrier ne suffit pas : ignoré, il disparaît. Dans Easy Home, une tâche **reste ouverte tant qu'elle
-n'est pas faite**, une notification arrive **au bon moment** (la veille au soir pour les poubelles), et un **journal**
-garde ce qui a été fait, par qui et quand.
+Et rien n'est oublié : une tâche **reste ouverte tant qu'elle n'est pas faite**, une notification arrive **au bon
+moment** (la veille au soir pour les poubelles), et un **journal** garde ce qui a été fait, par qui et quand.
 
-> Projet personnel, fait pour un seul foyer, à La Réunion. Le code est public pour être lu ; l'app n'est pas un service
-> ouvert : pas d'inscription, les comptes se créent sur le serveur.
+> Tout a commencé par la poubelle jaune, collectée une semaine sur deux, que l'on oubliait. Projet personnel, fait pour
+> un seul foyer, à La Réunion. Le code est public pour être lu ; l'app n'est pas un service ouvert : pas
+> d'inscription, les comptes se créent sur le serveur.
 
 ## Ce que fait l'app
 
