@@ -43,6 +43,10 @@
       <%= yield %>
     </main>
     <%= render "shared/confirm_dialog" %>
+    <%# In the app, keeps this phone registered for push notifications (the Notifications page has its own). %>
+    <% if authenticated? && hotwire_native_app? && !content_for?(:push_registration_in_page) %>
+      <%= push_registration_tag(hidden: true) %>
+    <% end %>
     <%# Live region for the toasts (toast_controller.js): permanent, so that screen readers notice its changes. %>
     <div id="announcer" class="sr-only" aria-live="polite" data-turbo-permanent></div>
   </body>

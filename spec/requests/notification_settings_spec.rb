@@ -19,13 +19,42 @@ RSpec.describe "Notification settings", type: :request do
     expect(response.body).to match(/<option selected="selected" value="08:00">/)
   end
 
-  it "tells in the app that this phone does not get the notifications yet" do
+  it "offers in the app to turn the notifications on for this phone, and to update an app that cannot" do
     sign_in(user)
 
     app = "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android"
     get edit_notification_settings_path, headers: { "User-Agent" => app }
 
-    expect(response.parsed_body.text.squish).to include("Ce téléphone ne reçoit pas encore les notifications")
+    page = response.parsed_body
+    expect(page.at_css("[data-push-supported] button").text).to eq("Recevoir les notifications sur ce téléphone")
+    expect(page.at_css("[data-push-unsupported]").text).to include("Mettez l'app à jour")
+    # The section registers the phone itself: no second "push" component from the layout.
+    expect(page.css("[data-controller~='bridge--push']").size).to eq(1)
+  end
+
+  it "says nothing about this phone once it is registered in this session" do
+    sign_in(user)
+    create(:push_device, token: "fcm-1", owner: user.sessions.sole)
+
+    app = "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android"
+    get edit_notification_settings_path, headers: { "User-Agent" => app }
+
+    expect(response.parsed_body.text.squish).to include("1 téléphone reçoit les notifications.")
+    expect(response.parsed_body.at_css("[data-push-supported]")).to be_nil
+    component = response.parsed_body.at_css("[data-controller~='bridge--push']")
+    fingerprints = component["data-bridge--push-fingerprints-value"]
+    expect(JSON.parse(fingerprints)).to eq([ Digest::SHA256.hexdigest("fcm-1") ])
+  end
+
+  it "keeps the phone registered from every page of the app, never from a browser" do
+    sign_in(user)
+
+    app = "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android"
+    get root_path, headers: { "User-Agent" => app }
+    expect(response.parsed_body.at_css("[data-controller~='bridge--push'][hidden]")).to be_present
+
+    get root_path
+    expect(response.parsed_body.at_css("[data-controller~='bridge--push']")).to be_nil
   end
 
   it "answers a refused change with the page and its error, even to a change saved from the page" do

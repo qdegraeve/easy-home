@@ -98,3 +98,13 @@ html:has([data-floating-action]) #toasts {
 html[data-bridge-components~="button"]:has([data-controller~="bridge--button"][data-bridge-order="2"]) #toasts {
   padding-bottom: 9.5rem;
 }
+/* Push notifications (bridge "push", push_controller.js): the button that registers this phone only in an app that
+   knows the component; an older app shows the line asking for an update instead. */
+[data-push-supported],
+html[data-bridge-components~="push"] [data-push-unsupported] {
+  display: none;
+}
+
+html[data-bridge-components~="push"] [data-push-supported] {
+  display: block;
+}

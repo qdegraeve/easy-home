@@ -37,10 +37,18 @@ notification « à l'échéance » partirait à minuit. Chaque membre doit pouvo
 - **Retard maximal de 2 heures** : après une panne ou un déploiement, un résumé en retard part encore jusqu'à 2 heures
   après son heure, pas au-delà. Un résumé du matin n'arrive jamais le soir (premier téléphone enregistré à 21 h, résumé
   activé l'après-midi) : le suivant part le lendemain.
-- **Enregistrement du téléphone** : `POST /push_devices` avec le jeton Firebase, appelé par l'app Android (bridge
-  component, PR suivante) dans la session de l'utilisateur connecté.
-- **Secrets** : le compte de service Firebase (`action_push_native.fcm.encryption_key`) dans les credentials Rails,
-  jamais dans le dépôt.
+- **Enregistrement du téléphone** : `POST /push_devices` avec le jeton Firebase, envoyé par la page dans la session
+  de l'utilisateur connecté (bridge component `push`). La **permission** (Android 13+) n'est demandée que sur un geste
+  de l'utilisateur, le bouton « Recevoir les notifications sur ce téléphone » de la page Notifications, jamais au
+  premier lancement ; refusée, la page l'explique et ouvre les réglages Android de l'app. Ensuite, chaque page de
+  l'app redonne le jeton, et la page ne le poste que si la session ne le connaît pas (empreintes SHA-256 des jetons
+  de la session dans la page) : une nouvelle session après une reconnexion, un jeton renouvelé par Firebase.
+- **Réception** : Firebase affiche lui-même la notification quand l'app est en arrière-plan (canal « Rappels »,
+  icône dédiée) ; au premier plan, l'app l'affiche. La toucher ouvre `data.path` dans l'onglet Aujourd'hui (un
+  chemin de l'app seulement, jamais un autre site).
+- **Secrets** : le compte de service Firebase (`action_push_native.fcm.encryption_key`, le fichier JSON entier, et
+  `project_id`) dans les credentials Rails, jamais dans le dépôt. `android/app/google-services.json` n'est pas versionné
+  (dépôt public) : sans lui, l'app se construit sans Firebase (CI) et dit qu'elle ne peut pas recevoir de notifications.
 
 ## Alternatives écartées
 
@@ -57,5 +65,4 @@ notification « à l'échéance » partirait à minuit. Chaque membre doit pouvo
 - Une seule heure par utilisateur, pour tous ses foyers.
 - Les notifications ne partent qu'en production (tâche récurrente) ; en développement, on les déclenche à la main
   (bouton « M'envoyer une notification de test » ou `Notifications::SendDigests.new.call` en console).
-- Reste à faire : l'app Android (Firebase, permission, bridge component d'enregistrement, réception), puis plus tard
-  l'action « Fait » depuis la notification, qui demandera un jeton d'API par appareil.
+- Reste à faire : l'action « Fait » depuis la notification, qui demandera un jeton d'API par appareil.

@@ -54,14 +54,12 @@
     <%= f.submit t(".submit"), class: button_class(:primary, block: true), data: { autosave_target: "submit" } %>
   <% end %>
 
-  <section class="mt-8 rounded-2xl bg-surface p-4 text-sm" aria-labelledby="devices">
-    <h2 id="devices" class="font-semibold"><%= t(".devices") %></h2>
-    <% if (count = Current.user.push_devices.count).positive? %>
-      <p class="mt-1"><%= t(".devices_count", count:) %></p>
-      <%= button_to t(".test"), test_notification_path, class: "mt-3 #{button_class(:secondary)}" %>
-    <% else %>
-      <%# Said differently in the app (this phone) and in a browser (the app is needed). %>
-      <p class="mt-1 text-muted"><%= t(hotwire_native_app? ? ".no_device_app" : ".no_device_web") %></p>
-    <% end %>
-  </section>
+  <%# In the app, this section is the "push" bridge component: it registers the phone (the layout then has none). %>
+  <% section = { class: "mt-8 rounded-2xl bg-surface p-4 text-sm", aria: { labelledby: "devices" } } %>
+  <% if hotwire_native_app? %>
+    <% content_for :push_registration_in_page, "1" %>
+    <%= push_registration_tag(:section, **section) do %><%= render "devices" %><% end %>
+  <% else %>
+    <%= tag.section(**section) do %><%= render "devices" %><% end %>
+  <% end %>
 </div>

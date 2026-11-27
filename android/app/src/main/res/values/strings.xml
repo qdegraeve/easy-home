@@ -5,4 +5,6 @@
     <string name="tab_house">Maison</string>
     <string name="tab_journal">Journal</string>
     <string name="settings">Réglages</string>
+    <string name="notification_channel_reminders">Rappels</string>
+    <string name="notification_channel_reminders_description">Le résumé du matin et les rappels des tâches</string>
 </resources>

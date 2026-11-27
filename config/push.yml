@@ -1,10 +1,13 @@
 # Push notifications (action_push_native, ADR 0012). Android only: Firebase Cloud Messaging.
-# Secrets in the Rails credentials (bin/rails credentials:edit), never in the repository:
+# Secrets in the Rails credentials (bin/rails credentials:edit --environment …), never in the repository:
 #   action_push_native:
 #     fcm:
-#       project_id: the Firebase project id
-#       encryption_key: the JSON key of the Firebase service account
+#       encryption_key: |
+#         the whole JSON key of the Firebase service account
+#       project_id: optional, read from the JSON key when missing
+<% fcm = Rails.application.credentials.dig(:action_push_native, :fcm) || {} %>
+<% project_id = fcm[:project_id].presence || (JSON.parse(fcm[:encryption_key])["project_id"] if fcm[:encryption_key]) %>
 shared:
   google:
-    encryption_key: <%= Rails.application.credentials.dig(:action_push_native, :fcm, :encryption_key)&.dump %>
-    project_id: <%= Rails.application.credentials.dig(:action_push_native, :fcm, :project_id) %>
+    encryption_key: <%= fcm[:encryption_key]&.dump %>
+    project_id: <%= project_id&.dump %>

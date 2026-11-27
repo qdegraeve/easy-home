@@ -3,6 +3,7 @@ package app.easyhome.android
 import android.app.Application
 import app.easyhome.android.bridge.ButtonComponent
 import app.easyhome.android.bridge.MenuComponent
+import app.easyhome.android.bridge.PushComponent
 import dev.hotwire.core.bridge.BridgeComponentFactory
 import dev.hotwire.core.config.Hotwire
 import dev.hotwire.core.logging.HotwireLogLevel
@@ -22,8 +23,10 @@ class EasyHomeApplication : Application() {
         // Native parts of the pages, driven by the web (app/javascript/controllers/bridge/).
         Hotwire.registerBridgeComponents(
             BridgeComponentFactory("button", ::ButtonComponent),
-            BridgeComponentFactory("menu", ::MenuComponent)
+            BridgeComponentFactory("menu", ::MenuComponent),
+            BridgeComponentFactory("push", ::PushComponent)
         )
+        PushNotifications.createChannel(this)
 
         Hotwire.config.webViewDebuggingEnabled = BuildConfig.DEBUG
         Hotwire.config.applicationUserAgentPrefix = "EasyHome Android;"

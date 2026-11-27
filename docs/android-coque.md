@@ -320,7 +320,7 @@ deux moitiés, qui s'échangent des messages JSON (ADR 0014) :
   `@hotwired/hotwire-native-bridge`) ;
 - un **composant Kotlin** (`android/…/bridge/`), enregistré dans `EasyHomeApplication`.
 
-Deux composants pour l'instant :
+Trois composants pour l'instant :
 
 - **`button`** : côté page, `data-controller="bridge--button"` avec `data-bridge-title`, `data-bridge-icon`,
   `data-bridge-label` (le mot sur le bouton, « Tâche ») et `data-bridge-order` (1 par défaut) sur un lien ; côté app,
@@ -338,6 +338,14 @@ Deux composants pour l'instant :
 - **`menu`** : côté page, `data-controller="bridge--menu"` et des cibles `item` ; côté app, les entrées du menu ⋮,
   dont le choix clique l'élément (sa confirmation s'affiche comme d'habitude). Utilisé pour Modifier, Archiver et
   Supprimer d'une plante.
+- **`push`** : les notifications (ADR 0012). Côté page, `data-controller="bridge--push"`, caché dans le layout de
+  l'app et autour de la section « Téléphones » de la page Notifications. Côté app, `PushComponent` répond au message
+  `token` par le jeton Firebase (sans jamais demander la permission), à `enable` après avoir demandé la permission
+  (`MainActivity.requestNotificationPermission`, l'API Android l'exige depuis l'activité), et ouvre les réglages de
+  l'app sur `openSettings`. Chaque réponse porte un statut : `granted` (avec le jeton), `prompt`, `denied`,
+  `unavailable` (app construite sans `google-services.json`). La page poste le jeton à Rails seulement s'il manque
+  à la session. Le reste vit dans `PushNotifications` (canal, affichage, chemin à ouvrir) et
+  `EasyHomeMessagingService` (notification reçue app ouverte).
 
 L'app annonce ses composants dans son user agent ; la bibliothèque le lit et marque `<html>` avec
 `data-bridge-components="button menu"`. Une règle CSS (`application.tailwind.css`) masque alors les éléments web pris

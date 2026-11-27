@@ -50,7 +50,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [x] Projet `android/`, webview pointant vers l'app, path configuration servie par Rails
 - [ ] Navigation et transitions plus naturelles dans l'app (titres, en-tête web, retours)
 - [x] Résumé du matin côté Rails : réglages, enregistrement des téléphones, envoi récurrent (ADR 0012)
-- [ ] Notifications côté Android : Firebase, permission, enregistrement du téléphone, réception
+- [x] Notifications côté Android : Firebase, permission, enregistrement du téléphone, réception (bridge `push`)
 - [x] Prendre une photo directement avec l'appareil du téléphone : fourni par la coque (sélecteur de fichiers de
   Hotwire Native, appareil photo compris), sans code dédié
 
@@ -60,7 +60,7 @@ de livraison complet (Docker, agent relecteur, staging) est gelé sur la branche
 - [ ] CLI `claude` et jeton dans l'image (ADR 0008)
 - [x] Sauvegardes chiffrées de la base et des photos (accessory `backup` : restic vers R2, alerte si absente)
 - [x] App Android de production signée, à côté de la version de test (`.debug`)
-- [ ] Envoi des e-mails en production (mot de passe oublié) : relais SMTP de Brevo (ADR 0018), reste à vérifier en production
+- [x] Envoi des e-mails en production (mot de passe oublié) : relais SMTP de Brevo (ADR 0018)
 
 ## Étape 5 : le reste du MVP
 
