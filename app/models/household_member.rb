@@ -6,6 +6,8 @@ class HouseholdMember < ApplicationRecord
   belongs_to :household
   has_one :invitation, dependent: :destroy
   has_many :guest_accesses, dependent: :delete_all
+  # The address invited, while the place is reserved (ADR 0020).
+  delegate :email, to: :invitation, allow_nil: true
 
   enum :role, { manager: "manager", member: "member", guest: "guest" }, validate: true
 

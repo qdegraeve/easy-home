@@ -9,7 +9,7 @@ RSpec.describe "Rain", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   it "marks a place as getting the rain, then sees its plants watered by the rain, and undoes it" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     household = user.households.sole
     household.update!(latitude: -20.9, longitude: 55.45)
     garden = create(:location, household:, name: "Jardin")
@@ -18,7 +18,7 @@ RSpec.describe "Rain", type: :system do
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_content("Citronnier")
 

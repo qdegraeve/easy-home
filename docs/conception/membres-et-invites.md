@@ -1,6 +1,7 @@
 # Membres et invités
 
-> **Statut : validée par le propriétaire le 27 novembre 2026.** Ses choix : invitation par un lien à partager, tous
+> **Statut : validée par le propriétaire le 27 novembre 2026.** Ses choix : invitation par e-mail (ADR 0020, à la place
+> du lien à partager d'abord retenu), tous
 > les gestionnaires peuvent inviter, invités ouverts par sujet avec un choix « Tout », accès réglés dès l'invitation,
 > lien ouvert dans le navigateur, conception complète avant la série de PR. Décisions : ADR 0019. Remplace l'esquisse
 > `TaskAccess` de `docs/domaine.md`.
@@ -27,30 +28,24 @@ l'utilisateur va le relire.**
 
 ## 2. Inviter
 
-Depuis **Réglages → Membres du foyer** (gestionnaire) : « Inviter quelqu'un », un nom pour s'y retrouver, le rôle
-(pour un invité : ce qui lui est ouvert et la période, voir 5), puis l'écran du lien.
+Depuis **Réglages → Membres du foyer** (gestionnaire) : « Inviter quelqu'un », l'e-mail de la personne, un prénom
+facultatif pour s'y retrouver, le rôle (pour un invité : ce qui lui est ouvert et la période, voir 5).
 
 ```
 Inviter quelqu'un
-  Pour : [ Marc (le voisin) ]
+  E-mail : [ marc@exemple.fr ]      Prénom : [ Marc ]
   Rôle : ( ) Membre   ( ) Gestionnaire   (•) Invité
   Ce qui lui est ouvert, période… (invité seulement)
-  [Créer le lien]
-
-Lien d'invitation, valable 7 jours, pour une seule personne
-  https://…/invitations/k3J9…        [Copier] [Partager]
+  [Envoyer l'invitation]
 ```
 
-- **Le lien** : un jeton aléatoire, à usage unique, valable 7 jours. Seule son empreinte (SHA-256) est en base : une
-  fuite de la base ne donne aucun lien valable. Le lien porte le rôle.
-- **Partager** ouvre le partage d'Android dans l'app (bridge component `share` : la WebView n'a pas la Web Share
-  API), celui du navigateur ailleurs quand il existe ; **Copier** partout.
-  L'app n'envoie rien elle-même : pas d'e-mail, pas d'adresse à saisir.
-- **Les invitations en attente** sont dans la liste des membres (« Marc, invité, en attente jusqu'au 4 déc. »), avec
-  « Annuler ». Une invitation expirée disparaît de la liste.
-- Le lien ne se réaffiche pas après coup (seule l'empreinte est gardée) : perdu, « Nouveau lien » remplace l'ancien
-  sans toucher aux réglages de la place.
-- Le nom saisi sert seulement à reconnaître l'invitation dans la liste ; la personne donne son prénom en rejoignant.
+- **L'e-mail** part aussitôt (Brevo, ADR 0018), avec un lien : jeton aléatoire, à usage unique, valable 7 jours.
+  Seule son empreinte (SHA-256) est en base, et l'e-mail est envoyé sans passer par un job : le jeton n'est stocké
+  nulle part. Pas parti : rien n'est réservé, le gestionnaire le voit.
+- **Seule cette adresse** peut rejoindre (ADR 0020). Une personne déjà dans le foyer ne peut pas être réinvitée.
+- **Les invitations en attente** sont dans la liste des membres (« Marc, marc@exemple.fr, invité, lien valable
+  jusqu'au 4 déc. »), avec « Renvoyer » (nouveau lien, l'ancien ne marche plus) et « Annuler ». Une invitation
+  expirée disparaît de la liste.
 
 ## 3. Rejoindre
 
@@ -58,9 +53,9 @@ Le lien ouvre la page « Rejoindre Maison » (nom du foyer, rôle, qui invite). 
 
 | Situation | Ce que voit la personne |
 |---|---|
-| Sans compte | Créer son compte : e-mail, mot de passe, confirmation. Elle est connectée et arrive dans le foyer. |
+| Sans compte | Créer son compte : l'e-mail invité, affiché et non modifiable, un prénom, un mot de passe. Le clic sur le lien reçu prouve l'adresse : le compte sert tout de suite, sans e-mail de confirmation. |
 | Avec un compte, non connectée | « J'ai déjà un compte » : connexion, puis retour sur l'invitation et « Rejoindre ». |
-| Connectée | « Rejoindre Maison ». Déjà membre : « Vous faites déjà partie de ce foyer », le lien n'est pas consommé. |
+| Connectée | Avec l'adresse invitée : « Rejoindre Maison ». Avec une autre : « Cette invitation est pour… », se déconnecter. Déjà membre : le lien n'est pas consommé. |
 
 - **L'invitation est la seule porte d'inscription** : sans lien valable, pas de création de compte (la page de
   connexion reste sans « S'inscrire »). `accounts:create` reste pour le premier compte.
@@ -190,8 +185,8 @@ User
 - Services : `Invitations::Create`, `Invitations::Accept` (crée le compte au besoin, attache l'utilisateur à sa place,
   consomme le lien, dans une transaction avec verrou sur l'invitation : deux clics simultanés n'en font qu'un),
   `Members::ChangeRole`, `Members::Remove` (garde-fou du dernier gestionnaire, sous verrou du foyer).
-- Sécurité : création de compte limitée par `rate_limit` (comme la connexion), mot de passe de 8 caractères au
-  moins ; le jeton se compare par son empreinte. Seule fuite assumée : un e-mail déjà pris le dit à l'inscription.
+- Sécurité : création de compte limitée par `rate_limit` (comme la connexion), mot de passe de 15 caractères au
+  moins et pas facile à deviner (ADR 0020) ; le jeton se compare par son empreinte. Seule fuite assumée : un e-mail déjà pris le dit à l'inscription.
   Limite connue : le jeton est dans le chemin de l'URL, donc dans les journaux du serveur, pendant ses 7 jours.
 
 ## 7. Découpage en PR
@@ -203,11 +198,12 @@ Dans une branche d'intégration `membres`, comme la série `domaines` ; le propr
 |---|---|
 | 0 | Cette conception, ADR 0019 (invitation par lien, inscription par invitation, accès invité par sujet), `docs/domaine.md` |
 | 1 | Rôle `owner` → `manager` (migration de données), plusieurs gestionnaires, régler le foyer réservé aux gestionnaires ; `users.name` |
-| 2 | Membres du foyer (liste), inviter (lien, Copier, Partager), rejoindre avec ou sans compte, invitations en attente et annulation |
+| 2 | Membres du foyer (liste), inviter, rejoindre avec ou sans compte, invitations en attente et annulation (par e-mail depuis la PR 7) |
 | 3 | Changer un rôle, retirer, quitter ; garde-fou du dernier gestionnaire ; « Fait par Léa » dans le journal |
 | 4 | Invités : `GuestAccess`, « Tout ouvrir », période ; `VisibleTasksQuery` et policies ; Aujourd'hui, feuille, Journal, Maison, fiches en lecture |
 | 5 | Notifications des invités (résumé et rappels des tâches ouvertes, dans la période) ; parcours complet « le voisin pendant les vacances » |
 | 6 | Supprimer son compte (app et web), page de confidentialité ; « Fait par un ancien membre » |
+| 7 | Invitation par e-mail liée à l'adresse, mot de passe de 15 caractères (ADR 0020) |
 
 Parcours critiques ajoutés à `docs/tests.md` : inviter puis rejoindre sans compte ; rejoindre avec un compte ;
 retirer un membre ; ouvrir un sujet à un invité qui fait la tâche, et ne voit rien d'autre ; accès hors période ;

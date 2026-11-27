@@ -14,7 +14,7 @@ RSpec.describe "Sessions", type: :request do
 
   describe "POST /session" do
     it "signs the user in with valid credentials" do
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
 
       expect(response).to redirect_to(root_url)
       expect(user.sessions.count).to eq(1)
@@ -30,7 +30,7 @@ RSpec.describe "Sessions", type: :request do
 
   describe "DELETE /session" do
     it "signs the user out" do
-      post session_path, params: { email: user.email, password: "password" }
+      post session_path, params: { email: user.email, password: "passwordpassword" }
 
       delete session_path
 

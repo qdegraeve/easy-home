@@ -46,19 +46,31 @@ RSpec.describe "Passwords", type: :request do
 
   describe "PUT /passwords/:token" do
     it "updates the password" do
-      put password_path(user.password_reset_token), params: { password: "new-pass", password_confirmation: "new-pass" }
+      new_password = "trois mots au soleil"
+      put password_path(user.password_reset_token), params: { password: new_password, password_confirmation: new_password }
 
       expect(response).to redirect_to(new_session_path)
-      expect(user.reload.authenticate("new-pass")).to be_truthy
+      expect(user.reload.authenticate(new_password)).to be_truthy
     end
 
     it "rejects a mismatched confirmation" do
       token = user.password_reset_token
 
-      put password_path(token), params: { password: "new-pass", password_confirmation: "other" }
+      put password_path(token), params: { password: "trois mots au soleil", password_confirmation: "other" }
 
       expect(response).to redirect_to(edit_password_path(token))
-      expect(flash[:alert]).to eq("Les mots de passe ne correspondent pas.")
+      expect(flash[:alert]).to include("ne concorde pas")
+    end
+
+    it "rejects a password too short or easy to guess, saying why" do
+      token = user.password_reset_token
+
+      put password_path(token), params: { password: "court", password_confirmation: "court" }
+      expect(flash[:alert]).to include("15 caractères")
+
+      put password_path(token), params: { password: "azertyuiopqsdfg", password_confirmation: "azertyuiopqsdfg" }
+      expect(flash[:alert]).to include("trop facile à deviner")
+      expect(user.reload.authenticate("passwordpassword")).to be_truthy
     end
   end
 end

@@ -10,7 +10,7 @@ RSpec.describe "Guests", type: :request do
 
   before do
     Members::SetGuestAccess.new.call(member: guest, params: { subjects: [ "Plant:#{ficus.id}" ] })
-    post session_path, params: { email: guest.user.email, password: "password" }
+    post session_path, params: { email: guest.user.email, password: "passwordpassword" }
   end
 
   it "shows an opened plant read only, its task sheet, and lets the guest do it" do

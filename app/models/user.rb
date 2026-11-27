@@ -11,8 +11,8 @@ class User < ApplicationRecord
   normalizes :name, with: ->(name) { name.squish.presence }
 
   validates :name, length: { maximum: 50 }
-  # Accounts are created from an invitation link (ADR 0019): a password long enough, checked whenever it is set.
-  validates :password, length: { minimum: 8 }, allow_nil: true
+  # Checked whenever a password is set (ADR 0020): long, and not easy to guess (PasswordPolicy).
+  validate :password_policy, if: -> { password }
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :digest_minute, inclusion: { in: DIGEST_MINUTES }
   # What the morning digest lists: every task due, or only the ones that must not be missed (UX review #22).
@@ -22,5 +22,12 @@ class User < ApplicationRecord
   # underscore ("sam.dupont@…" gives "Sam").
   def display_name
     name || email.split(/[@._]/).first.upcase_first
+  end
+
+  private
+
+  def password_policy
+    policy = PasswordPolicy.new(allowed: Rails.configuration.x.allowed_passwords || [])
+    policy.errors(password, email:).each { |error| errors.add(:password, error, count: PasswordPolicy::MIN_LENGTH) }
   end
 end

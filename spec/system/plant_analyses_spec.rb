@@ -13,11 +13,11 @@ RSpec.describe "Plant analyses", type: :system do
   end
 
   it "analyses the first photo automatically, then a chosen set of photos with a note" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     click_on "Ajouter une plante"
@@ -71,7 +71,7 @@ RSpec.describe "Plant analyses", type: :system do
   end
 
   it "shows a failed analysis, then restarts it with the same photos and note" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     plant = create(:plant, :watered, household: user.households.first, name: "Citronnier")
     older = create(:photo, plant:, taken_at: Time.zone.parse("2026-11-02 09:00"))
     create(:photo, plant:, taken_at: Time.zone.parse("2026-11-12 09:00"))
@@ -79,7 +79,7 @@ RSpec.describe "Plant analyses", type: :system do
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Nouvelle analyse"
@@ -112,13 +112,13 @@ RSpec.describe "Plant analyses", type: :system do
   end
 
   it "accepts the species, the watering interval and an action proposed by the AI" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     plant = create(:plant, :watered, household: user.households.first, name: "Citronnier", interval_days: 7)
     create(:photo, plant:, taken_at: Time.zone.parse("2026-11-12 09:00"))
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Nouvelle analyse"
@@ -148,13 +148,13 @@ RSpec.describe "Plant analyses", type: :system do
   end
 
   it "asks follow-up questions on an analysis, one of them with a new photo" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     plant = create(:plant, :watered, household: user.households.first, name: "Citronnier")
     create(:plant_analysis, :with_proposals, plant:)
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     open_plant("Citronnier")
     click_on "Voir l'analyse"

@@ -6,7 +6,7 @@ RSpec.describe "Locations", type: :request do
   let(:location) { create(:location, household:, name: "Terrasse", exposure: :partial_shade) }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   def change(location, **attributes)

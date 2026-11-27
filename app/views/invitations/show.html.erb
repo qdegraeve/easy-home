@@ -9,7 +9,11 @@
     ) %>
   </p>
 
-  <% if @already_member %>
+  <% if @other_account %>
+    <p class="mt-6"><%= t(".other_account", email: @invitation.email) %></p>
+    <%= button_to t("layouts.application.sign_out"), session_path, method: :delete,
+          class: "mt-4 #{button_class(:secondary, block: true)}" %>
+  <% elsif @already_member %>
     <p class="mt-6"><%= t(".already_member") %></p>
     <%= link_to t(".open"), root_path, class: "mt-4 #{button_class(:primary, block: true)}" %>
   <% elsif authenticated? %>
@@ -26,9 +30,14 @@
       class: "mt-3 space-y-4"
     ) do |form| %>
       <%= render "shared/errors", record: @user %>
+      <div>
+        <p class="text-sm font-semibold"><%= User.human_attribute_name(:email) %></p>
+        <p class="mt-1 break-words"><%= @invitation.email %></p>
+        <%# For the password managers: the account they save. %>
+        <%= hidden_field_tag :username, @invitation.email, autocomplete: "username", id: nil %>
+      </div>
       <% [
         [ :name, :text_field, { autocomplete: "given-name", required: true } ],
-        [ :email, :email_field, { autocomplete: "username", required: true } ],
         [ :password, :password_field, { autocomplete: "new-password", required: true, maxlength: 72 } ],
         [ :password_confirmation, :password_field, { autocomplete: "new-password", required: true, maxlength: 72 } ]
       ].each do |field, type, options| %>
@@ -40,6 +49,9 @@
             class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3",
             **options
           ) %>
+          <% if field == :password %>
+            <p class="mt-1 text-[13px] text-muted"><%= t("passwords.rule") %></p>
+          <% end %>
         </div>
       <% end %>
       <%= form.submit t(".submit", name: @household.name), class: button_class(:primary, block: true) %>

@@ -19,7 +19,7 @@ RSpec.describe "Page titles", type: :request do
     photo = create(:photo, plant:, taken_at: Time.zone.parse("2026-11-08 10:00"))
     pruning = create(:task, household: plant.household, subject: plant, title: "Tailler", template_key: nil,
                             recurrence_type: :once, recurrence_config: { "due_on" => "2026-12-01" })
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
 
     {
       root_path => "Aujourd'hui",

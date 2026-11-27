@@ -11,7 +11,7 @@ RSpec.describe Accounts::Destroy do
     task = create(:task, household: shared)
     done = task.occurrences.create!(due_at: Time.current, status: :done, completed_at: Time.current, completed_by: user)
 
-    expect(described_class.new.call(user:, password: "password")).to be_success
+    expect(described_class.new.call(user:, password: "passwordpassword")).to be_success
 
     expect(User.exists?(user.id)).to be(false)
     expect(ApplicationPushDevice.exists?(device.id)).to be(false)
@@ -23,7 +23,7 @@ RSpec.describe Accounts::Destroy do
     alone = create(:household_member, user:, role: :manager).household
     plant = create(:plant, :watered, household: alone)
 
-    described_class.new.call(user:, password: "password")
+    described_class.new.call(user:, password: "passwordpassword")
 
     expect(Household.exists?(alone.id)).to be(false)
     expect(Plant.exists?(plant.id)).to be(false)
@@ -35,7 +35,7 @@ RSpec.describe Accounts::Destroy do
     alone = create(:household_member, user:, role: :manager).household
 
     expect(described_class.new.call(user:, password: "wrong").failure.first).to eq(:wrong_password)
-    expect(described_class.new.call(user:, password: "password").failure.first).to eq(:last_manager)
+    expect(described_class.new.call(user:, password: "passwordpassword").failure.first).to eq(:last_manager)
     expect(Household.exists?(alone.id)).to be(true)
     expect(user.reload).to be_present
     expect(described_class.households_to_hand_over(user)).to eq([ shared ])

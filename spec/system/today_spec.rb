@@ -8,7 +8,7 @@ RSpec.describe "Today", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 18:30")) { example.run } }
 
   it "waters all the plants of the day in one tap, undoes it, then waters only the checked ones" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     household = user.households.sole
     terrace = create(:location, household:, name: "Terrasse")
     plant = ->(name, location: nil, watered: "2026-11-12 08:00") do
@@ -29,7 +29,7 @@ RSpec.describe "Today", type: :system do
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     # One line for the three waterings due, where they are; the one of the coming days folded under "Bientôt".

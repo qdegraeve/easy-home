@@ -17,19 +17,21 @@ RSpec.describe "Guests", type: :system do
 
     visit new_session_path
     fill_in "Votre adresse e-mail", with: manager.email
-    fill_in "Votre mot de passe", with: "password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     click_on "Réglages"
     click_on "Membres du foyer"
     click_on "Inviter quelqu'un"
-    fill_in "Pour qui ?", with: "Marc"
+    fill_in "E-mail", with: "marc@example.com"
+    fill_in "Prénom", with: "Marc"
     choose "Invité"
     check "Ficus"
     check "Tâches de la maison"
     fill_in "Du", with: "2026-12-20"
     fill_in "Au", with: "2027-01-05"
-    click_on "Créer le lien"
-    link = find("[data-invitation-link]").text
+    click_on "Envoyer l'invitation"
+    expect(page).to have_content("Invitation envoyée à marc@example.com.")
+    link = URI(ActionMailer::Base.deliveries.last.text_part.body.to_s[%r{http\S+/invitations/\S+}]).path
     click_on "Réglages"
     click_on "Se déconnecter"
     within("dialog", text: "Se déconnecter ?") { click_on "Se déconnecter" }
@@ -37,9 +39,8 @@ RSpec.describe "Guests", type: :system do
     visit link
     expect(page).to have_content("Quentin vous invite comme invité.")
     fill_in "Prénom", with: "Marc"
-    fill_in "E-mail", with: "marc@example.com"
-    fill_in "Mot de passe", with: "secret-password"
-    fill_in "Confirmation du mot de passe", with: "secret-password"
+    fill_in "Mot de passe", with: "passwordpassword"
+    fill_in "Confirmation du mot de passe", with: "passwordpassword"
     click_on "Créer mon compte et rejoindre Maison"
 
     expect(page).to have_content("Bienvenue dans Maison.")

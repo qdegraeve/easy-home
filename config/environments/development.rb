@@ -87,4 +87,7 @@ Rails.application.configure do
     config.consider_all_requests_local = false
     config.action_mailer.show_previews = false
   end
+
+  # A password easy to type, accepted outside production whatever PasswordPolicy says (ADR 0020).
+  config.x.allowed_passwords = [ "passwordpassword" ]
 end

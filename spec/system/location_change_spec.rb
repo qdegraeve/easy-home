@@ -6,7 +6,7 @@ RSpec.describe "Change of a location", type: :system do
   include ActiveJob::TestHelper
 
   it "changes the exposure of a location, sees the analysis to review, restarts it, and the signal goes" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     household = user.households.sole
     terrace = create(:location, household:, name: "Terrasse", exposure: :partial_shade, sheltered: true)
     lemon = create(:plant, :watered, household:, name: "Citronnier", location: terrace)
@@ -14,7 +14,7 @@ RSpec.describe "Change of a location", type: :system do
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     go_to_tab("Maison")

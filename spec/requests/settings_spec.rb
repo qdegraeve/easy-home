@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Settings", type: :request do
   it "shows the account, the preferences and signing out" do
     user = create(:user, :with_household, email: "moi@example.com")
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
 
     get settings_path
 

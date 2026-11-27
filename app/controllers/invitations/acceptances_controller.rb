@@ -39,7 +39,10 @@ module Invitations
 
         @household = @invitation.household
         @user = payload
+        @other_account = false
         render "invitations/show", status: :unprocessable_content
+      when :other_account
+        redirect_to invitation_path(params[:invitation_token]), alert: t(".other_account", email: payload.email)
       when :already_member
         session[:household_id] = payload.id
         redirect_to root_path, notice: t(".already_member", name: payload.name)
@@ -49,7 +52,7 @@ module Invitations
     end
 
     def account_params
-      params.expect(user: [ :name, :email, :password, :password_confirmation ])
+      params.expect(user: [ :name, :password, :password_confirmation ])
     end
   end
 end

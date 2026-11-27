@@ -1,0 +1,4 @@
+<p><%= t(".intro", inviter: @inviter || t(".someone"), household: @household.name) %></p>
+<p><%= link_to t(".link", household: @household.name), @url %></p>
+<p><%= t(".validity", date: l(@invitation.expires_at.to_date, format: :day)) %></p>
+<p><%= t(".ignore") %></p>

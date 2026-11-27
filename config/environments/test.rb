@@ -51,4 +51,7 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # A password easy to type, accepted outside production whatever PasswordPolicy says (ADR 0020).
+  config.x.allowed_passwords = [ "passwordpassword" ]
 end

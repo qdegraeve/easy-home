@@ -15,7 +15,8 @@ supprimer son compte. Conception détaillée : `docs/conception/membres-et-invit
 
 - **Trois rôles** : gestionnaire (`manager`, l'ancien `owner`, plusieurs par foyer), membre, invité. Gérer le foyer et
   ses membres est réservé aux gestionnaires ; il en reste toujours au moins un.
-- **Invitation par un lien** que le gestionnaire partage lui-même : jeton aléatoire, usage unique, 7 jours, seule son
+- **Invitation par un lien** (envoyé par e-mail à une adresse, depuis l'ADR 0020) que le gestionnaire partageait
+  lui-même : jeton aléatoire, usage unique, 7 jours, seule son
   empreinte SHA-256 en base. L'app n'envoie pas d'e-mail.
 - **L'invitation est la seule porte d'inscription** : sans lien valable, pas de création de compte.
 - **Inviter réserve une place** : un `HouseholdMember` sans utilisateur, avec son rôle et, pour un invité, ses accès.

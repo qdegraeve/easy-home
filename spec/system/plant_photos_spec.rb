@@ -12,11 +12,11 @@ RSpec.describe "Plant photos", type: :system do
   end
 
   it "adds a plant with a photo, adds another one, rejects a non picture, redates and deletes a photo" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     click_on "Ajouter une plante"

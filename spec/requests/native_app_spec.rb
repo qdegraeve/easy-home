@@ -6,7 +6,7 @@ RSpec.describe "Pages in the Android app", type: :request do
   let(:plant) { create(:plant, :watered, household: user.households.sole, name: "Citronnier") }
   let(:in_app) { { "User-Agent" => "Mozilla/5.0 (Linux; Android 17) Hotwire Native Android; Turbo Native Android" } }
 
-  before { post session_path, params: { email: user.email, password: "password" } }
+  before { post session_path, params: { email: user.email, password: "passwordpassword" } }
 
   it "hides the web header in the app, whose native top bar has the settings (WebFragment)" do
     get root_path, headers: in_app
@@ -46,7 +46,7 @@ RSpec.describe "Pages in the Android app", type: :request do
 
   it "shows the account links on the first household form, the only page of a user without household" do
     other = create(:user)
-    post session_path, params: { email: other.email, password: "password" }
+    post session_path, params: { email: other.email, password: "passwordpassword" }
 
     get new_household_path, headers: in_app
 

@@ -13,7 +13,7 @@ RSpec.describe "Members", type: :system do
 
     visit new_session_path
     fill_in "Votre adresse e-mail", with: manager.email
-    fill_in "Votre mot de passe", with: "password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_css("h1", text: "Aujourd'hui")
 

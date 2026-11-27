@@ -5,39 +5,52 @@ RSpec.describe "Members", type: :request do
   let(:manager) { create(:household_member, household:, role: :manager).user }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
-  def invite(params = { role: "member", invitee_name: "Léa" })
+  def invite(params = { role: "member", invitee_name: "Léa", email: "lea@example.com" })
     post members_path, params: { household_member: params }
   end
 
-  it "shows the link once, right after creating it, then offers a new one" do
+  def link_in(mail)
+    mail.text_part.body.to_s[%r{http\S+/invitations/\S+}]
+  end
+
+  it "e-mails the invitation, lists it as pending, and sends it again with a new link" do
     sign_in(manager)
 
     invite
     member = household.members.invited.sole
-    expect(response).to redirect_to(member_link_path(member))
-    follow_redirect!
-    link = response.parsed_body.at_css("[data-invitation-link]").text
-    token = link.split("/").last
-    expect(Invitation.find_usable(token).household_member).to eq(member)
+    expect(response).to redirect_to(members_path)
+    expect(flash[:notice]).to eq("Invitation envoyée à lea@example.com.")
+    first = link_in(ActionMailer::Base.deliveries.last)
+    expect(Invitation.find_usable(first.split("/").last).household_member).to eq(member)
+    get members_path
+    expect(response.parsed_body.text.squish).to include("Invitations en attente Léa lea@example.com")
+    expect(response.body).not_to include(first.split("/").last)
 
-    get member_link_path(member)
-    expect(response.parsed_body.at_css("[data-invitation-link]")).to be_nil
-    expect(response.body).not_to include(token)
+    post member_resend_path(member)
+    expect(flash[:notice]).to eq("Invitation renvoyée à lea@example.com.")
+    second = link_in(ActionMailer::Base.deliveries.last)
+    expect(Invitation.find_usable(first.split("/").last)).to be_nil
+    expect(Invitation.find_usable(second.split("/").last).household_member).to eq(member)
+  end
 
-    post member_link_path(member)
-    follow_redirect!
-    new_token = response.parsed_body.at_css("[data-invitation-link]").text.split("/").last
-    expect(Invitation.find_usable(token)).to be_nil
-    expect(Invitation.find_usable(new_token).household_member).to eq(member)
+  it "says why it cannot invite someone already in the household, keeping the address typed" do
+    create(:household_member, household:, role: :member, user: create(:user, email: "lea@example.com"))
+    sign_in(manager)
+
+    invite
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("E-mail fait déjà partie du foyer", 'value="lea@example.com"')
+    expect(ActionMailer::Base.deliveries).to be_empty
   end
 
   it "re-renders the form on an invalid role" do
     sign_in(manager)
 
-    invite(role: "owner")
+    invite(role: "owner", email: "lea@example.com")
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(household.members.invited).to be_empty

@@ -8,11 +8,11 @@ RSpec.describe "In the Android app", type: :system do
   end
 
   it "reaches the notification settings then signs out through the settings, without the web header" do
-    create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
 
     expect(page).to have_css("h1", text: "Aujourd'hui")
@@ -61,12 +61,12 @@ RSpec.describe "In the Android app", type: :system do
 
   it "moves the plant actions to the native menu, kept in step with the page, and asks before acting" do
     page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [button menu]")
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     plant = create(:plant, :watered, household: user.households.sole, name: "Basilic")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     visit plant_path(plant)
     page.execute_script(FAKE_APP)
@@ -89,13 +89,13 @@ RSpec.describe "In the Android app", type: :system do
 
   it "shows the native Tâche and Analyse buttons on the care tab, and opens the task form from the first" do
     page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [button menu]")
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     plant = create(:plant, :watered, household: user.households.sole, name: "Basilic")
     create(:photo, plant:)
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     visit plant_path(plant)
     page.execute_script(FAKE_APP)
@@ -118,13 +118,13 @@ RSpec.describe "In the Android app", type: :system do
 
   it "moves the date, cover and delete actions of a photo to the native menu, and still asks before deleting" do
     page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [button menu]")
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     plant = create(:plant, :watered, household: user.households.sole, name: "Basilic")
     photo = create(:photo, plant:)
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     visit plant_photo_path(plant, photo)
     page.execute_script(FAKE_APP)
@@ -162,11 +162,11 @@ RSpec.describe "In the Android app", type: :system do
 
   it "registers this phone from the Notifications page, then again by itself in a new session" do
     page.driver.add_headers("User-Agent" => "Mozilla/5.0 Hotwire Native Android; bridge-components: [push]")
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_css("h1", text: "Aujourd'hui")
     visit edit_notification_settings_path
@@ -189,7 +189,7 @@ RSpec.describe "In the Android app", type: :system do
     click_on "Se déconnecter"
     within("dialog", text: "Se déconnecter ?") { click_on "Se déconnecter" }
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_css("h1", text: "Aujourd'hui")
     page.execute_script("window.pushAllowed = true")

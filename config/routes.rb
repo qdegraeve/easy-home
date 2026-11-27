@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   get "confidentialite", to: "privacy#show", as: :privacy
   # The members of the current household and the invitations (ADR 0019).
   resources :members, only: [ :index, :new, :create, :edit, :update, :destroy ] do
-    resource :link, only: [ :show, :create ], module: :members
+    resource :resend, only: :create, module: :members
     resource :access, only: :update, module: :members
   end
   resources :invitations, only: :show, param: :token do

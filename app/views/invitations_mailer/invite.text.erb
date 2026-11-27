@@ -1,0 +1,6 @@
+<%= t(".intro", inviter: @inviter || t(".someone"), household: @household.name) %>
+
+<%= @url %>
+
+<%= t(".validity", date: l(@invitation.expires_at.to_date, format: :day)) %>
+<%= t(".ignore") %>

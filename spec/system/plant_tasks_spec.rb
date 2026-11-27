@@ -7,12 +7,12 @@ RSpec.describe "Plant tasks", type: :system do
   around { |example| travel_to(Time.zone.parse("2026-11-16 10:00")) { example.run } }
 
   it "adds a repeating and a one-off task, does them from home and plant page, cancels, edits, deletes" do
-    user = create(:user, :with_household, email: "quentin@example.com", password: "secret-password")
+    user = create(:user, :with_household, email: "quentin@example.com", password: "passwordpassword")
     create(:plant, :watered, household: user.households.first, name: "Citronnier", interval_days: 7)
 
     visit root_path
     fill_in "Votre adresse e-mail", with: "quentin@example.com"
-    fill_in "Votre mot de passe", with: "secret-password"
+    fill_in "Votre mot de passe", with: "passwordpassword"
     click_on "Se connecter"
     expect(page).to have_content("Rien à faire aujourd'hui.")
     open_plant("Citronnier")

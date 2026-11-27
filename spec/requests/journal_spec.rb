@@ -15,7 +15,7 @@ RSpec.describe "Journal", type: :request do
   end
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   it "lists what was done in the household, newest first, by day and with who did it" do

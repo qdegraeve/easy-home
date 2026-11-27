@@ -19,12 +19,6 @@ application.register("bridge--menu", Bridge__MenuController)
 import Bridge__PushController from "./bridge/push_controller"
 application.register("bridge--push", Bridge__PushController)
 
-import Bridge__ShareController from "./bridge/share_controller"
-application.register("bridge--share", Bridge__ShareController)
-
-import ClipboardController from "./clipboard_controller"
-application.register("clipboard", ClipboardController)
-
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
@@ -36,9 +30,6 @@ application.register("photo-viewer", PhotoViewerController)
 
 import RequiredWithController from "./required_with_controller"
 application.register("required-with", RequiredWithController)
-
-import ShareController from "./share_controller"
-application.register("share", ShareController)
 
 import ToastController from "./toast_controller"
 application.register("toast", ToastController)

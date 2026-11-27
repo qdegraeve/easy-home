@@ -9,7 +9,7 @@ RSpec.describe "Equipment suggestions", type: :request do
   around { |example| travel_to(Time.zone.parse("2026-11-23 10:00")) { example.run } }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   it "offers the upkeep of a new dishwasher, unchecked with its first dates, and adds the checked ones" do

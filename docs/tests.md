@@ -111,7 +111,7 @@ Liste maintenue à jour : une PR qui crée ou modifie un parcours critique l'ajo
 | Saut d'une échéance | | Étape 5 |
 | Ajout d'un élément du catalogue : les tâches sont générées | | Étape 5 |
 | Échéance manquée : marquée comme telle par le job, visible dans le journal | | Étape 5 |
-| Membres : un gestionnaire invite par un lien (affiché une fois, en attente dans la liste), la personne crée son compte depuis le lien et voit le foyer ; le lien ne sert plus ; rejoindre avec un compte existant après connexion | `spec/system/invitations_spec.rb` | Fait |
+| Membres : un gestionnaire invite par e-mail (en attente dans la liste), la personne crée son compte depuis le lien reçu, avec l'adresse invitée, et voit le foyer ; le lien ne sert plus ; rejoindre avec un compte existant après connexion ; autre compte refusé ; mot de passe de 15 caractères | `spec/system/invitations_spec.rb`, `spec/requests/invitations_spec.rb`, `spec/domain/password_policy_spec.rb` | Fait |
 | Gérer les membres : un second gestionnaire nommé, un membre retiré (il perd le foyer, son nom reste au journal) ; quitter un foyer, jamais le dernier gestionnaire | `spec/system/members_spec.rb`, `spec/requests/members_spec.rb`, `spec/services/members/` | Fait |
 | Invité (le voisin pendant les vacances) : invité avec une plante et les tâches de la maison ouvertes et une période, il voit et fait ces tâches seulement, la fiche en lecture ; plus rien après la période | `spec/system/guests_spec.rb`, `spec/requests/guests_spec.rb`, `spec/queries/guest_visibility_query_spec.rb` | Fait |
 

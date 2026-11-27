@@ -4,7 +4,7 @@ RSpec.describe "My account", type: :request do
   let(:user) { create(:user, :with_household, email: "lea@example.com") }
 
   def sign_in(user)
-    post session_path, params: { email: user.email, password: "password" }
+    post session_path, params: { email: user.email, password: "passwordpassword" }
   end
 
   it "shows the first name and the email from the settings" do
@@ -47,7 +47,7 @@ RSpec.describe "My account", type: :request do
     expect(flash[:alert]).to eq("Mot de passe incorrect : rien n'a été supprimé.")
     expect(user.reload).to be_present
 
-    delete account_path, params: { password: "password" }
+    delete account_path, params: { password: "passwordpassword" }
     expect(response).to redirect_to(new_session_path)
     expect(User.exists?(user.id)).to be(false)
     get root_path
