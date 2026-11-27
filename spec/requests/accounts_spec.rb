@@ -37,6 +37,34 @@ RSpec.describe "My account", type: :request do
     expect(user.reload).to have_attributes(name: nil, email: "lea@example.com")
   end
 
+  it "deletes the account with the password, says what goes with it, then signs out" do
+    sign_in(user)
+
+    get edit_account_path
+    expect(response.parsed_body.at_css("#households-alone").text.squish).to include("Maison de test")
+
+    delete account_path, params: { password: "mauvais" }
+    expect(flash[:alert]).to eq("Mot de passe incorrect : rien n'a été supprimé.")
+    expect(user.reload).to be_present
+
+    delete account_path, params: { password: "password" }
+    expect(response).to redirect_to(new_session_path)
+    expect(User.exists?(user.id)).to be(false)
+    get root_path
+    expect(response).to redirect_to(new_session_path)
+  end
+
+  it "asks the last manager of a shared household to name another one first" do
+    household = user.households.sole
+    create(:household_member, household:, role: :member)
+    sign_in(user)
+
+    get edit_account_path
+
+    expect(response.parsed_body.at_css("#hand-over").text).to include("Maison de test")
+    expect(response.parsed_body.at_css("form[action='#{account_path}'] input[name=password]")).to be_nil
+  end
+
   it "asks a visitor to sign in" do
     get edit_account_path
 

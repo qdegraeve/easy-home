@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resource :session
-  resource :account, only: [ :edit, :update ]
+  resource :account, only: [ :edit, :update, :destroy ]
+  # Public, required by the app stores: what the app stores and how to delete one's account.
+  get "confidentialite", to: "privacy#show", as: :privacy
   # The members of the current household and the invitations (ADR 0019).
   resources :members, only: [ :index, :new, :create, :edit, :update, :destroy ] do
     resource :link, only: [ :show, :create ], module: :members

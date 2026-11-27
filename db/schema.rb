@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_27_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_27_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -282,18 +282,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_27_120000) do
   add_foreign_key "invitations", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "locations", "households"
   add_foreign_key "plant_analyses", "plants"
-  add_foreign_key "plant_analyses", "users", column: "requested_by_id"
+  add_foreign_key "plant_analyses", "users", column: "requested_by_id", on_delete: :nullify
   add_foreign_key "plant_analysis_photos", "photos"
   add_foreign_key "plant_analysis_photos", "plant_analyses"
   add_foreign_key "plant_analysis_questions", "photos", on_delete: :nullify
   add_foreign_key "plant_analysis_questions", "plant_analyses"
-  add_foreign_key "plant_analysis_questions", "users", column: "asked_by_id"
+  add_foreign_key "plant_analysis_questions", "users", column: "asked_by_id", on_delete: :nullify
   add_foreign_key "plants", "households"
   add_foreign_key "plants", "locations"
   add_foreign_key "plants", "photos", column: "cover_photo_id", on_delete: :nullify
   add_foreign_key "rainfalls", "households"
   add_foreign_key "sessions", "users"
   add_foreign_key "task_occurrences", "tasks"
-  add_foreign_key "task_occurrences", "users", column: "completed_by_id"
+  add_foreign_key "task_occurrences", "users", column: "completed_by_id", on_delete: :nullify
   add_foreign_key "tasks", "households"
 end

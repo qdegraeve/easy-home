@@ -149,6 +149,9 @@ HouseholdMember
 - Membres (ADR 0019, `Members::ChangeRole`, `Members::Remove`) : un gestionnaire change un rôle (membre ↔
   gestionnaire) et retire quelqu'un ; chacun quitte un foyer depuis « Mes foyers ». Un foyer garde toujours un
   gestionnaire (sous verrou du foyer). Retirer ne supprime ni le compte ni ses lignes du journal.
+- Supprimer son compte (ADR 0019, `Accounts::Destroy`, Réglages → Mon compte) : sessions, téléphones et places
+  partent ; un foyer où l'on est seul est supprimé avec tout son contenu ; refusé au dernier gestionnaire d'un foyer
+  partagé. Le journal, les analyses et les questions restent, sans l'auteur (« par un ancien membre »).
 - Un utilisateur peut avoir plusieurs foyers. Le **foyer actif** est mémorisé en session (`session[:household_id]`) et
   se change depuis « Mes foyers ». À défaut, ou si la session pointe vers un foyer dont il n'est plus membre, c'est son
   premier foyer par ordre alphabétique. Toute lecture passe par `policy_scope(Household)`.

@@ -27,4 +27,45 @@
 
     <%= form.submit t(".save"), class: button_class(:primary, block: true) %>
   <% end %>
+
+  <%# Required by the app stores (ADR 0019): said plainly before confirming, with the password. %>
+  <section class="mt-8 space-y-3 rounded-2xl bg-surface p-4" aria-labelledby="delete-account">
+    <h2 id="delete-account" class="font-semibold"><%= t(".delete_title") %></h2>
+    <p class="text-sm text-muted"><%= t(".delete_help") %></p>
+    <% if @households_to_hand_over.any? %>
+      <p class="text-sm" id="hand-over">
+        <%= t(".hand_over", households: @households_to_hand_over.map(&:name).to_sentence) %>
+        <%= link_to t(".members_link"), members_path, class: "font-semibold text-action underline" %>
+      </p>
+    <% else %>
+      <% if @households_alone.any? %>
+        <p class="text-sm font-semibold text-alert" id="households-alone">
+          <%= t(".households_alone", count: @households_alone.size,
+                households: @households_alone.map(&:name).to_sentence) %>
+        </p>
+      <% end %>
+      <%= form_with(
+        url: account_path,
+        method: :delete,
+        class: "space-y-3",
+        data: confirm_data(t(".delete_confirm"), button: t(".delete"), danger: true)
+      ) do |form| %>
+        <div>
+          <%= form.label :password, t(".password"), class: "block text-sm font-semibold" %>
+          <%= form.password_field(
+            :password,
+            required: true,
+            autocomplete: "current-password",
+            maxlength: 72,
+            class: "mt-1 w-full rounded-xl border border-field px-3 py-3"
+          ) %>
+        </div>
+        <%= form.submit t(".delete"), class: button_class(:danger, block: true) %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <p class="mt-6 text-center text-sm">
+    <%= link_to t(".privacy"), privacy_path, class: "text-muted underline" %>
+  </p>
 </div>
