@@ -16,7 +16,7 @@ class ApplicationPolicy
 
     attr_reader :user, :scope
 
-    # Households where the user manages plants and tasks: owner or member, not guest.
+    # Households where the user manages plants and tasks: manager or member, not guest.
     def managed_household_ids
       user.household_members.where.not(role: :guest).select(:household_id)
     end

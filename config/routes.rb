@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resource :session
+  resource :account, only: [ :edit, :update ]
   resource :notification_settings, only: [ :edit, :update ]
   resources :push_devices, only: :create
   resource :test_notification, only: :create

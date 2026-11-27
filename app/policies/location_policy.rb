@@ -1,6 +1,6 @@
 class LocationPolicy < ApplicationPolicy
   def create?
-    HouseholdPolicy.new(user, record.household).update?
+    HouseholdPolicy.new(user, record.household).manage?
   end
 
   def update?

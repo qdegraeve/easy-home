@@ -4,12 +4,16 @@
   <div class="mt-6 space-y-6">
     <%= render ListGroupComponent.new(title: t(".account"), id: "account") do |group| %>
       <% group.with_row do %>
-        <div class="flex min-h-14 items-center gap-3 px-3 py-2">
+        <%= link_to edit_account_path, class: "flex min-h-14 items-center gap-3 px-3 py-2" do %>
           <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-muted">
             <%= icon(:user) %>
           </span>
-          <span class="min-w-0 flex-1 break-words"><%= Current.user.email %></span>
-        </div>
+          <span class="min-w-0 flex-1">
+            <span class="block font-medium"><%= Current.user.display_name %></span>
+            <span class="block break-words text-sm text-muted"><%= Current.user.email %></span>
+          </span>
+          <%= icon(:chevron_right, class: "text-muted") %>
+        <% end %>
       <% end %>
     <% end %>
 

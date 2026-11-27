@@ -154,7 +154,7 @@ RSpec.describe "Plant tasks", type: :request do
 
   describe "home page" do
     it "shows neither tasks of another household of the user, nor stopped tasks" do
-      other_household = create(:household_member, user:, role: :owner).household
+      other_household = create(:household_member, user:, role: :manager).household
       create(:plant, :watered, household: other_household, name: "Ailleurs", interval_days: 1)
       stopped = add_task(title: "Arrêtée", recurrence_type: "once", due_on: "2026-11-15")
       stopped.update!(active: false)

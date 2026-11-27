@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Locations", type: :request do
   let(:household) { create(:household) }
-  let(:owner) { create(:household_member, household:, role: :owner).user }
+  let(:manager) { create(:household_member, household:, role: :manager).user }
   let(:location) { create(:location, household:, name: "Terrasse", exposure: :partial_shade) }
 
   def sign_in(user)
@@ -17,7 +17,7 @@ RSpec.describe "Locations", type: :request do
   it "changes the exposure of a location, and warns before about the analyses of its plants" do
     plant = create(:plant, household:, location:)
     create(:plant, household:, location:) # never analysed: nothing to signal
-    sign_in(owner)
+    sign_in(manager)
     get edit_location_path(location)
     expect(response.body).not_to include("à revoir")
 
@@ -32,7 +32,7 @@ RSpec.describe "Locations", type: :request do
   end
 
   it "says whether a location gets the rain, off by default" do
-    sign_in(owner)
+    sign_in(manager)
     expect(location).not_to be_rain_exposed
 
     change(location, rain_exposed: "1")
@@ -43,7 +43,7 @@ RSpec.describe "Locations", type: :request do
   end
 
   it "renders the form again on a missing name" do
-    sign_in(owner)
+    sign_in(manager)
 
     change(location, name: "")
 
@@ -57,7 +57,7 @@ RSpec.describe "Locations", type: :request do
     change(location, exposure: "shade")
     expect(response).to have_http_status(:forbidden)
 
-    sign_in(owner)
+    sign_in(manager)
     change(create(:location), exposure: "shade")
     expect(response).to have_http_status(:not_found)
     expect(location.reload.exposure).to eq("partial_shade")

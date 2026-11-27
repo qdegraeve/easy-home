@@ -5,23 +5,24 @@ RSpec.describe HouseholdPolicy do
 
   let(:household) { create(:household) }
 
-  context "for the owner of the household" do
-    let(:user) { create(:household_member, household:, role: :owner).user }
+  context "for a manager of the household" do
+    let(:user) { create(:household_member, household:, role: :manager).user }
 
-    it { is_expected.to permit_actions(%i[show edit update new create]) }
+    it { is_expected.to permit_actions(%i[show manage edit update new create]) }
   end
 
   context "for a member of the household" do
     let(:user) { create(:household_member, household:, role: :member).user }
 
-    it { is_expected.to permit_actions(%i[show edit update]) }
+    it { is_expected.to permit_actions(%i[show manage edit]) }
+    it { is_expected.to forbid_action(:update) }
   end
 
   context "for a guest of the household" do
     let(:user) { create(:household_member, household:, role: :guest).user }
 
     it { is_expected.to permit_action(:show) }
-    it { is_expected.to forbid_actions(%i[edit update]) }
+    it { is_expected.to forbid_actions(%i[manage edit update]) }
   end
 
   context "for a user of another household" do

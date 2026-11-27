@@ -62,7 +62,7 @@ RSpec.describe TaskPolicy do
 
   describe "Scope" do
     it "only returns tasks of households where the user is not a guest" do
-      user = create(:household_member, household: plant.household, role: :owner).user
+      user = create(:household_member, household: plant.household, role: :manager).user
       other = create(:task)
       create(:household_member, user:, household: other.household, role: :guest)
 

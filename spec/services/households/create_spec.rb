@@ -3,12 +3,12 @@ require "rails_helper"
 RSpec.describe Households::Create do
   let(:user) { create(:user) }
 
-  it "creates the household and makes the user its owner" do
+  it "creates the household and makes the user its manager" do
     result = described_class.new.call(user:, params: { name: "Ma maison" })
 
     expect(result).to be_success
     expect(user.households.sole.name).to eq("Ma maison")
-    expect(user.household_members.sole).to be_owner
+    expect(user.household_members.sole).to be_manager
   end
 
   it "fails without creating anything when the name is blank" do

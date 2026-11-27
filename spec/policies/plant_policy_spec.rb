@@ -6,7 +6,7 @@ RSpec.describe PlantPolicy do
   let(:plant) { create(:plant) }
   let(:actions) { %i[show create update destroy archive restore] }
 
-  %i[owner member].each do |role|
+  %i[manager member].each do |role|
     context "for a #{role} of the household" do
       let(:user) { create(:household_member, household: plant.household, role:).user }
 

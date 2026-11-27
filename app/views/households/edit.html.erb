@@ -6,43 +6,48 @@
     <h2 class="font-semibold"><%= heading_with_icon(:map_pin, t(".situation")) %></h2>
     <p class="text-sm text-muted"><%= t(".situation_help") %></p>
 
-    <%= form_with(
-      model: @household,
-      class: "space-y-3",
-      data: { controller: "address-autocomplete", address_autocomplete_url_value: address_suggestions_path }
-    ) do |form| %>
-      <%= render "shared/errors", record: @household %>
+    <% if policy(@household).update? %>
+      <%= form_with(
+        model: @household,
+        class: "space-y-3",
+        data: { controller: "address-autocomplete", address_autocomplete_url_value: address_suggestions_path }
+      ) do |form| %>
+        <%= render "shared/errors", record: @household %>
 
-      <div class="relative">
-        <%= form.label :address, class: "block text-sm font-semibold" %>
-        <%= form.text_field(
-          :address,
-          autocomplete: "off",
-          placeholder: t(".address_placeholder"),
-          class: "mt-1 w-full rounded-xl border border-field px-3 py-3",
-          data: { address_autocomplete_target: "input", action: "input->address-autocomplete#search" }
-        ) %>
-        <div data-address-autocomplete-target="results"></div>
-      </div>
-      <%= form.hidden_field :latitude, data: { address_autocomplete_target: "latitude" } %>
-      <%= form.hidden_field :longitude, data: { address_autocomplete_target: "longitude" } %>
-
-      <div>
-        <%= form.label :altitude_m, class: "block text-sm font-semibold" %>
-        <div class="mt-1 flex items-center gap-2">
-          <%= form.number_field(
-            :altitude_m,
-            class: "w-28 rounded-xl border border-field px-3 py-3",
-            data: { address_autocomplete_target: "altitude" }
+        <div class="relative">
+          <%= form.label :address, class: "block text-sm font-semibold" %>
+          <%= form.text_field(
+            :address,
+            autocomplete: "off",
+            placeholder: t(".address_placeholder"),
+            class: "mt-1 w-full rounded-xl border border-field px-3 py-3",
+            data: { address_autocomplete_target: "input", action: "input->address-autocomplete#search" }
           ) %>
-          <span class="text-sm"><%= t(".meters") %></span>
+          <div data-address-autocomplete-target="results"></div>
         </div>
-        <p class="mt-1 text-[13px] text-muted">
-          <%= @household.located? && @household.altitude_m.nil? ? t(".altitude_unknown") : t(".altitude_help") %>
-        </p>
-      </div>
+        <%= form.hidden_field :latitude, data: { address_autocomplete_target: "latitude" } %>
+        <%= form.hidden_field :longitude, data: { address_autocomplete_target: "longitude" } %>
 
-      <%= form.submit t(".save"), class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
+        <div>
+          <%= form.label :altitude_m, class: "block text-sm font-semibold" %>
+          <div class="mt-1 flex items-center gap-2">
+            <%= form.number_field(
+              :altitude_m,
+              class: "w-28 rounded-xl border border-field px-3 py-3",
+              data: { address_autocomplete_target: "altitude" }
+            ) %>
+            <span class="text-sm"><%= t(".meters") %></span>
+          </div>
+          <p class="mt-1 text-[13px] text-muted">
+            <%= @household.located? && @household.altitude_m.nil? ? t(".altitude_unknown") : t(".altitude_help") %>
+          </p>
+        </div>
+
+        <%= form.submit t(".save"), class: "w-full rounded-xl bg-action py-3 font-semibold text-white" %>
+      <% end %>
+    <% else %>
+      <p class="font-medium"><%= @household.address.presence || t(".no_address") %></p>
+      <p class="text-sm text-muted"><%= t(".address_by_managers") %></p>
     <% end %>
   </section>
 

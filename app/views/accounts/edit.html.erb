@@ -1,0 +1,30 @@
+<div class="mx-auto max-w-2xl">
+  <%= back_link_to t(".back"), settings_path %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+
+  <%= form_with(
+    model: @user,
+    url: account_path,
+    method: :patch,
+    class: "mt-6 space-y-4 rounded-2xl bg-surface p-4"
+  ) do |form| %>
+    <%= render "shared/errors", record: @user %>
+
+    <div>
+      <%= form.label :name, class: "block text-sm font-semibold" %>
+      <%= form.text_field(
+        :name,
+        autocomplete: "given-name",
+        class: "mt-1 w-full rounded-xl border border-field px-3 py-3"
+      ) %>
+      <p class="mt-1 text-[13px] text-muted"><%= t(".name_help") %></p>
+    </div>
+
+    <div>
+      <p class="text-sm font-semibold"><%= User.human_attribute_name(:email) %></p>
+      <p class="mt-1 break-words"><%= @user.email %></p>
+    </div>
+
+    <%= form.submit t(".save"), class: button_class(:primary, block: true) %>
+  <% end %>
+</div>

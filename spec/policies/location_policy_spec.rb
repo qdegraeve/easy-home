@@ -5,8 +5,8 @@ RSpec.describe LocationPolicy do
 
   let(:location) { build(:location) }
 
-  context "for the owner of the household" do
-    let(:user) { create(:household_member, household: location.household, role: :owner).user }
+  context "for a manager of the household" do
+    let(:user) { create(:household_member, household: location.household, role: :manager).user }
 
     it { is_expected.to permit_actions(%i[create destroy]) }
   end

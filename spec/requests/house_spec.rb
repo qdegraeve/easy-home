@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "My house", type: :request do
   let(:household) { create(:household, name: "Maison") }
-  let(:user) { create(:household_member, household:, role: :owner).user }
+  let(:user) { create(:household_member, household:, role: :manager).user }
 
   def sign_in(user)
     post session_path, params: { email: user.email, password: "password" }
@@ -54,7 +54,7 @@ RSpec.describe "My house", type: :request do
   end
 
   describe "GET /house" do
-    it "shows the inventory to everyone, and the places of the house to the owner, not to a guest" do
+    it "shows the inventory to everyone, and the places of the house to a manager, not to a guest" do
       create(:plant, :watered, household:, name: "Basilic")
       sign_in(user)
       get house_path
@@ -96,6 +96,28 @@ RSpec.describe "My house", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(household.reload.latitude).to be_nil
+    end
+
+    it "shows a member the address without the form, and the places they manage" do
+      household.update!(address: "1 rue des Lilas")
+      create(:location, household:, name: "Terrasse")
+      sign_in(create(:household_member, household:, role: :member).user)
+
+      get edit_household_path(household)
+
+      page = response.parsed_body
+      expect(page.text.squish).to include("1 rue des Lilas", "Seul un gestionnaire du foyer peut changer l'adresse.")
+      expect(page.text).to include("Terrasse")
+      expect(page.at_css("form[action='#{household_path(household)}']")).to be_nil
+    end
+
+    it "rejects a member: only a manager changes the address" do
+      sign_in(create(:household_member, household:, role: :member).user)
+
+      patch household_path(household), params: { household: { address: "Ici" } }
+
+      expect(response).to have_http_status(:forbidden)
+      expect(household.reload.address).to be_nil
     end
 
     it "rejects a guest" do
