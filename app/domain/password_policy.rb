@@ -6,6 +6,7 @@
 #   # => [:guessable]
 class PasswordPolicy
   MIN_LENGTH = 15
+  MAX_BYTES = 72
   RUNS = %w[
     0123456789012345678901234567890 abcdefghijklmnopqrstuvwxyz qwertyuiopasdfghjklzxcvbnm azertyuiopqsdfghjklmwxcvbn
   ].freeze
@@ -19,8 +20,11 @@ class PasswordPolicy
   def errors(password, email: nil)
     return [] if @allowed.include?(password)
     return [ :too_short ] if password.to_s.length < MIN_LENGTH
+    # Over the 72 bytes of bcrypt, has_secure_password refuses it already: no costly check on a huge input.
+    return [] if password.bytesize > MAX_BYTES
 
-    guessable?(password.downcase.gsub(/[^[:alnum:]]/, ""), email) ? [ :guessable ] : []
+    letters = password.downcase.gsub(/[^[:alnum:]]/, "")
+    guessable?(letters.empty? ? password.downcase : letters, email) ? [ :guessable ] : []
   end
 
   private
@@ -31,7 +35,7 @@ class PasswordPolicy
 
   # "passwordpassword", "abcabcabc…": one chunk over and over.
   def repeated?(text)
-    (1..text.length / 2).any? { |size| text == text[0, size] * (text.length / size) && (text.length % size).zero? }
+    (1..text.length / 2).any? { |size| (text.length % size).zero? && text == text[0, size] * (text.length / size) }
   end
 
   def run?(text)

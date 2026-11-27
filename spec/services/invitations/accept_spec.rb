@@ -37,6 +37,12 @@ RSpec.describe Invitations::Accept do
     expect(Invitation.find_usable(invitation.token)).to eq(invitation)
   end
 
+  it "requires the confirmation of the password" do
+    result = described_class.new.call(token: invitation.token, account: account.except(:password_confirmation))
+
+    expect(result.failure.first).to eq(:invalid_account)
+  end
+
   it "requires a password of 15 characters at least, not easy to guess" do
     [ "", "trop court", "aaaaaaaaaaaaaaaaaaaa" ].each do |password|
       weak = account.merge(password:, password_confirmation: password)

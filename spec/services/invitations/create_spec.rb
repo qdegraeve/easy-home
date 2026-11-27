@@ -36,9 +36,11 @@ RSpec.describe Invitations::Create do
   end
 
   it "reserves nothing when the e-mail cannot be sent" do
-    allow(InvitationsMailer).to receive(:invite).and_raise(Errno::ECONNREFUSED)
+    [ Errno::ECONNREFUSED, SocketError, OpenSSL::SSL::SSLError ].each do |error|
+      allow(InvitationsMailer).to receive(:invite).and_raise(error)
 
-    expect(invite(email: "lea@example.com").failure.first).to eq(:not_sent)
+      expect(invite(email: "lea@example.com").failure.first).to eq(:not_sent)
+    end
     expect(household.members.where(user: nil)).to be_empty
   end
 

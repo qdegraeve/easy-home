@@ -32,7 +32,9 @@ module Invitations
 
     # The e-mail is the invitation's, never one from the form.
     def create_account(invitation, account)
-      user = User.new(account.to_h.slice(:name, :password, :password_confirmation).merge(email: invitation.email))
+      attributes = account.to_h.slice(:name, :password).merge(email: invitation.email)
+      # The confirmation is required: missing, it does not match.
+      user = User.new(attributes.merge(password_confirmation: account.to_h[:password_confirmation].to_s))
       user.errors.add(:password, :blank) if user.password.blank?
       user.save if user.errors.none?
       user.persisted? ? Success(user) : Failure[:invalid_account, user]

@@ -7,7 +7,8 @@ module Invitations
     def call(invitation:)
       InvitationsMailer.invite(invitation, invitation.token).deliver_now
       Success(invitation)
-    rescue Net::SMTPError, IOError, SystemCallError, Timeout::Error => error
+    # Any failure of the delivery (SMTP, DNS, TLS, timeout…): reported, and said to the manager.
+    rescue StandardError => error
       Rails.error.report(error, handled: true)
       Failure[:not_sent, invitation]
     end

@@ -21,6 +21,12 @@ RSpec.describe PasswordPolicy do
     end
   end
 
+  it "accepts symbols or emoji only when varied, and leaves a huge input to has_secure_password" do
+    expect(policy.errors("🌴🌋🐢☀️🌊🥥🍍🦎🌺🐚🌈🏝️🦜🐠🌿")).to be_empty
+    expect(policy.errors("a" * 100_000)).to be_empty
+    expect(User.new(email: "a@example.com", password: "a" * 100_000)).not_to be_valid
+  end
+
   it "accepts the allowed passwords whatever the rules: passwordpassword outside production" do
     expect(described_class.new(allowed: [ "passwordpassword" ]).errors("passwordpassword")).to be_empty
     expect(Rails.configuration.x.allowed_passwords).to eq([ "passwordpassword" ])
