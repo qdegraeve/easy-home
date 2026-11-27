@@ -1,0 +1,36 @@
+<div class="mx-auto max-w-2xl">
+  <%= back_link_to t(".back"), members_path %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title") %></h1>
+  <p class="mt-1 text-sm text-muted"><%= t(".intro") %></p>
+
+  <%= form_with model: @member, url: members_path, class: "mt-6 space-y-5 rounded-2xl bg-surface p-4" do |form| %>
+    <%= render "shared/errors", record: @member %>
+
+    <div>
+      <%= form.label :invitee_name, class: "block text-sm font-semibold" %>
+      <%= form.text_field(
+        :invitee_name,
+        placeholder: t(".invitee_name_placeholder"),
+        class: "mt-1 w-full rounded-xl border border-field px-3 py-3"
+      ) %>
+      <p class="mt-1 text-[13px] text-muted"><%= t(".invitee_name_help") %></p>
+    </div>
+
+    <fieldset>
+      <legend class="text-sm font-semibold"><%= HouseholdMember.human_attribute_name(:role) %></legend>
+      <div class="mt-2 space-y-2">
+        <% Invitations::Create::ROLES.each do |role| %>
+          <label class="flex items-start gap-3 rounded-xl border border-field p-3">
+            <%= form.radio_button :role, role, class: "mt-1 h-5 w-5" %>
+            <span>
+              <span class="block font-medium"><%= t("households.index.roles.#{role}") %></span>
+              <span class="block text-sm text-muted"><%= t(".role_help.#{role}") %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <%= form.submit t(".submit"), class: button_class(:primary, block: true) %>
+  <% end %>
+</div>

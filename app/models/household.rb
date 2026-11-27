@@ -1,5 +1,6 @@
 class Household < ApplicationRecord
   has_many :members, class_name: "HouseholdMember", dependent: :destroy
+  has_many :invitations, through: :members
   has_many :users, through: :members
   has_many :locations, dependent: :destroy
   has_many :plants, dependent: :destroy

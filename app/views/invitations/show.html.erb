@@ -1,0 +1,53 @@
+<div class="mx-auto max-w-sm pt-10">
+  <p class="text-xs font-semibold uppercase tracking-wide text-action"><%= t("layouts.application.app_name") %></p>
+  <h1 class="text-2xl font-bold" data-screen-title><%= page_title t(".title", name: @household.name) %></h1>
+  <p class="mt-2 text-muted">
+    <%= t(
+      ".intro",
+      inviter: @invitation.created_by&.display_name || t(".someone"),
+      role: t("households.index.roles.#{@invitation.household_member.role}").downcase
+    ) %>
+  </p>
+
+  <% if @already_member %>
+    <p class="mt-6"><%= t(".already_member") %></p>
+    <%= link_to t(".open"), root_path, class: "mt-4 #{button_class(:primary, block: true)}" %>
+  <% elsif authenticated? %>
+    <%= button_to(
+      t(".join", name: @household.name),
+      invitation_acceptance_path(params[:token] || params[:invitation_token]),
+      class: "mt-6 #{button_class(:primary, block: true)}"
+    ) %>
+  <% else %>
+    <h2 class="mt-8 font-semibold"><%= t(".create_account") %></h2>
+    <%= form_with(
+      model: @user,
+      url: invitation_acceptance_path(params[:token] || params[:invitation_token]),
+      class: "mt-3 space-y-4"
+    ) do |form| %>
+      <%= render "shared/errors", record: @user %>
+      <% [
+        [ :name, :text_field, { autocomplete: "given-name", required: true } ],
+        [ :email, :email_field, { autocomplete: "username", required: true } ],
+        [ :password, :password_field, { autocomplete: "new-password", required: true, maxlength: 72 } ],
+        [ :password_confirmation, :password_field, { autocomplete: "new-password", required: true, maxlength: 72 } ]
+      ].each do |field, type, options| %>
+        <div>
+          <%= form.label field, class: "block text-sm font-semibold" %>
+          <%= form.public_send(
+            type,
+            field,
+            class: "mt-1 w-full rounded-xl border border-field bg-surface px-3 py-3",
+            **options
+          ) %>
+        </div>
+      <% end %>
+      <%= form.submit t(".submit", name: @household.name), class: button_class(:primary, block: true) %>
+    <% end %>
+
+    <p class="mt-6 text-center text-sm">
+      <%= t(".have_account") %>
+      <%= link_to t(".sign_in"), new_session_path, class: "font-semibold text-action underline" %>
+    </p>
+  <% end %>
+</div>

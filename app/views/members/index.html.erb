@@ -1,0 +1,69 @@
+<div class="mx-auto max-w-2xl">
+  <%= back_link_to t(".back"), settings_path %>
+  <h1 class="mt-2 text-2xl font-bold" data-screen-title><%= page_title t(".title", name: @household.name) %></h1>
+
+  <div class="mt-6 space-y-6">
+    <%= render ListGroupComponent.new(id: "members") do |group| %>
+      <% @members.each do |member| %>
+        <% group.with_row do %>
+          <div class="flex min-h-14 items-center gap-3 px-3 py-2">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-muted">
+              <%= icon(:user) %>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block font-medium">
+                <%= member.user.display_name %><%= t(".you") if member.user == Current.user %>
+              </span>
+              <span class="block break-words text-sm text-muted">
+                <%= t("households.index.roles.#{member.role}") %> · <%= member.user.email %>
+              </span>
+            </span>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if @invited.any? %>
+      <%= render ListGroupComponent.new(title: t(".invited"), id: "invited") do |group| %>
+        <% @invited.each do |member| %>
+          <% group.with_row do %>
+            <div class="flex min-h-14 items-center gap-3 px-3 py-2">
+              <span class="min-w-0 flex-1">
+                <span class="block font-medium"><%= member.invitee_name || t(".unnamed") %></span>
+                <span class="block text-sm text-muted">
+                  <%= t(
+                    ".pending",
+                    role: t("households.index.roles.#{member.role}"),
+                    date: l(member.invitation.expires_at.to_date, format: :day)
+                  ) %>
+                </span>
+              </span>
+              <% if policy(member).renew? %>
+                <%= button_to t(".new_link"), member_link_path(member), class: small_action_class %>
+                <%= button_to(
+                  t(".cancel"),
+                  member_path(member),
+                  method: :delete,
+                  class: small_action_class(:danger),
+                  form: {
+                    data: confirm_data(
+                      t(".cancel_confirm", name: member.invitee_name || t(".unnamed")),
+                      button: t(".cancel"),
+                      danger: true
+                    )
+                  }
+                ) %>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if policy(HouseholdMember.new(household: @household)).create? %>
+      <%= link_to new_member_path, class: button_class(:secondary, block: true) do %>
+        <%= icon(:plus) %><%= t(".invite") %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

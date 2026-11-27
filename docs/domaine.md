@@ -18,7 +18,7 @@
 | À savoir | `Equipment#notes` | Ce qu'on sait d'un équipement hors tâche (référence du filtre, garantie…). |
 | Échéance | `TaskOccurrence` | Une instance datée d'une tâche. L'ensemble des échéances forme le **journal**. |
 | Accès invité | `GuestAccess` (à venir) | Ouvre un sujet (plante, équipement, ou le foyer pour les tâches de la maison) et toutes ses tâches à un `guest`, pendant sa période (ADR 0019). |
-| Invitation | `Invitation` (à venir) | Lien à usage unique qui donne à une personne la place réservée pour elle dans le foyer (ADR 0019). |
+| Invitation | `Invitation` | Lien à usage unique qui donne à une personne la place réservée pour elle dans le foyer (ADR 0019). |
 | Appareil | `ApplicationPushDevice` | Téléphone qui reçoit les notifications : jeton Firebase, rattaché à une session (ADR 0012). |
 | Plante | `Plant` | Un élément du foyer : nom, espèce, emplacement. Archivable (`archived_at`). |
 | Emplacement | `Location` | Zone de la maison (« terrasse », « jardin devant ») avec son exposition au soleil. |
@@ -52,8 +52,9 @@ Location
 
 HouseholdMember
   user, household, role (manager | member | guest)
-  # à venir (ADR 0019) : user nullable (place réservée par une invitation), guest_full_access,
-  # access_starts_on, access_ends_on, has_many :guest_accesses, has_one :invitation
+  user (nul : place réservée par une invitation, sans aucun droit), invitee_name (« Pour qui ? »)
+  has_one :invitation
+  # à venir (ADR 0019) : guest_full_access, access_starts_on, access_ends_on, has_many :guest_accesses
 
 Plant                            # un modèle par type d'élément (ADR 0010)
   household (lecture seule), name
@@ -122,8 +123,8 @@ TaskOccurrence                   # = une ligne du journal
 GuestAccess                      # à venir (ADR 0019)
   household_member (guest), subject (Plant, Equipment, ou Household pour les tâches de la maison)
 
-Invitation                       # à venir (ADR 0019)
-  household_member (la place réservée), created_by (User), token_digest, expires_at, accepted_at
+Invitation                       # ADR 0019 : lien à usage unique, 7 jours ; expirée, sa place est supprimée la nuit
+  household_member (la place réservée), created_by (User), token_digest (SHA-256), expires_at, accepted_at
 
 ApplicationPushDevice            # gem action_push_native (ADR 0012)
   owner (Session)                # se déconnecter supprime l'appareil

@@ -43,7 +43,8 @@ Lien d'invitation, valable 7 jours, pour une seule personne
 
 - **Le lien** : un jeton aléatoire, à usage unique, valable 7 jours. Seule son empreinte (SHA-256) est en base : une
   fuite de la base ne donne aucun lien valable. Le lien porte le rôle.
-- **Partager** ouvre le partage d'Android dans l'app (Web Share API, disponible dans la WebView), **Copier** partout.
+- **Partager** ouvre le partage d'Android dans l'app (bridge component `share` : la WebView n'a pas la Web Share
+  API), celui du navigateur ailleurs quand il existe ; **Copier** partout.
   L'app n'envoie rien elle-même : pas d'e-mail, pas d'adresse à saisir.
 - **Les invitations en attente** sont dans la liste des membres (« Marc, invité, en attente jusqu'au 4 déc. »), avec
   « Annuler ». Une invitation expirée disparaît de la liste.
@@ -189,8 +190,9 @@ User
 - Services : `Invitations::Create`, `Invitations::Accept` (crée le compte au besoin, attache l'utilisateur à sa place,
   consomme le lien, dans une transaction avec verrou sur l'invitation : deux clics simultanés n'en font qu'un),
   `Members::ChangeRole`, `Members::Remove` (garde-fou du dernier gestionnaire, sous verrou du foyer).
-- Sécurité : création de compte limitée par `rate_limit` (comme la connexion) ; le jeton se compare par son empreinte ;
-  les pages d'invitation ne disent pas si un e-mail a déjà un compte.
+- Sécurité : création de compte limitée par `rate_limit` (comme la connexion), mot de passe de 8 caractères au
+  moins ; le jeton se compare par son empreinte. Seule fuite assumée : un e-mail déjà pris le dit à l'inscription.
+  Limite connue : le jeton est dans le chemin de l'URL, donc dans les journaux du serveur, pendant ses 7 jours.
 
 ## 7. Découpage en PR
 

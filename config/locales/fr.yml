@@ -76,6 +76,11 @@ fr:
       user:
         name: "Prénom"
         email: "E-mail"
+        password: "Mot de passe"
+        password_confirmation: "Confirmation du mot de passe"
+      household_member:
+        invitee_name: "Pour qui ?"
+        role: "Rôle"
       equipment:
         kind: "Type"
         name: "Nom"
@@ -323,6 +328,64 @@ fr:
       save: "Enregistrer"
     update:
       success: "Compte enregistré."
+  members:
+    index:
+      back: "← Réglages"
+      title: "Membres de %{name}"
+      you: " (vous)"
+      invited: "Invitations en attente"
+      unnamed: "Sans nom"
+      pending: "%{role}, lien valable jusqu'au %{date}"
+      new_link: "Nouveau lien"
+      cancel: "Annuler"
+      cancel_confirm: "Annuler l'invitation de %{name} ? Son lien ne marchera plus."
+      invite: "Inviter quelqu'un"
+    new:
+      back: "← Membres"
+      title: "Inviter quelqu'un"
+      intro: "Vous obtenez un lien à envoyer vous-même (message, WhatsApp…). Il sert une seule fois, pendant 7 jours."
+      invitee_name_placeholder: "Ex. Léa"
+      invitee_name_help: "Pour vous y retrouver dans les invitations en attente. La personne donnera son prénom."
+      role_help:
+        member: "Voit et fait tout : plantes, équipements, tâches."
+        manager: "Comme un membre, et gère le foyer : son adresse, ses membres."
+      submit: "Créer le lien"
+    create:
+      success: "Lien créé."
+    destroy:
+      success: "Invitation annulée."
+    links:
+      show:
+        back: "← Membres"
+        title: "Lien d'invitation"
+        intro: "Envoyez ce lien à %{name}. Il ne sera plus affiché ensuite."
+        copy: "Copier"
+        copied: "Copié"
+        share: "Partager"
+        share_text: "Rejoins %{household} sur Easy Home : %{url}"
+        validity: "Valable une seule fois, jusqu'au %{date}."
+        gone: "Le lien n'est affiché qu'une fois, à sa création. Perdu ? Un nouveau lien remplace l'ancien."
+        renew: "Nouveau lien"
+  invitations:
+    show:
+      title: "Rejoindre %{name}"
+      intro: "%{inviter} vous invite comme %{role}."
+      someone: "Quelqu'un"
+      already_member: "Vous faites déjà partie de ce foyer."
+      open: "Ouvrir Easy Home"
+      join: "Rejoindre %{name}"
+      create_account: "Créer votre compte"
+      submit: "Créer mon compte et rejoindre %{name}"
+      have_account: "Déjà un compte ?"
+      sign_in: "Se connecter"
+    unusable:
+      title: "Lien expiré"
+      body: "Ce lien n'est plus valable. Demandez-en un nouveau à la personne qui vous l'a envoyé."
+    acceptances:
+      create:
+        success: "Bienvenue dans %{name}."
+        already_member: "Vous faites déjà partie de %{name}."
+        rate_limited: "Trop d'essais. Réessayez dans quelques minutes."
   settings:
     show:
       title: "Réglages"
@@ -330,6 +393,7 @@ fr:
       preferences: "Préférences"
       notifications: "Notifications"
       households: "Mes foyers"
+      members: "Membres du foyer"
   places:
     none: "sans emplacement"
     sheltered: "abrité du vent"
